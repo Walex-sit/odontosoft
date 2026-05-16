@@ -71,21 +71,21 @@ export default function Agenda() {
   const eventos = agendamentos.map((a) => ({
     title: a.pacientes?.nome || 'Consulta',
     date: a.data_consulta,
-    color: '#2563eb' // blue-600
+    color: '#3b82f6'
   }))
 
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Agenda da Clínica</h2>
-          <p className="text-gray-500 mt-1">Gerencie os horários e agendamentos</p>
+          <h2 className="text-2xl font-bold text-white">Agenda da Clínica</h2>
+          <p className="text-slate-400 mt-1">Gerencie os horários e agendamentos</p>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-gray-100 mb-8 shadow-sm">
-        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 mb-8">
+        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           Novo Agendamento
@@ -93,15 +93,15 @@ export default function Agenda() {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Paciente</label>
+            <label className="block text-sm font-semibold text-slate-400 mb-1.5">Paciente</label>
             <select
-              className="appearance-none block w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
+              className="appearance-none block w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
               value={pacienteId}
               onChange={(e) => setPacienteId(e.target.value)}
             >
-              <option value="" className="text-gray-400">Selecione o paciente</option>
+              <option value="" className="text-slate-500">Selecione o paciente</option>
               {pacientes.map((p) => (
-                <option key={p.id} value={p.id} className="text-gray-900">
+                <option key={p.id} value={p.id} className="text-white bg-slate-800">
                   {p.nome}
                 </option>
               ))}
@@ -109,20 +109,20 @@ export default function Agenda() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Data</label>
+            <label className="block text-sm font-semibold text-slate-400 mb-1.5">Data</label>
             <input
               type="date"
-              className="appearance-none block w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
+              className="appearance-none block w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
               value={dataConsulta}
               onChange={(e) => setDataConsulta(e.target.value)}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Horário</label>
+            <label className="block text-sm font-semibold text-slate-400 mb-1.5">Horário</label>
             <input
               type="time"
-              className="appearance-none block w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
+              className="appearance-none block w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
               value={horaConsulta}
               onChange={(e) => setHoraConsulta(e.target.value)}
             />
@@ -130,7 +130,7 @@ export default function Agenda() {
 
           <button
             onClick={salvarAgendamento}
-            className="w-full bg-blue-600 text-white px-6 py-2.5 rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm font-bold text-sm h-[42px]"
+            className="w-full bg-blue-600 text-white px-6 py-2.5 rounded-xl hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-sm h-[42px] border border-blue-500"
           >
             Agendar
           </button>
@@ -138,15 +138,15 @@ export default function Agenda() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="lg:col-span-2 bg-slate-900 p-6 rounded-2xl border border-slate-800">
+          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             Calendário Mensal
           </h3>
           
-          <div className="calendar-container">
+          <div className="calendar-container dark-calendar">
             <FullCalendar
               plugins={[dayGridPlugin]}
               initialView="dayGridMonth"
@@ -163,27 +163,27 @@ export default function Agenda() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm h-fit">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">
+        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 h-fit">
+          <h3 className="text-lg font-bold text-white mb-4">
             Próximas consultas
           </h3>
 
           {agendamentos.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500 font-medium text-sm">Nenhuma consulta agendada.</p>
+              <p className="text-slate-400 font-medium text-sm">Nenhuma consulta agendada.</p>
             </div>
           ) : (
             <div className="space-y-3">
               {agendamentos.map((a) => (
                 <div
                   key={a.id}
-                  className="border border-gray-100 rounded-xl p-4 flex justify-between items-center hover:bg-gray-50/50 transition-colors"
+                  className="border border-slate-700 rounded-xl p-4 flex justify-between items-center hover:bg-slate-800 transition-colors"
                 >
                   <div>
-                    <p className="font-bold text-gray-900 text-sm">
+                    <p className="font-bold text-white text-sm">
                       {a.pacientes?.nome || 'Paciente não encontrado'}
                     </p>
-                    <div className="flex items-center text-gray-500 text-xs mt-1 font-medium gap-1">
+                    <div className="flex items-center text-slate-400 text-xs mt-1 font-medium gap-1">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -191,7 +191,7 @@ export default function Agenda() {
                     </div>
                   </div>
 
-                  <div className="font-bold text-blue-700 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-lg text-xs shadow-sm">
+                  <div className="font-bold text-blue-400 bg-blue-900/30 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs">
                     {a.hora_consulta}
                   </div>
                 </div>

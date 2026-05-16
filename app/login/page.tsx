@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { useRouter } from 'next/navigation'
+import { logAction } from '../lib/logger'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -18,6 +19,7 @@ export default function Login() {
     if (error) {
       alert(error.message)
     } else {
+      await logAction('login', 'auth', { email })
       router.push('/pacientes')
     }
   }
