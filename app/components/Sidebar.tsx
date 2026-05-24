@@ -91,10 +91,10 @@ const MENU_SECTIONS: MenuSection[] = [
 ]
 
 const ROLE_LABELS: Record<UserRole, { label: string; color: string }> = {
-  admin: { label: 'Administrador', color: 'text-blue-600' },
-  dentista: { label: 'Dentista', color: 'text-emerald-600' },
-  recepcao: { label: 'Recepção', color: 'text-amber-600' },
-  financeiro: { label: 'Financeiro', color: 'text-violet-600' },
+  admin: { label: 'Administrador', color: 'text-blue-400' },
+  dentista: { label: 'Dentista', color: 'text-emerald-400' },
+  recepcao: { label: 'Recepção', color: 'text-amber-400' },
+  financeiro: { label: 'Financeiro', color: 'text-violet-400' },
 }
 
 interface SidebarProps {
@@ -118,12 +118,12 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
 
   function getItemClasses(item: MenuItem) {
     return isItemActive(item)
-      ? 'bg-blue-50 text-blue-700 font-semibold border border-blue-100 shadow-sm'
-      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium border border-transparent'
+      ? 'bg-slate-900 text-blue-400 font-semibold border border-slate-800 shadow-sm'
+      : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200 font-medium border border-transparent'
   }
 
   function getIconClasses(item: MenuItem) {
-    return isItemActive(item) ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'
+    return isItemActive(item) ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-350'
   }
 
   async function logout() {
@@ -137,48 +137,48 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* Mobile Backdrop */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-40 lg:hidden transition-all duration-300"
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 lg:hidden transition-all duration-300"
           onClick={onClose}
         />
       )}
 
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col h-full 
-        shadow-[2px_0_8px_-4px_rgba(0,0,0,0.05)] transition-transform duration-300 ease-in-out
+        fixed inset-y-0 left-0 z-50 w-64 flex flex-col h-full 
+        transition-transform duration-300 ease-in-out
         lg:static lg:translate-x-0 lg:flex
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+      `} style={{background:'#131c2e', borderRight:'1px solid rgba(148,163,184,0.10)'}} >
         {/* Logo */}
         <div className="p-6 flex-shrink-0">
           <div className="flex items-center justify-between gap-3 mb-8">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm border border-blue-700">
+              <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center border border-blue-500 shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
-                Odonto<span className="text-blue-600">SaaS</span>
+              <h1 className="text-2xl font-extrabold text-slate-200 tracking-tight">
+                Odonto<span className="text-blue-500">SaaS</span>
               </h1>
             </div>
 
             {/* Close Button on Mobile */}
             <button
               onClick={onClose}
-              className="lg:hidden p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all"
+              className="lg:hidden p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition-all"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
           {/* Card da Clínica + Role do Usuário */}
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm">
+          <div className="rounded-xl p-4" style={{background:'#1a2540', border:'1px solid rgba(148,163,184,0.10)'}}>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Clínica Ativa</p>
-              <ChevronDown className="h-4 w-4 text-slate-400" />
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Clínica Ativa</p>
+              <ChevronDown className="h-4 w-4 text-slate-550" />
             </div>
-            <p className="text-sm font-bold text-slate-800">Matriz Centro</p>
-            <div className="mt-2 pt-2 border-t border-slate-200">
+            <p className="text-sm font-bold text-slate-350">Matriz Centro</p>
+            <div className="mt-2 pt-2" style={{borderTop:'1px solid rgba(148,163,184,0.10)'}}>
               <p className="text-xs text-slate-500 mb-0.5">Perfil</p>
               <p className={`text-sm font-semibold ${roleInfo.color}`}>{roleInfo.label}</p>
             </div>
@@ -196,7 +196,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
 
             return (
               <div key={section.title}>
-                <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                <p className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">
                   {section.title}
                 </p>
                 <nav className="space-y-1">
@@ -221,15 +221,15 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         </div>
         
         {/* Rodapé com Logout */}
-        <div className="mt-auto p-4 border-t border-slate-200 bg-slate-50/50 flex-shrink-0">
+        <div className="mt-auto p-4 flex-shrink-0" style={{borderTop:'1px solid rgba(148,163,184,0.10)', background:'#131c2e'}}>
           <button 
             onClick={logout}
-            className="group flex w-full items-center gap-3 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-700 transition-colors font-medium border border-transparent hover:border-red-100"
+            className="group flex w-full items-center gap-3 px-4 py-2.5 rounded-xl text-slate-400 hover:bg-red-950/20 hover:text-red-400 transition-colors font-medium border border-transparent"
           >
-            <LogOut className="h-5 w-5 text-slate-400 group-hover:text-red-500 transition-colors" />
+            <LogOut className="h-5 w-5 text-slate-500 group-hover:text-red-400 transition-colors" />
             Sair do Sistema
           </button>
-        </div>
+        </div>      
       </aside>
     </>
   )
