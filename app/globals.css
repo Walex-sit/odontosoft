@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020617;
-  --foreground: #cbd5e1;
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -15,78 +15,93 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
-/* FullCalendar Dark Theme */
-.dark-calendar .fc {
-  --fc-border-color: #1e293b;
-  --fc-button-bg-color: #1e293b;
-  --fc-button-border-color: #334155;
-  --fc-button-hover-bg-color: #334155;
-  --fc-button-hover-border-color: #475569;
-  --fc-button-active-bg-color: #3b82f6;
-  --fc-button-active-border-color: #3b82f6;
-  --fc-today-bg-color: rgba(59, 130, 246, 0.1);
-  --fc-neutral-bg-color: #0f172a;
+/* FullCalendar Clinical Light Theme */
+.clinical-calendar .fc {
+  --fc-border-color: #e2e8f0;
+  --fc-button-bg-color: #ffffff;
+  --fc-button-border-color: #e2e8f0;
+  --fc-button-hover-bg-color: #f8fafc;
+  --fc-button-hover-border-color: #cbd5e1;
+  --fc-button-active-bg-color: #eff6ff;
+  --fc-button-active-border-color: #bfdbfe;
+  --fc-today-bg-color: #f0fdf4;
+  --fc-neutral-bg-color: #f8fafc;
   --fc-page-bg-color: transparent;
-  --fc-event-bg-color: #3b82f6;
-  --fc-event-border-color: #2563eb;
+  --fc-event-bg-color: #2563eb;
+  --fc-event-border-color: #1d4ed8;
 }
 
-.dark-calendar .fc .fc-col-header-cell {
-  background-color: #0f172a;
-  border-color: #1e293b;
+.clinical-calendar .fc .fc-col-header-cell {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  padding: 0.5rem 0;
 }
 
-.dark-calendar .fc .fc-col-header-cell-cushion {
-  color: #94a3b8;
-  font-weight: 700;
+.clinical-calendar .fc .fc-col-header-cell-cushion {
+  color: #64748b;
+  font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.dark-calendar .fc .fc-daygrid-day-number {
-  color: #cbd5e1;
-  font-weight: 600;
+.clinical-calendar .fc .fc-daygrid-day-number {
+  color: #334155;
+  font-weight: 500;
   font-size: 0.85rem;
+  padding: 0.5rem;
 }
 
-.dark-calendar .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-  color: #3b82f6;
+.clinical-calendar .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  color: #2563eb;
+  font-weight: 700;
 }
 
-.dark-calendar .fc .fc-toolbar-title {
-  color: #f1f5f9;
-  font-weight: 800;
-  font-size: 1.15rem;
+.clinical-calendar .fc .fc-toolbar-title {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1.25rem;
 }
 
-.dark-calendar .fc .fc-button {
-  color: #cbd5e1;
-  font-weight: 600;
+.clinical-calendar .fc .fc-button {
+  color: #475569;
+  font-weight: 500;
   border-radius: 0.5rem;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
+  padding: 0.4rem 0.75rem;
+  text-transform: capitalize;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-.dark-calendar .fc .fc-button:focus {
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+.clinical-calendar .fc .fc-button:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-.dark-calendar .fc .fc-scrollgrid {
-  border-color: #1e293b;
+.clinical-calendar .fc .fc-button-primary:not(:disabled).fc-button-active, 
+.clinical-calendar .fc .fc-button-primary:not(:disabled):active {
+  color: #1d4ed8;
 }
 
-.dark-calendar .fc .fc-daygrid-day {
-  border-color: #1e293b;
+.clinical-calendar .fc .fc-scrollgrid {
+  border-color: #e2e8f0;
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
-.dark-calendar .fc .fc-event {
-  border-radius: 0.375rem;
+.clinical-calendar .fc .fc-daygrid-day {
+  border-color: #e2e8f0;
+}
+
+.clinical-calendar .fc .fc-event {
+  border-radius: 0.25rem;
   font-size: 0.75rem;
-  font-weight: 600;
-  padding: 1px 4px;
+  font-weight: 500;
+  padding: 2px 6px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: none;
 }
 
 /* Scrollbar minimalista */
@@ -101,20 +116,15 @@ body {
 /* Scrollbar sutil para áreas de conteúdo */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #cbd5e1;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
-
-/* Date/Time inputs no dark mode */
-input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="time"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.7);
+  background: #94a3b8;
 }

@@ -9,11 +9,11 @@ export default function DashboardLayout({
 }) {
   return (
     <RequireAuth>
-      <div className="h-screen w-full bg-slate-950 flex overflow-hidden text-slate-300">
+      <div className="h-screen w-full bg-slate-50 flex overflow-hidden text-slate-900">
         <Sidebar />
-        <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-950">
+        <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50">
           <Topbar />
-          <main className="flex-1 overflow-y-auto p-8 lg:px-12">
+          <main className="flex-1 overflow-y-auto p-8 lg:px-12 relative">
             <div className="max-w-7xl mx-auto pb-12">
               {children}
             </div>

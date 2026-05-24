@@ -5,33 +5,48 @@ import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth, UserRole } from './RequireAuth'
 import { logAction } from '../lib/logger'
+import { 
+  LayoutDashboard, 
+  Calendar, 
+  Users, 
+  ClipboardList, 
+  TrendingUp, 
+  TrendingDown, 
+  Activity, 
+  Truck, 
+  ShoppingCart, 
+  ReceiptText, 
+  ShieldCheck, 
+  History, 
+  LogOut,
+  ChevronDown
+} from 'lucide-react'
 
 // Definição centralizada das permissões por perfil
 const PERMISSIONS: Record<UserRole, string[]> = {
   admin: [
-    '/', '/agenda', '/pacientes', '/prontuarios',
+    '/overview', '/agenda', '/pacientes', '/prontuarios',
     '/financeiro', '/despesas', '/fluxo-caixa',
     '/fornecedores', '/compras', '/notas-fiscais',
     '/usuarios', '/logs'
   ],
   dentista: [
-    '/', '/agenda', '/pacientes', '/prontuarios'
+    '/overview', '/agenda', '/pacientes', '/prontuarios'
   ],
   recepcao: [
-    '/', '/agenda', '/pacientes', '/financeiro'
+    '/overview', '/agenda', '/pacientes', '/financeiro'
   ],
   financeiro: [
-    '/', '/financeiro', '/despesas', '/fluxo-caixa',
+    '/overview', '/financeiro', '/despesas', '/fluxo-caixa',
     '/fornecedores', '/compras', '/notas-fiscais'
   ],
 }
 
-// Configuração de cada item de menu
 interface MenuItem {
   path: string
   label: string
-  icon: string  // SVG path "d" attribute
-  matchPrefix?: boolean // para /pacientes/[id]
+  icon: React.ElementType
+  matchPrefix?: boolean
 }
 
 interface MenuSection {
@@ -43,91 +58,42 @@ const MENU_SECTIONS: MenuSection[] = [
   {
     title: 'Principal',
     items: [
-      {
-        path: '/',
-        label: 'Dashboard',
-        icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z',
-      },
-      {
-        path: '/agenda',
-        label: 'Agenda',
-        icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
-      },
+      { path: '/overview', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/agenda', label: 'Agenda', icon: Calendar },
     ],
   },
   {
     title: 'Clínica',
     items: [
-      {
-        path: '/pacientes',
-        label: 'Pacientes',
-        icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
-        matchPrefix: true,
-      },
-      {
-        path: '/prontuarios',
-        label: 'Prontuários',
-        icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-      },
+      { path: '/pacientes', label: 'Pacientes', icon: Users, matchPrefix: true },
+      { path: '/prontuarios', label: 'Prontuários', icon: ClipboardList },
     ],
   },
   {
     title: 'Financeiro',
     items: [
-      {
-        path: '/financeiro',
-        label: 'Receitas',
-        icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-      },
-      {
-        path: '/despesas',
-        label: 'Despesas',
-        icon: 'M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z',
-      },
-      {
-        path: '/fluxo-caixa',
-        label: 'Fluxo de Caixa',
-        icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
-      },
-      {
-        path: '/fornecedores',
-        label: 'Fornecedores',
-        icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
-      },
-      {
-        path: '/compras',
-        label: 'Compras',
-        icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z',
-      },
-      {
-        path: '/notas-fiscais',
-        label: 'Notas Fiscais',
-        icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-      },
+      { path: '/financeiro', label: 'Receitas', icon: TrendingUp },
+      { path: '/despesas', label: 'Despesas', icon: TrendingDown },
+      { path: '/fluxo-caixa', label: 'Fluxo de Caixa', icon: Activity },
+      { path: '/fornecedores', label: 'Fornecedores', icon: Truck },
+      { path: '/compras', label: 'Compras', icon: ShoppingCart },
+      { path: '/notas-fiscais', label: 'Notas Fiscais', icon: ReceiptText },
     ],
   },
   {
     title: 'Sistema',
     items: [
-      {
-        path: '/usuarios',
-        label: 'Usuários e Perfis',
-        icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
-      },
-      {
-        path: '/logs',
-        label: 'Logs (Auditoria)',
-        icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
-      },
+      { path: '/usuarios', label: 'Usuários e Perfis', icon: ShieldCheck },
+      { path: '/logs', label: 'Logs (Auditoria)', icon: History },
     ],
   },
 ]
 
 const ROLE_LABELS: Record<UserRole, { label: string; color: string }> = {
-  admin: { label: 'Administrador', color: 'text-blue-400' },
-  dentista: { label: 'Dentista', color: 'text-emerald-400' },
-  recepcao: { label: 'Recepção', color: 'text-amber-400' },
-  financeiro: { label: 'Financeiro', color: 'text-violet-400' },
+  admin: { label: 'Administrador', color: 'text-blue-600' },
+  dentista: { label: 'Dentista', color: 'text-emerald-600' },
+  recepcao: { label: 'Recepção', color: 'text-amber-600' },
+  financeiro: { label: 'Financeiro', color: 'text-violet-600' },
 }
 
 export default function Sidebar() {
@@ -146,12 +112,12 @@ export default function Sidebar() {
 
   function getItemClasses(item: MenuItem) {
     return isItemActive(item)
-      ? 'bg-blue-900/30 text-blue-400 font-bold border border-blue-800/50'
-      : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium border border-transparent'
+      ? 'bg-blue-50 text-blue-700 font-semibold border border-blue-100 shadow-sm'
+      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium border border-transparent'
   }
 
   function getIconClasses(item: MenuItem) {
-    return isItemActive(item) ? 'text-blue-400' : 'text-slate-500'
+    return isItemActive(item) ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'
   }
 
   async function logout() {
@@ -161,32 +127,30 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col h-full shadow-sm z-20 relative">
+    <aside className="w-64 bg-white border-r border-slate-200 flex flex-col h-full shadow-[2px_0_8px_-4px_rgba(0,0,0,0.05)] z-20 relative">
       {/* Logo */}
       <div className="p-6">
         <div className="flex items-center gap-3 mb-8">
-          <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-md border border-blue-500/30">
+          <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm border border-blue-700">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           </div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">
-            Odonto<span className="text-blue-500">SaaS</span>
+          <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+            Odonto<span className="text-blue-600">SaaS</span>
           </h1>
         </div>
 
         {/* Card da Clínica + Role do Usuário */}
-        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 mb-6">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Clínica Ativa</p>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-            </svg>
+            <ChevronDown className="h-4 w-4 text-slate-400" />
           </div>
-          <p className="text-sm font-bold text-white">Matriz Centro</p>
-          <div className="mt-2 pt-2 border-t border-slate-700">
-            <p className="text-xs text-slate-500">Perfil</p>
-            <p className={`text-sm font-bold ${roleInfo.color}`}>{roleInfo.label}</p>
+          <p className="text-sm font-bold text-slate-800">Matriz Centro</p>
+          <div className="mt-2 pt-2 border-t border-slate-200">
+            <p className="text-xs text-slate-500 mb-0.5">Perfil</p>
+            <p className={`text-sm font-semibold ${roleInfo.color}`}>{roleInfo.label}</p>
           </div>
         </div>
       </div>
@@ -194,43 +158,31 @@ export default function Sidebar() {
       {/* Menu dinâmico baseado em RBAC */}
       <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-6 no-scrollbar">
         {MENU_SECTIONS.map((section) => {
-          // Filtrar itens permitidos para este perfil
           const visibleItems = section.items.filter((item) =>
             allowedPaths.includes(item.path)
           )
 
-          // Se nenhum item da seção é visível, omitir a seção inteira
           if (visibleItems.length === 0) return null
 
           return (
             <div key={section.title}>
-              <p className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">
+              <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
                 {section.title}
               </p>
               <nav className="space-y-1">
-                {visibleItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 ${getItemClasses(item)}`}
-                    href={item.path}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className={`h-5 w-5 ${getIconClasses(item)}`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                {visibleItems.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <Link
+                      key={item.path}
+                      className={`group flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 ${getItemClasses(item)}`}
+                      href={item.path}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={item.icon}
-                      />
-                    </svg>
-                    {item.label}
-                  </Link>
-                ))}
+                      <Icon className={`h-5 w-5 transition-colors ${getIconClasses(item)}`} strokeWidth={2} />
+                      {item.label}
+                    </Link>
+                  )
+                })}
               </nav>
             </div>
           )
@@ -238,14 +190,12 @@ export default function Sidebar() {
       </div>
       
       {/* Rodapé com Logout */}
-      <div className="mt-auto p-4 border-t border-slate-800">
+      <div className="mt-auto p-4 border-t border-slate-200 bg-slate-50/50">
         <button 
           onClick={logout}
-          className="flex w-full items-center gap-3 px-4 py-2.5 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors font-medium border border-transparent hover:border-red-500/20"
+          className="group flex w-full items-center gap-3 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-700 transition-colors font-medium border border-transparent hover:border-red-100"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
+          <LogOut className="h-5 w-5 text-slate-400 group-hover:text-red-500 transition-colors" />
           Sair do Sistema
         </button>
       </div>
