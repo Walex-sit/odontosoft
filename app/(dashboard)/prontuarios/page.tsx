@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { FileText, Plus, ClipboardList } from 'lucide-react'
+import { useAuth } from '../../components/RequireAuth'
 
 export default function Prontuarios() {
+  const { session } = useAuth()
   const [pacientes, setPacientes] = useState<any[]>([])
   const [prontuarios, setProntuarios] = useState<any[]>([])
   const [pacienteId, setPacienteId] = useState('')
@@ -12,12 +14,9 @@ export default function Prontuarios() {
   const [tratamento, setTratamento] = useState('')
   const [carregando, setCarregando] = useState(true)
 
-  async function carregarDados() {
+  async function carregarDados(userId: string) {
     try {
-      const { data: userData } = await supabase.auth.getUser()
-      if (!userData.user) return
-
-      const { data: pacs } = await supabase.from('pacientes').select('*').eq('user_id', userData.user.id)
+      const { data: pacs } = await supabase.from('pacientes').select('*').eq('user_id', userId)
       setPacientes(pacs || [])
 
       const { data: prns } = await supabase
@@ -34,13 +33,11 @@ export default function Prontuarios() {
   }
 
   async function salvarProntuario() {
-    if (!pacienteId || !descricao.trim()) return
-
-    const { data: userData } = await supabase.auth.getUser()
+    if (!pacienteId || !descricao.trim() || !session?.user?.id) return
 
     await supabase.from('prontuarios').insert([{
       paciente_id: pacienteId,
-      dentista_id: userData.user?.id,
+      dentista_id: session.user.id,
       descricao,
       tratamento
     }])
@@ -48,10 +45,16 @@ export default function Prontuarios() {
     setPacienteId('')
     setDescricao('')
     setTratamento('')
-    carregarDados()
+    carregarDados(session.user.id)
   }
 
-  useEffect(() => { carregarDados() }, [])
+  useEffect(() => {
+    if (session?.user?.id) {
+      carregarDados(session.user.id)
+    } else if (session === null) {
+      setCarregando(false)
+    }
+  }, [session])
 
   return (
     <>

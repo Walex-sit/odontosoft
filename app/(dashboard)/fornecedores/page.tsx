@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { Plus, Truck, ListFilter } from 'lucide-react'
+import { useAuth } from '../../components/RequireAuth'
 
 export default function Fornecedores() {
+  const { session } = useAuth()
   const [nome, setNome] = useState('')
   const [cnpj, setCnpj] = useState('')
   const [telefone, setTelefone] = useState('')
@@ -24,11 +26,10 @@ export default function Fornecedores() {
   }
 
   async function salvarFornecedor() {
-    if (!nome.trim()) return
-    const { data: userData } = await supabase.auth.getUser()
+    if (!nome.trim() || !session?.user?.id) return
     
     try {
-      await supabase.from('fornecedores').insert([{ nome, cnpj, telefone, email, user_id: userData.user?.id }])
+      await supabase.from('fornecedores').insert([{ nome, cnpj, telefone, email, user_id: session.user.id }])
       setNome(''); setCnpj(''); setTelefone(''); setEmail('')
       carregarFornecedores()
     } catch (e) {

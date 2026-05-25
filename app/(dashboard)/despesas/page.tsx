@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { logAction } from '../../lib/logger'
 import { TrendingDown, Plus, ListFilter } from 'lucide-react'
+import { useAuth } from '../../components/RequireAuth'
 
 export default function Despesas() {
+  const { session } = useAuth()
   const [descricao, setDescricao] = useState('')
   const [valor, setValor] = useState('')
   const [categoria, setCategoria] = useState('')
@@ -29,9 +31,7 @@ export default function Despesas() {
   }
 
   async function salvarDespesa() {
-    if (!descricao.trim() || !valor || !dataVencimento) return
-
-    const { data: userData } = await supabase.auth.getUser()
+    if (!descricao.trim() || !valor || !dataVencimento || !session?.user?.id) return
 
     try {
       await supabase.from('despesas').insert([
@@ -41,7 +41,7 @@ export default function Despesas() {
           categoria,
           data_vencimento: dataVencimento,
           status: 'pendente',
-          user_id: userData.user?.id
+          user_id: session.user.id
         }
       ])
 

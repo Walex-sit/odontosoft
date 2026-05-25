@@ -60,51 +60,51 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
   }
 
   return (
-    <header className="h-20 flex items-center justify-between px-4 md:px-8 z-10 relative" style={{background:'#131c2e', borderBottom:'1px solid rgba(148,163,184,0.10)'}}>
+    <header className="h-20 flex items-center justify-between px-3 sm:px-6 md:px-8 z-10 relative" style={{background:'#131c2e', borderBottom:'1px solid rgba(148,163,184,0.10)'}}>
       
       {/* Search and Hamburger */}
-      <div className="flex items-center gap-3 flex-1 max-w-xl">
+      <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xl">
         <button 
           onClick={onMenuClick}
           className="lg:hidden p-2 text-slate-400 hover:text-slate-250 hover:bg-slate-800 rounded-xl transition-colors shrink-0"
         >
-          <Menu className="h-5.5 w-5.5" />
+          <Menu className="h-5 w-5" />
         </button>
 
         <div className="relative group w-full">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Search className="h-4.5 w-4.5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
           </div>
           <input
             type="text"
-            className="block w-full pl-10 pr-4 py-2 border border-slate-700 rounded-full text-xs sm:text-sm placeholder-slate-500 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-800/60 hover:bg-slate-800 transition-all text-slate-100"
-            placeholder="Buscar pacientes, agendamentos..."
+            className="block w-full pl-9 pr-3 py-2 border border-slate-700 rounded-full text-[11px] sm:text-sm placeholder-slate-550 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-800/60 hover:bg-slate-800 transition-all text-slate-100"
+            placeholder="Buscar..."
           />
         </div>
       </div>
 
       {/* Action buttons and profile */}
-      <div className="flex items-center gap-3 md:gap-6 ml-3 sm:ml-6 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-4 md:gap-6 ml-2 sm:ml-6 shrink-0">
         
         {/* Responsive Novo Agendamento Button */}
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white p-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 border border-blue-500 active:scale-95"
+          className="bg-blue-600 hover:bg-blue-700 text-white p-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 border border-blue-500 active:scale-95 shadow-sm"
         >
-          <Plus className="h-4.5 w-4.5 sm:h-4 sm:w-4" strokeWidth={3} />
-          <span className="hidden sm:inline">Novo Agendamento</span>
+          <Plus className="h-4 w-4" strokeWidth={3} />
+          <span className="hidden md:inline">Novo Agendamento</span>
         </button>
 
-        <div className="h-8 w-px bg-slate-800 hidden sm:block"></div>
+        <div className="h-6 w-px bg-slate-800 hidden sm:block"></div>
 
         <div className="relative">
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="text-slate-400 hover:text-slate-200 transition-colors relative p-2 rounded-full hover:bg-slate-800"
+            className="text-slate-400 hover:text-slate-200 transition-colors relative p-2 rounded-full hover:bg-slate-800/80"
           >
-            <Bell className="h-5 w-5" />
+            <Bell className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 border border-slate-900 animate-pulse"></span>
+              <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-red-500 border border-slate-900 animate-pulse"></span>
             )}
           </button>
 
@@ -117,12 +117,12 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           />
         </div>
 
-        <div className="flex items-center gap-2 md:gap-3 pl-1 sm:pl-2">
-          <div className="text-right hidden md:block">
-            <p className="text-sm font-bold text-slate-200">Dr. Administrador</p>
-            <p className="text-xs font-semibold text-slate-500">Admin</p>
+        <div className="flex items-center gap-2 pl-1">
+          <div className="text-right hidden lg:block">
+            <p className="text-xs sm:text-sm font-bold text-slate-200">Dr. Administrador</p>
+            <p className="text-[10px] font-semibold text-slate-500">Admin</p>
           </div>
-          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-xs sm:text-sm font-bold border border-blue-500/20 shrink-0">
+          <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-xs sm:text-sm font-bold border border-blue-500/20 shrink-0">
             AD
           </div>
         </div>

@@ -5,8 +5,10 @@ import { supabase } from '../../lib/supabaseClient'
 import { useRouter } from 'next/navigation'
 import { logAction } from '../../lib/logger'
 import { DollarSign, Plus, ListFilter } from 'lucide-react'
+import { useAuth } from '../../components/RequireAuth'
 
 export default function Financeiro() {
+  const { session } = useAuth()
   const router = useRouter()
   const [descricao, setDescricao] = useState('')
   const [valor, setValor] = useState('')
@@ -14,12 +16,6 @@ export default function Financeiro() {
   const [carregando, setCarregando] = useState(true)
 
   async function carregarReceitas() {
-    const { data: userData } = await supabase.auth.getUser()
-    if (!userData.user) {
-      router.push('/login')
-      return
-    }
-
     try {
       const { data } = await supabase
         .from('receitas')
@@ -58,8 +54,12 @@ export default function Financeiro() {
   }
 
   useEffect(() => {
-    carregarReceitas()
-  }, [])
+    if (session) {
+      carregarReceitas()
+    } else if (session === null) {
+      setCarregando(false)
+    }
+  }, [session])
 
   const total = receitas.reduce(
     (acc, item) => acc + Number(item.valor),

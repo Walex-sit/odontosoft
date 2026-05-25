@@ -5,22 +5,21 @@ import { supabase } from '../../lib/supabaseClient'
 import { useRouter } from 'next/navigation'
 import { logAction } from '../../lib/logger'
 import { UserPlus, Users, Eye } from 'lucide-react'
+import { useAuth } from '../../components/RequireAuth'
 
 export default function Pacientes() {
+  const { session } = useAuth()
   const [nome, setNome] = useState('')
   const [pacientes, setPacientes] = useState<any[]>([])
   const [carregando, setCarregando] = useState(true)
   const router = useRouter()
 
-  async function carregarPacientes() {
+  async function carregarPacientes(userId: string) {
     try {
-      const { data: userData } = await supabase.auth.getUser()
-      if (!userData.user) return
-
       const { data } = await supabase
         .from('pacientes')
         .select('*')
-        .eq('user_id', userData.user.id)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false })
 
       setPacientes(data || [])
@@ -32,31 +31,32 @@ export default function Pacientes() {
   }
 
   async function adicionarPaciente() {
-    if (!nome.trim()) return
-
-    const { data: userData } = await supabase.auth.getUser()
-    if (!userData.user) return
+    if (!nome.trim() || !session?.user?.id) return
 
     try {
       await supabase.from('pacientes').insert([
         {
           nome,
-          user_id: userData.user.id
+          user_id: session.user.id
         }
       ])
 
       await logAction('criacao', 'pacientes', { nome })
 
       setNome('')
-      carregarPacientes()
+      carregarPacientes(session.user.id)
     } catch (e) {
       alert('Erro ao adicionar paciente')
     }
   }
 
   useEffect(() => {
-    carregarPacientes()
-  }, [])
+    if (session?.user?.id) {
+      carregarPacientes(session.user.id)
+    } else if (session === null) {
+      setCarregando(false)
+    }
+  }, [session])
 
   return (
     <>

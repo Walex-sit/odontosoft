@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { ShoppingBag, Plus, ListFilter } from 'lucide-react'
+import { useAuth } from '../../components/RequireAuth'
 
 export default function Compras() {
+  const { session } = useAuth()
   const [fornecedores, setFornecedores] = useState<any[]>([])
   const [compras, setCompras] = useState<any[]>([])
   const [fornecedorId, setFornecedorId] = useState('')
@@ -27,11 +29,10 @@ export default function Compras() {
   }
 
   async function salvarCompra() {
-    if (!descricao.trim() || !valorTotal || !dataCompra) return
-    const { data: userData } = await supabase.auth.getUser()
+    if (!descricao.trim() || !valorTotal || !dataCompra || !session?.user?.id) return
     
     try {
-      await supabase.from('compras').insert([{ fornecedor_id: proveedorIdFunc(), descricao, valor_total: Number(valorTotal), data_compra: dataCompra, user_id: userData.user?.id }])
+      await supabase.from('compras').insert([{ fornecedor_id: proveedorIdFunc(), descricao, valor_total: Number(valorTotal), data_compra: dataCompra, user_id: session.user.id }])
       setFornecedorId(''); setDescricao(''); setValorTotal(''); setDataCompra('')
       carregarDados()
     } catch (e) {

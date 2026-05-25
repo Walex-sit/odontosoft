@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../../lib/supabaseClient'
 import { useRouter, useParams } from 'next/navigation'
 import { ChevronLeft, Info, Calendar, DollarSign, FileText } from 'lucide-react'
+import { useAuth } from '../../../components/RequireAuth'
 
 export default function DetalhePaciente() {
+  const { session } = useAuth()
   const router = useRouter()
   const params = useParams()
   const [paciente, setPaciente] = useState<any>(null)
@@ -14,12 +16,6 @@ export default function DetalhePaciente() {
 
   async function carregarPaciente() {
     if (!params.id) return
-
-    const { data: userData } = await supabase.auth.getUser()
-    if (!userData.user) {
-      router.push('/login')
-      return
-    }
 
     const { data } = await supabase
       .from('pacientes')
@@ -34,8 +30,12 @@ export default function DetalhePaciente() {
   }
 
   useEffect(() => {
-    carregarPaciente()
-  }, [params.id])
+    if (session) {
+      carregarPaciente()
+    } else if (session === null) {
+      setLoading(false)
+    }
+  }, [params.id, session])
 
   if (loading) {
     return (

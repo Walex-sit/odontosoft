@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { Plus, ReceiptText, ListFilter } from 'lucide-react'
+import { useAuth } from '../../components/RequireAuth'
 
 export default function NotasFiscais() {
+  const { session } = useAuth()
   const [receitas, setReceitas] = useState<any[]>([])
   const [notas, setNotas] = useState<any[]>([])
   const [receitaId, setReceitaId] = useState('')
@@ -27,10 +29,9 @@ export default function NotasFiscais() {
   }
 
   async function salvarNota() {
-    if (!numeroNota.trim() || !valor || !dataEmissao) return
-    const { data: userData } = await supabase.auth.getUser()
+    if (!numeroNota.trim() || !valor || !dataEmissao || !session?.user?.id) return
     try {
-      await supabase.from('notas_fiscais').insert([{ receita_id: receitaId || null, numero_nota: numeroNota, valor: Number(valor), data_emissao: dataEmissao, user_id: userData.user?.id }])
+      await supabase.from('notas_fiscais').insert([{ receita_id: receitaId || null, numero_nota: numeroNota, valor: Number(valor), data_emissao: dataEmissao, user_id: session.user.id }])
       setReceitaId(''); setNumeroNota(''); setValor(''); setDataEmissao('')
       carregarDados()
     } catch (e) {

@@ -6,8 +6,10 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { useRouter } from 'next/navigation'
 import { Calendar as CalendarIcon, Clock } from 'lucide-react'
+import { useAuth } from '../../components/RequireAuth'
 
 export default function Agenda() {
+  const { session } = useAuth()
   const router = useRouter()
   const [pacientes, setPacientes] = useState<any[]>([])
   const [agendamentos, setAgendamentos] = useState<any[]>([])
@@ -17,17 +19,11 @@ export default function Agenda() {
   const [dataConsulta, setDataConsulta] = useState('')
   const [horaConsulta, setHoraConsulta] = useState('')
 
-  async function carregarPacientes() {
-    const { data: userData } = await supabase.auth.getUser()
-    if (!userData.user) {
-      router.push('/login')
-      return
-    }
-
+  async function carregarPacientes(userId: string) {
     const { data } = await supabase
       .from('pacientes')
       .select('*')
-      .eq('user_id', userData.user.id)
+      .eq('user_id', userId)
 
     setPacientes(data || [])
   }
@@ -70,12 +66,16 @@ export default function Agenda() {
   }
 
   useEffect(() => {
-    async function init() {
-      await Promise.all([carregarPacientes(), carregarAgendamentos()])
+    async function init(userId: string) {
+      await Promise.all([carregarPacientes(userId), carregarAgendamentos()])
       setCarregando(false)
     }
-    init()
-  }, [])
+    if (session?.user?.id) {
+      init(session.user.id)
+    } else if (session === null) {
+      setCarregando(false)
+    }
+  }, [session])
 
   const eventos = agendamentos.map((a) => ({
     title: a.pacientes?.nome || 'Consulta',
