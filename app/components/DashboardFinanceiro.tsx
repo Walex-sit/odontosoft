@@ -152,13 +152,19 @@ export default function DashboardFinanceiro() {
     const { data, error } = await supabase
       .from('v_fluxo_caixa')
       .select('*')
-      .single()
 
     if (error) {
+      // Falha real de conexão ou permissão — exibe erro
       setErro(error.message)
       setDados(null)
     } else {
-      setDados(data as FluxoCaixaRow)
+      // View vazia é estado normal: assume zeros
+      const row = data && data.length > 0 ? data[0] : null
+      setDados({
+        total_receitas: Number(row?.total_receitas ?? 0),
+        total_despesas: Number(row?.total_despesas ?? 0),
+        saldo_liquido:  Number(row?.saldo_liquido  ?? 0),
+      })
     }
 
     setCarregando(false)
@@ -174,13 +180,7 @@ export default function DashboardFinanceiro() {
 
   if (erro) return <ErrorCard message={erro} onRetry={buscarDados} />
 
-  if (!dados) {
-    return (
-      <div className="bg-slate-800 border border-slate-700/50 rounded-2xl p-8 text-center text-slate-400 text-sm">
-        Nenhum dado financeiro disponível.
-      </div>
-    )
-  }
+  // Após o fetch, `dados` é sempre populado (zeros se vazio) — sem estado "vazio" separado
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
