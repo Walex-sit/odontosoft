@@ -145,7 +145,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                 </svg>
               </div>
               <h1 className="text-2xl font-extrabold text-slate-200 tracking-tight">
-                Odonto<span className="text-blue-500">SaaS</span>
+                Odonto<span className="text-blue-500">Soft</span>
               </h1>
             </div>
 

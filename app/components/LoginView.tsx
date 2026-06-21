@@ -106,7 +106,7 @@ export default function LoginView() {
               </svg>
             </div>
             <span className="text-xl font-bold text-slate-200 tracking-tight">
-              Odonto<span className="text-blue-500">SaaS</span>
+              Odonto<span className="text-blue-500">Soft</span>
             </span>
           </div>
 
@@ -127,7 +127,7 @@ export default function LoginView() {
           </div>
           
           <div className="text-lg font-bold text-slate-200 mb-6">
-            Odonto<span className="text-blue-500">SaaS</span>
+            Odonto<span className="text-blue-500">Soft</span>
           </div>
 
           {/* Form Fields */}
