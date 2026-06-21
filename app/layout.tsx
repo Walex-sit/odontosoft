@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OdontoSaaS — Gestão Odontológica Premium",
+  title: "OdontoSoft — Gestão Odontológica Premium",
   description: "A nova geração da gestão odontológica. Software médico premium para clínicas que exigem velocidade, elegância e confiabilidade.",
 };
 
