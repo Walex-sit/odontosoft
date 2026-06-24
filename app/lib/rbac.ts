@@ -19,6 +19,7 @@ export const ROUTE_PERMISSIONS: Record<UserRole, string[]> = {
     '/notas-fiscais',
     '/usuarios',
     '/logs',
+    '/assinatura',
     '/minha-conta',
   ],
   dentista: [

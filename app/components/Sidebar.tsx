@@ -22,7 +22,8 @@ import {
   LogOut,
   ChevronDown,
   X,
-  UserCircle
+  UserCircle,
+  CreditCard
 } from 'lucide-react'
 
 // Permissões centralizadas em app/lib/rbac.ts
@@ -70,6 +71,7 @@ const MENU_SECTIONS: MenuSection[] = [
     items: [
       { path: '/usuarios', label: 'Usuários e Perfis', icon: ShieldCheck },
       { path: '/logs', label: 'Logs (Auditoria)', icon: History },
+      { path: '/assinatura', label: 'Assinatura', icon: CreditCard },
       { path: '/minha-conta', label: 'Minha Conta', icon: UserCircle },
     ],
   },

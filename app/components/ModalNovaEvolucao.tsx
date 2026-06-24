@@ -3,12 +3,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/app/lib/supabaseClient'
 import { X, FileText, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Props {
   pacienteId: string
   dentistaId: string
+  evolucaoParaEditar?: { id: string, data_evolucao: string, descricao: string } | null
   onClose: () => void
   onSaved: () => void
 }
@@ -21,11 +23,11 @@ function toDateInputValue(date: Date) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function ModalNovaEvolucao({ pacienteId, dentistaId, onClose, onSaved }: Props) {
+export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoParaEditar, onClose, onSaved }: Props) {
   const today = toDateInputValue(new Date())
 
-  const [data, setData] = useState(today)
-  const [evolucao, setEvolucao] = useState('')
+  const [data, setData] = useState(evolucaoParaEditar ? evolucaoParaEditar.data_evolucao : today)
+  const [evolucao, setEvolucao] = useState(evolucaoParaEditar ? evolucaoParaEditar.descricao : '')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -65,18 +67,33 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, onClose, onS
     setSalvando(true)
     setErro(null)
 
-    const { error } = await supabase.from('evolucao').insert([{
-      paciente_id:  pacienteId,
-      dentista_id:  dentistaId,
-      data_evolucao: data,
-      descricao:    texto,
-    }])
+    let error;
+
+    if (evolucaoParaEditar) {
+      // Update
+      const res = await supabase.from('evolucao').update({
+        data_evolucao: data,
+        descricao: texto,
+      }).eq('id', evolucaoParaEditar.id)
+      error = res.error
+    } else {
+      // Insert
+      const res = await supabase.from('evolucao').insert([{
+        paciente_id:  pacienteId,
+        dentista_id:  dentistaId,
+        data_evolucao: data,
+        descricao:    texto,
+      }])
+      error = res.error
+    }
 
     setSalvando(false)
 
     if (error) {
       setErro(error.message)
+      toast.error('Erro ao salvar evolução')
     } else {
+      toast.success(evolucaoParaEditar ? 'Evolução atualizada com sucesso!' : 'Evolução criada com sucesso!')
       onSaved()   // dispara refresh na tela pai
       onClose()   // fecha o modal
     }
@@ -121,7 +138,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, onClose, onS
             </div>
             <div>
               <h2 id="modal-title" className="text-base font-bold text-slate-100">
-                Nova Evolução
+                {evolucaoParaEditar ? 'Editar Evolução' : 'Nova Evolução'}
               </h2>
               <p className="text-xs text-slate-500">Registro clínico do paciente</p>
             </div>
