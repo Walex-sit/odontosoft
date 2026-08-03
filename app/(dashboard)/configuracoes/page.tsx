@@ -1,7 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Building2, Users, ShieldCheck, Cpu, Save, Sliders, Smartphone, Mail, Globe, UserPlus, Loader2, Pencil, Trash2, Percent } from 'lucide-react'
+import {
+  Building2, Users, ShieldCheck, Cpu, Save, Sliders, Smartphone, Mail, Globe,
+  UserPlus, Loader2, Pencil, Trash2, Percent, FileText, CheckCircle2, AlertTriangle,
+  Clock, Lock, ExternalLink, RefreshCw, Download,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import ManageRolePermissionsModal, { Role } from '@/app/components/ManageRolePermissionsModal'
 import CreateUserModal from '@/app/components/CreateUserModal'
@@ -9,9 +13,62 @@ import EditUserModal from '@/app/components/EditUserModal'
 import { fetchTeamMembers, deleteUserAccount } from '@/app/actions/users'
 import CommissionModal from '@/app/components/CommissionModal'
 import { fetchCommissions } from '@/app/actions/commissions'
+import { fetchAuditLogs, fetchComplianceStats, AuditLog, ComplianceStats } from '@/app/actions/audit'
+import { useAuth } from '@/app/components/RequireAuth'
+import Link from 'next/link'
+
+// ─── Badge de ação colorido ──────────────────────────────────────────────────
+
+const ACTION_STYLES: Record<string, { bg: string; text: string; label: string }> = {
+  criacao:    { bg: 'bg-emerald-50 border border-emerald-200', text: 'text-emerald-700', label: 'CRIAÇÃO' },
+  edicao:     { bg: 'bg-blue-50 border border-blue-200',       text: 'text-blue-700',    label: 'EDIÇÃO' },
+  exclusao:   { bg: 'bg-red-50 border border-red-200',         text: 'text-red-700',     label: 'EXCLUSÃO' },
+  financeiro: { bg: 'bg-amber-50 border border-amber-200',     text: 'text-amber-700',   label: 'FINANCEIRO' },
+  login:      { bg: 'bg-indigo-50 border border-indigo-200',   text: 'text-indigo-700',  label: 'LOGIN' },
+  logout:     { bg: 'bg-slate-100 border border-slate-200',    text: 'text-slate-600',   label: 'LOGOUT' },
+}
+
+function ActionBadge({ action }: { action: string }) {
+  const style = ACTION_STYLES[action] ?? { bg: 'bg-slate-100 border border-slate-200', text: 'text-slate-600', label: action.toUpperCase() }
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold ${style.bg} ${style.text}`}>
+      {style.label}
+    </span>
+  )
+}
+
+// ─── Card de Métrica ─────────────────────────────────────────────────────────
+
+function MetricCard({
+  icon,
+  label,
+  value,
+  sub,
+  color,
+}: {
+  icon: React.ReactNode
+  label: string
+  value: string | number
+  sub?: string
+  color: string
+}) {
+  return (
+    <div className={`p-5 rounded-2xl border bg-white shadow-sm flex items-start gap-4 ${color}`}>
+      <div className="p-3 rounded-xl bg-current/10 shrink-0">{icon}</div>
+      <div>
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{label}</p>
+        <p className="text-2xl font-extrabold text-slate-800 leading-none">{value}</p>
+        {sub && <p className="text-xs text-slate-500 mt-1">{sub}</p>}
+      </div>
+    </div>
+  )
+}
+
+// ─── Componente Principal ────────────────────────────────────────────────────
 
 export default function ConfiguracoesPage() {
-  const [activeTab, setActiveTab] = useState<'perfil' | 'usuarios' | 'integracoes' | 'comissoes'>('perfil')
+  const { profile } = useAuth()
+  const [activeTab, setActiveTab] = useState<'perfil' | 'usuarios' | 'integracoes' | 'comissoes' | 'seguranca'>('perfil')
   const [salvando, setSalvando] = useState(false)
 
   // Estados para o Modal de Permissões
@@ -32,6 +89,14 @@ export default function ConfiguracoesPage() {
   const [commissions, setCommissions] = useState<any[]>([])
   const [isLoadingCommissions, setIsLoadingCommissions] = useState(false)
 
+  // Estados para Segurança / Conformidade
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([])
+  const [complianceStats, setComplianceStats] = useState<ComplianceStats | null>(null)
+  const [isLoadingSecurity, setIsLoadingSecurity] = useState(false)
+  const [filtroAction, setFiltroAction] = useState('')
+
+  // ─── Loaders ──────────────────────────────────────────────────────────────
+
   const loadCommissions = async () => {
     setIsLoadingCommissions(true)
     try {
@@ -44,6 +109,49 @@ export default function ConfiguracoesPage() {
     }
   }
 
+  const loadTeamMembers = async () => {
+    setIsLoadingMembers(true)
+    try {
+      const res = await fetchTeamMembers()
+      setTeamMembers(res.data ?? [])
+      if (!res.success && res.error) {
+        console.error('Falha ao carregar equipe:', res.error)
+      }
+    } catch (e) {
+      console.error('Erro inesperado ao carregar equipe:', e)
+    } finally {
+      setIsLoadingMembers(false)
+    }
+  }
+
+  const loadSecurityData = async (actionFilter?: string) => {
+    setIsLoadingSecurity(true)
+    try {
+      const [logsRes, statsRes] = await Promise.all([
+        fetchAuditLogs({ action: actionFilter || undefined, limit: 50 }),
+        fetchComplianceStats(),
+      ])
+      setAuditLogs(logsRes.data)
+      setComplianceStats(statsRes.data)
+    } catch (e) {
+      console.error('Erro ao carregar dados de segurança:', e)
+    } finally {
+      setIsLoadingSecurity(false)
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'usuarios') loadTeamMembers()
+    else if (activeTab === 'comissoes') loadCommissions()
+    else if (activeTab === 'seguranca') loadSecurityData(filtroAction)
+  }, [activeTab])
+
+  useEffect(() => {
+    if (activeTab === 'seguranca') loadSecurityData(filtroAction)
+  }, [filtroAction])
+
+  // ─── Handlers ──────────────────────────────────────────────────────────────
+
   const handleEditUser = (member: { id: string; nome: string; email: string; role: string }) => {
     setEditingUser(member)
     setIsEditUserModalOpen(true)
@@ -53,7 +161,7 @@ export default function ConfiguracoesPage() {
     if (!confirm(`Tem certeza que deseja excluir o usuário "${userName}"? Esta ação é irreversível.`)) return
     setDeletingUserId(userId)
     try {
-      const res = await deleteUserAccount(userId)
+      const res = await deleteUserAccount(userId, profile?.id, profile?.nome)
       if (res.success) {
         toast.success('Usuário excluído com sucesso!')
         loadTeamMembers()
@@ -67,30 +175,12 @@ export default function ConfiguracoesPage() {
     }
   }
 
-  const loadTeamMembers = async () => {
-    setIsLoadingMembers(true)
-    try {
-      const res = await fetchTeamMembers()
-      // Sempre seta o array (mesmo vazio) — success:true com data:[] não é erro
-      setTeamMembers(res.data ?? [])
-      // Só mostra toast de erro se vier uma mensagem de erro explícita
-      if (!res.success && res.error) {
-        console.error('Falha ao carregar equipe:', res.error)
-      }
-    } catch (e) {
-      console.error('Erro inesperado ao carregar equipe:', e)
-    } finally {
-      setIsLoadingMembers(false)
-    }
+  const handleSalvar = async () => {
+    setSalvando(true)
+    await new Promise(r => setTimeout(r, 600))
+    setSalvando(false)
+    toast.success('Configurações salvas com sucesso!')
   }
-
-  useEffect(() => {
-    if (activeTab === 'usuarios') {
-      loadTeamMembers()
-    } else if (activeTab === 'comissoes') {
-      loadCommissions()
-    }
-  }, [activeTab])
 
   // Estado mock para o Perfil da Clínica
   const [clinica, setClinica] = useState({
@@ -111,12 +201,24 @@ export default function ConfiguracoesPage() {
     pagamentosPix: true
   })
 
-  const handleSalvar = async () => {
-    setSalvando(true)
-    await new Promise(r => setTimeout(r, 600))
-    setSalvando(false)
-    toast.success('Configurações salvas com sucesso!')
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+
+  const lgpdPercent = complianceStats && complianceStats.totalPacientes > 0
+    ? Math.round((complianceStats.pacientesComAceite / complianceStats.totalPacientes) * 100)
+    : 0
+
+  const formatDateTime = (iso: string) =>
+    new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+
+  const entityLabel = (entity: string) => {
+    const map: Record<string, string> = {
+      pacientes: 'Pacientes', usuarios: 'Usuários', receitas: 'Receitas',
+      despesas: 'Despesas', prontuarios: 'Prontuários', auth: 'Autenticação',
+    }
+    return map[entity] ?? entity
   }
+
+  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <div className="flex flex-col w-full h-full bg-slate-50 text-slate-800 overflow-y-auto">
@@ -138,47 +240,31 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Abas */}
-        <div className="max-w-6xl mx-auto flex items-center gap-2 mt-8 border-b border-slate-100 pb-0.5">
-          <button
-            onClick={() => setActiveTab('perfil')}
-            className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all border-b-2 ${
-              activeTab === 'perfil'
-                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-            }`}
-          >
-            <Building2 className="h-4 w-4" /> Perfil da Clínica
-          </button>
-          <button
-            onClick={() => setActiveTab('usuarios')}
-            className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all border-b-2 ${
-              activeTab === 'usuarios'
-                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-            }`}
-          >
-            <Users className="h-4 w-4" /> Usuários e Permissões
-          </button>
-          <button
-            onClick={() => setActiveTab('comissoes')}
-            className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all border-b-2 ${
-              activeTab === 'comissoes'
-                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-            }`}
-          >
-            <Percent className="h-4 w-4" /> Comissões
-          </button>
-          <button
-            onClick={() => setActiveTab('integracoes')}
-            className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all border-b-2 ${
-              activeTab === 'integracoes'
-                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-            }`}
-          >
-            <Cpu className="h-4 w-4" /> Integrações
-          </button>
+        <div className="max-w-6xl mx-auto flex items-center gap-2 mt-8 border-b border-slate-100 pb-0.5 overflow-x-auto">
+          {(
+            [
+              { id: 'perfil',      label: 'Perfil da Clínica',      icon: <Building2 className="h-4 w-4" /> },
+              { id: 'usuarios',    label: 'Usuários e Permissões',   icon: <Users className="h-4 w-4" /> },
+              { id: 'comissoes',   label: 'Comissões',               icon: <Percent className="h-4 w-4" /> },
+              { id: 'integracoes', label: 'Integrações',             icon: <Cpu className="h-4 w-4" /> },
+              { id: 'seguranca',   label: 'Segurança',               icon: <ShieldCheck className="h-4 w-4" /> },
+            ] as const
+          ).map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all border-b-2 whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'border-blue-600 text-blue-600 bg-blue-50/50'
+                  : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+              }`}
+            >
+              {tab.icon} {tab.label}
+              {tab.id === 'seguranca' && (
+                <span className="ml-1 bg-blue-100 text-blue-700 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">LGPD</span>
+              )}
+            </button>
+          ))}
         </div>
       </header>
 
@@ -461,7 +547,7 @@ export default function ConfiguracoesPage() {
                     <Globe className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-800">Recebimento via PIX & Cartões (Gateway)</h4>
+                    <h4 className="font-bold text-slate-800">Recebimento via PIX &amp; Cartões (Gateway)</h4>
                     <p className="text-xs text-slate-500 font-semibold mt-0.5">Geração de QR Code PIX dinâmico e conciliação bancária</p>
                   </div>
                 </div>
@@ -528,6 +614,238 @@ export default function ConfiguracoesPage() {
                 </table>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ABA 5: SEGURANÇA E CONFORMIDADE */}
+        {activeTab === 'seguranca' && (
+          <div className="space-y-6">
+
+            {/* Header da aba */}
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-blue-600" />
+                  Painel de Conformidade LGPD
+                </h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Transparência e rastreabilidade de todas as ações sensíveis realizadas no sistema.
+                </p>
+              </div>
+              <button
+                onClick={() => loadSecurityData(filtroAction)}
+                disabled={isLoadingSecurity}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-800 hover:shadow-md transition-all disabled:opacity-50"
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoadingSecurity ? 'animate-spin' : ''}`} />
+                Atualizar
+              </button>
+            </div>
+
+            {/* Cards de Métricas LGPD */}
+            {isLoadingSecurity && !complianceStats ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 animate-pulse h-28" />
+                ))}
+              </div>
+            ) : complianceStats ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                {/* Card 1: Pacientes com aceite */}
+                <div className="bg-white border border-emerald-200 rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-emerald-100 rounded-xl">
+                      <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                    </div>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Aceite LGPD</p>
+                  </div>
+                  <p className="text-3xl font-extrabold text-slate-800">{complianceStats.pacientesComAceite}</p>
+                  <div className="mt-2">
+                    <div className="flex justify-between text-xs text-slate-500 mb-1">
+                      <span>{lgpdPercent}% conformes</span>
+                      <span>{complianceStats.totalPacientes} total</span>
+                    </div>
+                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                        style={{ width: `${lgpdPercent}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 2: Pendentes */}
+                <div className={`bg-white rounded-2xl p-5 shadow-sm border ${complianceStats.pacientesSemAceite > 0 ? 'border-red-200' : 'border-slate-200'}`}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`p-2 rounded-xl ${complianceStats.pacientesSemAceite > 0 ? 'bg-red-100' : 'bg-slate-100'}`}>
+                      <AlertTriangle className={`h-5 w-5 ${complianceStats.pacientesSemAceite > 0 ? 'text-red-500' : 'text-slate-400'}`} />
+                    </div>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pendentes LGPD</p>
+                  </div>
+                  <p className="text-3xl font-extrabold text-slate-800">{complianceStats.pacientesSemAceite}</p>
+                  <p className="text-xs text-slate-500 mt-2">
+                    {complianceStats.pacientesSemAceite > 0
+                      ? 'Pacientes sem consentimento registrado'
+                      : 'Todos os pacientes estão em conformidade ✓'}
+                  </p>
+                </div>
+
+                {/* Card 3: Logs hoje */}
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-blue-100 rounded-xl">
+                      <FileText className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Logs (24h)</p>
+                  </div>
+                  <p className="text-3xl font-extrabold text-slate-800">{complianceStats.totalLogsHoje}</p>
+                  <p className="text-xs text-slate-500 mt-2">Ações registradas nas últimas 24 horas</p>
+                </div>
+
+                {/* Card 4: Último evento */}
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-indigo-100 rounded-xl">
+                      <Clock className="h-5 w-5 text-indigo-600" />
+                    </div>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Último Evento</p>
+                  </div>
+                  {complianceStats.ultimoEvento ? (
+                    <>
+                      <p className="text-base font-extrabold text-slate-800 leading-tight">
+                        {formatDateTime(complianceStats.ultimoEvento)}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-2">Data/hora do registro mais recente</p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-slate-400 mt-2">Nenhum evento nas últimas 24h</p>
+                  )}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Tabela de Logs de Auditoria */}
+            <div className="bg-white border border-slate-200 rounded-[32px] shadow-sm overflow-hidden">
+              <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-slate-500" />
+                    Logs de Auditoria
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Últimas {auditLogs.length} ações sensíveis registradas no sistema
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  {/* Filtro de ação */}
+                  <select
+                    value={filtroAction}
+                    onChange={e => setFiltroAction(e.target.value)}
+                    className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  >
+                    <option value="">Todas as ações</option>
+                    <option value="criacao">Criação</option>
+                    <option value="edicao">Edição</option>
+                    <option value="exclusao">Exclusão</option>
+                    <option value="financeiro">Financeiro</option>
+                    <option value="login">Login</option>
+                    <option value="logout">Logout</option>
+                  </select>
+                  {/* Botão exportar (UI) */}
+                  <button
+                    onClick={() => toast.info('Exportação CSV em breve!')}
+                    className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-800 transition-all"
+                  >
+                    <Download className="h-3.5 w-3.5" /> CSV
+                  </button>
+                  {/* Link para logs completos */}
+                  <Link
+                    href="/logs"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-blue-50 border border-blue-200 rounded-xl text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-all"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" /> Ver todos
+                  </Link>
+                </div>
+              </div>
+
+              {/* Tabela */}
+              {isLoadingSecurity ? (
+                <div className="flex flex-col items-center justify-center py-16">
+                  <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-3" />
+                  <p className="text-sm text-slate-500 font-semibold">Carregando logs...</p>
+                </div>
+              ) : auditLogs.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="p-4 bg-slate-100 rounded-2xl mb-4">
+                    <FileText className="h-8 w-8 text-slate-400" />
+                  </div>
+                  <p className="font-bold text-slate-600">Nenhum log encontrado</p>
+                  <p className="text-sm text-slate-400 mt-1">
+                    {filtroAction ? `Sem registros do tipo "${filtroAction}"` : 'As ações sensíveis aparecerão aqui'}
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm border-collapse min-w-[700px]">
+                    <thead className="bg-slate-50 border-b border-slate-200">
+                      <tr className="text-xs uppercase tracking-wider text-slate-500 font-bold">
+                        <th className="px-5 py-3.5">Data/Hora</th>
+                        <th className="px-5 py-3.5">Ação</th>
+                        <th className="px-5 py-3.5">Módulo</th>
+                        <th className="px-5 py-3.5">Usuário</th>
+                        <th className="px-5 py-3.5">Detalhes</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {auditLogs.map(log => (
+                        <tr key={log.id} className="hover:bg-slate-50/60 transition-colors">
+                          <td className="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500 font-mono">
+                            {formatDateTime(log.created_at)}
+                          </td>
+                          <td className="px-5 py-3.5 whitespace-nowrap">
+                            <ActionBadge action={log.action} />
+                          </td>
+                          <td className="px-5 py-3.5 whitespace-nowrap">
+                            <span className="text-xs font-semibold text-slate-700">{entityLabel(log.entity)}</span>
+                          </td>
+                          <td className="px-5 py-3.5 whitespace-nowrap">
+                            {log.user_nome ? (
+                              <span className="text-xs font-semibold text-slate-700">{log.user_nome}</span>
+                            ) : log.user_id ? (
+                              <span className="text-xs text-slate-400 font-mono">{log.user_id.substring(0, 8)}…</span>
+                            ) : (
+                              <span className="text-xs text-slate-400">—</span>
+                            )}
+                          </td>
+                          <td className="px-5 py-3.5 max-w-[240px]">
+                            {log.details ? (
+                              <span className="text-xs text-slate-500 truncate block" title={JSON.stringify(log.details)}>
+                                {log.details.nome
+                                  ? `Paciente: ${log.details.nome}`
+                                  : log.details.deleted_user_nome
+                                  ? `Usuário: ${log.details.deleted_user_nome}`
+                                  : JSON.stringify(log.details).substring(0, 60)}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-slate-400">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Nota de rodapé legal */}
+            <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-2xl text-xs text-blue-700">
+              <ShieldCheck className="h-4 w-4 shrink-0 mt-0.5" />
+              <p>
+                <strong>Conformidade LGPD:</strong> Este painel registra automaticamente todas as ações sensíveis realizadas no sistema, garantindo rastreabilidade e transparência conforme exigido pela{' '}
+                <strong>Lei 13.709/2018</strong>. Os logs são imutáveis e ficam disponíveis para auditoria interna ou por autoridades competentes.
+              </p>
+            </div>
           </div>
         )}
       </main>

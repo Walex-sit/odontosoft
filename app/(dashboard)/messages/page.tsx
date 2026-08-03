@@ -1,11 +1,12 @@
 'use client'
 
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { Search, Send, MoreVertical, Phone, Video, Info, Paperclip, Smile, Mic, CheckCircle2, MessageSquare } from 'lucide-react'
-import Image from 'next/image'
 
 export default function MessagesPage() {
   const [activeChat, setActiveChat] = useState<number | null>(1)
+  const [inputText, setInputText] = useState('')
 
   const chats = [
     { id: 1, name: 'João Silva', avatar: 'JS', lastMsg: 'Tudo bem, nos vemos às 15h.', time: '10:45', unread: 0, online: true },
@@ -14,10 +15,49 @@ export default function MessagesPage() {
     { id: 4, name: 'Ana Souza', avatar: 'AS', lastMsg: 'Bom dia. Vocês aceitam plano OdontoPrev?', time: 'Segunda', unread: 0, online: true },
   ]
 
-  const messages = [
-    { id: 1, text: 'Olá João, lembrando da sua consulta hoje às 15:30.', sender: 'me', time: '10:30', status: 'read' },
-    { id: 2, text: 'Tudo bem, nos vemos às 15h. Chegarei um pouco mais cedo.', sender: 'them', time: '10:45', status: '' },
-  ]
+  const [allMessages, setAllMessages] = useState<Record<number, any[]>>({
+    1: [
+      { id: 1, text: 'Olá João, lembrando da sua consulta hoje às 15:30.', sender: 'me', time: '10:30', status: 'read' },
+      { id: 2, text: 'Tudo bem, nos vemos às 15h. Chegarei um pouco mais cedo.', sender: 'them', time: '10:45', status: '' },
+    ],
+    2: [
+      { id: 1, text: 'Maria, os resultados dos seus exames chegaram.', sender: 'me', time: '14:20', status: 'read' },
+      { id: 2, text: 'Obrigada pelo retorno doutor!', sender: 'them', time: 'Ontem', status: '' },
+    ],
+    3: [
+      { id: 1, text: 'Gostaria de reagendar minha consulta.', sender: 'them', time: 'Ontem', status: '' },
+    ],
+    4: [
+      { id: 1, text: 'Bom dia. Vocês aceitam plano OdontoPrev?', sender: 'them', time: 'Segunda', status: '' },
+    ]
+  })
+
+  const currentMessages = activeChat ? (allMessages[activeChat] || []) : []
+  const activeChatDetails = chats.find(c => c.id === activeChat)
+
+  const handleSend = () => {
+    if (!inputText.trim() || !activeChat) return
+
+    const newMessage = {
+      id: Date.now(),
+      text: inputText.trim(),
+      sender: 'me',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: 'sent'
+    }
+
+    setAllMessages(prev => ({
+      ...prev,
+      [activeChat]: [...(prev[activeChat] || []), newMessage]
+    }))
+    setInputText('')
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSend()
+    }
+  }
 
   return (
     <div className="flex-1 flex h-full bg-slate-50 overflow-hidden relative">
@@ -29,10 +69,17 @@ export default function MessagesPage() {
         <div className="h-16 px-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50/50">
           <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">Mensagens</h2>
           <div className="flex items-center gap-2">
-            <button className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors" title="Nova Conversa">
+            <button 
+              onClick={() => toast.success('Tela de Nova Conversa iniciada')}
+              className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors" 
+              title="Nova Conversa"
+            >
               <MessagePlusIcon className="h-5 w-5" />
             </button>
-            <button className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors">
+            <button 
+              onClick={() => toast.info('Menu de Opções Gerais aberto')}
+              className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors"
+            >
               <MoreVertical className="h-5 w-5" />
             </button>
           </div>
@@ -59,65 +106,94 @@ export default function MessagesPage() {
 
         {/* Lista */}
         <div className="flex-1 overflow-y-auto">
-          {chats.map(chat => (
-            <div 
-              key={chat.id}
-              onClick={() => setActiveChat(chat.id)}
-              className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-b border-slate-100 last:border-none ${activeChat === chat.id ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
-            >
-              <div className="relative">
-                <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0">
-                  {chat.avatar}
-                </div>
-                {chat.online && (
-                  <div className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 border-2 border-white rounded-full"></div>
-                )}
-              </div>
-              
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-baseline mb-1">
-                  <h3 className="text-base font-bold text-slate-800 truncate">{chat.name}</h3>
-                  <span className={`text-xs font-semibold ${chat.unread > 0 ? 'text-blue-600' : 'text-slate-400'}`}>{chat.time}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <p className={`text-sm truncate ${chat.unread > 0 ? 'text-slate-800 font-semibold' : 'text-slate-500 font-medium'}`}>
-                    {chat.lastMsg}
-                  </p>
-                  {chat.unread > 0 && (
-                    <div className="h-5 w-5 bg-blue-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 ml-2">
-                      {chat.unread}
-                    </div>
+          {chats.map(chat => {
+            const msgs = allMessages[chat.id] || []
+            const lastMsgObj = msgs[msgs.length - 1]
+            const displayLastMsg = lastMsgObj ? lastMsgObj.text : chat.lastMsg
+            const displayTime = lastMsgObj ? lastMsgObj.time : chat.time
+
+            return (
+              <div 
+                key={chat.id}
+                onClick={() => setActiveChat(chat.id)}
+                className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-b border-slate-100 last:border-none ${activeChat === chat.id ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
+              >
+                <div className="relative">
+                  <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0">
+                    {chat.avatar}
+                  </div>
+                  {chat.online && (
+                    <div className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 border-2 border-white rounded-full"></div>
                   )}
                 </div>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-baseline mb-1">
+                    <h3 className="text-base font-bold text-slate-800 truncate">{chat.name}</h3>
+                    <span className={`text-xs font-semibold ${chat.unread > 0 ? 'text-blue-600' : 'text-slate-400'}`}>{displayTime}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className={`text-sm truncate ${chat.unread > 0 ? 'text-slate-800 font-semibold' : 'text-slate-500 font-medium'}`}>
+                      {displayLastMsg}
+                    </p>
+                    {chat.unread > 0 && (
+                      <div className="h-5 w-5 bg-blue-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 ml-2">
+                        {chat.unread}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </aside>
 
       {/* Coluna Direita: Chat Ativo */}
       <main className="flex-1 flex flex-col h-full bg-[#EFEAE2] relative hidden md:flex">
         
-        {activeChat ? (
+        {activeChat && activeChatDetails ? (
           <>
             {/* Header Direito */}
             <header className="h-16 px-6 border-b border-slate-200 bg-white flex items-center justify-between shrink-0 shadow-sm z-10">
               <div className="flex items-center gap-3 cursor-pointer">
                 <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0">
-                  JS
+                  {activeChatDetails.avatar}
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-slate-800">João Silva</h2>
-                  <p className="text-xs font-medium text-slate-500">visto por último hoje às 11:00</p>
+                  <h2 className="text-base font-bold text-slate-800">{activeChatDetails.name}</h2>
+                  <p className="text-xs font-medium text-slate-500">
+                    {activeChatDetails.online ? 'online' : 'visto por último recentemente'}
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-4">
-                <button className="text-slate-500 hover:text-blue-600 transition-colors"><Video className="h-5 w-5" /></button>
-                <button className="text-slate-500 hover:text-blue-600 transition-colors"><Phone className="h-5 w-5" /></button>
+                <button 
+                  onClick={() => toast.info(`Iniciando chamada de vídeo com ${activeChatDetails.name}...`)}
+                  className="text-slate-500 hover:text-blue-600 transition-colors"
+                >
+                  <Video className="h-5 w-5" />
+                </button>
+                <button 
+                  onClick={() => toast.info(`Ligando para ${activeChatDetails.name}...`)}
+                  className="text-slate-500 hover:text-blue-600 transition-colors"
+                >
+                  <Phone className="h-5 w-5" />
+                </button>
                 <div className="w-px h-6 bg-slate-200"></div>
-                <button className="text-slate-500 hover:text-slate-800 transition-colors"><Search className="h-5 w-5" /></button>
-                <button className="text-slate-500 hover:text-slate-800 transition-colors"><MoreVertical className="h-5 w-5" /></button>
+                <button 
+                  onClick={() => toast.info('Barra de pesquisa do chat aberta')}
+                  className="text-slate-500 hover:text-slate-800 transition-colors"
+                >
+                  <Search className="h-5 w-5" />
+                </button>
+                <button 
+                  onClick={() => toast.info('Opções do contato abertas')}
+                  className="text-slate-500 hover:text-slate-800 transition-colors"
+                >
+                  <MoreVertical className="h-5 w-5" />
+                </button>
               </div>
             </header>
 
@@ -129,10 +205,10 @@ export default function MessagesPage() {
                 <span className="bg-white/80 backdrop-blur text-slate-500 text-xs font-bold px-3 py-1 rounded-lg shadow-sm">HOJE</span>
               </div>
 
-              {messages.map(msg => (
+              {currentMessages.map(msg => (
                 <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'} mb-2 z-10`}>
                   <div className={`max-w-[70%] rounded-2xl px-4 py-2 shadow-sm relative ${msg.sender === 'me' ? 'bg-[#D9FDD3] rounded-tr-none text-slate-800' : 'bg-white rounded-tl-none text-slate-800'}`}>
-                    <p className="text-[15px] leading-relaxed">{msg.text}</p>
+                    <p className="text-[15px] leading-relaxed break-words">{msg.text}</p>
                     <div className="flex items-center justify-end gap-1 mt-1">
                       <span className="text-[10px] font-semibold text-slate-400">{msg.time}</span>
                       {msg.sender === 'me' && (
@@ -146,10 +222,16 @@ export default function MessagesPage() {
 
             {/* Input Footer */}
             <footer className="h-16 px-4 bg-slate-50 border-t border-slate-200 flex items-center gap-3 shrink-0">
-              <button className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors shrink-0">
+              <button 
+                onClick={() => toast.info('Menu de Emojis')}
+                className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors shrink-0"
+              >
                 <Smile className="h-6 w-6" />
               </button>
-              <button className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors shrink-0">
+              <button 
+                onClick={() => toast.info('Anexar Arquivo ou Foto')}
+                className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors shrink-0"
+              >
                 <Paperclip className="h-5 w-5" />
               </button>
               
@@ -157,13 +239,28 @@ export default function MessagesPage() {
                 <input 
                   type="text" 
                   placeholder="Digite uma mensagem" 
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   className="bg-transparent border-none outline-none text-sm w-full text-slate-800 placeholder-slate-400 font-medium"
                 />
               </div>
 
-              <button className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors shrink-0">
-                <Mic className="h-5 w-5" />
-              </button>
+              {inputText.trim() ? (
+                <button 
+                  onClick={handleSend}
+                  className="p-2 bg-blue-600 text-white hover:bg-blue-700 rounded-full transition-colors shrink-0 shadow-sm"
+                >
+                  <Send className="h-5 w-5 ml-0.5" />
+                </button>
+              ) : (
+                <button 
+                  onClick={() => toast.info('Gravando áudio...')}
+                  className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors shrink-0"
+                >
+                  <Mic className="h-5 w-5" />
+                </button>
+              )}
             </footer>
           </>
         ) : (

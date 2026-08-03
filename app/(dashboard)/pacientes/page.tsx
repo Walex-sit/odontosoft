@@ -13,7 +13,7 @@ import { Paciente as PacienteActionType } from '@/app/actions/patients'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface Paciente extends Partial<PacienteActionType> {
+interface Paciente extends Omit<Partial<PacienteActionType>, 'telefone' | 'cpf'> {
   id: string
   nome: string
   telefone: string | null
@@ -472,7 +472,7 @@ export default function Pacientes() {
           setEditingPatient(null)
         }}
         onSuccess={carregarPacientes}
-        patient={editingPatient}
+        patient={editingPatient as any}
       />
     </>
   )

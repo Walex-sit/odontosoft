@@ -40,7 +40,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
       
       if (res.success) {
         toast.success('Usuário criado com sucesso!')
-        setFormData({ nome: '', email: '', password: '', role: 'dentista' })
+        setFormData({ nome: '', email: '', password: '', role: 'dentista', especialidade: '' })
         onSuccess()
         onClose()
       } else {

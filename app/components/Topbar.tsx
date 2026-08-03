@@ -20,6 +20,10 @@ import {
   CreditCard
 } from 'lucide-react'
 import NotificacoesDropdown from './NotificacoesDropdown'
+import TarefasSlideOver from './TarefasSlideOver'
+import CalculadoraModal from './CalculadoraModal'
+import ReceituarioRapidoModal from './ReceituarioRapidoModal'
+import AtestadoMedicoModal from './AtestadoMedicoModal'
 
 export default function Topbar() {
   const pathname = usePathname()
@@ -29,6 +33,10 @@ export default function Topbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isToolsOpen, setIsToolsOpen] = useState(false)
+  const [isTarefasOpen, setIsTarefasOpen] = useState(false)
+  const [isCalculadoraOpen, setIsCalculadoraOpen] = useState(false)
+  const [isReceituarioOpen, setIsReceituarioOpen] = useState(false)
+  const [isAtestadoOpen, setIsAtestadoOpen] = useState(false)
 
   const [notifications, setNotifications] = useState([
     {
@@ -70,7 +78,7 @@ export default function Topbar() {
   }
 
   const handleTarefas = () => {
-    toast.info('Painel de tarefas pendentes do dia será aberto!')
+    setIsTarefasOpen(true)
   }
 
   const handleSuporte = () => {
@@ -131,10 +139,17 @@ export default function Topbar() {
               <LayoutGrid className="h-4 w-4" /> Ferramentas
             </button>
             {isToolsOpen && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2">
-                <button onClick={() => toast('Calculadora aberta')} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Calculadora</button>
-                <button onClick={() => toast('Emissão de receituário')} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Receituário Rápido</button>
-                <button onClick={() => toast('Atestados')} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Atestado Médico</button>
+              <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ferramentas Clínicas</p>
+                <button onClick={() => { setIsCalculadoraOpen(true); setIsToolsOpen(false) }} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium transition-colors flex items-center justify-between">Calculadora</button>
+                <button onClick={() => { setIsReceituarioOpen(true); setIsToolsOpen(false) }} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium transition-colors flex items-center justify-between">Receituário Rápido</button>
+                <button onClick={() => { setIsAtestadoOpen(true); setIsToolsOpen(false) }} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium transition-colors flex items-center justify-between">Atestado Médico</button>
+                <div className="h-px bg-slate-100 my-1" />
+                <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Módulos Avançados</p>
+                <Link href="/estoque" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Gestão de Estoque</Link>
+                <Link href="/comissoes" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Controle de Comissões</Link>
+                <Link href="/regua-cobranca" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Régua de Cobrança</Link>
+                <Link href="/planos-tratamento" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium">Planos de Tratamento</Link>
               </div>
             )}
           </div>
@@ -244,6 +259,26 @@ export default function Topbar() {
         </div>
 
       </div>
+      
+      <TarefasSlideOver 
+        isOpen={isTarefasOpen} 
+        onClose={() => setIsTarefasOpen(false)} 
+      />
+
+      <CalculadoraModal
+        isOpen={isCalculadoraOpen}
+        onClose={() => setIsCalculadoraOpen(false)}
+      />
+
+      <ReceituarioRapidoModal
+        isOpen={isReceituarioOpen}
+        onClose={() => setIsReceituarioOpen(false)}
+      />
+
+      <AtestadoMedicoModal
+        isOpen={isAtestadoOpen}
+        onClose={() => setIsAtestadoOpen(false)}
+      />
     </header>
   )
 }

@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { logAction } from '@/app/lib/logger'
 
 // ---------------------------------------------------------------------------
 // Cria conta de usuário via Admin API (não desloga o admin atual)
@@ -107,8 +108,13 @@ export async function fetchTeamMembers(): Promise<{
 
 // ---------------------------------------------------------------------------
 // Exclui usuário do Auth e da tabela user_profiles
+// actorId / actorNome: ID e nome do admin que está realizando a exclusão
 // ---------------------------------------------------------------------------
-export async function deleteUserAccount(userId: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteUserAccount(
+  userId: string,
+  actorId?: string,
+  actorNome?: string
+): Promise<{ success: boolean; error?: string }> {
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -116,6 +122,13 @@ export async function deleteUserAccount(userId: string): Promise<{ success: bool
   )
 
   try {
+    // 0. Busca o nome do usuário ANTES de excluir (para o log de auditoria)
+    const { data: profileData } = await supabaseAdmin
+      .from('user_profiles')
+      .select('nome, email, role')
+      .eq('id', userId)
+      .single()
+
     // 1. Remove da tabela pública primeiro
     const { error: profileError } = await supabaseAdmin
       .from('user_profiles')
@@ -135,10 +148,27 @@ export async function deleteUserAccount(userId: string): Promise<{ success: bool
       return { success: false, error: 'Perfil removido, mas erro ao remover Auth: ' + authError.message }
     }
 
+    // 3. Registra log de auditoria
+    if (actorId) {
+      await logAction(
+        actorId,
+        'exclusao',
+        'usuarios',
+        {
+          deleted_user_id: userId,
+          deleted_user_nome: profileData?.nome ?? 'Desconhecido',
+          deleted_user_email: profileData?.email ?? null,
+          deleted_user_role: profileData?.role ?? null,
+        },
+        actorNome
+      )
+    }
+
     return { success: true }
-  } catch (e: any) {
-    console.error('Erro geral ao deletar usuário:', e.message)
-    return { success: false, error: e.message }
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Erro desconhecido'
+    console.error('Erro geral ao deletar usuário:', msg)
+    return { success: false, error: msg }
   }
 }
 

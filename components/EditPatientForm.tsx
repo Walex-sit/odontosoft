@@ -50,7 +50,8 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type, checked } = e.target;
+    const target = e.target as HTMLInputElement;
+    const { name, value, type, checked } = target;
     setForm(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,

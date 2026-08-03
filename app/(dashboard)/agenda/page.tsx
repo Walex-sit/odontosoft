@@ -32,6 +32,13 @@ export default function Agenda() {
   const [initialTime, setInitialTime] = useState('')
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState<any>(null)
 
+  // Tooltip Informativo no Hover
+  const [hoveredInfo, setHoveredInfo] = useState<{
+    data: any;
+    x: number;
+    y: number;
+  } | null>(null)
+
   async function carregarDados() {
     setCarregando(true)
     
@@ -43,7 +50,7 @@ export default function Agenda() {
     const { data: dents } = await supabase.from('user_profiles').select('*').eq('role', 'dentista')
     setDentistas(dents || [])
 
-    // Carrega Agendamentos
+    // Carrega Agendamentos com fallback gracioso se o JOIN no PostgREST falhar
     let query = supabase
       .from('agendamentos')
       .select('*, pacientes(nome, telefone), dentistas:user_profiles!dentista_id(nome)')
@@ -52,7 +59,32 @@ export default function Agenda() {
       query = query.eq('dentista_id', filtroDentista)
     }
     
-    const { data: agends } = await query
+    let { data: agends, error: agendErr } = await query
+
+    if (agendErr) {
+      console.warn('Busca com JOIN falhou, executando fallback simples:', agendErr.message)
+      let fbQuery = supabase.from('agendamentos').select('*, pacientes(nome, telefone)')
+      if (filtroDentista) {
+        fbQuery = fbQuery.eq('dentista_id', filtroDentista)
+      }
+      const { data: fbData } = await fbQuery
+      agends = (fbData || []).map(a => {
+        const dent = (dents || []).find(d => d.id === (a.dentista_id || a.profissional_id))
+        return {
+          ...a,
+          dentistas: dent ? { nome: dent.nome } : null
+        }
+      })
+    } else {
+      agends = (agends || []).map(a => {
+        if (!a.dentistas) {
+          const dent = (dents || []).find(d => d.id === (a.dentista_id || a.profissional_id))
+          if (dent) a.dentistas = { nome: dent.nome }
+        }
+        return a
+      })
+    }
+
     setAgendamentos(agends || [])
     setCarregando(false)
   }
@@ -67,6 +99,14 @@ export default function Agenda() {
     espera: '#eab308', // yellow-500
     atendido: '#a855f7', // purple-500
     cancelado: '#ef4444' // red-500
+  }
+
+  const statusLabels: any = {
+    agendado: 'Agendado',
+    confirmado: 'Confirmado',
+    espera: 'Na Espera',
+    atendido: 'Atendido',
+    cancelado: 'Cancelado'
   }
 
   const eventos = agendamentos.map((a) => {
@@ -86,9 +126,18 @@ export default function Agenda() {
 
   function handleDateClick(info: any) {
     // Se clicou na visão de mês (sem hora), ou na de tempo (com hora)
-    const data = info.dateStr.split('T')[0]
-    const hora = info.dateStr.split('T')[1] ? info.dateStr.split('T')[1].substring(0, 5) : ''
+    const parts = info.dateStr.split('T')
+    const data = parts[0]
+    const hora = parts[1] ? parts[1].substring(0, 5) : '08:00'
     
+    setInitialDate(data)
+    setInitialTime(hora)
+    setIsNovoModalOpen(true)
+  }
+
+  function handleSelectSlot(info: any) {
+    const data = info.startStr.split('T')[0]
+    const hora = info.startStr.split('T')[1] ? info.startStr.split('T')[1].substring(0, 5) : '08:00'
     setInitialDate(data)
     setInitialTime(hora)
     setIsNovoModalOpen(true)
@@ -99,8 +148,24 @@ export default function Agenda() {
     setIsDetalhesModalOpen(true)
   }
 
+  function handleEventMouseEnter(info: any) {
+    const rect = info.el.getBoundingClientRect()
+    const x = rect.right + 12 < window.innerWidth - 240 ? rect.right + 12 : Math.max(12, rect.left - 240)
+    const y = Math.min(rect.top, window.innerHeight - 200)
+
+    setHoveredInfo({
+      data: info.event.extendedProps,
+      x,
+      y
+    })
+  }
+
+  function handleEventMouseLeave() {
+    setHoveredInfo(null)
+  }
+
   return (
-    <div className="flex w-full h-full overflow-hidden text-slate-800 font-sans text-sm bg-slate-50">
+    <div className="flex w-full h-full overflow-hidden text-slate-800 font-sans text-sm bg-slate-50 relative">
       
       {/* Sidebar: Filtros */}
       <aside className="w-72 border-r border-slate-200 bg-white flex flex-col h-full shrink-0 shadow-sm z-10">
@@ -162,11 +227,26 @@ export default function Agenda() {
                 .custom-calendar .fc-button-primary { background-color: #f1f5f9 !important; border-color: transparent !important; color: #475569 !important; font-weight: 600 !important; border-radius: 0.5rem !important; text-transform: capitalize !important; }
                 .custom-calendar .fc-button-primary:not(:disabled):active, .custom-calendar .fc-button-primary:not(:disabled).fc-button-active { background-color: #2563eb !important; color: white !important; }
                 .custom-calendar .fc-theme-standard th { border-color: #e2e8f0; padding: 8px 0; font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
-                .custom-calendar .fc-theme-standard td { border-color: #e2e8f0; }
-                .custom-calendar .fc-event { border-radius: 6px; padding: 2px 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-                .custom-calendar .fc-event:hover { opacity: 0.85; }
+                .custom-calendar .fc-theme-standard td { border-color: #e2e8f0; cursor: pointer; }
+                .custom-calendar .fc-timegrid-slot { cursor: pointer; }
+                .custom-calendar .fc-timegrid-slot:hover { background-color: rgba(37, 99, 235, 0.04) !important; }
+                .custom-calendar .fc-event { border-radius: 8px; padding: 3px 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
+                .custom-calendar .fc-event:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); opacity: 0.95; }
                 .custom-calendar .fc-v-event { border: none !important; }
                 .custom-calendar .fc-daygrid-event { margin-top: 2px; }
+                
+                /* Estilização do Indicador de Hora Atual */
+                .custom-calendar .fc-timegrid-now-indicator-line {
+                  border-color: #ef4444 !important;
+                  border-width: 2px !important;
+                  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+                  z-index: 20 !important;
+                }
+                .custom-calendar .fc-timegrid-now-indicator-arrow {
+                  border-color: #ef4444 !important;
+                  border-width: 6px !important;
+                  margin-top: -5px !important;
+                }
               `}} />
               <FullCalendar
                 ref={calendarRef}
@@ -184,9 +264,14 @@ export default function Agenda() {
                 slotMinTime="07:00:00"
                 slotMaxTime="20:00:00"
                 slotDuration="00:30:00"
+                selectable={true}
+                selectMirror={true}
+                select={handleSelectSlot}
                 allDaySlot={false}
                 dateClick={handleDateClick}
                 eventClick={handleEventClick}
+                eventMouseEnter={handleEventMouseEnter}
+                eventMouseLeave={handleEventMouseLeave}
                 nowIndicator={true}
                 dayMaxEvents={true}
               />
@@ -194,6 +279,48 @@ export default function Agenda() {
           </div>
         </div>
       </main>
+
+      {/* Tooltip Informativa Flutuante no Hover */}
+      {hoveredInfo && (
+        <div 
+          style={{ top: `${hoveredInfo.y}px`, left: `${hoveredInfo.x}px` }}
+          className="fixed z-50 w-60 bg-slate-900 text-white rounded-2xl p-4 shadow-2xl border border-slate-700 pointer-events-none animate-in fade-in zoom-in-95 duration-150"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span 
+              className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full text-white"
+              style={{ backgroundColor: statusColors[hoveredInfo.data.status || 'agendado'] }}
+            >
+              {statusLabels[hoveredInfo.data.status || 'agendado']}
+            </span>
+            <span className="text-xs font-semibold text-slate-400">
+              {hoveredInfo.data.hora_consulta} {hoveredInfo.data.hora_fim ? `- ${hoveredInfo.data.hora_fim}` : ''}
+            </span>
+          </div>
+
+          <p className="font-bold text-slate-100 text-sm truncate">
+            {hoveredInfo.data.pacientes?.nome || 'Paciente não identificado'}
+          </p>
+
+          {hoveredInfo.data.pacientes?.telefone && (
+            <p className="text-xs text-slate-400 font-medium mt-0.5">
+              📞 {hoveredInfo.data.pacientes.telefone}
+            </p>
+          )}
+
+          {hoveredInfo.data.procedimento && (
+            <p className="text-xs text-blue-400 font-semibold mt-2 border-t border-slate-800 pt-1.5">
+              📋 {hoveredInfo.data.procedimento}
+            </p>
+          )}
+
+          {hoveredInfo.data.dentistas?.nome && (
+            <p className="text-xs text-slate-400 font-medium mt-1">
+              👨‍⚕️ {hoveredInfo.data.dentistas.nome}
+            </p>
+          )}
+        </div>
+      )}
 
       <NovoAgendamentoModal 
         isOpen={isNovoModalOpen}
