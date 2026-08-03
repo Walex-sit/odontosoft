@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { useAuth } from '../../components/RequireAuth'
-import { KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, User } from 'lucide-react'
+import { KeyRound, Eye, EyeOff, CheckCircle2, AlertCircle, Search } from 'lucide-react'
 
 const ROLE_LABELS: Record<string, string> = {
   admin: 'Administrador',
@@ -61,79 +61,71 @@ export default function MinhaConta() {
   }
 
   return (
-    <>
-      {/* Cabeçalho */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-100">Minha Conta</h2>
-        <p className="text-slate-400 mt-1 text-sm">Gerencie suas informações e segurança</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {/* Card de Perfil */}
-        <div className="lg:col-span-1">
-          <div className="bg-slate-800 rounded-2xl border border-slate-700/50 shadow-sm p-6 flex flex-col items-center text-center">
-            <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-3xl font-bold border-2 border-blue-500/30 shadow-sm mb-4">
-              {(profile?.nome || 'U').charAt(0).toUpperCase()}
-            </div>
-            <h3 className="text-lg font-bold text-slate-100">{profile?.nome || 'Usuário'}</h3>
-            <span className="mt-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              {ROLE_LABELS[profile?.role ?? ''] ?? profile?.role ?? '—'}
-            </span>
-
-            <div className="w-full mt-6 pt-5 border-t border-slate-700/50 text-left space-y-3">
-              <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">ID do Usuário</p>
-                <p className="text-xs text-slate-400 font-mono break-all">{profile?.id ?? '—'}</p>
-              </div>
-              <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Nível de Acesso</p>
-                <p className="text-sm font-semibold text-slate-300">{ROLE_LABELS[profile?.role ?? ''] ?? '—'}</p>
-              </div>
-            </div>
+    <div className="flex w-full h-full overflow-hidden">
+      {/* Column 2: Context/Filters */}
+      <aside className="w-72 border-r border-slate-600 bg-slate-700/50 flex flex-col h-full shrink-0">
+        <div className="p-4 border-b border-slate-600 bg-slate-700">
+          <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wide">Perfil</h2>
+        </div>
+        <div className="p-6 flex flex-col items-center border-b border-slate-600 text-center bg-slate-700">
+          <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-2xl font-bold mb-3 border border-blue-200">
+            {(profile?.nome || 'U').charAt(0).toUpperCase()}
           </div>
+          <h3 className="text-sm font-bold text-slate-100">{profile?.nome || 'Usuário'}</h3>
+          <span className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-700 text-slate-300 border border-slate-600">
+            {ROLE_LABELS[profile?.role ?? ''] ?? profile?.role ?? '—'}
+          </span>
         </div>
 
-        {/* Card de Alterar Senha */}
-        <div className="lg:col-span-2">
-          <div className="bg-slate-800 rounded-2xl border border-slate-700/50 shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-slate-700/50 flex items-center gap-3">
-              <div className="h-9 w-9 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center border border-blue-500/20">
-                <KeyRound className="h-5 w-5" />
+        <div className="p-4 space-y-4 bg-slate-700/50 flex-1">
+          <div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">ID do Usuário</p>
+            <p className="text-xs text-slate-100 font-mono break-all">{profile?.id ?? '—'}</p>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nível de Acesso</p>
+            <p className="text-xs font-semibold text-slate-100">{ROLE_LABELS[profile?.role ?? ''] ?? '—'}</p>
+          </div>
+        </div>
+      </aside>
+
+      {/* Column 3: Main Workspace */}
+      <main className="flex-1 flex flex-col h-full bg-slate-800 relative">
+        <header className="h-14 border-b border-slate-600 flex items-center px-6 shrink-0 gap-4">
+          <Search className="h-4 w-4 text-slate-400" />
+          <input 
+            type="text" 
+            placeholder="Buscar configurações..." 
+            className="bg-transparent border-none focus:outline-none text-sm text-slate-100 w-full placeholder-slate-400" 
+          />
+        </header>
+
+        <div className="flex-1 overflow-auto p-6">
+          <h1 className="text-lg font-bold text-slate-100 mb-1">Alterar Senha</h1>
+          <p className="text-xs text-slate-400 mb-6">A nova senha será aplicada imediatamente à sua conta.</p>
+
+          <div className="max-w-sm">
+            {erro && (
+              <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-md px-3 py-2.5 mb-5">
+                <AlertCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
+                <p className="text-xs text-red-700 font-medium">{erro}</p>
               </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-100">Alterar Senha</h3>
-                <p className="text-xs text-slate-500">A nova senha será aplicada imediatamente</p>
+            )}
+
+            {sucesso && (
+              <div className="flex items-start gap-2 bg-green-50 border border-green-200 rounded-md px-3 py-2.5 mb-5">
+                <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+                <p className="text-xs text-green-700 font-medium">Senha alterada com sucesso!</p>
               </div>
-            </div>
+            )}
 
-            <div className="p-6 space-y-5">
-
-              {/* Feedback de erro */}
-              {erro && (
-                <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
-                  <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-400">{erro}</p>
-                </div>
-              )}
-
-              {/* Feedback de sucesso */}
-              {sucesso && (
-                <div className="flex items-start gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <p className="text-sm text-emerald-400 font-medium">Senha alterada com sucesso!</p>
-                </div>
-              )}
-
-              {/* Nova Senha */}
+            <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                  Nova Senha
-                </label>
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">Nova Senha</label>
                 <div className="relative">
                   <input
                     type={mostrarNova ? 'text' : 'password'}
-                    className="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-3 pr-11 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full px-3 py-2.5 bg-slate-800 border border-slate-600 rounded-md text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     placeholder="••••••••"
                     value={novaSenha}
                     onChange={(e) => { setNovaSenha(e.target.value); setErro(null); setSucesso(false) }}
@@ -142,22 +134,19 @@ export default function MinhaConta() {
                   <button
                     type="button"
                     onClick={() => setMostrarNova(v => !v)}
-                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-300"
                   >
-                    {mostrarNova ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {mostrarNova ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
-              {/* Confirmar Senha */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                  Confirmar Nova Senha
-                </label>
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">Confirmar Nova Senha</label>
                 <div className="relative">
                   <input
                     type={mostrarConfirma ? 'text' : 'password'}
-                    className="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-3 pr-11 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full px-3 py-2.5 bg-slate-800 border border-slate-600 rounded-md text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     placeholder="••••••••"
                     value={confirmaSenha}
                     onChange={(e) => { setConfirmaSenha(e.target.value); setErro(null); setSucesso(false) }}
@@ -166,41 +155,39 @@ export default function MinhaConta() {
                   <button
                     type="button"
                     onClick={() => setMostrarConfirma(v => !v)}
-                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-300"
                   >
-                    {mostrarConfirma ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {mostrarConfirma ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
-
-              {/* Requisitos */}
-              <ul className="space-y-1.5">
-                {[
-                  { ok: novaSenha.length >= 8,         label: 'Mínimo de 8 caracteres' },
-                  { ok: /[A-Z]/.test(novaSenha),       label: 'Pelo menos uma letra maiúscula' },
-                  { ok: /[a-z]/.test(novaSenha),       label: 'Pelo menos uma letra minúscula' },
-                  { ok: /[0-9]/.test(novaSenha),       label: 'Pelo menos um número' },
-                  { ok: novaSenha === confirmaSenha && confirmaSenha.length > 0, label: 'Senhas coincidem' },
-                ].map(({ ok, label }) => (
-                  <li key={label} className={`flex items-center gap-2 text-xs font-medium transition-colors ${ok ? 'text-emerald-400' : 'text-slate-500'}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${ok ? 'bg-emerald-400' : 'bg-slate-600'}`} />
-                    {label}
-                  </li>
-                ))}
-              </ul>
-
-              {/* Botão */}
-              <button
-                onClick={alterarSenha}
-                disabled={salvando}
-                className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 disabled:opacity-60 text-white py-3 rounded-xl font-bold text-sm transition-all border border-blue-500 shadow-sm active:scale-[0.98]"
-              >
-                {salvando ? 'Salvando...' : 'Alterar Senha'}
-              </button>
             </div>
+
+            <ul className="space-y-1.5 mb-6">
+              {[
+                { ok: novaSenha.length >= 8,         label: 'Mínimo de 8 caracteres' },
+                { ok: /[A-Z]/.test(novaSenha),       label: 'Pelo menos uma letra maiúscula' },
+                { ok: /[a-z]/.test(novaSenha),       label: 'Pelo menos uma letra minúscula' },
+                { ok: /[0-9]/.test(novaSenha),       label: 'Pelo menos um número' },
+                { ok: novaSenha === confirmaSenha && confirmaSenha.length > 0, label: 'Senhas coincidem' },
+              ].map(({ ok, label }) => (
+                <li key={label} className={`flex items-center gap-2 text-xs font-medium transition-colors ${ok ? 'text-green-600' : 'text-slate-400'}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${ok ? 'bg-green-500' : 'bg-slate-300'}`} />
+                  {label}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={alterarSenha}
+              disabled={salvando}
+              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-300 text-white py-2.5 rounded-md font-bold text-sm transition-colors"
+            >
+              {salvando ? 'Salvando...' : 'Atualizar Senha'}
+            </button>
           </div>
         </div>
-      </div>
-    </>
+      </main>
+    </div>
   )
 }

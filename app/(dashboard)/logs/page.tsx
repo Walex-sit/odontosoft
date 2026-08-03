@@ -2,7 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
-import { History, ListFilter } from 'lucide-react'
+import { History, Search } from 'lucide-react'
+
+const actionColors: Record<string, string> = {
+  criacao: 'bg-green-50 text-green-700 border-green-200',
+  edicao: 'bg-blue-50 text-blue-700 border-blue-200',
+  exclusao: 'bg-red-50 text-red-700 border-red-200',
+  login: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  logout: 'bg-slate-700 text-slate-300 border-slate-600',
+  financeiro: 'bg-amber-50 text-amber-700 border-amber-200',
+}
 
 export default function Logs() {
   const [logs, setLogs] = useState<any[]>([])
@@ -32,125 +41,108 @@ export default function Logs() {
 
   useEffect(() => { carregarLogs() }, [filtroAction])
 
-  const actionColors: Record<string, string> = {
-    criacao: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
-    edicao: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
-    exclusao: 'bg-red-500/10 text-red-400 border border-red-500/20',
-    login: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20',
-    logout: 'bg-slate-900 text-slate-400 border border-slate-750',
-    financeiro: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-  }
-
   return (
-    <>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-101">Logs do Sistema</h2>
-          <p className="text-slate-400 mt-1 text-sm">Auditoria de ações realizadas no sistema</p>
+    <div className="flex w-full h-full overflow-hidden">
+      {/* Column 2: Context/Filters */}
+      <aside className="w-72 border-r border-slate-600 bg-slate-700 flex flex-col h-full shrink-0">
+        <div className="p-4 border-b border-slate-600">
+          <h2 className="text-sm font-bold text-slate-100 uppercase tracking-wide">Filtros</h2>
         </div>
-        <div className="w-full sm:w-auto">
+        <div className="p-4 flex-1 overflow-y-auto">
+          <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Ação</label>
           <select
-            className="appearance-none w-full sm:w-auto px-4 py-2.5 bg-slate-800 border border-slate-700/50 rounded-xl text-slate-105 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+            className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-md text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
             value={filtroAction}
             onChange={(e) => setFiltroAction(e.target.value)}
           >
-            <option value="" className="bg-slate-900 text-slate-400">Todas as Ações</option>
-            <option value="criacao" className="bg-slate-900 text-slate-100">Criação</option>
-            <option value="edicao" className="bg-slate-900 text-slate-100">Edição</option>
-            <option value="exclusao" className="bg-slate-900 text-slate-100">Exclusão</option>
-            <option value="login" className="bg-slate-900 text-slate-100">Login</option>
-            <option value="logout" className="bg-slate-900 text-slate-100">Logout</option>
-            <option value="financeiro" className="bg-slate-900 text-slate-100">Financeiro</option>
+            <option value="">Todas as Ações</option>
+            <option value="criacao">Criação</option>
+            <option value="edicao">Edição</option>
+            <option value="exclusao">Exclusão</option>
+            <option value="login">Login</option>
+            <option value="logout">Logout</option>
+            <option value="financeiro">Financeiro</option>
           </select>
         </div>
-      </div>
+      </aside>
 
-      <div className="bg-slate-800 rounded-2xl border border-slate-700/50 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-slate-700/50 flex items-center justify-between flex-wrap gap-2">
-          <h3 className="text-lg font-bold text-slate-105 flex items-center gap-2">
-            <History className="h-5 w-5 text-slate-400" />
-            Registros de Auditoria
-          </h3>
-          <span className="text-xs font-bold text-slate-400 bg-slate-900/60 px-3 py-1 rounded-full border border-slate-700/50">{logs.length} registro(s)</span>
-        </div>
+      {/* Column 3: Main Workspace */}
+      <main className="flex-1 flex flex-col h-full bg-slate-800 relative">
+        <header className="h-14 border-b border-slate-600 flex items-center px-6 shrink-0 gap-4">
+          <Search className="h-4 w-4 text-slate-400" />
+          <input 
+            type="text" 
+            placeholder="Buscar logs..." 
+            className="bg-transparent border-none focus:outline-none text-sm text-slate-100 w-full placeholder-slate-400" 
+          />
+        </header>
 
-        {carregando ? (
-          <div className="flex justify-center items-center py-16">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          </div>
-        ) : logs.length === 0 ? (
-          <div className="text-center py-16 px-4">
-            <div className="h-16 w-16 bg-slate-900 text-slate-550 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-800">
-              <History className="h-8 w-8" />
+        <div className="flex-1 overflow-auto p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-bold text-slate-100">Logs do Sistema</h1>
+              <p className="text-xs text-slate-400 mt-0.5">Auditoria de ações realizadas no sistema.</p>
             </div>
-            <h3 className="text-lg font-bold text-slate-100 mb-1">Nenhum log registrado</h3>
-            <p className="text-slate-400 text-sm">Os logs aparecerão conforme ações forem realizadas no sistema.</p>
+            <span className="text-xs font-medium bg-slate-700 text-slate-300 px-2.5 py-1 rounded-md border border-slate-600">
+              {logs.length} registros
+            </span>
           </div>
-        ) : (
-          <>
-            {/* Desktop Table */}
-            <div className="hidden sm:block overflow-x-auto w-full no-scrollbar">
-              <table className="w-full text-left border-collapse min-w-[700px]">
-                <thead>
-                  <tr className="bg-slate-900/40 border-b border-slate-700/50">
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Data/Hora</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ação</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Entidade</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Detalhes</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Usuário</th>
+
+          <div className="border border-slate-600 rounded-md overflow-hidden bg-slate-700">
+            <table className="w-full text-left text-sm border-collapse min-w-[700px]">
+              <thead className="bg-slate-700/50 border-b border-slate-600">
+                <tr>
+                  <th className="px-4 py-3 font-semibold text-slate-300 text-xs uppercase tracking-wider">Data/Hora</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300 text-xs uppercase tracking-wider">Ação</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300 text-xs uppercase tracking-wider">Entidade</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300 text-xs uppercase tracking-wider">Detalhes</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300 text-xs uppercase tracking-wider">Usuário</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-700/50">
+                {carregando ? (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-slate-400 text-sm">
+                      <div className="flex justify-center items-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-700/50">
-                  {logs.map((l) => {
-                    const color = actionColors[l.action] || 'bg-slate-900 text-slate-400 border border-slate-750'
+                ) : logs.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-slate-400 text-sm">
+                      Nenhum log encontrado.
+                    </td>
+                  </tr>
+                ) : (
+                  logs.map((l) => {
+                    const color = actionColors[l.action] || 'bg-slate-700 text-slate-300 border-slate-600'
                     return (
-                      <tr key={l.id} className="hover:bg-slate-700/30 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-medium">
+                      <tr key={l.id} className="hover:bg-slate-700/50 transition-colors">
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-slate-300">
                           {new Date(l.created_at).toLocaleString('pt-BR')}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${color}`}>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border ${color}`}>
                             {l.action.toUpperCase()}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-200 text-sm">{l.entity}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 max-w-[200px] truncate">
+                        <td className="px-4 py-3 whitespace-nowrap font-medium text-slate-100 text-xs">{l.entity}</td>
+                        <td className="px-4 py-3 text-xs text-slate-400 max-w-[200px] truncate">
                           {l.details ? JSON.stringify(l.details) : '—'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-slate-400 font-mono">
                           {l.user_id ? l.user_id.substring(0, 8) : '—'}
                         </td>
                       </tr>
                     )
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile Cards */}
-            <div className="sm:hidden divide-y divide-slate-700/50">
-              {logs.map((l) => {
-                const color = actionColors[l.action] || 'bg-slate-900 text-slate-400 border border-slate-750'
-                return (
-                  <div key={l.id} className="p-4 hover:bg-slate-700/20 transition-colors">
-                    <div className="flex justify-between items-center mb-1.5 gap-2">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${color}`}>
-                        {l.action.toUpperCase()}
-                      </span>
-                      <span className="text-[10px] text-slate-500">{new Date(l.created_at).toLocaleString('pt-BR')}</span>
-                    </div>
-                    <div className="text-sm font-bold text-slate-200 mb-1">Módulo: <span className="text-blue-400 font-semibold">{l.entity}</span></div>
-                    <p className="text-xs text-slate-400 leading-relaxed truncate mb-1">
-                      Detalhes: <span className="font-mono text-[11px] text-slate-350">{l.details ? JSON.stringify(l.details) : '—'}</span>
-                    </p>
-                    <div className="text-[10px] text-slate-500">Usuário ID: {l.user_id ? l.user_id.substring(0, 8) : '—'}</div>
-                  </div>
-                )
-              })}
-            </div>
-          </>
-        )}
-      </div>
-    </>
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
   )
 }

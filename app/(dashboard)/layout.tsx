@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
 import RequireAuth from '../components/RequireAuth'
 import RouteGuard from '../components/RouteGuard'
@@ -11,24 +9,16 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-
   return (
     <RequireAuth>
-      <div className="h-screen w-full flex overflow-hidden relative" style={{background:'#0e1420', color:'#f0f4ff'}}>
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="flex flex-col h-screen w-full bg-slate-50 overflow-hidden font-sans text-slate-800 relative">
+        <Topbar />
         
-        <div className="flex-1 flex flex-col h-full overflow-hidden" style={{background:'#0e1420'}}>
-          <Topbar onMenuClick={() => setSidebarOpen(true)} />
-          
-          <main className="flex-1 overflow-y-auto px-2 py-4 sm:p-6 md:p-8 lg:px-12 relative">
-            <div className="max-w-7xl mx-auto pb-12">
-              <RouteGuard>
-                {children}
-              </RouteGuard>
-            </div>
-          </main>
-        </div>
+        <main className="flex flex-1 flex-col overflow-hidden relative z-10 w-full h-full">
+          <RouteGuard>
+            {children}
+          </RouteGuard>
+        </main>
       </div>
     </RequireAuth>
   )

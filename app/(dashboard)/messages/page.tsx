@@ -1,0 +1,194 @@
+'use client'
+
+import { useState } from 'react'
+import { Search, Send, MoreVertical, Phone, Video, Info, Paperclip, Smile, Mic, CheckCircle2, MessageSquare } from 'lucide-react'
+import Image from 'next/image'
+
+export default function MessagesPage() {
+  const [activeChat, setActiveChat] = useState<number | null>(1)
+
+  const chats = [
+    { id: 1, name: 'João Silva', avatar: 'JS', lastMsg: 'Tudo bem, nos vemos às 15h.', time: '10:45', unread: 0, online: true },
+    { id: 2, name: 'Maria Fernanda', avatar: 'MF', lastMsg: 'Obrigada pelo retorno doutor!', time: 'Ontem', unread: 2, online: false },
+    { id: 3, name: 'Roberto Almeida', avatar: 'RA', lastMsg: 'Gostaria de reagendar minha consulta.', time: 'Ontem', unread: 0, online: false },
+    { id: 4, name: 'Ana Souza', avatar: 'AS', lastMsg: 'Bom dia. Vocês aceitam plano OdontoPrev?', time: 'Segunda', unread: 0, online: true },
+  ]
+
+  const messages = [
+    { id: 1, text: 'Olá João, lembrando da sua consulta hoje às 15:30.', sender: 'me', time: '10:30', status: 'read' },
+    { id: 2, text: 'Tudo bem, nos vemos às 15h. Chegarei um pouco mais cedo.', sender: 'them', time: '10:45', status: '' },
+  ]
+
+  return (
+    <div className="flex-1 flex h-full bg-slate-50 overflow-hidden relative">
+      
+      {/* Coluna Esquerda: Lista de Conversas */}
+      <aside className="w-full md:w-96 bg-white border-r border-slate-200 flex flex-col h-full shrink-0 z-10">
+        
+        {/* Header Esquerdo */}
+        <div className="h-16 px-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50/50">
+          <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">Mensagens</h2>
+          <div className="flex items-center gap-2">
+            <button className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors" title="Nova Conversa">
+              <MessagePlusIcon className="h-5 w-5" />
+            </button>
+            <button className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors">
+              <MoreVertical className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Busca */}
+        <div className="p-3 border-b border-slate-200 shrink-0">
+          <div className="flex items-center w-full bg-slate-100 rounded-xl px-4 py-2 border border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+            <Search className="h-4 w-4 text-slate-400 mr-2 shrink-0" />
+            <input 
+              type="text" 
+              placeholder="Pesquisar ou começar uma nova conversa" 
+              className="bg-transparent border-none outline-none text-sm w-full text-slate-800 placeholder-slate-500 font-medium"
+            />
+          </div>
+        </div>
+
+        {/* Filtros rápidos (Campanhas, Lidas) */}
+        <div className="flex gap-2 px-4 py-2 border-b border-slate-100 shrink-0 overflow-x-auto no-scrollbar">
+          <button className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">Todas</button>
+          <button className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors">Não Lidas</button>
+          <button className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors">Campanhas Automáticas</button>
+        </div>
+
+        {/* Lista */}
+        <div className="flex-1 overflow-y-auto">
+          {chats.map(chat => (
+            <div 
+              key={chat.id}
+              onClick={() => setActiveChat(chat.id)}
+              className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-b border-slate-100 last:border-none ${activeChat === chat.id ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
+            >
+              <div className="relative">
+                <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0">
+                  {chat.avatar}
+                </div>
+                {chat.online && (
+                  <div className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 border-2 border-white rounded-full"></div>
+                )}
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-baseline mb-1">
+                  <h3 className="text-base font-bold text-slate-800 truncate">{chat.name}</h3>
+                  <span className={`text-xs font-semibold ${chat.unread > 0 ? 'text-blue-600' : 'text-slate-400'}`}>{chat.time}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <p className={`text-sm truncate ${chat.unread > 0 ? 'text-slate-800 font-semibold' : 'text-slate-500 font-medium'}`}>
+                    {chat.lastMsg}
+                  </p>
+                  {chat.unread > 0 && (
+                    <div className="h-5 w-5 bg-blue-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 ml-2">
+                      {chat.unread}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </aside>
+
+      {/* Coluna Direita: Chat Ativo */}
+      <main className="flex-1 flex flex-col h-full bg-[#EFEAE2] relative hidden md:flex">
+        
+        {activeChat ? (
+          <>
+            {/* Header Direito */}
+            <header className="h-16 px-6 border-b border-slate-200 bg-white flex items-center justify-between shrink-0 shadow-sm z-10">
+              <div className="flex items-center gap-3 cursor-pointer">
+                <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0">
+                  JS
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-slate-800">João Silva</h2>
+                  <p className="text-xs font-medium text-slate-500">visto por último hoje às 11:00</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <button className="text-slate-500 hover:text-blue-600 transition-colors"><Video className="h-5 w-5" /></button>
+                <button className="text-slate-500 hover:text-blue-600 transition-colors"><Phone className="h-5 w-5" /></button>
+                <div className="w-px h-6 bg-slate-200"></div>
+                <button className="text-slate-500 hover:text-slate-800 transition-colors"><Search className="h-5 w-5" /></button>
+                <button className="text-slate-500 hover:text-slate-800 transition-colors"><MoreVertical className="h-5 w-5" /></button>
+              </div>
+            </header>
+
+            {/* Área de Mensagens */}
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-2 relative">
+              <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://w0.peakpx.com/wallpaper/818/148/HD-wallpaper-whatsapp-background-cool-dark-green-light-pattern-soft-whatsapp-logo-white.jpg")', backgroundSize: 'cover' }}></div>
+              
+              <div className="text-center my-4 z-10">
+                <span className="bg-white/80 backdrop-blur text-slate-500 text-xs font-bold px-3 py-1 rounded-lg shadow-sm">HOJE</span>
+              </div>
+
+              {messages.map(msg => (
+                <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'} mb-2 z-10`}>
+                  <div className={`max-w-[70%] rounded-2xl px-4 py-2 shadow-sm relative ${msg.sender === 'me' ? 'bg-[#D9FDD3] rounded-tr-none text-slate-800' : 'bg-white rounded-tl-none text-slate-800'}`}>
+                    <p className="text-[15px] leading-relaxed">{msg.text}</p>
+                    <div className="flex items-center justify-end gap-1 mt-1">
+                      <span className="text-[10px] font-semibold text-slate-400">{msg.time}</span>
+                      {msg.sender === 'me' && (
+                        <CheckCircle2 className={`h-3.5 w-3.5 ${msg.status === 'read' ? 'text-blue-500' : 'text-slate-400'}`} />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Input Footer */}
+            <footer className="h-16 px-4 bg-slate-50 border-t border-slate-200 flex items-center gap-3 shrink-0">
+              <button className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors shrink-0">
+                <Smile className="h-6 w-6" />
+              </button>
+              <button className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors shrink-0">
+                <Paperclip className="h-5 w-5" />
+              </button>
+              
+              <div className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2.5 focus-within:border-blue-400 transition-colors">
+                <input 
+                  type="text" 
+                  placeholder="Digite uma mensagem" 
+                  className="bg-transparent border-none outline-none text-sm w-full text-slate-800 placeholder-slate-400 font-medium"
+                />
+              </div>
+
+              <button className="p-2 text-slate-500 hover:bg-slate-200 rounded-full transition-colors shrink-0">
+                <Mic className="h-5 w-5" />
+              </button>
+            </footer>
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 border-l border-slate-200">
+            <div className="h-32 w-32 bg-blue-50 rounded-full flex items-center justify-center mb-6">
+              <MessageSquare className="h-12 w-12 text-blue-200" />
+            </div>
+            <h2 className="text-2xl font-extrabold text-slate-800 mb-2">Central de Mensagens</h2>
+            <p className="text-slate-500 font-medium text-center max-w-sm">
+              Selecione uma conversa ao lado ou inicie um novo chat para interagir com seus pacientes.
+            </p>
+          </div>
+        )}
+      </main>
+
+    </div>
+  )
+}
+
+function MessagePlusIcon(props: any) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      <line x1="9" y1="10" x2="15" y2="10"></line>
+      <line x1="12" y1="7" x2="12" y2="13"></line>
+    </svg>
+  )
+}

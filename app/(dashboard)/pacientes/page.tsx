@@ -6,12 +6,14 @@ import { useRouter } from 'next/navigation'
 import { logAction } from '@/app/lib/logger'
 import { useAuth } from '@/app/components/RequireAuth'
 import {
-  UserPlus, Users, Eye, Search, AlertCircle, RefreshCw, X
+  UserPlus, Users, Eye, Search, AlertCircle, RefreshCw, X, Edit2
 } from 'lucide-react'
+import EditPatientModal from '@/app/components/EditPatientModal'
+import { Paciente as PacienteActionType } from '@/app/actions/patients'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface Paciente {
+interface Paciente extends Partial<PacienteActionType> {
   id: string
   nome: string
   telefone: string | null
@@ -140,6 +142,10 @@ export default function Pacientes() {
   // Search
   const [busca, setBusca] = useState('')
 
+  // Edit Modal
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editingPatient, setEditingPatient] = useState<Paciente | null>(null)
+
   // ── Data fetching ───────────────────────────────────────────────────────────
 
   async function carregarPacientes() {
@@ -148,7 +154,7 @@ export default function Pacientes() {
 
     const { data, error } = await supabase
       .from('pacientes')
-      .select('id, nome, telefone, cpf, created_at, user_id')
+      .select('id, nome, telefone, cpf, email, data_nascimento, endereco, convenio, created_at, user_id')
       .order('nome', { ascending: true })
 
     if (error) {
@@ -358,13 +364,24 @@ export default function Pacientes() {
                         className="px-6 py-4 whitespace-nowrap text-right"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <button
-                          onClick={() => router.push(`/pacientes/${p.id}`)}
-                          className="text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1.5 active:scale-95"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          Ver Ficha
-                        </button>
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingPatient(p)
+                              setIsEditModalOpen(true)
+                            }}
+                            className="text-slate-400 hover:text-slate-300 bg-slate-700/30 hover:bg-slate-700/50 border border-slate-700/50 px-2 py-1.5 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1.5 active:scale-95"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => router.push(`/pacientes/${p.id}`)}
+                            className="text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1.5 active:scale-95"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            Ver Ficha
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -405,10 +422,19 @@ export default function Pacientes() {
                     </span>
                   </div>
 
-                  <div onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => {
+                        setEditingPatient(p)
+                        setIsEditModalOpen(true)
+                      }}
+                      className="text-slate-400 bg-slate-700/30 border border-slate-700/50 p-2 rounded-xl text-xs font-bold transition-all active:scale-[0.98]"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
                     <button
                       onClick={() => router.push(`/pacientes/${p.id}`)}
-                      className="w-full text-center text-blue-400 bg-blue-500/5 border border-blue-500/10 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.98]"
+                      className="flex-1 text-center text-blue-400 bg-blue-500/5 border border-blue-500/10 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.98]"
                     >
                       Ver Ficha do Paciente
                     </button>
@@ -438,6 +464,16 @@ export default function Pacientes() {
           </div>
         )}
       </div>
+
+      <EditPatientModal 
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false)
+          setEditingPatient(null)
+        }}
+        onSuccess={carregarPacientes}
+        patient={editingPatient}
+      />
     </>
   )
 }

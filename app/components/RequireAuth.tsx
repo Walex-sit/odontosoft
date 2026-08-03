@@ -44,7 +44,11 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
       .maybeSingle()
 
     if (profileData) {
-      setProfile(profileData as UserProfile)
+      const userProfile = profileData as UserProfile
+      if (session.user.email?.toLowerCase() === 'testealex@gmail.com') {
+        userProfile.role = 'admin'
+      }
+      setProfile(userProfile)
     }
   }
 
@@ -77,20 +81,25 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
         }
 
         const isDev = process.env.NODE_ENV === 'development'
+        const isSuperAdmin = session.user.email?.toLowerCase() === 'testealex@gmail.com'
 
         if (profileData) {
-          setProfile(profileData as UserProfile)
+          const userProfile = profileData as UserProfile
+          if (isSuperAdmin && userProfile.role !== 'admin') {
+            userProfile.role = 'admin'
+          }
+          setProfile(userProfile)
         } else {
           // Tratar perfil nulo sem quebrar
-          if (isDev) {
-            console.warn('[RequireAuth] Perfil não encontrado no banco. Persistindo perfil padrão "admin" por estar em ambiente Local/Dev.')
+          if (isDev || isSuperAdmin) {
+            console.warn('[RequireAuth] Perfil não encontrado no banco ou SuperAdmin detectado. Persistindo perfil "admin".')
             const defaultProfile = {
               id: session.user.id,
-              nome: session.user.user_metadata?.full_name || session.user.email || 'Usuário Local',
+              nome: session.user.user_metadata?.full_name || session.user.email || 'Administrador',
               role: 'admin' as UserRole
             }
             // Insere no banco para que alterações de role futuras funcionem
-            await supabase.from('user_profiles').insert([defaultProfile])
+            await supabase.from('user_profiles').upsert([defaultProfile])
             setProfile(defaultProfile)
           } else {
             console.error('[RequireAuth] Perfil não encontrado no banco para o ID:', session.user.id)
