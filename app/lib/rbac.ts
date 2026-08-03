@@ -1,3 +1,4 @@
+"use server"
 import { UserRole } from '../components/RequireAuth'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
