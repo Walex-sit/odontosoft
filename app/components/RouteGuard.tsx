@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from './RequireAuth'
-import { canAccess } from '../lib/rbac'
+import { canAccess } from '../lib/rbac-client'
 
 /**
  * RouteGuard — protege rotas com base no role do usuário.
