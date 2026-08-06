@@ -138,7 +138,7 @@ export default function Usuarios() {
       {/* Column 2: Filters / Context */}
       <aside className="w-72 border-r border-slate-600 bg-slate-700/50 flex flex-col h-full shrink-0 overflow-y-auto">
         <div className="p-5 border-b border-slate-600 bg-slate-700">
-          <h2 className="text-lg font-bold text-slate-900">Equipe</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Equipe</h2>
           <p className="text-xs text-slate-400 mt-1">Controle de acessos</p>
         </div>
 

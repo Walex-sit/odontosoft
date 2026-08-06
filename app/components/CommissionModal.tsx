@@ -90,22 +90,22 @@ export default function CommissionModal({ isOpen, onClose, onSuccess }: Commissi
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-slate-800 rounded-[24px] shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50 dark:bg-slate-950 shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 text-green-600 rounded-xl">
               <Percent className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Nova Comissão</h2>
-              <p className="text-sm font-semibold text-slate-500">Defina o % repassado ao dentista</p>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Nova Comissão</h2>
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Defina o % repassado ao dentista</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded-full transition-colors"
+            className="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-200/50 rounded-full transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -115,12 +115,12 @@ export default function CommissionModal({ isOpen, onClose, onSuccess }: Commissi
         <form onSubmit={handleSubmit} className="flex flex-col flex-1">
           <div className="p-6 space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Dentista</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Dentista</label>
               <select
                 required
                 value={formData.dentista_id}
                 onChange={e => setFormData(p => ({ ...p, dentista_id: e.target.value }))}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
               >
                 <option value="">Selecione um dentista...</option>
                 {dentistas.map(d => (
@@ -130,12 +130,12 @@ export default function CommissionModal({ isOpen, onClose, onSuccess }: Commissi
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Procedimento</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Procedimento</label>
               <select
                 required
                 value={formData.procedimento_id}
                 onChange={e => setFormData(p => ({ ...p, procedimento_id: e.target.value }))}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none"
               >
                 <option value="">Selecione um procedimento...</option>
                 {procedimentos.map(p => (
@@ -145,7 +145,7 @@ export default function CommissionModal({ isOpen, onClose, onSuccess }: Commissi
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Porcentagem (%)</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Porcentagem (%)</label>
               <input
                 type="number"
                 step="0.01"
@@ -154,18 +154,18 @@ export default function CommissionModal({ isOpen, onClose, onSuccess }: Commissi
                 required
                 value={formData.porcentagem}
                 onChange={e => setFormData(p => ({ ...p, porcentagem: e.target.value }))}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 placeholder="Ex: 15.5"
               />
             </div>
           </div>
 
           {/* Footer */}
-          <div className="p-6 border-t border-slate-100 bg-slate-50 mt-auto flex justify-end gap-3">
+          <div className="p-6 border-t border-slate-100 bg-slate-50 dark:bg-slate-950 mt-auto flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:text-slate-800 hover:bg-slate-200/50 rounded-xl transition-colors"
+              className="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:text-slate-100 hover:bg-slate-200/50 rounded-xl transition-colors"
             >
               Cancelar
             </button>

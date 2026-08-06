@@ -53,15 +53,15 @@ export default function DetalhesAgendamentoModal({ isOpen, onClose, onSuccess, a
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="relative w-full max-w-lg bg-white border-none rounded-[24px] p-6 sm:p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+      <div className="relative w-full max-w-lg bg-white dark:bg-slate-800 border-none rounded-[24px] p-6 sm:p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-heading font-extrabold text-slate-800">Detalhes do Agendamento</h2>
+            <h2 className="text-xl font-heading font-extrabold text-slate-800 dark:text-slate-100">Detalhes do Agendamento</h2>
             <div className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[agendamento.status || 'agendado']}`}>
               {agendamento.status || 'Agendado'}
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+          <button onClick={onClose} className="p-2 rounded-full text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -70,53 +70,53 @@ export default function DetalhesAgendamentoModal({ isOpen, onClose, onSuccess, a
           <div className="flex items-start gap-3">
             <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><User size={18} /></div>
             <div>
-              <p className="text-sm font-bold text-slate-800">{pacienteNome}</p>
-              <p className="text-xs text-slate-500">Paciente</p>
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{pacienteNome}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Paciente</p>
             </div>
           </div>
           
           <div className="flex items-start gap-3">
             <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Stethoscope size={18} /></div>
             <div>
-              <p className="text-sm font-bold text-slate-800">{agendamento.dentistas?.nome || 'Não atribuído'}</p>
-              <p className="text-xs text-slate-500">Dentista</p>
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{agendamento.dentistas?.nome || 'Não atribuído'}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Dentista</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
             <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Activity size={18} /></div>
             <div>
-              <p className="text-sm font-bold text-slate-800">{agendamento.procedimento || 'Consulta Padrão'}</p>
-              <p className="text-xs text-slate-500">Procedimento</p>
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{agendamento.procedimento || 'Consulta Padrão'}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Procedimento</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
             <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><CalendarDays size={18} /></div>
             <div>
-              <p className="text-sm font-bold text-slate-800">
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
                 {new Date(agendamento.data_consulta).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
               </p>
-              <p className="text-xs text-slate-500">Data</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Data</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
             <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Clock size={18} /></div>
             <div>
-              <p className="text-sm font-bold text-slate-800">
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
                 {agendamento.hora_consulta} {agendamento.hora_fim ? `- ${agendamento.hora_fim}` : ''}
               </p>
-              <p className="text-xs text-slate-500">Horário</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Horário</p>
             </div>
           </div>
 
           {agendamento.observacoes && (
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-slate-50 text-slate-600 rounded-lg"><FileText size={18} /></div>
+              <div className="p-2 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-300 rounded-lg"><FileText size={18} /></div>
               <div>
-                <p className="text-sm font-medium text-slate-700">{agendamento.observacoes}</p>
-                <p className="text-xs text-slate-500">Observações</p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{agendamento.observacoes}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Observações</p>
               </div>
             </div>
           )}

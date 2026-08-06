@@ -115,7 +115,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
       <div
         className="
           relative z-10 w-full sm:max-w-lg
-          bg-white border-none
+          bg-white dark:bg-slate-800 border-none
           rounded-t-[32px] sm:rounded-[24px]
           shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)]
           flex flex-col
@@ -137,16 +137,16 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
               <FileText className="h-5 w-5" />
             </div>
             <div>
-              <h2 id="modal-title" className="text-lg font-heading font-extrabold text-slate-800">
+              <h2 id="modal-title" className="text-lg font-heading font-extrabold text-slate-800 dark:text-slate-100">
                 {evolucaoParaEditar ? 'Editar Evolução' : 'Nova Evolução'}
               </h2>
-              <p className="text-xs text-slate-500 font-medium">Registro clínico do paciente</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Registro clínico do paciente</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="h-8 w-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all active:scale-95"
+            className="h-8 w-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-95"
             aria-label="Fechar modal"
           >
             <X className="h-4 w-4" />
@@ -160,7 +160,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
           <div>
             <label
               htmlFor="evo-data"
-              className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+              className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2"
             >
               Data da Evolução
             </label>
@@ -172,8 +172,8 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
               onChange={(e) => setData(e.target.value)}
               className="
                 w-full px-4 py-3
-                bg-slate-50 border border-transparent
-                rounded-xl text-slate-800 font-medium
+                bg-slate-50 dark:bg-slate-950 border border-transparent
+                rounded-xl text-slate-800 dark:text-slate-100 font-medium
                 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
                 text-sm transition-all
                 [color-scheme:light]
@@ -185,7 +185,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
           <div>
             <label
               htmlFor="evo-descricao"
-              className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
+              className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2"
             >
               Evolução Clínica
             </label>
@@ -198,8 +198,8 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
               rows={6}
               className="
                 w-full px-4 py-3
-                bg-slate-50 border border-transparent
-                rounded-xl text-slate-800 text-sm leading-relaxed font-medium
+                bg-slate-50 dark:bg-slate-950 border border-transparent
+                rounded-xl text-slate-800 dark:text-slate-100 text-sm leading-relaxed font-medium
                 placeholder-slate-400
                 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
                 transition-all resize-none
@@ -225,7 +225,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
             disabled={salvando}
             className="
               w-full sm:w-auto px-5 py-2.5 rounded-xl
-              text-sm font-bold text-slate-600 hover:text-slate-800
+              text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:text-slate-100
               bg-slate-100 hover:bg-slate-200
               transition-all active:scale-95 disabled:opacity-50
             "

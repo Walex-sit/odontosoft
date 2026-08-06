@@ -105,21 +105,21 @@ export default function ManageRolePermissionsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-slate-800 rounded-[24px] shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50 dark:bg-slate-950 shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 text-blue-600 rounded-xl">
               <Shield className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Editar Permissões</h2>
-              <p className="text-sm font-semibold text-slate-500">{roleName}</p>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Editar Permissões</h2>
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{roleName}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded-full transition-colors"
+            className="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-200/50 rounded-full transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -130,14 +130,14 @@ export default function ManageRolePermissionsModal({
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-10">
               <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-4" />
-              <p className="text-sm text-slate-500 font-semibold">Carregando permissões...</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando permissões...</p>
             </div>
           ) : (
             permissions.map((perm) => (
-              <div key={perm.id} className="flex items-start justify-between gap-4 p-4 rounded-xl border border-slate-100 bg-white">
+              <div key={perm.id} className="flex items-start justify-between gap-4 p-4 rounded-xl border border-slate-100 bg-white dark:bg-slate-800">
                 <div>
-                  <p className="font-bold text-slate-800 text-sm">{perm.label}</p>
-                  <p className="text-xs font-semibold text-slate-500 mt-0.5">{perm.description}</p>
+                  <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">{perm.label}</p>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">{perm.description}</p>
                 </div>
                 
                 {/* Toggle Switch */}
@@ -152,7 +152,7 @@ export default function ManageRolePermissionsModal({
                 >
                   <span
                     aria-hidden="true"
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-slate-800 shadow ring-0 transition duration-200 ease-in-out ${
                       perm.enabled ? 'translate-x-5' : 'translate-x-0'
                     }`}
                   />
@@ -163,10 +163,10 @@ export default function ManageRolePermissionsModal({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 bg-slate-50 shrink-0 flex justify-end gap-3">
+        <div className="p-6 border-t border-slate-100 bg-slate-50 dark:bg-slate-950 shrink-0 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:text-slate-800 hover:bg-slate-200/50 rounded-xl transition-colors"
+            className="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:text-slate-100 hover:bg-slate-200/50 rounded-xl transition-colors"
           >
             Cancelar
           </button>

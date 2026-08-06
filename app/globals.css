@@ -1,11 +1,10 @@
 @import "tailwindcss";
-
-/* ─── Design tokens ──────────────────────────────────────── */
+@custom-variant dark (&:is(.dark *));/* ─── Design tokens ──────────────────────────────────────── */
 :root {
   /* Backgrounds */
   --bg-base:        #f8fafc;   /* slate-50 */
-  --bg-surface:     #ffffff;   /* white sidebar / topbar */
-  --bg-card:        #ffffff;   /* white cards */
+  --bg-surface:     #f1f5f9;   /* slate-100, off-white */
+  --bg-card:        #f1f5f9;   /* slate-100, off-white */
   --bg-card-inner:  #f8fafc;   /* slate-50 */
   --bg-hover:       rgba(0,0,0,0.03);
 
@@ -28,6 +27,31 @@
   --shadow-elevated:0 20px 60px -15px rgba(0,0,0,0.1);
 
   /* Tailwind compat */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+}
+
+.dark {
+  /* Backgrounds */
+  --bg-base:        #0f172a;   /* slate-900 */
+  --bg-surface:     #1e293b;   /* slate-800 */
+  --bg-card:        #1e293b;   /* slate-800 */
+  --bg-card-inner:  #0f172a;   /* slate-900 */
+  --bg-hover:       rgba(255,255,255,0.05);
+
+  /* Borders */
+  --border-soft:    rgba(255, 255, 255, 0.1);
+  --border-medium:  rgba(255, 255, 255, 0.15);
+
+  /* Text */
+  --text-primary:   #e2e8f0;   /* slate-200 */
+  --text-secondary: #cbd5e1;   /* slate-300 */
+  --text-muted:     #94a3b8;   /* slate-400 */
+
+  /* Shadows - softer in dark mode */
+  --shadow-card:    0 10px 40px -10px rgba(0,0,0,0.5);
+  --shadow-elevated:0 20px 60px -15px rgba(0,0,0,0.6);
+
   --background: var(--bg-base);
   --foreground: var(--text-primary);
 }

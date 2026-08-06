@@ -355,7 +355,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                     <p>Esta clínica adota medidas técnicas e administrativas para proteger seus dados contra acessos não autorizados, conforme exigido pela LGPD.</p>
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 pt-2">Ao marcar o checkbox de consentimento, o paciente ou seu responsável legal confirma que leu, entendeu e concorda com os termos acima.</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 pt-2">Ao marcar o checkbox de consentimento, o paciente ou seu responsável legal confirma que leu, entendeu e concorda com os termos acima.</p>
               </div>
               <div className="p-4 border-t border-slate-600 shrink-0">
                 <button

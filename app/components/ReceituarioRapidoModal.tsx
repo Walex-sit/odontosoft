@@ -29,7 +29,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-in fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-lg overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 w-full max-w-lg overflow-hidden">
         
         {/* Header */}
         <div className="bg-blue-600 text-white p-5 flex items-center justify-between">
@@ -53,7 +53,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
         {/* Body Form */}
         <form onSubmit={handleGerar} className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
               Nome do Paciente *
             </label>
             <input
@@ -62,12 +62,12 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
               placeholder="Ex: Ana Maria Silva"
               value={paciente}
               onChange={(e) => setPaciente(e.target.value)}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
               Medicamento & Dosagem *
             </label>
             <input
@@ -76,12 +76,12 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
               placeholder="Ex: Amoxicilina 500mg (21 cápsulas)"
               value={medicamento}
               onChange={(e) => setMedicamento(e.target.value)}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
               Posologia / Modo de Uso
             </label>
             <textarea
@@ -89,12 +89,12 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
               placeholder="Ex: Tomar 1 cápsula de 8 em 8 horas durante 7 dias."
               value={posologia}
               onChange={(e) => setPosologia(e.target.value)}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-1">
               Observações Adicionais
             </label>
             <input
@@ -102,7 +102,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
               placeholder="Ex: Tomar preferencialmente após as refeições."
               value={observacoes}
               onChange={(e) => setObservacoes(e.target.value)}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
 
@@ -111,7 +111,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+              className="px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
             >
               Cancelar
             </button>

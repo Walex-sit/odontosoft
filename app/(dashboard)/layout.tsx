@@ -11,7 +11,7 @@ export default function DashboardLayout({
 }) {
   return (
     <RequireAuth>
-      <div className="flex flex-col h-screen w-full bg-slate-50 overflow-hidden font-sans text-slate-800 relative">
+      <div className="flex flex-col min-h-screen w-full bg-slate-100 dark:bg-slate-900 overflow-hidden font-sans text-slate-800 dark:text-slate-200 relative transition-colors duration-200">
         <Topbar />
         
         <main className="flex flex-1 flex-col overflow-hidden relative z-10 w-full h-full">

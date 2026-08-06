@@ -4,16 +4,19 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { useRouter } from 'next/navigation'
 import { logAction } from '../lib/logger'
-import { Mail, Lock, Activity } from 'lucide-react'
+import { Eye, EyeOff, Lock, ShieldCheck } from 'lucide-react'
 
 export default function LoginView() {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
+  const [mostrarSenha, setMostrarSenha] = useState(false)
   const [carregando, setCarregando] = useState(false)
   const [enviandoReset, setEnviandoReset] = useState(false)
   const router = useRouter()
 
-  async function login() {
+  async function login(e?: React.FormEvent) {
+    if (e) e.preventDefault()
+
     if (!email || !senha) {
       alert('Por favor, preencha todos os campos.')
       return
@@ -40,7 +43,6 @@ export default function LoginView() {
     }
   }
 
-
   async function esqueceuSenha() {
     if (!email) {
       alert('Digite seu e-mail acima para receber o link de redefinição.')
@@ -64,133 +66,108 @@ export default function LoginView() {
   }
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-[#0F151C] font-sans antialiased text-slate-100">
+    <div className="min-h-screen w-full bg-slate-200 flex items-center justify-center p-4 sm:p-6 font-sans antialiased">
       
-      {/* Coluna Esquerda: Seção Hero */}
-      <div className="lg:col-span-7 flex flex-col justify-center items-center px-6 py-10 lg:py-16 lg:px-12 border-b lg:border-b-0 lg:border-r border-slate-800/60 bg-[#18212C] relative overflow-hidden">
-        {/* Background sutil */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-emerald-500/10 blur-[120px]" />
-          <div className="absolute bottom-[10%] -right-[10%] w-[50%] h-[50%] rounded-full bg-emerald-500/5 blur-[150px]" />
-        </div>
-
-        <div className="relative z-10 max-w-2xl flex flex-col items-center text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6 shadow-sm">
-            <Activity className="h-4 w-4" />
-            O novo padrão em tecnologia clínica
-          </div>
-
-          {/* Título */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-slate-100">
-            A nova geração da <br />
-            <span className="text-emerald-400">gestão odontológica</span>
-          </h1>
-
-          {/* Subtítulo */}
-          <p className="text-slate-400 mt-4 text-sm md:text-base leading-relaxed max-w-xl">
-            Um software médico premium projetado para clínicas que exigem velocidade, elegância e confiabilidade total em seus processos diários.
-          </p>
-        </div>
-      </div>
-
-      {/* Coluna Direita: Card de Login */}
-      <div className="lg:col-span-5 flex flex-col justify-center items-center px-6 py-10 lg:py-16 lg:px-12 bg-[#0F151C]">
+      {/* Card Principal */}
+      <div className="w-full max-w-md bg-slate-50 dark:bg-slate-950 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 sm:p-10 flex flex-col items-center">
         
-        {/* Header Superior da Coluna Direita */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="flex items-center gap-2.5 mb-6">
-            <div className="h-9 w-9 bg-emerald-400 rounded-lg flex items-center justify-center border border-emerald-400">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
-            <span className="text-xl font-bold text-slate-200 tracking-tight">
-              Odonto<span className="text-emerald-400">Soft</span>
-            </span>
-          </div>
-
-          <h2 className="text-2xl font-bold text-slate-105 tracking-tight text-center">
-            Acesse sua clínica
-          </h2>
-          <p className="text-sm text-slate-400 mt-1.5 text-center">
-            Entre com suas credenciais para acessar o sistema
-          </p>
+        {/* Logo Icon */}
+        <div className="h-12 w-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-md shadow-emerald-500/20 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
         </div>
 
-        {/* Card Branco / Dark */}
-        <div className="w-full max-w-[380px] bg-[#18212C] border border-slate-800/60 rounded-3xl p-7 flex flex-col items-center shadow-xl">
+        {/* Título & Subtítulo */}
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight text-center">
+          Acesso à <span className="text-emerald-500">OdontoSoft</span>
+        </h1>
+        <p className="text-sm font-medium text-slate-600 dark:text-slate-300 mt-2 text-center">
+          Entre com suas credenciais para continuar
+        </p>
+
+        {/* Formulário */}
+        <form onSubmit={login} className="w-full mt-8 space-y-5">
           
-          {/* Logo Card */}
-          <div className="h-14 w-14 bg-emerald-400 rounded-2xl flex items-center justify-center text-slate-900 text-lg font-bold shadow-sm mb-3">
-            OS
-          </div>
-          
-          <div className="text-lg font-bold text-slate-200 mb-6">
-            Odonto<span className="text-emerald-400">Soft</span>
+          {/* Campo EMAIL */}
+          <div>
+            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+              EMAIL
+            </label>
+            <input
+              type="email"
+              required
+              disabled={carregando}
+              className="w-full px-4 py-3 bg-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 text-sm font-medium placeholder-slate-400 focus:outline-none focus:bg-white dark:bg-slate-800 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all"
+              placeholder="seuemail@clinica.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
-          {/* Form Fields */}
-          <div className="w-full space-y-4">
-            {/* E-mail Input */}
+          {/* Campo SENHA */}
+          <div>
+            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+              SENHA
+            </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-slate-500" />
-              </div>
               <input
-                type="email"
+                type={mostrarSenha ? 'text' : 'password'}
+                required
                 disabled={carregando}
-                className="w-full border border-slate-800/60 rounded-xl pl-11 pr-4 py-3 bg-[#0F151C] text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 transition-all text-sm"
-                placeholder="testealex@gmail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            {/* Senha Input */}
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-slate-500" />
-              </div>
-              <input
-                type="password"
-                disabled={carregando}
-                className="w-full border border-slate-800/60 rounded-xl pl-11 pr-4 py-3 bg-[#0F151C] text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 transition-all text-sm"
+                className="w-full pl-4 pr-11 py-3 bg-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 text-sm font-medium placeholder-slate-400 focus:outline-none focus:bg-white dark:bg-slate-800 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all"
                 placeholder="••••••••"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
               />
+              <button
+                type="button"
+                onClick={() => setMostrarSenha(!mostrarSenha)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-300 transition-colors p-1"
+                title={mostrarSenha ? 'Ocultar senha' : 'Visualizar senha'}
+              >
+                {mostrarSenha ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
             </div>
 
-            {/* Botão Entrar */}
-            <button
-              onClick={login}
-              disabled={carregando}
-              className="w-full bg-emerald-400 hover:bg-emerald-500 disabled:bg-emerald-800 text-slate-900 py-3 rounded-xl font-semibold transition-all text-sm active:scale-[0.98]"
-            >
-              {carregando ? 'Entrando...' : 'Entrar'}
-            </button>
-
-            {/* Esqueci minha senha */}
-            <button
-              onClick={esqueceuSenha}
-              disabled={enviandoReset || carregando}
-              className="w-full text-slate-400 hover:text-emerald-400 disabled:opacity-50 transition-colors text-sm py-1 font-medium"
-            >
-              {enviandoReset ? 'Enviando...' : 'Esqueci minha senha'}
-            </button>
+            {/* Link Esqueci Minha Senha */}
+            <div className="flex justify-end mt-2">
+              <button
+                type="button"
+                onClick={esqueceuSenha}
+                disabled={enviandoReset || carregando}
+                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 disabled:opacity-50 transition-colors"
+              >
+                {enviandoReset ? 'Enviando link...' : 'Esqueci minha senha'}
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Footer do Card */}
-        <div className="flex items-center gap-2 mt-8 text-slate-450 max-w-[280px] text-center">
-          <Lock className="h-4 w-4 text-slate-500 shrink-0" />
-          <span className="text-xs font-medium leading-normal">
+          {/* Botão Entrar */}
+          <button
+            type="submit"
+            disabled={carregando}
+            className="w-full bg-emerald-500 hover:bg-emerald-600 active:scale-[0.99] disabled:bg-emerald-300 text-white py-3.5 rounded-xl font-bold text-sm shadow-md shadow-emerald-500/20 transition-all border-0 cursor-pointer mt-2"
+          >
+            {carregando ? 'Entrando...' : 'Entrar'}
+          </button>
+
+        </form>
+
+        {/* Rodapé do Card */}
+        <div className="w-full flex items-center justify-center gap-2 mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400">
+          <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
+          <span className="text-xs font-medium text-center">
             Seus dados estão protegidos com segurança de ponta a ponta.
           </span>
         </div>
 
       </div>
+
     </div>
   )
 }

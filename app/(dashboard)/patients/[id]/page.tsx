@@ -49,7 +49,7 @@ function InfoDense({ label, value }: { label: string; value: string | null | und
   return (
     <div className="flex flex-col mb-4">
       <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">{label}</span>
-      <span className="text-sm font-semibold text-slate-700">{value || 'Não informado'}</span>
+      <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{value || 'Não informado'}</span>
     </div>
   )
 }
@@ -132,7 +132,7 @@ export default function DetalhePaciente() {
 
   if (loadingPaciente) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-slate-50 h-full">
+      <div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-950 h-full">
         <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
       </div>
     )
@@ -140,8 +140,8 @@ export default function DetalhePaciente() {
 
   if (!paciente) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 h-full">
-        <h2 className="text-xl font-bold text-slate-800">Paciente não encontrado</h2>
+      <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 h-full">
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Paciente não encontrado</h2>
         <button onClick={() => router.push('/patients')} className="mt-4 text-blue-600 font-bold hover:underline">
           Voltar para Lista
         </button>
@@ -165,16 +165,16 @@ export default function DetalhePaciente() {
   )
 
   return (
-    <div className="flex flex-col md:flex-row w-full h-full bg-slate-50 text-slate-800 overflow-hidden absolute inset-0">
+    <div className="flex flex-col md:flex-row w-full h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 overflow-hidden absolute inset-0">
       
       {/* Coluna Esquerda: Contexto do Paciente */}
-      <aside className="w-full md:w-80 border-r border-slate-200 bg-white flex flex-col h-full shrink-0 overflow-y-auto shadow-sm z-10">
+      <aside className="w-full md:w-80 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex flex-col h-full shrink-0 overflow-y-auto shadow-sm z-10">
         
         <div className="p-6 border-b border-slate-100 flex flex-col items-center">
           <div className="w-full flex justify-start mb-6">
             <button 
               onClick={() => router.push('/patients')}
-              className="flex items-center gap-1.5 text-slate-400 hover:text-blue-600 text-sm font-semibold transition-colors bg-slate-50 hover:bg-blue-50 px-3 py-1.5 rounded-lg"
+              className="flex items-center gap-1.5 text-slate-400 hover:text-blue-600 text-sm font-semibold transition-colors bg-slate-50 dark:bg-slate-950 hover:bg-blue-50 px-3 py-1.5 rounded-lg"
             >
               <ChevronLeft className="h-4 w-4" /> Voltar
             </button>
@@ -197,13 +197,13 @@ export default function DetalhePaciente() {
             </div>
           </div>
           
-          <h2 className="text-xl font-extrabold text-slate-800 leading-tight text-center mt-2">{paciente.nome}</h2>
+          <h2 className="text-xl font-extrabold text-slate-800 dark:text-slate-100 leading-tight text-center mt-2">{paciente.nome}</h2>
           <span className="text-xs font-semibold text-slate-400 mt-1 uppercase tracking-widest">Cod: {paciente.id.substring(0, 6)}</span>
 
           <div className="mt-6 flex gap-2 w-full">
             <button 
               onClick={() => router.push(`/pacientes/${paciente.id}/edit`)}
-              className="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold text-sm py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200"
+              className="flex-1 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-sm py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700"
             >
               <Pencil className="h-4 w-4" /> Editar
             </button>
@@ -223,18 +223,18 @@ export default function DetalhePaciente() {
       </aside>
 
       {/* Coluna Direita: Área de Conteúdo */}
-      <main className="flex-1 flex flex-col h-full bg-slate-50 overflow-hidden relative">
+      <main className="flex-1 flex flex-col h-full bg-slate-50 dark:bg-slate-950 overflow-hidden relative">
         
         <header className="px-8 pt-8 pb-0 shrink-0">
-          <div className="flex gap-1 overflow-x-auto no-scrollbar border-b border-slate-200">
+          <div className="flex gap-1 overflow-x-auto no-scrollbar border-b border-slate-200 dark:border-slate-700">
             {navItems.map(item => (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 className={`px-5 py-3 text-sm font-bold whitespace-nowrap transition-all border-b-2 ${
                   activeTab === item.id 
-                    ? 'border-blue-600 text-blue-600 bg-white rounded-t-xl' 
-                    : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/50 rounded-t-xl'
+                    ? 'border-blue-600 text-blue-600 bg-white dark:bg-slate-800 rounded-t-xl' 
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-t-xl'
                 }`}
               >
                 {item.label}
@@ -250,38 +250,38 @@ export default function DetalhePaciente() {
             <div className="max-w-5xl space-y-6">
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-[24px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col gap-2 hover:border-blue-200 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-2 text-slate-500 mb-2">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-[24px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col gap-2 hover:border-blue-200 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-2">
                     <CheckCircle2 className="h-5 w-5 text-green-500" />
                     <h3 className="font-bold text-sm">Status do Tratamento</h3>
                   </div>
-                  <p className="text-2xl font-extrabold text-slate-800">Em andamento</p>
+                  <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">Em andamento</p>
                   <p className="text-sm font-semibold text-slate-400">Última evolução há 15 dias</p>
                 </div>
                 
-                <div className="bg-white p-6 rounded-[24px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col gap-2 hover:border-blue-200 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-2 text-slate-500 mb-2">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-[24px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col gap-2 hover:border-blue-200 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-2">
                     <AlertCircle className="h-5 w-5 text-orange-500" />
                     <h3 className="font-bold text-sm">Próximo Retorno</h3>
                   </div>
-                  <p className="text-2xl font-extrabold text-slate-800">12 Out, 2024</p>
+                  <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">12 Out, 2024</p>
                   <p className="text-sm font-semibold text-slate-400">Limpeza semestral</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-[24px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col gap-2 hover:border-blue-200 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-2 text-slate-500 mb-2">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-[24px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100 flex flex-col gap-2 hover:border-blue-200 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-2">
                     <FileText className="h-5 w-5 text-blue-500" />
                     <h3 className="font-bold text-sm">Financeiro</h3>
                   </div>
-                  <p className="text-2xl font-extrabold text-slate-800">Em dia</p>
+                  <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">Em dia</p>
                   <p className="text-sm font-semibold text-slate-400">Nenhum débito pendente</p>
                 </div>
               </div>
 
               {/* Tabela Resumo Recente */}
-              <div className="bg-white p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
-                <h3 className="text-lg font-bold text-slate-800 mb-4">Últimas Atividades</h3>
-                <div className="text-sm font-medium text-slate-500 text-center py-8">
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">Últimas Atividades</h3>
+                <div className="text-sm font-medium text-slate-500 dark:text-slate-400 text-center py-8">
                   O painel de visão geral reúne os resumos das outras abas. Navegue nas guias acima para ações detalhadas.
                 </div>
               </div>
@@ -292,22 +292,22 @@ export default function DetalhePaciente() {
           {/* ABA: ANAMNESES */}
           {activeTab === 'anamneses' && (
             <div className="max-w-3xl">
-              <div className="bg-white p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-slate-800">Questionários de Saúde</h3>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Questionários de Saúde</h3>
                   <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm">
                     Nova Anamnese
                   </button>
                 </div>
                 
                 <div className="space-y-4">
-                  <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between hover:border-blue-300 transition-colors cursor-pointer group">
+                  <div className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between hover:border-blue-300 transition-colors cursor-pointer group">
                     <div className="flex items-center gap-4">
                       <div className="h-12 w-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
                         <AlertTriangle className="h-6 w-6" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Anamnese Padrão - Hipertensão Relatada</h4>
+                        <h4 className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 transition-colors">Anamnese Padrão - Hipertensão Relatada</h4>
                         <p className="text-sm font-semibold text-slate-400">Respondida em 15/01/2024</p>
                       </div>
                     </div>
@@ -321,27 +321,27 @@ export default function DetalhePaciente() {
           {/* ABA: ORÇAMENTOS */}
           {activeTab === 'orcamentos' && (
             <div className="max-w-4xl">
-              <div className="bg-white p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-slate-800">Orçamentos</h3>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Orçamentos</h3>
                   <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm">
                     Novo Orçamento
                   </button>
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-3 mb-1">
                         <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider">Aprovado</span>
-                        <h4 className="font-bold text-slate-800 text-lg">Tratamento Ortodôntico</h4>
+                        <h4 className="font-bold text-slate-800 dark:text-slate-100 text-lg">Tratamento Ortodôntico</h4>
                       </div>
-                      <p className="text-sm font-semibold text-slate-500">Criado em 10/02/2024 • Dr. Administrador</p>
+                      <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Criado em 10/02/2024 • Dr. Administrador</p>
                     </div>
                     <div className="flex items-center gap-6">
                       <div className="text-right">
                         <p className="text-xs font-bold text-slate-400 uppercase">Valor Total</p>
-                        <p className="text-lg font-extrabold text-slate-800">R$ 2.450,00</p>
+                        <p className="text-lg font-extrabold text-slate-800 dark:text-slate-100">R$ 2.450,00</p>
                       </div>
                       <button className="text-blue-600 font-bold hover:underline text-sm">Ver Detalhes</button>
                     </div>
@@ -354,11 +354,11 @@ export default function DetalhePaciente() {
           {/* ABA: TRATAMENTOS (Odontograma Interativo) */}
           {activeTab === 'tratamentos' && (
             <div className="max-w-5xl">
-              <div className="bg-white p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-800">Plano de Tratamento</h3>
-                    <p className="text-sm text-slate-500 font-medium">Odontograma Interativo (Permanentes e Decíduos)</p>
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Plano de Tratamento</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Odontograma Interativo (Permanentes e Decíduos)</p>
                   </div>
                 </div>
                 <Odontograma />
@@ -369,44 +369,44 @@ export default function DetalhePaciente() {
           {/* ABA: PAGAMENTOS */}
           {activeTab === 'pagamentos' && (
             <div className="max-w-4xl">
-              <div className="bg-white p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-slate-800">Histórico Financeiro</h3>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Histórico Financeiro</h3>
                   <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm">
                     Lançar Recebimento
                   </button>
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  <div className="p-5 bg-white border border-red-200 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden">
+                  <div className="p-5 bg-white dark:bg-slate-800 border border-red-200 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden">
                     <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-red-500"></div>
                     <div className="pl-3">
                       <div className="flex items-center gap-3 mb-1">
                         <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider">Atrasado (5 dias)</span>
-                        <h4 className="font-bold text-slate-800">Manutenção Aparelho (Parcela 2/12)</h4>
+                        <h4 className="font-bold text-slate-800 dark:text-slate-100">Manutenção Aparelho (Parcela 2/12)</h4>
                       </div>
-                      <p className="text-sm font-semibold text-slate-500">Vencimento: 10/10/2024</p>
+                      <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Vencimento: 10/10/2024</p>
                     </div>
                     <div className="flex items-center gap-4">
-                      <p className="text-lg font-extrabold text-slate-800">R$ 150,00</p>
+                      <p className="text-lg font-extrabold text-slate-800 dark:text-slate-100">R$ 150,00</p>
                       <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm">
                         Cobrar
                       </button>
                     </div>
                   </div>
 
-                  <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden">
+                  <div className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden">
                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-green-500"></div>
                     <div className="pl-3">
                       <div className="flex items-center gap-3 mb-1">
                         <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider">Pago</span>
-                        <h4 className="font-bold text-slate-800">Manutenção Aparelho (Parcela 1/12)</h4>
+                        <h4 className="font-bold text-slate-800 dark:text-slate-100">Manutenção Aparelho (Parcela 1/12)</h4>
                       </div>
-                      <p className="text-sm font-semibold text-slate-500">Pago em: 10/09/2024</p>
+                      <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Pago em: 10/09/2024</p>
                     </div>
                     <div className="flex items-center gap-4">
-                      <p className="text-lg font-extrabold text-slate-800">R$ 150,00</p>
-                      <button className="text-slate-500 hover:text-blue-600 font-bold text-sm">
+                      <p className="text-lg font-extrabold text-slate-800 dark:text-slate-100">R$ 150,00</p>
+                      <button className="text-slate-500 dark:text-slate-400 hover:text-blue-600 font-bold text-sm">
                         Recibo
                       </button>
                     </div>
@@ -420,14 +420,14 @@ export default function DetalhePaciente() {
           {activeTab === 'evolucoes' && (
             <div className="max-w-4xl">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <div className="flex items-center w-full max-w-sm bg-white rounded-xl px-4 py-2.5 border border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all shadow-sm">
+                <div className="flex items-center w-full max-w-sm bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 border border-slate-200 dark:border-slate-700 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all shadow-sm">
                   <Search className="h-5 w-5 text-slate-400 mr-2" />
                   <input 
                     type="text" 
                     placeholder="Pesquisar evolução..."
                     value={busca}
                     onChange={(e) => setBusca(e.target.value)}
-                    className="bg-transparent border-none outline-none text-sm w-full text-slate-800 placeholder-slate-400 font-medium"
+                    className="bg-transparent border-none outline-none text-sm w-full text-slate-800 dark:text-slate-100 placeholder-slate-400 font-medium"
                   />
                 </div>
                 
@@ -451,19 +451,19 @@ export default function DetalhePaciente() {
                   Erro ao carregar evoluções: {erroEvolucoes}
                 </div>
               ) : evolucoesFiltradas.length === 0 ? (
-                <div className="p-12 text-center bg-white rounded-[32px] border border-slate-200 shadow-sm flex flex-col items-center">
-                  <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                <div className="p-12 text-center bg-white dark:bg-slate-800 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center">
+                  <div className="h-16 w-16 bg-slate-50 dark:bg-slate-950 rounded-full flex items-center justify-center mb-4">
                     <FileText className="h-8 w-8 text-slate-300" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-1">Nenhum registro encontrado</h3>
-                  <p className="text-slate-500 font-medium text-sm">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Nenhum registro encontrado</h3>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">
                     O prontuário deste paciente está vazio.
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {evolucoesFiltradas.map(ev => (
-                    <div key={ev.id} className="bg-white p-5 rounded-[24px] border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] flex flex-col sm:flex-row gap-4 sm:gap-6 hover:border-blue-200 transition-colors group relative">
+                    <div key={ev.id} className="bg-white dark:bg-slate-800 p-5 rounded-[24px] border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] flex flex-col sm:flex-row gap-4 sm:gap-6 hover:border-blue-200 transition-colors group relative">
                       
                       <div className="w-full sm:w-48 shrink-0 flex flex-col gap-1 border-b sm:border-b-0 sm:border-r border-slate-100 pb-3 sm:pb-0 sm:pr-4">
                         <span className="text-sm font-extrabold text-blue-600">
@@ -473,7 +473,7 @@ export default function DetalhePaciente() {
                       </div>
                       
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-slate-700 whitespace-pre-wrap leading-relaxed">
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
                           {ev.descricao}
                         </p>
                       </div>
@@ -484,14 +484,14 @@ export default function DetalhePaciente() {
                             setEvolucaoSelecionada(ev)
                             setModalAberto(true)
                           }}
-                          className="p-2 bg-slate-50 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-lg transition-colors"
+                          className="p-2 bg-slate-50 dark:bg-slate-950 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-lg transition-colors"
                           title="Editar"
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button 
                           onClick={() => excluirEvolucao(ev.id)}
-                          className="p-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition-colors"
+                          className="p-2 bg-slate-50 dark:bg-slate-950 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition-colors"
                           title="Excluir"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -508,35 +508,35 @@ export default function DetalhePaciente() {
           {/* ABA: DOCUMENTOS */}
           {activeTab === 'documentos' && (
             <div className="max-w-4xl">
-              <div className="bg-white p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-slate-800">Documentos e Prescrições</h3>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Documentos e Prescrições</h3>
                   <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm">
                     Gerar Documento
                   </button>
                 </div>
                 
                 <div className="space-y-4">
-                  <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between hover:border-blue-300 transition-colors cursor-pointer group">
+                  <div className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between hover:border-blue-300 transition-colors cursor-pointer group">
                     <div className="flex items-center gap-4">
                       <div className="h-12 w-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
                         <FileText className="h-6 w-6" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Receituário de Antibiótico</h4>
+                        <h4 className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 transition-colors">Receituário de Antibiótico</h4>
                         <p className="text-sm font-semibold text-slate-400">Gerado em 12/03/2024</p>
                       </div>
                     </div>
                     <button className="text-blue-600 font-bold text-sm hover:underline">Imprimir</button>
                   </div>
                   
-                  <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between hover:border-blue-300 transition-colors cursor-pointer group">
+                  <div className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between hover:border-blue-300 transition-colors cursor-pointer group">
                     <div className="flex items-center gap-4">
                       <div className="h-12 w-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
                         <FileText className="h-6 w-6" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Atestado Odontológico (1 dia)</h4>
+                        <h4 className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 transition-colors">Atestado Odontológico (1 dia)</h4>
                         <p className="text-sm font-semibold text-slate-400">Gerado em 12/03/2024</p>
                       </div>
                     </div>
@@ -550,20 +550,20 @@ export default function DetalhePaciente() {
           {/* ABA: ARQUIVOS */}
           {activeTab === 'arquivos' && (
             <div className="max-w-4xl">
-              <div className="bg-white p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-slate-800">Galeria de Arquivos</h3>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Galeria de Arquivos</h3>
                   <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm">
                     Fazer Upload
                   </button>
                 </div>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div className="aspect-square bg-slate-100 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-slate-400 hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer group">
+                  <div className="aspect-square bg-slate-100 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center text-slate-400 hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer group">
                     <FileText className="h-10 w-10 mb-2 group-hover:text-blue-600" />
                     <span className="text-xs font-bold">Panorâmica.jpg</span>
                   </div>
-                  <div className="aspect-square bg-slate-100 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-slate-400 hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer group">
+                  <div className="aspect-square bg-slate-100 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center text-slate-400 hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer group">
                     <FileText className="h-10 w-10 mb-2 group-hover:text-blue-600" />
                     <span className="text-xs font-bold">Raio-X_Periapical.png</span>
                   </div>

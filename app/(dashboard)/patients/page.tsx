@@ -58,14 +58,14 @@ export default function PacientesPage() {
   )
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-slate-50 overflow-hidden relative">
+    <div className="flex-1 flex flex-col h-full bg-slate-50 dark:bg-slate-950 overflow-hidden relative">
       
       {/* Header Fixo */}
-      <header className="pt-8 px-6 sm:px-8 pb-4 shrink-0 bg-slate-50">
+      <header className="pt-8 px-6 sm:px-8 pb-4 shrink-0 bg-slate-50 dark:bg-slate-950">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Pacientes</h1>
-            <p className="text-sm font-semibold text-slate-500 mt-1">Gerencie os cadastros e prontuários</p>
+            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Pacientes</h1>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">Gerencie os cadastros e prontuários</p>
           </div>
           <button 
             onClick={() => setSlideOverOpen(true)}
@@ -77,16 +77,16 @@ export default function PacientesPage() {
       </header>
 
       {/* Barra de Pesquisa e Filtros */}
-      <div className="px-6 sm:px-8 py-4 shrink-0 border-b border-slate-200 bg-white shadow-sm z-10">
+      <div className="px-6 sm:px-8 py-4 shrink-0 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm z-10">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center w-full max-w-md bg-slate-50 rounded-xl px-4 py-2.5 border border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+          <div className="flex items-center w-full max-w-md bg-slate-50 dark:bg-slate-950 rounded-xl px-4 py-2.5 border border-slate-200 dark:border-slate-700 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
             <Search className="h-5 w-5 text-slate-400 mr-2 shrink-0" />
             <input 
               type="text" 
               placeholder="Buscar por nome ou CPF..." 
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              className="bg-transparent border-none outline-none text-sm w-full text-slate-800 placeholder-slate-400 font-medium"
+              className="bg-transparent border-none outline-none text-sm w-full text-slate-800 dark:text-slate-100 placeholder-slate-400 font-medium"
             />
           </div>
           <span className="text-sm font-bold text-slate-400 shrink-0">
@@ -103,12 +103,12 @@ export default function PacientesPage() {
               <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
             </div>
           ) : pacientesFiltrados.length === 0 ? (
-            <div className="p-12 text-center bg-white rounded-[32px] border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] flex flex-col items-center">
+            <div className="p-12 text-center bg-white dark:bg-slate-800 rounded-[32px] border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] flex flex-col items-center">
               <div className="h-16 w-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
                 <UserIcon className="h-8 w-8 text-blue-300" />
               </div>
-              <h3 className="text-lg font-bold text-slate-800 mb-1">Nenhum paciente encontrado</h3>
-              <p className="text-slate-500 font-medium text-sm">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Nenhum paciente encontrado</h3>
+              <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">
                 Tente ajustar os termos da sua busca.
               </p>
             </div>
@@ -118,7 +118,7 @@ export default function PacientesPage() {
                   <Link 
                     key={p.id} 
                     href={`/patients/${p.id}`} 
-                    className="block bg-white p-5 rounded-[24px] border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] hover:border-blue-200 transition-colors group relative overflow-hidden"
+                    className="block bg-white dark:bg-slate-800 p-5 rounded-[24px] border border-slate-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] hover:border-blue-200 transition-colors group relative overflow-hidden"
                   >
                   <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   
@@ -130,7 +130,7 @@ export default function PacientesPage() {
                         {p.nome.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <h3 className="font-bold text-slate-800 text-lg leading-tight group-hover:text-blue-600 transition-colors">
+                        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg leading-tight group-hover:text-blue-600 transition-colors">
                           {p.nome}
                         </h3>
                         {p.cpf && <p className="text-xs font-semibold text-slate-400 mt-0.5">CPF: {p.cpf}</p>}
@@ -139,11 +139,11 @@ export default function PacientesPage() {
 
                     {/* Contatos */}
                     <div className="flex flex-col gap-1.5 flex-1 pl-0 sm:pl-4 sm:border-l border-slate-100">
-                      <div className="flex items-center gap-2 text-slate-500">
+                      <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                         <Phone className="h-4 w-4 shrink-0 text-slate-400" />
                         <span className="text-sm font-medium">{formatarTelefone(p.telefone) || 'Não informado'}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-slate-500">
+                      <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                         <Mail className="h-4 w-4 shrink-0 text-slate-400" />
                         <span className="text-sm font-medium truncate">{p.email || 'Não informado'}</span>
                       </div>
@@ -153,13 +153,13 @@ export default function PacientesPage() {
                     <div className="flex items-center justify-between sm:justify-end gap-6 flex-1 pl-0 sm:pl-4 sm:border-l border-slate-100">
                       <div className="flex flex-col">
                         <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Cadastro</span>
-                        <div className="flex items-center gap-1.5 text-slate-700 mt-0.5">
+                        <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-200 mt-0.5">
                           <CalendarIcon className="h-4 w-4 text-slate-400" />
                           <span className="text-sm font-bold">{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
                         </div>
                       </div>
                       
-                      <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all shrink-0">
+                      <div className="h-10 w-10 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all shrink-0">
                         <ChevronRight className="h-5 w-5" />
                       </div>
                     </div>

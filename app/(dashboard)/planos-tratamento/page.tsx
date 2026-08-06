@@ -114,12 +114,12 @@ export default function PlanosTratamentoPage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 overflow-y-auto">
-      <header className="p-8 bg-white border-b border-slate-200 shadow-sm shrink-0">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 overflow-y-auto">
+      <header className="p-8 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Planos de Tratamento</h1>
-            <p className="text-sm font-semibold text-slate-500 mt-1">Gestão de pacotes e tratamentos de longa duração por sessões ou parcelas</p>
+            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Planos de Tratamento</h1>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">Gestão de pacotes e tratamentos de longa duração por sessões ou parcelas</p>
           </div>
           <button onClick={() => setNovoModal(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors">
             <Plus className="h-4 w-4" /> Novo Plano
@@ -136,10 +136,10 @@ export default function PlanosTratamentoPage() {
             { label: 'Recebido (Parcelas)', value: `R$ ${totalRecebido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: CheckCircle2, color: 'emerald' },
             { label: 'A Receber', value: `R$ ${totalPendente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: DollarSign, color: 'amber' },
           ].map(({ label, value, icon: Icon, color }) => (
-            <div key={label} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+            <div key={label} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
               <div className={`p-2.5 bg-${color}-50 text-${color}-600 rounded-xl w-fit mb-3`}><Icon className="h-5 w-5" /></div>
-              <p className="text-2xl font-extrabold text-slate-800">{value}</p>
-              <p className="text-xs font-semibold text-slate-500 mt-1">{label}</p>
+              <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">{value}</p>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">{label}</p>
             </div>
           ))}
         </div>
@@ -154,11 +154,11 @@ export default function PlanosTratamentoPage() {
               const parcelasPagas = plano.sessoes.filter(s => s.parcelaPaga).length
               return (
                 <div key={plano.id} onClick={() => setSelectedPlano(selectedPlano === plano.id ? null : plano.id)}
-                  className={`bg-white rounded-2xl border shadow-sm p-6 cursor-pointer transition-all ${selectedPlano === plano.id ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 hover:border-blue-300'}`}>
+                  className={`bg-white dark:bg-slate-800 rounded-2xl border shadow-sm p-6 cursor-pointer transition-all ${selectedPlano === plano.id ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300'}`}>
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="font-bold text-slate-800">{plano.paciente}</h3>
-                      <p className="text-sm text-slate-500">{plano.tipo} · {plano.dentista}</p>
+                      <h3 className="font-bold text-slate-800 dark:text-slate-100">{plano.paciente}</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">{plano.tipo} · {plano.dentista}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${st.bg} ${st.text}`}>{st.label}</span>
@@ -169,19 +169,19 @@ export default function PlanosTratamentoPage() {
                   <div className="flex items-center gap-6 mb-3 flex-wrap">
                     <div className="text-right">
                       <p className="text-xs text-slate-400">Valor Total</p>
-                      <p className="font-extrabold text-slate-800">R$ {plano.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                      <p className="font-extrabold text-slate-800 dark:text-slate-100">R$ {plano.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-400">Sessões</p>
-                      <p className="font-extrabold text-slate-800">{plano.sessoes.filter(s => s.status === 'realizada').length}/{plano.sessaoTotal}</p>
+                      <p className="font-extrabold text-slate-800 dark:text-slate-100">{plano.sessoes.filter(s => s.status === 'realizada').length}/{plano.sessaoTotal}</p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-400">Parcelas</p>
-                      <p className="font-extrabold text-slate-800">{parcelasPagas}/{plano.sessoes.length} pagas</p>
+                      <p className="font-extrabold text-slate-800 dark:text-slate-100">{parcelasPagas}/{plano.sessoes.length} pagas</p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-400">Período</p>
-                      <p className="text-xs font-semibold text-slate-600">{plano.dataInicio} → {plano.dataFim}</p>
+                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">{plano.dataInicio} → {plano.dataFim}</p>
                     </div>
                   </div>
 
@@ -197,10 +197,10 @@ export default function PlanosTratamentoPage() {
 
           {/* Detalhe do Plano */}
           {planoAtivo && (
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden h-fit">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden h-fit">
               <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-                <h3 className="font-bold text-slate-800">Sessões — {planoAtivo.paciente}</h3>
-                <button onClick={() => setSelectedPlano(null)} className="p-1.5 hover:bg-slate-100 rounded-lg"><X className="h-4 w-4 text-slate-400" /></button>
+                <h3 className="font-bold text-slate-800 dark:text-slate-100">Sessões — {planoAtivo.paciente}</h3>
+                <button onClick={() => setSelectedPlano(null)} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X className="h-4 w-4 text-slate-400" /></button>
               </div>
               <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto">
                 {planoAtivo.sessoes.map(sessao => {
@@ -210,16 +210,16 @@ export default function PlanosTratamentoPage() {
                       <div className="flex items-center gap-3">
                         <div className={`p-1.5 rounded-lg ${st.bg} ${st.text}`}>{st.icon}</div>
                         <div>
-                          <p className="text-sm font-bold text-slate-800">Sessão {sessao.numero}</p>
-                          <p className="text-xs text-slate-500">{sessao.descricao}{sessao.data ? ` · ${sessao.data}` : ''}</p>
+                          <p className="text-sm font-bold text-slate-800 dark:text-slate-100">Sessão {sessao.numero}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{sessao.descricao}{sessao.data ? ` · ${sessao.data}` : ''}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 shrink-0">
                         <div className="text-right">
-                          <p className="text-xs font-bold text-slate-700">R$ {sessao.valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                          <p className="text-xs font-bold text-slate-700 dark:text-slate-200">R$ {sessao.valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                           <p className={`text-[10px] font-bold ${sessao.parcelaPaga ? 'text-emerald-600' : 'text-amber-600'}`}>{sessao.parcelaPaga ? 'Pago' : 'Pendente'}</p>
                         </div>
-                        <button onClick={() => marcarPago(planoAtivo.id, sessao.id)} className={`h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all ${sessao.parcelaPaga ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 hover:border-emerald-400'}`}>
+                        <button onClick={() => marcarPago(planoAtivo.id, sessao.id)} className={`h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all ${sessao.parcelaPaga ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 dark:border-slate-700 hover:border-emerald-400'}`}>
                           {sessao.parcelaPaga && <CheckCircle2 className="h-4 w-4 text-white" />}
                         </button>
                       </div>
@@ -235,10 +235,10 @@ export default function PlanosTratamentoPage() {
       {/* Modal Novo Plano */}
       {novoModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md p-8">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-slate-800">Novo Plano de Tratamento</h3>
-              <button onClick={() => setNovoModal(false)} className="p-2 hover:bg-slate-100 rounded-full"><X className="h-5 w-5 text-slate-400" /></button>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Novo Plano de Tratamento</h3>
+              <button onClick={() => setNovoModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full"><X className="h-5 w-5 text-slate-400" /></button>
             </div>
             <div className="space-y-4">
               {[
@@ -251,14 +251,14 @@ export default function PlanosTratamentoPage() {
                 { label: 'Data Prevista de Conclusão', key: 'dataFim', type: 'date' },
               ].map(f => (
                 <div key={f.key}>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">{f.label}</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">{f.label}</label>
                   <input type={f.type} placeholder={(f as any).placeholder} value={(novoPlano as any)[f.key]} onChange={e => setNovoPlano(p => ({ ...p, [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value }))}
-                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
+                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
                 </div>
               ))}
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setNovoModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancelar</button>
+              <button onClick={() => setNovoModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancelar</button>
               <button onClick={criarPlano} className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors">Criar Plano</button>
             </div>
           </div>

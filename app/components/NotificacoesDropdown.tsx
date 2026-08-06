@@ -98,9 +98,9 @@ export default function NotificacoesDropdown({
       <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-800 scrollbar-thin">
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-            <Bell className="h-8 w-8 mb-2 text-slate-600" />
+            <Bell className="h-8 w-8 mb-2 text-slate-600 dark:text-slate-300" />
             <p className="text-xs font-semibold text-slate-400">Nenhuma notificação por aqui.</p>
-            <p className="text-[10px] text-slate-500 mt-1">Tudo limpo e atualizado!</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Tudo limpo e atualizado!</p>
           </div>
         ) : (
           notifications.map(item => {
@@ -153,7 +153,7 @@ export default function NotificacoesDropdown({
                     >
                       {item.title}
                     </p>
-                    <span className="text-[9px] text-slate-500 font-medium shrink-0">
+                    <span className="text-[9px] text-slate-500 dark:text-slate-400 font-medium shrink-0">
                       {item.time}
                     </span>
                   </div>
@@ -172,7 +172,7 @@ export default function NotificacoesDropdown({
         className="p-3 text-center border-t"
         style={{ borderColor: 'rgba(148,163,184,0.08)', background: '#101726' }}
       >
-        <p className="text-[10px] font-semibold text-slate-500">
+        <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
           Última atualização: hoje às 14:00
         </p>
       </div>

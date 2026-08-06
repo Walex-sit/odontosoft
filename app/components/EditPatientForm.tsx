@@ -142,26 +142,26 @@ export default function EditPatientForm({ patient }: Props) {
   // Reusable input component
   const Input = ({ label, name, type = 'text', placeholder }: { label: string; name: string; type?: string; placeholder?: string }) => (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{label}</label>
       <input
         type={type}
         name={name}
         value={(form as any)[name] ?? ''}
         onChange={handleChange}
         placeholder={placeholder}
-        className="mt-1 block w-full rounded-md border-slate-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white"
+        className="mt-1 block w-full rounded-md border-slate-200 dark:border-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white dark:bg-slate-800"
       />
     </div>
   );
 
   const Select = ({ label, name, options }: { label: string; name: string; options: string[] }) => (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{label}</label>
       <select
         name={name}
         value={(form as any)[name] ?? ''}
         onChange={handleChange}
-        className="mt-1 block w-full rounded-md border-slate-200 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+        className="mt-1 block w-full rounded-md border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
       >
         <option value="">Selecione...</option>
         {options.map(opt => (
@@ -174,10 +174,10 @@ export default function EditPatientForm({ patient }: Props) {
   );
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md space-y-6">
+    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white dark:bg-slate-800 p-8 rounded-xl shadow-md space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between border-b pb-4">
-        <h2 className="text-2xl font-bold text-slate-800">Editar paciente</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Editar paciente</h2>
         <a
           href={`/pacientes/${patient.id}`}
           target="_blank"
@@ -190,7 +190,7 @@ export default function EditPatientForm({ patient }: Props) {
 
       {/* Dados Pessoais */}
       <section className="border p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-slate-700 mb-3">Dados Pessoais</h3>
+        <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-3">Dados Pessoais</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Input({ label: 'Nome completo', name: 'nome' })}
           <div className="flex space-x-2">
@@ -210,7 +210,7 @@ export default function EditPatientForm({ patient }: Props) {
                 name="estrangeiro"
                 checked={form.estrangeiro}
                 onChange={handleChange}
-                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500"
               />
               <span>Paciente estrangeiro</span>
             </label>
@@ -220,8 +220,8 @@ export default function EditPatientForm({ patient }: Props) {
           {Input({ label: 'RG', name: 'rg' })}
           {/* Foto upload placeholder */}
           <div className="col-span-2">
-            <label className="block text-sm font-medium text-slate-700 mb-1">Adicionar foto</label>
-            <input type="file" name="foto" className="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" disabled />
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Adicionar foto</label>
+            <input type="file" name="foto" className="mt-1 block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" disabled />
           </div>
           {Input({ label: 'Observações', name: 'observacoes', placeholder: 'Observações gerais' })}
         </div>
@@ -229,20 +229,20 @@ export default function EditPatientForm({ patient }: Props) {
 
       {/* Categorias */}
       <section className="border p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-slate-700 mb-3">Categorias</h3>
+        <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-3">Categorias</h3>
         {Select({ label: 'Categoria', name: 'categoria', options: ['Adulto', 'Criança', 'Sênior'] })}
       </section>
 
       {/* Contato de Emergência */}
       <section className="border p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-slate-700 mb-3">Contato de Emergência</h3>
+        <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-3">Contato de Emergência</h3>
         {Input({ label: 'Nome', name: 'contato_emergencia_nome' })}
         {Input({ label: 'Telefone', name: 'contato_emergencia_telefone' })}
       </section>
 
       {/* Endereço */}
       <section className="border p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-slate-700 mb-3">Endereço</h3>
+        <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-3">Endereço</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Input({ label: 'CEP', name: 'cep' })}
           {Input({ label: 'Endereço', name: 'endereco' })}
@@ -256,7 +256,7 @@ export default function EditPatientForm({ patient }: Props) {
 
       {/* Responsável */}
       <section className="border p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-slate-700 mb-3">Responsável (se menor/dependente)</h3>
+        <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-3">Responsável (se menor/dependente)</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Input({ label: 'Nome do responsável', name: 'responsavel_nome' })}
           {Input({ label: 'CPF do responsável', name: 'responsavel_cpf' })}
@@ -266,7 +266,7 @@ export default function EditPatientForm({ patient }: Props) {
 
       {/* Dados do Convênio */}
       <section className="border p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-slate-700 mb-3">Dados do Convênio</h3>
+        <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-3">Dados do Convênio</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Input({ label: 'Convênio', name: 'convenio' })}
           {Input({ label: 'Titular do convênio', name: 'titular_convenio' })}

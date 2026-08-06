@@ -25,11 +25,11 @@ const ACTION_STYLES: Record<string, { bg: string; text: string; label: string }>
   exclusao:   { bg: 'bg-red-50 border border-red-200',         text: 'text-red-700',     label: 'EXCLUSÃO' },
   financeiro: { bg: 'bg-amber-50 border border-amber-200',     text: 'text-amber-700',   label: 'FINANCEIRO' },
   login:      { bg: 'bg-indigo-50 border border-indigo-200',   text: 'text-indigo-700',  label: 'LOGIN' },
-  logout:     { bg: 'bg-slate-100 border border-slate-200',    text: 'text-slate-600',   label: 'LOGOUT' },
+  logout:     { bg: 'bg-slate-100 border border-slate-200 dark:border-slate-700',    text: 'text-slate-600 dark:text-slate-300',   label: 'LOGOUT' },
 }
 
 function ActionBadge({ action }: { action: string }) {
-  const style = ACTION_STYLES[action] ?? { bg: 'bg-slate-100 border border-slate-200', text: 'text-slate-600', label: action.toUpperCase() }
+  const style = ACTION_STYLES[action] ?? { bg: 'bg-slate-100 border border-slate-200 dark:border-slate-700', text: 'text-slate-600 dark:text-slate-300', label: action.toUpperCase() }
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold ${style.bg} ${style.text}`}>
       {style.label}
@@ -53,12 +53,12 @@ function MetricCard({
   color: string
 }) {
   return (
-    <div className={`p-5 rounded-2xl border bg-white shadow-sm flex items-start gap-4 ${color}`}>
+    <div className={`p-5 rounded-2xl border bg-white dark:bg-slate-800 shadow-sm flex items-start gap-4 ${color}`}>
       <div className="p-3 rounded-xl bg-current/10 shrink-0">{icon}</div>
       <div>
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{label}</p>
-        <p className="text-2xl font-extrabold text-slate-800 leading-none">{value}</p>
-        {sub && <p className="text-xs text-slate-500 mt-1">{sub}</p>}
+        <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">{label}</p>
+        <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 leading-none">{value}</p>
+        {sub && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{sub}</p>}
       </div>
     </div>
   )
@@ -221,13 +221,13 @@ export default function ConfiguracoesPage() {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col w-full h-full bg-slate-50 text-slate-800 overflow-y-auto">
+    <div className="flex flex-col w-full h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 overflow-y-auto">
       {/* Header */}
-      <header className="p-8 bg-white border-b border-slate-200 shadow-sm shrink-0">
+      <header className="p-8 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Configurações do Sistema</h1>
-            <p className="text-sm font-semibold text-slate-500 mt-1">Gerencie os dados da sua clínica, permissões de usuários e integrações</p>
+            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Configurações do Sistema</h1>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">Gerencie os dados da sua clínica, permissões de usuários e integrações</p>
           </div>
           <button
             onClick={handleSalvar}
@@ -255,8 +255,8 @@ export default function ConfiguracoesPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all border-b-2 whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'border-blue-600 text-blue-600 bg-blue-50/50'
-                  : 'border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-slate-800'
+                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950'
               }`}
             >
               {tab.icon} {tab.label}
@@ -272,78 +272,78 @@ export default function ConfiguracoesPage() {
       <main className="flex-1 p-8 max-w-6xl mx-auto w-full">
         {/* ABA 1: PERFIL DA CLÍNICA */}
         {activeTab === 'perfil' && (
-          <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3">Informações Cadastrais</h3>
+          <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4 border-b border-slate-100 pb-3">Informações Cadastrais</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Razão Social / Nome da Clínica</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Razão Social / Nome da Clínica</label>
                 <input
                   type="text"
                   value={clinica.nome}
                   onChange={e => setClinica(p => ({ ...p, nome: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">CNPJ</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">CNPJ</label>
                 <input
                   type="text"
                   value={clinica.cnpj}
                   onChange={e => setClinica(p => ({ ...p, cnpj: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Telefone de Contato</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Telefone de Contato</label>
                 <input
                   type="text"
                   value={clinica.telefone}
                   onChange={e => setClinica(p => ({ ...p, telefone: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">E-mail Comercial</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">E-mail Comercial</label>
                 <input
                   type="email"
                   value={clinica.email}
                   onChange={e => setClinica(p => ({ ...p, email: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">CRO do Responsável Técnico</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">CRO do Responsável Técnico</label>
                 <input
                   type="text"
                   value={clinica.croResponsavel}
                   onChange={e => setClinica(p => ({ ...p, croResponsavel: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Website</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Website</label>
                 <input
                   type="text"
                   value={clinica.site}
                   onChange={e => setClinica(p => ({ ...p, site: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
               </div>
             </div>
 
             <div className="pt-4">
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Endereço Completo</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Endereço Completo</label>
               <input
                 type="text"
                 value={clinica.endereco}
                 onChange={e => setClinica(p => ({ ...p, endereco: e.target.value }))}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
               />
             </div>
           </div>
@@ -351,64 +351,64 @@ export default function ConfiguracoesPage() {
 
         {/* ABA 2: USUÁRIOS E PERMISSÕES */}
         {activeTab === 'usuarios' && (
-          <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm space-y-6">
+          <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
-                <h3 className="text-lg font-bold text-slate-800">Perfis de Acesso (RBAC)</h3>
-                <p className="text-sm text-slate-500 mt-0.5">Gerencie os papeis configurados no seu OdontoSoft</p>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Perfis de Acesso (RBAC)</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Gerencie os papeis configurados no seu OdontoSoft</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div 
                 onClick={() => { setSelectedRole('admin'); setSelectedRoleName('Administrador'); setIsModalOpen(true); }}
-                className="p-5 border border-slate-200 rounded-2xl bg-slate-50 flex items-start gap-4 cursor-pointer hover:bg-slate-100 hover:shadow-md transition-all"
+                className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-950 flex items-start gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 hover:shadow-md transition-all"
               >
                 <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
                   <ShieldCheck className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800">Administrador</h4>
-                  <p className="text-xs font-semibold text-slate-500 mt-1">Acesso total a todos os módulos, prontuários, financeiro e configurações.</p>
+                  <h4 className="font-bold text-slate-800 dark:text-slate-100">Administrador</h4>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Acesso total a todos os módulos, prontuários, financeiro e configurações.</p>
                 </div>
               </div>
 
               <div 
                 onClick={() => { setSelectedRole('dentista'); setSelectedRoleName('Dentista / Odontólogo'); setIsModalOpen(true); }}
-                className="p-5 border border-slate-200 rounded-2xl bg-slate-50 flex items-start gap-4 cursor-pointer hover:bg-slate-100 hover:shadow-md transition-all"
+                className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-950 flex items-start gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 hover:shadow-md transition-all"
               >
                 <div className="p-3 bg-green-100 text-green-700 rounded-xl">
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800">Dentista / Odontólogo</h4>
-                  <p className="text-xs font-semibold text-slate-500 mt-1">Acesso à agenda, lista de pacientes, prontuários e evolução médica.</p>
+                  <h4 className="font-bold text-slate-800 dark:text-slate-100">Dentista / Odontólogo</h4>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Acesso à agenda, lista de pacientes, prontuários e evolução médica.</p>
                 </div>
               </div>
 
               <div 
                 onClick={() => { setSelectedRole('recepcao'); setSelectedRoleName('Recepção'); setIsModalOpen(true); }}
-                className="p-5 border border-slate-200 rounded-2xl bg-slate-50 flex items-start gap-4 cursor-pointer hover:bg-slate-100 hover:shadow-md transition-all"
+                className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-950 flex items-start gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 hover:shadow-md transition-all"
               >
                 <div className="p-3 bg-amber-100 text-amber-700 rounded-xl">
                   <Sliders className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800">Recepção</h4>
-                  <p className="text-xs font-semibold text-slate-500 mt-1">Agendamento de consultas, confirmações e cadastro inicial de pacientes.</p>
+                  <h4 className="font-bold text-slate-800 dark:text-slate-100">Recepção</h4>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Agendamento de consultas, confirmações e cadastro inicial de pacientes.</p>
                 </div>
               </div>
 
               <div 
                 onClick={() => { setSelectedRole('financeiro'); setSelectedRoleName('Financeiro'); setIsModalOpen(true); }}
-                className="p-5 border border-slate-200 rounded-2xl bg-slate-50 flex items-start gap-4 cursor-pointer hover:bg-slate-100 hover:shadow-md transition-all"
+                className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-950 flex items-start gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 hover:shadow-md transition-all"
               >
                 <div className="p-3 bg-purple-100 text-purple-700 rounded-xl">
                   <Building2 className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800">Financeiro</h4>
-                  <p className="text-xs font-semibold text-slate-500 mt-1">Controle de entradas, saídas, emissão de boletos e relatórios orçamentários.</p>
+                  <h4 className="font-bold text-slate-800 dark:text-slate-100">Financeiro</h4>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Controle de entradas, saídas, emissão de boletos e relatórios orçamentários.</p>
                 </div>
               </div>
             </div>
@@ -417,8 +417,8 @@ export default function ConfiguracoesPage() {
             <div className="mt-12">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-800">Membros da Equipe</h3>
-                  <p className="text-sm text-slate-500 mt-0.5">Gerencie os usuários cadastrados no sistema</p>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Membros da Equipe</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Gerencie os usuários cadastrados no sistema</p>
                 </div>
                 <button
                   onClick={() => setIsCreateUserModalOpen(true)}
@@ -432,13 +432,13 @@ export default function ConfiguracoesPage() {
               {isLoadingMembers ? (
                 <div className="flex flex-col items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-4" />
-                  <p className="text-sm text-slate-500 font-semibold">Carregando membros...</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando membros...</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-2xl border border-slate-200">
+                <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
+                      <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
                         <th className="p-4">Nome Completo</th>
                         <th className="p-4">E-mail</th>
                         <th className="p-4">Função</th>
@@ -448,9 +448,9 @@ export default function ConfiguracoesPage() {
                     <tbody className="divide-y divide-slate-100">
                       {teamMembers.length > 0 ? (
                         teamMembers.map(member => (
-                          <tr key={member.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="p-4 font-semibold text-slate-800">{member.nome}</td>
-                            <td className="p-4 text-slate-600 text-sm">{member.email}</td>
+                          <tr key={member.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950/50 transition-colors">
+                            <td className="p-4 font-semibold text-slate-800 dark:text-slate-100">{member.nome}</td>
+                            <td className="p-4 text-slate-600 dark:text-slate-300 text-sm">{member.email}</td>
                             <td className="p-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
                                 member.role === 'admin' ? 'bg-blue-100 text-blue-700' :
@@ -486,7 +486,7 @@ export default function ConfiguracoesPage() {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={4} className="p-8 text-center text-slate-500 font-semibold">
+                          <td colSpan={4} className="p-8 text-center text-slate-500 dark:text-slate-400 font-semibold">
                             Nenhum usuário encontrado.
                           </td>
                         </tr>
@@ -501,61 +501,61 @@ export default function ConfiguracoesPage() {
 
         {/* ABA 3: INTEGRAÇÕES */}
         {activeTab === 'integracoes' && (
-          <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-3 mb-4">Serviços Conectados</h3>
+          <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-100 pb-3 mb-4">Serviços Conectados</h3>
 
             <div className="space-y-4">
-              <div className="p-5 border border-slate-200 rounded-2xl flex items-center justify-between">
+              <div className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-green-50 text-green-600 rounded-xl">
                     <Smartphone className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-800">WhatsApp / Notificações Automáticas</h4>
-                    <p className="text-xs text-slate-500 font-semibold mt-0.5">Envio automático de lembretes e confirmações de consulta</p>
+                    <h4 className="font-bold text-slate-800 dark:text-slate-100">WhatsApp / Notificações Automáticas</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Envio automático de lembretes e confirmações de consulta</p>
                   </div>
                 </div>
                 <input
                   type="checkbox"
                   checked={integracoes.whatsapp}
                   onChange={e => setIntegracoes(p => ({ ...p, whatsapp: e.target.checked }))}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-700 cursor-pointer"
                 />
               </div>
 
-              <div className="p-5 border border-slate-200 rounded-2xl flex items-center justify-between">
+              <div className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
                     <Mail className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-800">Google Calendar</h4>
-                    <p className="text-xs text-slate-500 font-semibold mt-0.5">Sincronização bidirecional das agendas da clínica</p>
+                    <h4 className="font-bold text-slate-800 dark:text-slate-100">Google Calendar</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Sincronização bidirecional das agendas da clínica</p>
                   </div>
                 </div>
                 <input
                   type="checkbox"
                   checked={integracoes.googleCalendar}
                   onChange={e => setIntegracoes(p => ({ ...p, googleCalendar: e.target.checked }))}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-700 cursor-pointer"
                 />
               </div>
 
-              <div className="p-5 border border-slate-200 rounded-2xl flex items-center justify-between">
+              <div className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
                     <Globe className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-800">Recebimento via PIX &amp; Cartões (Gateway)</h4>
-                    <p className="text-xs text-slate-500 font-semibold mt-0.5">Geração de QR Code PIX dinâmico e conciliação bancária</p>
+                    <h4 className="font-bold text-slate-800 dark:text-slate-100">Recebimento via PIX &amp; Cartões (Gateway)</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Geração de QR Code PIX dinâmico e conciliação bancária</p>
                   </div>
                 </div>
                 <input
                   type="checkbox"
                   checked={integracoes.pagamentosPix}
                   onChange={e => setIntegracoes(p => ({ ...p, pagamentosPix: e.target.checked }))}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-700 cursor-pointer"
                 />
               </div>
             </div>
@@ -564,11 +564,11 @@ export default function ConfiguracoesPage() {
 
         {/* ABA 4: COMISSÕES */}
         {activeTab === 'comissoes' && (
-          <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm space-y-6">
+          <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
               <div>
-                <h3 className="text-lg font-bold text-slate-800">Tabela de Comissões</h3>
-                <p className="text-sm text-slate-500 mt-0.5">Defina a porcentagem de comissão por procedimento e dentista</p>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Tabela de Comissões</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Defina a porcentagem de comissão por procedimento e dentista</p>
               </div>
               <button
                 onClick={() => setIsCommissionModalOpen(true)}
@@ -582,13 +582,13 @@ export default function ConfiguracoesPage() {
             {isLoadingCommissions ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-4" />
-                <p className="text-sm text-slate-500 font-semibold">Carregando comissões...</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando comissões...</p>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-slate-200">
+              <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
+                    <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
                       <th className="p-4">Dentista</th>
                       <th className="p-4">Procedimento</th>
                       <th className="p-4">Porcentagem</th>
@@ -597,15 +597,15 @@ export default function ConfiguracoesPage() {
                   <tbody className="divide-y divide-slate-100">
                     {commissions.length > 0 ? (
                       commissions.map(c => (
-                        <tr key={c.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="p-4 font-semibold text-slate-800">{c.dentista_nome}</td>
-                          <td className="p-4 text-slate-600 text-sm">{c.procedimento_nome}</td>
-                          <td className="p-4 text-slate-600 text-sm">{c.porcentagem}%</td>
+                        <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950/50 transition-colors">
+                          <td className="p-4 font-semibold text-slate-800 dark:text-slate-100">{c.dentista_nome}</td>
+                          <td className="p-4 text-slate-600 dark:text-slate-300 text-sm">{c.procedimento_nome}</td>
+                          <td className="p-4 text-slate-600 dark:text-slate-300 text-sm">{c.porcentagem}%</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={3} className="p-8 text-center text-slate-500 font-semibold">
+                        <td colSpan={3} className="p-8 text-center text-slate-500 dark:text-slate-400 font-semibold">
                           Nenhuma comissão configurada.
                         </td>
                       </tr>
@@ -624,18 +624,18 @@ export default function ConfiguracoesPage() {
             {/* Header da aba */}
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                <h2 className="text-xl font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                   <ShieldCheck className="h-5 w-5 text-blue-600" />
                   Painel de Conformidade LGPD
                 </h2>
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                   Transparência e rastreabilidade de todas as ações sensíveis realizadas no sistema.
                 </p>
               </div>
               <button
                 onClick={() => loadSecurityData(filtroAction)}
                 disabled={isLoadingSecurity}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-800 hover:shadow-md transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:text-slate-100 hover:shadow-md transition-all disabled:opacity-50"
               >
                 <RefreshCw className={`h-4 w-4 ${isLoadingSecurity ? 'animate-spin' : ''}`} />
                 Atualizar
@@ -646,22 +646,22 @@ export default function ConfiguracoesPage() {
             {isLoadingSecurity && !complianceStats ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 {[1,2,3,4].map(i => (
-                  <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 animate-pulse h-28" />
+                  <div key={i} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 animate-pulse h-28" />
                 ))}
               </div>
             ) : complianceStats ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 {/* Card 1: Pacientes com aceite */}
-                <div className="bg-white border border-emerald-200 rounded-2xl p-5 shadow-sm">
+                <div className="bg-white dark:bg-slate-800 border border-emerald-200 rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-emerald-100 rounded-xl">
                       <CheckCircle2 className="h-5 w-5 text-emerald-600" />
                     </div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Aceite LGPD</p>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Aceite LGPD</p>
                   </div>
-                  <p className="text-3xl font-extrabold text-slate-800">{complianceStats.pacientesComAceite}</p>
+                  <p className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">{complianceStats.pacientesComAceite}</p>
                   <div className="mt-2">
-                    <div className="flex justify-between text-xs text-slate-500 mb-1">
+                    <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
                       <span>{lgpdPercent}% conformes</span>
                       <span>{complianceStats.totalPacientes} total</span>
                     </div>
@@ -675,15 +675,15 @@ export default function ConfiguracoesPage() {
                 </div>
 
                 {/* Card 2: Pendentes */}
-                <div className={`bg-white rounded-2xl p-5 shadow-sm border ${complianceStats.pacientesSemAceite > 0 ? 'border-red-200' : 'border-slate-200'}`}>
+                <div className={`bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border ${complianceStats.pacientesSemAceite > 0 ? 'border-red-200' : 'border-slate-200 dark:border-slate-700'}`}>
                   <div className="flex items-center gap-3 mb-3">
                     <div className={`p-2 rounded-xl ${complianceStats.pacientesSemAceite > 0 ? 'bg-red-100' : 'bg-slate-100'}`}>
                       <AlertTriangle className={`h-5 w-5 ${complianceStats.pacientesSemAceite > 0 ? 'text-red-500' : 'text-slate-400'}`} />
                     </div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pendentes LGPD</p>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pendentes LGPD</p>
                   </div>
-                  <p className="text-3xl font-extrabold text-slate-800">{complianceStats.pacientesSemAceite}</p>
-                  <p className="text-xs text-slate-500 mt-2">
+                  <p className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">{complianceStats.pacientesSemAceite}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
                     {complianceStats.pacientesSemAceite > 0
                       ? 'Pacientes sem consentimento registrado'
                       : 'Todos os pacientes estão em conformidade ✓'}
@@ -691,31 +691,31 @@ export default function ConfiguracoesPage() {
                 </div>
 
                 {/* Card 3: Logs hoje */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-blue-100 rounded-xl">
                       <FileText className="h-5 w-5 text-blue-600" />
                     </div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Logs (24h)</p>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Logs (24h)</p>
                   </div>
-                  <p className="text-3xl font-extrabold text-slate-800">{complianceStats.totalLogsHoje}</p>
-                  <p className="text-xs text-slate-500 mt-2">Ações registradas nas últimas 24 horas</p>
+                  <p className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">{complianceStats.totalLogsHoje}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Ações registradas nas últimas 24 horas</p>
                 </div>
 
                 {/* Card 4: Último evento */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-indigo-100 rounded-xl">
                       <Clock className="h-5 w-5 text-indigo-600" />
                     </div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Último Evento</p>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Último Evento</p>
                   </div>
                   {complianceStats.ultimoEvento ? (
                     <>
-                      <p className="text-base font-extrabold text-slate-800 leading-tight">
+                      <p className="text-base font-extrabold text-slate-800 dark:text-slate-100 leading-tight">
                         {formatDateTime(complianceStats.ultimoEvento)}
                       </p>
-                      <p className="text-xs text-slate-500 mt-2">Data/hora do registro mais recente</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Data/hora do registro mais recente</p>
                     </>
                   ) : (
                     <p className="text-sm text-slate-400 mt-2">Nenhum evento nas últimas 24h</p>
@@ -725,14 +725,14 @@ export default function ConfiguracoesPage() {
             ) : null}
 
             {/* Tabela de Logs de Auditoria */}
-            <div className="bg-white border border-slate-200 rounded-[32px] shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[32px] shadow-sm overflow-hidden">
               <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-slate-500" />
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                     Logs de Auditoria
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     Últimas {auditLogs.length} ações sensíveis registradas no sistema
                   </p>
                 </div>
@@ -741,7 +741,7 @@ export default function ConfiguracoesPage() {
                   <select
                     value={filtroAction}
                     onChange={e => setFiltroAction(e.target.value)}
-                    className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   >
                     <option value="">Todas as ações</option>
                     <option value="criacao">Criação</option>
@@ -754,7 +754,7 @@ export default function ConfiguracoesPage() {
                   {/* Botão exportar (UI) */}
                   <button
                     onClick={() => toast.info('Exportação CSV em breve!')}
-                    className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-800 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:text-slate-100 transition-all"
                   >
                     <Download className="h-3.5 w-3.5" /> CSV
                   </button>
@@ -772,14 +772,14 @@ export default function ConfiguracoesPage() {
               {isLoadingSecurity ? (
                 <div className="flex flex-col items-center justify-center py-16">
                   <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-3" />
-                  <p className="text-sm text-slate-500 font-semibold">Carregando logs...</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando logs...</p>
                 </div>
               ) : auditLogs.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
                   <div className="p-4 bg-slate-100 rounded-2xl mb-4">
                     <FileText className="h-8 w-8 text-slate-400" />
                   </div>
-                  <p className="font-bold text-slate-600">Nenhum log encontrado</p>
+                  <p className="font-bold text-slate-600 dark:text-slate-300">Nenhum log encontrado</p>
                   <p className="text-sm text-slate-400 mt-1">
                     {filtroAction ? `Sem registros do tipo "${filtroAction}"` : 'As ações sensíveis aparecerão aqui'}
                   </p>
@@ -787,8 +787,8 @@ export default function ConfiguracoesPage() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm border-collapse min-w-[700px]">
-                    <thead className="bg-slate-50 border-b border-slate-200">
-                      <tr className="text-xs uppercase tracking-wider text-slate-500 font-bold">
+                    <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
+                      <tr className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
                         <th className="px-5 py-3.5">Data/Hora</th>
                         <th className="px-5 py-3.5">Ação</th>
                         <th className="px-5 py-3.5">Módulo</th>
@@ -798,19 +798,19 @@ export default function ConfiguracoesPage() {
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {auditLogs.map(log => (
-                        <tr key={log.id} className="hover:bg-slate-50/60 transition-colors">
-                          <td className="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500 font-mono">
+                        <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950/60 transition-colors">
+                          <td className="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500 dark:text-slate-400 font-mono">
                             {formatDateTime(log.created_at)}
                           </td>
                           <td className="px-5 py-3.5 whitespace-nowrap">
                             <ActionBadge action={log.action} />
                           </td>
                           <td className="px-5 py-3.5 whitespace-nowrap">
-                            <span className="text-xs font-semibold text-slate-700">{entityLabel(log.entity)}</span>
+                            <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{entityLabel(log.entity)}</span>
                           </td>
                           <td className="px-5 py-3.5 whitespace-nowrap">
                             {log.user_nome ? (
-                              <span className="text-xs font-semibold text-slate-700">{log.user_nome}</span>
+                              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{log.user_nome}</span>
                             ) : log.user_id ? (
                               <span className="text-xs text-slate-400 font-mono">{log.user_id.substring(0, 8)}…</span>
                             ) : (
@@ -819,7 +819,7 @@ export default function ConfiguracoesPage() {
                           </td>
                           <td className="px-5 py-3.5 max-w-[240px]">
                             {log.details ? (
-                              <span className="text-xs text-slate-500 truncate block" title={JSON.stringify(log.details)}>
+                              <span className="text-xs text-slate-500 dark:text-slate-400 truncate block" title={JSON.stringify(log.details)}>
                                 {log.details.nome
                                   ? `Paciente: ${log.details.nome}`
                                   : log.details.deleted_user_nome

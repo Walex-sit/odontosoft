@@ -45,7 +45,7 @@ export default function CalculadoraModal({ isOpen, onClose }: CalculadoraModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-in fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-xs overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 w-full max-w-xs overflow-hidden">
         
         {/* Header */}
         <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
@@ -62,17 +62,17 @@ export default function CalculadoraModal({ isOpen, onClose }: CalculadoraModalPr
         </div>
 
         {/* Display */}
-        <div className="p-4 bg-slate-50 border-b border-slate-200 text-right">
+        <div className="p-4 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700 text-right">
           <div className="text-xs text-slate-400 font-mono h-4 overflow-hidden truncate">
             {equation || ' '}
           </div>
-          <div className="text-3xl font-extrabold text-slate-800 font-mono tracking-tight truncate mt-1">
+          <div className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 font-mono tracking-tight truncate mt-1">
             {display}
           </div>
         </div>
 
         {/* Teclado */}
-        <div className="p-4 grid grid-cols-4 gap-2 bg-white">
+        <div className="p-4 grid grid-cols-4 gap-2 bg-white dark:bg-slate-800">
           {['C', '(', ')', '÷', '7', '8', '9', '×', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='].map((btn) => {
             const isOp = ['÷', '×', '-', '+', '='].includes(btn)
             const isClear = btn === 'C'
@@ -88,7 +88,7 @@ export default function CalculadoraModal({ isOpen, onClose }: CalculadoraModalPr
                     ? 'bg-blue-50 text-blue-600 hover:bg-blue-100'
                     : isClear
                     ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    : 'bg-slate-100 text-slate-700 dark:text-slate-200 hover:bg-slate-200'
                 }`}
               >
                 {btn}

@@ -64,13 +64,13 @@ export default function MinhaConta() {
   const userEmail = session?.user?.email || ''
 
   return (
-    <div className="flex flex-col w-full h-full bg-slate-50 text-slate-800 overflow-y-auto">
+    <div className="flex flex-col w-full h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 overflow-y-auto">
       {/* Header */}
-      <header className="p-8 bg-white border-b border-slate-200 shadow-sm shrink-0">
+      <header className="p-8 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Meu Perfil</h1>
-            <p className="text-sm font-semibold text-slate-500 mt-1">Gerencie suas informações pessoais e credenciais de acesso</p>
+            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Meu Perfil</h1>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">Gerencie suas informações pessoais e credenciais de acesso</p>
           </div>
         </div>
       </header>
@@ -79,72 +79,72 @@ export default function MinhaConta() {
       <main className="flex-1 p-8 max-w-4xl mx-auto w-full space-y-8">
         
         {/* Card 1: Informações Pessoais */}
-        <section className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+        <section className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-6">
             <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
               <User className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Dados do Usuário</h2>
-              <p className="text-sm font-medium text-slate-500 mt-0.5">Informações vinculadas à sua conta no sistema</p>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Dados do Usuário</h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5">Informações vinculadas à sua conta no sistema</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nome Completo</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Nome Completo</label>
               <input
                 type="text"
                 value={profile?.nome || ''}
                 disabled
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 opacity-80 cursor-not-allowed"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 opacity-80 cursor-not-allowed"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">E-mail de Acesso</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">E-mail de Acesso</label>
               <div className="relative">
                 <input
                   type="email"
                   value={userEmail || 'carregando...'}
                   disabled
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 opacity-80 cursor-not-allowed"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 opacity-80 cursor-not-allowed"
                 />
                 <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
               </div>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nível de Acesso (Perfil)</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Nível de Acesso (Perfil)</label>
               <div className="relative">
                 <input
                   type="text"
                   value={ROLE_LABELS[profile?.role ?? ''] ?? profile?.role ?? ''}
                   disabled
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 opacity-80 cursor-not-allowed"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 opacity-80 cursor-not-allowed"
                 />
                 <ShieldCheck className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
               </div>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ID do Usuário</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">ID do Usuário</label>
               <input
                 type="text"
                 value={profile?.id || ''}
                 disabled
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-500 opacity-80 cursor-not-allowed"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold text-slate-500 dark:text-slate-400 opacity-80 cursor-not-allowed"
               />
             </div>
           </div>
         </section>
 
         {/* Card 2: Segurança */}
-        <section className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+        <section className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-6">
             <div className="p-2.5 bg-amber-50 text-amber-600 rounded-xl">
               <KeyRound className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Alterar Senha</h2>
-              <p className="text-sm font-medium text-slate-500 mt-0.5">Mantenha sua conta segura atualizando sua senha periodicamente</p>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Alterar Senha</h2>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5">Mantenha sua conta segura atualizando sua senha periodicamente</p>
             </div>
           </div>
 
@@ -165,11 +165,11 @@ export default function MinhaConta() {
 
             <div className="space-y-5 mb-8">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Nova Senha</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Nova Senha</label>
                 <div className="relative">
                   <input
                     type={mostrarNova ? 'text' : 'password'}
-                    className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     placeholder="••••••••"
                     value={novaSenha}
                     onChange={(e) => { setNovaSenha(e.target.value); setErro(null); setSucesso(false) }}
@@ -178,7 +178,7 @@ export default function MinhaConta() {
                   <button
                     type="button"
                     onClick={() => setMostrarNova(v => !v)}
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:text-slate-300 transition-colors"
                   >
                     {mostrarNova ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -186,11 +186,11 @@ export default function MinhaConta() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Confirmar Nova Senha</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Confirmar Nova Senha</label>
                 <div className="relative">
                   <input
                     type={mostrarConfirma ? 'text' : 'password'}
-                    className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     placeholder="••••••••"
                     value={confirmaSenha}
                     onChange={(e) => { setConfirmaSenha(e.target.value); setErro(null); setSucesso(false) }}
@@ -199,7 +199,7 @@ export default function MinhaConta() {
                   <button
                     type="button"
                     onClick={() => setMostrarConfirma(v => !v)}
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:text-slate-300 transition-colors"
                   >
                     {mostrarConfirma ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -208,8 +208,8 @@ export default function MinhaConta() {
             </div>
 
             {/* Requisitos de Senha */}
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8">
-              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">Requisitos de Segurança</h4>
+            <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 mb-8">
+              <h4 className="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider mb-3">Requisitos de Segurança</h4>
               <ul className="space-y-2.5">
                 {[
                   { ok: novaSenha.length >= 8,         label: 'Mínimo de 8 caracteres' },
@@ -222,9 +222,9 @@ export default function MinhaConta() {
                     {ok ? (
                       <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                     ) : (
-                      <div className="h-4 w-4 rounded-full border border-slate-300 shrink-0 flex items-center justify-center bg-white" />
+                      <div className="h-4 w-4 rounded-full border border-slate-300 dark:border-slate-700 shrink-0 flex items-center justify-center bg-white dark:bg-slate-800" />
                     )}
-                    <span className={`text-sm font-medium transition-colors ${ok ? 'text-slate-800' : 'text-slate-500'}`}>
+                    <span className={`text-sm font-medium transition-colors ${ok ? 'text-slate-800 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400'}`}>
                       {label}
                     </span>
                   </li>
@@ -235,7 +235,7 @@ export default function MinhaConta() {
             <button
               onClick={alterarSenha}
               disabled={salvando || !novaSenha || !confirmaSenha}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none text-white py-3.5 rounded-xl font-bold text-sm transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:text-slate-500 dark:text-slate-400 disabled:shadow-none text-white py-3.5 rounded-xl font-bold text-sm transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2"
             >
               {salvando ? (
                 <>

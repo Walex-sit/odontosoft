@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Poppins, Nunito } from "next/font/google";
 import "./globals.css";
 import { Toaster } from 'sonner';
-
+import { ThemeProvider } from "./components/ThemeProvider";
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -28,10 +28,13 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       className={`${poppins.variable} ${nunito.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans bg-[#F8F9FA] text-slate-800">
-        <Toaster theme="light" position="bottom-right" richColors />
-        {children}
+      <body className="w-full min-h-screen flex flex-col font-sans bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <Toaster theme="system" position="bottom-right" richColors />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -178,14 +178,14 @@ export default function FinanceiroPage() {
   ]
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-slate-900">
 
       {/* ── PAGE HEADER ──────────────────────────────── */}
       <div className="px-8 pt-6 pb-0 shrink-0">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Financeiro</h1>
-            <p className="text-sm font-medium text-slate-500 mt-0.5">Gestão financeira completa da sua clínica</p>
+            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Financeiro</h1>
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5">Gestão financeira completa da sua clínica</p>
           </div>
           <div className="flex gap-3">
             <button
@@ -196,7 +196,7 @@ export default function FinanceiroPage() {
             </button>
             <button
               onClick={() => setShowNewModal('despesa')}
-              className="h-10 px-5 rounded-xl font-bold text-sm bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2"
+              className="h-10 px-5 rounded-xl font-bold text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 dark:hover:bg-slate-700 transition-colors shadow-sm flex items-center gap-2"
             >
               <Plus className="h-4 w-4" /> Nova Despesa
             </button>
@@ -204,7 +204,7 @@ export default function FinanceiroPage() {
         </div>
 
         {/* ── TABS ────────────────────────────────────── */}
-        <div className="flex gap-1 border-b border-slate-200">
+        <div className="flex gap-1 border-b border-slate-200 dark:border-slate-700">
           {tabs.map(tab => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -214,8 +214,8 @@ export default function FinanceiroPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-5 py-3 text-sm font-bold border-b-2 transition-all -mb-px ${
                   isActive
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:bg-slate-800/50 rounded-t-lg'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200 hover:border-slate-300 dark:border-slate-700'
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -245,7 +245,7 @@ export default function FinanceiroPage() {
                   purple: 'bg-purple-50 text-purple-600',
                 }
                 return (
-                  <div key={i} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow">
+                  <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-3">
                       <div className={`p-2.5 rounded-xl ${colorMap[kpi.color]}`}>
                         <Icon className="h-5 w-5" />
@@ -253,24 +253,24 @@ export default function FinanceiroPage() {
                       <span className={`text-xs font-bold px-2 py-1 rounded-lg ${
                         kpi.trend === 'up' ? 'bg-green-50 text-green-600' :
                         kpi.trend === 'down' ? 'bg-red-50 text-red-600' :
-                        'bg-slate-100 text-slate-500'
+                        'bg-slate-100 text-slate-500 dark:text-slate-400'
                       }`}>
                         {kpi.change}
                       </span>
                     </div>
-                    <p className="text-2xl font-extrabold text-slate-800 tracking-tight">{kpi.value}</p>
-                    <p className="text-xs font-semibold text-slate-500 mt-1">{kpi.label}</p>
+                    <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">{kpi.value}</p>
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">{kpi.label}</p>
                   </div>
                 )
               })}
             </div>
 
             {/* Gráfico de Fluxo de Caixa */}
-            <div className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)]">
+            <div className="bg-white dark:bg-slate-800 rounded-[24px] p-6 border border-slate-200 dark:border-slate-700 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)]">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-extrabold text-slate-800">Fluxo de Caixa</h3>
-                  <p className="text-sm text-slate-500 font-medium">Entradas vs. Saídas (últimos 6 meses)</p>
+                  <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100">Fluxo de Caixa</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Entradas vs. Saídas (últimos 6 meses)</p>
                 </div>
                 <div className="flex items-center gap-4 text-xs font-bold">
                   <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded-full bg-blue-500"></div> Entradas</div>
@@ -292,30 +292,30 @@ export default function FinanceiroPage() {
                         title={`Saídas: R$ ${d.saidas}k`}
                       ></div>
                     </div>
-                    <span className="text-xs font-bold text-slate-500">{d.mes}</span>
+                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{d.mes}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Últimos Lançamentos (resumo) */}
-            <div className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)]">
+            <div className="bg-white dark:bg-slate-800 rounded-[24px] p-6 border border-slate-200 dark:border-slate-700 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-extrabold text-slate-800">Últimos Lançamentos</h3>
+                <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100">Últimos Lançamentos</h3>
                 <button onClick={() => setActiveTab('fluxo')} className="text-sm font-bold text-blue-600 hover:text-blue-700">
                   Ver todos →
                 </button>
               </div>
               <div className="space-y-3">
                 {lancamentos.slice(0, 4).map(l => (
-                  <div key={l.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                  <div key={l.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-lg ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
                         {l.tipo === 'entrada' ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-slate-800">{l.descricao}</p>
-                        <p className="text-xs font-medium text-slate-500">{l.data} · {l.categoria}</p>
+                        <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{l.descricao}</p>
+                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{l.data} · {l.categoria}</p>
                       </div>
                     </div>
                     <span className={`text-sm font-extrabold ${l.tipo === 'entrada' ? 'text-green-600' : 'text-red-500'}`}>
@@ -333,28 +333,28 @@ export default function FinanceiroPage() {
           <div className="p-8 space-y-6 animate-in fade-in duration-300">
 
             {/* Filtros */}
-            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-wrap gap-3 items-center">
-              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 flex-1 min-w-[200px] max-w-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-wrap gap-3 items-center">
+              <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 flex-1 min-w-[200px] max-w-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
                 <Search className="h-4 w-4 text-slate-400" />
-                <input type="text" placeholder="Buscar lançamento ou paciente..." className="bg-transparent border-none outline-none text-sm w-full text-slate-800 placeholder-slate-500 font-medium" />
+                <input type="text" placeholder="Buscar lançamento ou paciente..." className="bg-transparent border-none outline-none text-sm w-full text-slate-800 dark:text-slate-100 placeholder-slate-500 font-medium" />
               </div>
-              <select className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500">
+              <select className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500">
                 <option>Este Mês</option>
                 <option>Mês Passado</option>
                 <option>Últimos 90 dias</option>
                 <option>Personalizado</option>
               </select>
-              <select className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500">
+              <select className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500">
                 <option>Todos os Status</option>
                 <option>Pago</option>
                 <option>Pendente</option>
               </select>
-              <select className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500">
+              <select className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500">
                 <option>Todos os Profissionais</option>
                 <option>Dra. Camila</option>
                 <option>Dr. João</option>
               </select>
-              <button className="ml-auto h-9 px-4 rounded-xl text-sm font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm">
+              <button className="ml-auto h-9 px-4 rounded-xl text-sm font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 dark:hover:bg-slate-700 flex items-center gap-2 shadow-sm">
                 <Download className="h-4 w-4" /> Exportar
               </button>
             </div>
@@ -362,7 +362,7 @@ export default function FinanceiroPage() {
             {/* Lista de Lançamentos em Cards */}
             <div className="space-y-3">
               {lancamentos.map(l => (
-                <div key={l.id} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all flex items-center gap-4">
+                <div key={l.id} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all flex items-center gap-4">
                   {/* Ícone Tipo */}
                   <div className={`p-2.5 rounded-xl shrink-0 ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
                     {l.tipo === 'entrada' ? <ArrowUpRight className="h-5 w-5" /> : <ArrowDownRight className="h-5 w-5" />}
@@ -370,15 +370,15 @@ export default function FinanceiroPage() {
 
                   {/* Info Principal */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-[15px] font-bold text-slate-800 truncate">{l.descricao}</p>
+                    <p className="text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate">{l.descricao}</p>
                     <div className="flex items-center gap-3 mt-1">
-                      <span className="text-xs font-semibold text-slate-500">{l.data}</span>
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{l.data}</span>
                       <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">{l.categoria}</span>
                     </div>
                   </div>
 
                   {/* Forma de Pagamento */}
-                  <div className="hidden md:flex items-center gap-1.5 text-xs font-bold text-slate-500 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100 shrink-0">
+                  <div className="hidden md:flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700/50 shrink-0">
                     {formaIcon(l.forma)}
                     {l.forma}
                   </div>
@@ -396,7 +396,7 @@ export default function FinanceiroPage() {
                   </span>
 
                   {/* Ações */}
-                  <button className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors shrink-0">
+                  <button className="p-1.5 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors shrink-0">
                     <MoreHorizontal className="h-4 w-4" />
                   </button>
                 </div>
@@ -411,18 +411,18 @@ export default function FinanceiroPage() {
 
             {/* Resumo Boletos */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Em Aberto</p>
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Em Aberto</p>
                 <p className="text-2xl font-extrabold text-amber-600">R$ 2.130,00</p>
                 <p className="text-xs font-semibold text-slate-400 mt-1">3 boletos</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Vencidos</p>
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Vencidos</p>
                 <p className="text-2xl font-extrabold text-red-600">R$ 6.800,00</p>
                 <p className="text-xs font-semibold text-slate-400 mt-1">1 boleto</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Pagos no Mês</p>
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Pagos no Mês</p>
                 <p className="text-2xl font-extrabold text-green-600">R$ 350,00</p>
                 <p className="text-xs font-semibold text-slate-400 mt-1">1 boleto</p>
               </div>
@@ -460,7 +460,7 @@ export default function FinanceiroPage() {
                 className={`h-4.5 w-4.5 flex items-center justify-center rounded border-2 transition-all shrink-0 ${
                   allSelected ? 'bg-blue-600 border-blue-600' :
                   someSelected ? 'bg-blue-100 border-blue-400' :
-                  'border-slate-300 hover:border-blue-400'
+                  'border-slate-300 dark:border-slate-700 hover:border-blue-400'
                 }`}
                 title="Selecionar todos"
               >
@@ -475,16 +475,16 @@ export default function FinanceiroPage() {
             {/* Lista de Boletos */}
             <div ref={dropdownRef} className="space-y-3">
               {boletosData.map(b => (
-                <div key={b.id} className={`bg-white rounded-2xl p-5 border shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all flex items-center gap-4 ${
+                <div key={b.id} className={`bg-white dark:bg-slate-800 rounded-2xl p-5 border shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all flex items-center gap-4 ${
                   selectedBoletos.has(b.id) ? 'border-blue-300 ring-1 ring-blue-200' :
-                  b.status === 'vencido' ? 'border-red-200 bg-red-50/30' : 'border-slate-200'
+                  b.status === 'vencido' ? 'border-red-200 bg-red-50/30' : 'border-slate-200 dark:border-slate-700'
                 }`}>
 
                   {/* Checkbox */}
                   <button
                     onClick={() => toggleSelectOne(b.id)}
                     className={`h-4.5 w-4.5 flex items-center justify-center rounded border-2 transition-all shrink-0 ${
-                      selectedBoletos.has(b.id) ? 'bg-blue-600 border-blue-600' : 'border-slate-300 hover:border-blue-400'
+                      selectedBoletos.has(b.id) ? 'bg-blue-600 border-blue-600' : 'border-slate-300 dark:border-slate-700 hover:border-blue-400'
                     }`}
                   >
                     {selectedBoletos.has(b.id) && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
@@ -501,8 +501,8 @@ export default function FinanceiroPage() {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-[15px] font-bold text-slate-800">{b.paciente}</p>
-                    <p className="text-sm font-medium text-slate-500 truncate">{b.descricao}</p>
+                    <p className="text-[15px] font-bold text-slate-800 dark:text-slate-100">{b.paciente}</p>
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">{b.descricao}</p>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="text-xs font-semibold text-slate-400">Venc: {b.vencimento}</span>
                       <span className="text-xs font-semibold text-slate-400">• {b.banco}</span>
@@ -519,7 +519,7 @@ export default function FinanceiroPage() {
                   </span>
 
                   {/* Valor */}
-                  <span className="text-base font-extrabold text-slate-800 w-28 text-right shrink-0">
+                  <span className="text-base font-extrabold text-slate-800 dark:text-slate-100 w-28 text-right shrink-0">
                     {fmt(b.valor)}
                   </span>
 
@@ -542,7 +542,7 @@ export default function FinanceiroPage() {
                       <button
                         onClick={() => setOpenDropdownId(openDropdownId === b.id ? null : b.id)}
                         className={`p-2 rounded-lg transition-colors ${
-                          openDropdownId === b.id ? 'bg-slate-200 text-slate-800' : 'text-slate-400 hover:bg-slate-100'
+                          openDropdownId === b.id ? 'bg-slate-200 text-slate-800 dark:text-slate-100' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
                         }`}
                         title="Mais opções"
                       >
@@ -550,16 +550,16 @@ export default function FinanceiroPage() {
                       </button>
 
                       {openDropdownId === b.id && (
-                        <div className="absolute right-0 top-full mt-1 w-52 bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                        <div className="absolute right-0 top-full mt-1 w-52 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700/50 py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                           <button
                             onClick={() => handleBoletosAction(b.id, 'copiar')}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 font-medium transition-colors"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 dark:hover:bg-slate-700 font-medium transition-colors"
                           >
                             <Copy className="h-4 w-4 text-slate-400" /> Copiar código de barras
                           </button>
                           <button
                             onClick={() => handleBoletosAction(b.id, 'baixar')}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 font-medium transition-colors"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 dark:hover:bg-slate-700 font-medium transition-colors"
                           >
                             <Download className="h-4 w-4 text-slate-400" /> Baixar boleto
                           </button>
@@ -598,12 +598,12 @@ export default function FinanceiroPage() {
             {/* Header Comissões */}
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-extrabold text-slate-800">Repasse de Comissões — Julho 2026</h3>
-                <p className="text-sm font-medium text-slate-500">Gerencie os valores devidos a cada profissional.</p>
+                <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100">Repasse de Comissões — Julho 2026</h3>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Gerencie os valores devidos a cada profissional.</p>
               </div>
               <button
                 onClick={() => setComissaoModal(true)}
-                className="h-10 px-5 rounded-xl font-bold text-sm bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2"
+                className="h-10 px-5 rounded-xl font-bold text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 dark:hover:bg-slate-700 transition-colors shadow-sm flex items-center gap-2"
               >
                 <Settings className="h-4 w-4" /> Configurar Regras
               </button>
@@ -613,18 +613,18 @@ export default function FinanceiroPage() {
             {profsLoading ? (
               <div className="flex items-center justify-center py-20 gap-3">
                 <Loader2 className="h-7 w-7 text-blue-500 animate-spin" />
-                <p className="text-sm font-semibold text-slate-500">Carregando dados do Supabase...</p>
+                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Carregando dados do Supabase...</p>
               </div>
             ) : profsData.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <Users className="h-12 w-12 text-slate-300 mb-3" />
-                <p className="text-base font-bold text-slate-600">Nenhum dentista cadastrado</p>
+                <p className="text-base font-bold text-slate-600 dark:text-slate-300">Nenhum dentista cadastrado</p>
                 <p className="text-sm font-medium text-slate-400 mt-1">Cadastre profissionais com a função "Dentista" em Configurações → Equipe.</p>
               </div>
             ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {profsData.map(p => (
-                <div key={p.id} className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] flex flex-col">
+                <div key={p.id} className="bg-white dark:bg-slate-800 rounded-[24px] p-6 border border-slate-200 dark:border-slate-700 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] flex flex-col">
                   
                   {/* Header do Card */}
                   <div className="flex items-center gap-3 mb-5">
@@ -632,20 +632,20 @@ export default function FinanceiroPage() {
                       {p.nome.split(' ').filter((_,i) => i === 0 || i === p.nome.split(' ').length - 1).map(n => n[0]).join('')}
                     </div>
                     <div>
-                      <h4 className="text-base font-bold text-slate-800">{p.nome}</h4>
-                      <p className="text-xs font-semibold text-slate-500">{p.especialidade}</p>
+                      <h4 className="text-base font-bold text-slate-800 dark:text-slate-100">{p.nome}</h4>
+                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{p.especialidade}</p>
                     </div>
                   </div>
 
                   {/* Métricas */}
                   <div className="grid grid-cols-2 gap-3 mb-5">
-                    <div className="bg-slate-50 rounded-xl p-3 text-center">
-                      <p className="text-xs font-bold text-slate-500">Atendimentos</p>
-                      <p className="text-xl font-extrabold text-slate-800">{p.atendimentos}</p>
+                    <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-3 text-center">
+                      <p className="text-xs font-bold text-slate-500 dark:text-slate-400">Atendimentos</p>
+                      <p className="text-xl font-extrabold text-slate-800 dark:text-slate-100">{p.atendimentos}</p>
                     </div>
-                    <div className="bg-slate-50 rounded-xl p-3 text-center">
-                      <p className="text-xs font-bold text-slate-500">Faturado</p>
-                      <p className="text-xl font-extrabold text-slate-800">{fmt(p.faturado)}</p>
+                    <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-3 text-center">
+                      <p className="text-xs font-bold text-slate-500 dark:text-slate-400">Faturado</p>
+                      <p className="text-xl font-extrabold text-slate-800 dark:text-slate-100">{fmt(p.faturado)}</p>
                     </div>
                   </div>
 
@@ -682,7 +682,7 @@ export default function FinanceiroPage() {
                     )}
                     <button 
                       onClick={() => handleOpenExtrato(p.id)}
-                      className="px-3 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors"
+                      className="px-3 py-2.5 bg-slate-100 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors"
                       title="Ver Extrato Detalhado"
                     >
                       <FileText className="h-4 w-4" />
@@ -700,29 +700,29 @@ export default function FinanceiroPage() {
       {showNewModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowNewModal(null)}></div>
-          <div className="relative bg-white rounded-[24px] p-8 w-full max-w-lg shadow-2xl border border-slate-200 animate-in zoom-in-95 fade-in duration-200">
-            <h2 className="text-xl font-extrabold text-slate-800 mb-6">
+          <div className="relative bg-white dark:bg-slate-800 rounded-[24px] p-8 w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 fade-in duration-200">
+            <h2 className="text-xl font-extrabold text-slate-800 dark:text-slate-100 mb-6">
               {showNewModal === 'receita' ? '+ Nova Receita' : '+ Nova Despesa'}
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Descrição</label>
-                <input type="text" placeholder="Ex: Consulta odontológica" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Descrição</label>
+                <input type="text" placeholder="Ex: Consulta odontológica" className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Valor (R$)</label>
-                  <input type="number" step="0.01" placeholder="0,00" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Valor (R$)</label>
+                  <input type="number" step="0.01" placeholder="0,00" className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Data</label>
-                  <input type="date" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Data</label>
+                  <input type="date" className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Categoria</label>
-                  <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Categoria</label>
+                  <select className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500">
                     <option>Procedimento</option>
                     <option>Consulta</option>
                     <option>Estético</option>
@@ -732,8 +732,8 @@ export default function FinanceiroPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Forma de Pagamento</label>
-                  <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Forma de Pagamento</label>
+                  <select className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500">
                     <option>Pix</option>
                     <option>Cartão Crédito</option>
                     <option>Cartão Débito</option>
@@ -744,13 +744,13 @@ export default function FinanceiroPage() {
               </div>
               {showNewModal === 'receita' && (
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Paciente (opcional)</label>
-                  <input type="text" placeholder="Buscar paciente..." className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Paciente (opcional)</label>
+                  <input type="text" placeholder="Buscar paciente..." className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
                 </div>
               )}
             </div>
             <div className="flex gap-3 mt-8">
-              <button onClick={() => setShowNewModal(null)} className="flex-1 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">
+              <button onClick={() => setShowNewModal(null)} className="flex-1 py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">
                 Cancelar
               </button>
               <button className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)]">
@@ -765,43 +765,43 @@ export default function FinanceiroPage() {
       {comissaoModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setComissaoModal(false)}></div>
-          <div className="relative bg-white rounded-[24px] p-8 w-full max-w-md shadow-2xl border border-slate-200 animate-in zoom-in-95 fade-in duration-200">
-            <h2 className="text-xl font-extrabold text-slate-800 mb-2">Configurar Regras de Comissão</h2>
-            <p className="text-sm font-medium text-slate-500 mb-6">Defina o percentual de repasse para cada profissional.</p>
+          <div className="relative bg-white dark:bg-slate-800 rounded-[24px] p-8 w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 fade-in duration-200">
+            <h2 className="text-xl font-extrabold text-slate-800 dark:text-slate-100 mb-2">Configurar Regras de Comissão</h2>
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Defina o percentual de repasse para cada profissional.</p>
 
             <div className="space-y-4">
               {profissionais.map(p => (
-                <div key={p.id} className="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div key={p.id} className="flex items-center justify-between bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                   <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs shrink-0">
                       {p.nome.split(' ')[0][0]}{p.nome.split(' ').pop()?.[0]}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-800">{p.nome}</p>
-                      <p className="text-xs font-medium text-slate-500">{p.especialidade}</p>
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{p.nome}</p>
+                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{p.especialidade}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
                       defaultValue={p.comissao}
-                      className="w-16 bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-sm font-bold text-center text-slate-800 focus:outline-none focus:border-blue-500"
+                      className="w-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-sm font-bold text-center text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500"
                     />
-                    <span className="text-sm font-bold text-slate-500">%</span>
+                    <span className="text-sm font-bold text-slate-500 dark:text-slate-400">%</span>
                   </div>
                 </div>
               ))}
 
               <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-200">
                 <input type="radio" name="base" defaultChecked className="accent-blue-600" />
-                <span className="text-sm font-bold text-slate-700">Sobre Valor Bruto</span>
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Sobre Valor Bruto</span>
                 <input type="radio" name="base" className="accent-blue-600 ml-4" />
-                <span className="text-sm font-bold text-slate-700">Sobre Valor Líquido</span>
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Sobre Valor Líquido</span>
               </div>
             </div>
 
             <div className="flex gap-3 mt-8">
-              <button onClick={() => setComissaoModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">
+              <button onClick={() => setComissaoModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">
                 Cancelar
               </button>
               <button onClick={() => setComissaoModal(false)} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)]">
@@ -819,13 +819,13 @@ export default function FinanceiroPage() {
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setExtratoModal(null)}></div>
-            <div className="relative bg-white rounded-[24px] w-full max-w-2xl shadow-2xl border border-slate-200 animate-in zoom-in-95 fade-in duration-200 flex flex-col max-h-[85vh]">
-              <div className="p-6 border-b border-slate-200 flex items-center justify-between shrink-0">
+            <div className="relative bg-white dark:bg-slate-800 rounded-[24px] w-full max-w-2xl shadow-2xl border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 fade-in duration-200 flex flex-col max-h-[85vh]">
+              <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0">
                 <div>
-                  <h2 className="text-xl font-extrabold text-slate-800">Extrato de Comissões</h2>
-                  <p className="text-sm font-medium text-slate-500">{p.nome} • {p.especialidade} • Últimos 30 dias</p>
+                  <h2 className="text-xl font-extrabold text-slate-800 dark:text-slate-100">Extrato de Comissões</h2>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{p.nome} • {p.especialidade} • Últimos 30 dias</p>
                 </div>
-                <button onClick={() => setExtratoModal(null)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors">
+                <button onClick={() => setExtratoModal(null)} className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors">
                   <XCircle className="h-6 w-6" />
                 </button>
               </div>
@@ -834,14 +834,14 @@ export default function FinanceiroPage() {
                 {extratoLoading ? (
                   <div className="flex flex-col items-center justify-center py-16 gap-3">
                     <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
-                    <p className="text-sm font-semibold text-slate-500">Buscando dados do Supabase...</p>
+                    <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Buscando dados do Supabase...</p>
                   </div>
                 ) : extratoData && extratoData.procedimentos.length > 0 ? (
                   <>
                     <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                        <p className="text-xs font-bold text-slate-500 uppercase">Total Faturado</p>
-                        <p className="text-xl font-extrabold text-slate-800">{fmt(extratoData.totalFaturado)}</p>
+                      <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
+                        <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Total Faturado</p>
+                        <p className="text-xl font-extrabold text-slate-800 dark:text-slate-100">{fmt(extratoData.totalFaturado)}</p>
                       </div>
                       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                         <p className="text-xs font-bold text-blue-600 uppercase">Total de Comissões</p>
@@ -849,13 +849,13 @@ export default function FinanceiroPage() {
                       </div>
                     </div>
 
-                    <h3 className="text-sm font-bold text-slate-800 mb-3 uppercase tracking-wide">Procedimentos Realizados</h3>
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 mb-3 uppercase tracking-wide">Procedimentos Realizados</h3>
                     <div className="space-y-3">
                       {extratoData.procedimentos.map(item => (
-                        <div key={item.id} className="flex justify-between items-center bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                        <div key={item.id} className="flex justify-between items-center bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700/50 p-4 rounded-xl">
                           <div className="min-w-0 flex-1">
-                            <p className="font-bold text-slate-800 text-sm truncate">{item.procedimento_nome}</p>
-                            <p className="text-xs font-medium text-slate-500">
+                            <p className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{item.procedimento_nome}</p>
+                            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
                               {item.paciente_nome} • {new Date(item.data_realizacao).toLocaleDateString('pt-BR')} • Base: {fmt(item.valor_cobrado)}
                             </p>
                           </div>
@@ -867,16 +867,16 @@ export default function FinanceiroPage() {
                 ) : (
                   <div className="flex flex-col items-center justify-center py-16 text-center">
                     <Receipt className="h-12 w-12 text-slate-300 mb-3" />
-                    <p className="text-base font-bold text-slate-600">Nenhum procedimento encontrado</p>
+                    <p className="text-base font-bold text-slate-600 dark:text-slate-300">Nenhum procedimento encontrado</p>
                     <p className="text-sm font-medium text-slate-400 mt-1">Nenhum registro nos últimos 30 dias para este profissional.</p>
                   </div>
                 )}
               </div>
 
-              <div className="p-6 border-t border-slate-200 shrink-0">
+              <div className="p-6 border-t border-slate-200 dark:border-slate-700 shrink-0">
                 <button 
                   onClick={() => setExtratoModal(null)} 
-                  className="w-full py-3 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors"
+                  className="w-full py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors"
                 >
                   Fechar Extrato
                 </button>

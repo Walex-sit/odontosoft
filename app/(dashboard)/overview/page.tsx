@@ -55,7 +55,7 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="flex flex-col w-full h-full bg-slate-50 text-slate-800 overflow-y-auto print:bg-white print:text-black">
+    <div className="flex flex-col min-h-screen w-full h-full bg-slate-100 text-slate-800 dark:text-slate-100 overflow-y-auto print:bg-white dark:bg-slate-800 print:text-slate-900 dark:text-slate-100">
       {/* Estilos para impressão */}
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
@@ -67,17 +67,17 @@ export default function DashboardOverview() {
       `}} />
 
       {/* Cabeçalho da Página */}
-      <header className="flex items-center justify-between p-8 border-b border-slate-200 bg-white shadow-sm shrink-0 no-print">
+      <header className="flex items-center justify-between p-8 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 shadow-sm shrink-0 no-print">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Dashboard Gerencial</h1>
-          <p className="text-sm font-semibold text-slate-500 mt-1">Visão geral do desempenho da sua clínica</p>
+          <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Dashboard Gerencial</h1>
+          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">Visão geral do desempenho da sua clínica</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 w-72 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
+          <div className="flex items-center bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 w-72 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
             <Search size={18} className="text-slate-400 mr-2" />
-            <input type="text" placeholder="Buscar pacientes, médicos..." className="bg-transparent border-none focus:outline-none text-sm font-semibold w-full text-slate-700 placeholder-slate-400" />
+            <input type="text" placeholder="Buscar pacientes, médicos..." className="bg-transparent border-none focus:outline-none text-sm font-semibold w-full text-slate-700 dark:text-slate-200 placeholder-slate-400" />
           </div>
-          <button className="relative p-3 text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors border border-slate-200 rounded-xl bg-white shadow-sm">
+          <button className="relative p-3 text-slate-500 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-950 shadow-sm">
             <Bell size={18} />
             <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
           </button>
@@ -92,16 +92,16 @@ export default function DashboardOverview() {
             </button>
             
             {exportOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
+              <div className="absolute right-0 mt-2 w-48 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg z-50 overflow-hidden">
                 <button 
                   onClick={handleExportPDF}
-                  className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-3 border-b border-slate-100"
+                  className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 flex items-center gap-3 border-b border-slate-100"
                 >
                   <Printer size={16} className="text-slate-400" /> Em PDF / Imprimir
                 </button>
                 <button 
                   onClick={handleExportCSV}
-                  className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                  className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 flex items-center gap-3"
                 >
                   <FileSpreadsheet size={16} className="text-green-600" /> Em Planilha (CSV)
                 </button>
@@ -114,19 +114,19 @@ export default function DashboardOverview() {
       <main id="printable-dashboard" className="flex-1 p-8 max-w-[1400px] mx-auto w-full flex flex-col gap-8 min-w-0">
         
         <div className="hidden print:block mb-8">
-          <h1 className="text-3xl font-extrabold text-black">Relatório Gerencial - OdontoSaaS</h1>
-          <p className="text-slate-600">Gerado em {new Date().toLocaleDateString('pt-BR')}</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">Relatório Gerencial - OdontoSaaS</h1>
+          <p className="text-slate-600 dark:text-slate-300">Gerado em {new Date().toLocaleDateString('pt-BR')}</p>
         </div>
 
         {/* Linha 1: KPIs (Métricas Principais) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white border border-slate-200 rounded-[24px] p-6 shadow-sm flex flex-col">
+          <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-[24px] p-6 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Faturamento Mensal</h3>
+              <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Faturamento Mensal</h3>
               <div className="p-2 bg-emerald-100 text-emerald-600 rounded-xl"><TrendingUp size={18} /></div>
             </div>
             <div className="mt-auto">
-              <span className="text-3xl font-extrabold text-slate-800">
+              <span className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">
                 {metrics ? formatCurrency(metrics.faturamentoMensal) : 'R$ 0,00'}
               </span>
               <div className="flex items-center gap-2 mt-2">
@@ -138,13 +138,13 @@ export default function DashboardOverview() {
             </div>
           </div>
           
-          <div className="bg-white border border-slate-200 rounded-[24px] p-6 shadow-sm flex flex-col">
+          <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-[24px] p-6 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pacientes Ativos</h3>
+              <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pacientes Ativos</h3>
               <div className="p-2 bg-blue-100 text-blue-600 rounded-xl"><Users size={18} /></div>
             </div>
             <div className="mt-auto">
-              <span className="text-3xl font-extrabold text-slate-800">
+              <span className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">
                 {metrics?.pacientesAtivos || 0}
               </span>
               <div className="flex items-center gap-2 mt-2">
@@ -156,30 +156,30 @@ export default function DashboardOverview() {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-[24px] p-6 shadow-sm flex flex-col">
+          <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-[24px] p-6 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Consultas Hoje</h3>
+              <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Consultas Hoje</h3>
               <div className="p-2 bg-purple-100 text-purple-600 rounded-xl"><Calendar size={18} /></div>
             </div>
             <div className="mt-auto">
-              <span className="text-3xl font-extrabold text-slate-800">
+              <span className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">
                 {metrics?.consultasHoje || 0}
               </span>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs font-semibold text-slate-500">
-                  <strong className="text-slate-700">{metrics?.consultasRealizadasHoje || 0}</strong> realizadas
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  <strong className="text-slate-700 dark:text-slate-200">{metrics?.consultasRealizadasHoje || 0}</strong> realizadas
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-[24px] p-6 shadow-sm flex flex-col">
+          <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-[24px] p-6 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Comparecimento</h3>
+              <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Comparecimento</h3>
               <div className="p-2 bg-amber-100 text-amber-600 rounded-xl"><Activity size={18} /></div>
             </div>
             <div className="mt-auto">
-              <span className="text-3xl font-extrabold text-slate-800">
+              <span className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">
                 {metrics?.taxaComparecimento || 0}%
               </span>
               <div className="flex items-center gap-2 mt-2">
@@ -196,11 +196,11 @@ export default function DashboardOverview() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* Gráfico Principal: Fluxo de Caixa */}
-            <div className="lg:col-span-2 bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm">
+            <div className="lg:col-span-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-[32px] p-8 shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-800">Fluxo de Caixa Mensal</h3>
-                  <p className="text-sm font-semibold text-slate-500">Receitas vs Despesas do ano</p>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Fluxo de Caixa Mensal</h3>
+                  <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Receitas vs Despesas do ano</p>
                 </div>
               </div>
               <div className="h-80 w-full">
@@ -221,10 +221,10 @@ export default function DashboardOverview() {
             </div>
 
             {/* Gráfico 2: Atendimentos por Dentista (Pie) */}
-            <div className="lg:col-span-1 bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm flex flex-col">
+            <div className="lg:col-span-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-[32px] p-8 shadow-sm flex flex-col">
               <div className="mb-2">
-                <h3 className="text-lg font-bold text-slate-800">Atendimentos</h3>
-                <p className="text-sm font-semibold text-slate-500">Distribuição por Profissional</p>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Atendimentos</h3>
+                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Distribuição por Profissional</p>
               </div>
               <div className="flex-1 min-h-[250px] relative">
                 <ResponsiveContainer width="100%" height="100%">
@@ -253,19 +253,19 @@ export default function DashboardOverview() {
                   <div key={d.name} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.fill }}></div>
-                      <span className="text-sm font-semibold text-slate-600">{d.name}</span>
+                      <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">{d.name}</span>
                     </div>
-                    <span className="text-sm font-bold text-slate-800">{d.value}</span>
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-100">{d.value}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Gráfico 3: Procedimentos (Bar) */}
-            <div className="lg:col-span-3 bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm">
+            <div className="lg:col-span-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-[32px] p-8 shadow-sm">
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-slate-800">Procedimentos Mais Realizados</h3>
-                <p className="text-sm font-semibold text-slate-500">Top 5 tratamentos executados na clínica</p>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Procedimentos Mais Realizados</h3>
+                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Top 5 tratamentos executados na clínica</p>
               </div>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">

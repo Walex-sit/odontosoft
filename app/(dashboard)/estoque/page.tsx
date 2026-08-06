@@ -83,13 +83,13 @@ export default function EstoquePage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 overflow-y-auto">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 overflow-y-auto">
       {/* Header */}
-      <header className="p-8 bg-white border-b border-slate-200 shadow-sm shrink-0">
+      <header className="p-8 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Gestão de Estoque</h1>
-            <p className="text-sm font-semibold text-slate-500 mt-1">Controle de materiais, insumos e suprimentos odontológicos</p>
+            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Gestão de Estoque</h1>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">Controle de materiais, insumos e suprimentos odontológicos</p>
           </div>
           <button onClick={() => setNovoModal(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors">
             <Plus className="h-4 w-4" /> Novo Item
@@ -106,37 +106,37 @@ export default function EstoquePage() {
             { label: 'Itens OK', value: total - criticos, icon: TrendingUp, color: 'emerald' },
             { label: 'Valor em Estoque', value: `R$ ${valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: TrendingDown, color: 'slate' },
           ].map(({ label, value, icon: Icon, color }) => (
-            <div key={label} className={`bg-white rounded-2xl border border-slate-200 p-5 shadow-sm`}>
+            <div key={label} className={`bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm`}>
               <div className={`p-2.5 bg-${color}-50 text-${color}-600 rounded-xl w-fit mb-3`}>
                 <Icon className="h-5 w-5" />
               </div>
-              <p className="text-2xl font-extrabold text-slate-800">{value}</p>
-              <p className="text-xs font-semibold text-slate-500 mt-1">{label}</p>
+              <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">{value}</p>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">{label}</p>
             </div>
           ))}
         </div>
 
         {/* Filtros */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap gap-3 items-center">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm flex flex-wrap gap-3 items-center">
           <div className="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2 flex-1 min-w-48">
             <Search className="h-4 w-4 text-slate-400" />
-            <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar item ou fornecedor..." className="bg-transparent outline-none text-sm text-slate-700 w-full font-medium" />
+            <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar item ou fornecedor..." className="bg-transparent outline-none text-sm text-slate-700 dark:text-slate-200 w-full font-medium" />
           </div>
           <div className="flex flex-wrap gap-2">
             {CATEGORIAS.map(cat => (
-              <button key={cat} onClick={() => setCategoria(cat)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${categoria === cat ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>{cat}</button>
+              <button key={cat} onClick={() => setCategoria(cat)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${categoria === cat ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}`}>{cat}</button>
             ))}
           </div>
         </div>
 
         {/* Tabela */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 border-b border-slate-200">
+              <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
                 <tr>
                   {['Item', 'Categoria', 'Qtd Atual', 'Mín.', 'Unidade', 'Fornecedor', 'Custo Unit.', 'Status', 'Ações'].map(h => (
-                    <th key={h} className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                    <th key={h} className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -144,14 +144,14 @@ export default function EstoquePage() {
                 {itensFiltrados.map(item => {
                   const st = statusColor(item)
                   return (
-                    <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-5 py-3.5 font-bold text-slate-800">{item.nome}</td>
-                      <td className="px-5 py-3.5 text-slate-600">{item.categoria}</td>
-                      <td className={`px-5 py-3.5 font-extrabold ${item.quantidade < item.minimo ? 'text-red-600' : 'text-slate-800'}`}>{item.quantidade}</td>
-                      <td className="px-5 py-3.5 text-slate-500">{item.minimo}</td>
-                      <td className="px-5 py-3.5 text-slate-500">{item.unidade}</td>
-                      <td className="px-5 py-3.5 text-slate-600">{item.fornecedor}</td>
-                      <td className="px-5 py-3.5 text-slate-700 font-semibold">R$ {item.custo.toFixed(2)}</td>
+                    <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 transition-colors">
+                      <td className="px-5 py-3.5 font-bold text-slate-800 dark:text-slate-100">{item.nome}</td>
+                      <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{item.categoria}</td>
+                      <td className={`px-5 py-3.5 font-extrabold ${item.quantidade < item.minimo ? 'text-red-600' : 'text-slate-800 dark:text-slate-100'}`}>{item.quantidade}</td>
+                      <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.minimo}</td>
+                      <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.unidade}</td>
+                      <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{item.fornecedor}</td>
+                      <td className="px-5 py-3.5 text-slate-700 dark:text-slate-200 font-semibold">R$ {item.custo.toFixed(2)}</td>
                       <td className="px-5 py-3.5">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${st.bg} ${st.text}`}>{st.label}</span>
                       </td>
@@ -180,15 +180,15 @@ export default function EstoquePage() {
       {/* Modal Movimentação */}
       {movModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8">
-            <h3 className="text-lg font-bold text-slate-800 mb-1">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-sm p-8">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">
               {movModal.tipo === 'entrada' ? '📦 Registrar Entrada' : '📤 Registrar Saída'}
             </h3>
-            <p className="text-sm text-slate-500 mb-6">{movModal.item.nome} — estoque atual: <strong>{movModal.item.quantidade}</strong></p>
-            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Quantidade ({movModal.item.unidade})</label>
-            <input type="number" min={1} value={movQtd} onChange={e => setMovQtd(Number(e.target.value))} className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 mb-6" />
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{movModal.item.nome} — estoque atual: <strong>{movModal.item.quantidade}</strong></p>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">Quantidade ({movModal.item.unidade})</label>
+            <input type="number" min={1} value={movQtd} onChange={e => setMovQtd(Number(e.target.value))} className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 mb-6" />
             <div className="flex gap-3">
-              <button onClick={() => setMovModal(null)} className="flex-1 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancelar</button>
+              <button onClick={() => setMovModal(null)} className="flex-1 py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancelar</button>
               <button onClick={executarMovimentacao} className={`flex-1 py-3 text-white rounded-xl font-bold text-sm transition-colors ${movModal.tipo === 'entrada' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'}`}>Confirmar</button>
             </div>
           </div>
@@ -198,10 +198,10 @@ export default function EstoquePage() {
       {/* Modal Novo Item */}
       {novoModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md p-8">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-slate-800">Novo Item de Estoque</h3>
-              <button onClick={() => setNovoModal(false)} className="p-2 hover:bg-slate-100 rounded-full"><X className="h-5 w-5 text-slate-400" /></button>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Novo Item de Estoque</h3>
+              <button onClick={() => setNovoModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full"><X className="h-5 w-5 text-slate-400" /></button>
             </div>
             <div className="space-y-4">
               {[
@@ -213,20 +213,20 @@ export default function EstoquePage() {
                 { label: 'Custo Unitário (R$)', key: 'custo', type: 'number' },
               ].map(f => (
                 <div key={f.key}>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">{f.label}</label>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">{f.label}</label>
                   <input type={f.type} value={(novoItem as any)[f.key]} onChange={e => setNovoItem(p => ({ ...p, [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value }))}
-                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
+                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
                 </div>
               ))}
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Categoria</label>
-                <select value={novoItem.categoria} onChange={e => setNovoItem(p => ({ ...p, categoria: e.target.value }))} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Categoria</label>
+                <select value={novoItem.categoria} onChange={e => setNovoItem(p => ({ ...p, categoria: e.target.value }))} className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                   {CATEGORIAS.filter(c => c !== 'Todos').map(c => <option key={c}>{c}</option>)}
                 </select>
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setNovoModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancelar</button>
+              <button onClick={() => setNovoModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancelar</button>
               <button onClick={adicionarItem} className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors">Salvar Item</button>
             </div>
           </div>

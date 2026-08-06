@@ -57,13 +57,13 @@ function formatarTelefone(tel: string | null) {
 function InfoField({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div>
-      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+      <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
         {label}
       </label>
       {value ? (
-        <p className="text-slate-300 font-medium text-sm">{value}</p>
+        <p className="text-slate-600 dark:text-slate-300 font-medium text-sm">{value}</p>
       ) : (
-        <p className="text-slate-600 italic text-sm">Não informado</p>
+        <p className="text-slate-600 dark:text-slate-300 italic text-sm">Não informado</p>
       )}
     </div>
   )
@@ -73,7 +73,7 @@ function InfoField({ label, value }: { label: string; value: string | null | und
 
 function EvolucaoSkeleton() {
   return (
-    <div className="p-6 border-b border-slate-700/50 space-y-3">
+    <div className="p-6 border-b border-slate-200 dark:border-slate-700/50 space-y-3">
       <div className="flex justify-between">
         <div className="h-4 w-32 bg-slate-700/60 rounded animate-pulse" />
         <div className="h-4 w-20 bg-slate-700/60 rounded animate-pulse" />
@@ -219,7 +219,7 @@ export default function DetalhePaciente() {
   if (!paciente) {
     return (
       <div className="text-center py-16">
-        <h2 className="text-2xl font-bold text-slate-100">Paciente não encontrado</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Paciente não encontrado</h2>
         <button
           onClick={() => router.push('/pacientes')}
           className="mt-4 text-blue-400 hover:underline text-sm"
@@ -249,7 +249,7 @@ export default function DetalhePaciente() {
       <div className="mb-6">
         <button
           onClick={() => router.push('/pacientes')}
-          className="flex items-center gap-2 text-slate-400 hover:text-slate-100 font-medium text-sm transition-colors mb-4 active:scale-95"
+          className="flex items-center gap-2 text-slate-400 hover:text-slate-800 dark:text-slate-100 font-medium text-sm transition-colors mb-4 active:scale-95"
         >
           <ChevronLeft className="h-4 w-4" />
           Voltar para lista
@@ -260,8 +260,8 @@ export default function DetalhePaciente() {
             {paciente.nome.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-slate-100">{paciente.nome}</h2>
-            <p className="text-slate-500 mt-0.5 text-xs sm:text-sm font-medium">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">{paciente.nome}</h2>
+            <p className="text-slate-500 dark:text-slate-400 mt-0.5 text-xs sm:text-sm font-medium">
               Paciente Ativo · ID: {paciente.id.substring(0, 8)}
             </p>
           </div>
@@ -269,10 +269,10 @@ export default function DetalhePaciente() {
       </div>
 
       {/* Card com tabs */}
-      <div className="bg-slate-800 rounded-2xl border border-slate-700/50 shadow-sm overflow-hidden mb-8">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden mb-8">
 
         {/* Tab bar */}
-        <div className="border-b border-slate-700/50 px-4 sm:px-6">
+        <div className="border-b border-slate-200 dark:border-slate-700/50 px-4 sm:px-6">
           <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto no-scrollbar scroll-smooth">
             {tabs.map(({ id, name, icon: Icon }) => (
               <button
@@ -299,7 +299,7 @@ export default function DetalhePaciente() {
           {/* ── Informações ────────────────────────────────────────────────── */}
           {activeTab === 'informacoes' && (
             <div className="space-y-6">
-              <h3 className="text-base font-bold text-slate-100 border-b border-slate-700/50 pb-2">
+              <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700/50 pb-2">
                 Dados Pessoais
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -315,10 +315,10 @@ export default function DetalhePaciente() {
           {/* ── Consultas ─────────────────────────────────────────────────── */}
           {activeTab === 'historico' && (
             <div className="text-center py-12">
-              <div className="h-12 w-12 bg-slate-900 border border-slate-800 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-3">
+              <div className="h-12 w-12 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 dark:border-slate-800 text-slate-500 dark:text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Calendar className="h-5 w-5" />
               </div>
-              <h4 className="text-slate-100 font-bold mb-1 text-base">Nenhum histórico de consultas</h4>
+              <h4 className="text-slate-800 dark:text-slate-100 font-bold mb-1 text-base">Nenhum histórico de consultas</h4>
               <p className="text-slate-400 text-sm">Os agendamentos concluídos aparecerão aqui.</p>
             </div>
           )}
@@ -329,7 +329,7 @@ export default function DetalhePaciente() {
               <div className="h-12 w-12 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full flex items-center justify-center mx-auto mb-3">
                 <DollarSign className="h-5 w-5" />
               </div>
-              <h4 className="text-slate-100 font-bold mb-1 text-base">Planejamento de Tratamento</h4>
+              <h4 className="text-slate-800 dark:text-slate-100 font-bold mb-1 text-base">Planejamento de Tratamento</h4>
               <p className="text-slate-400 text-sm mb-4">Módulo de orçamento e tratamentos em breve.</p>
               <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all border border-blue-500 shadow-sm active:scale-95">
                 Novo Orçamento
@@ -343,11 +343,11 @@ export default function DetalhePaciente() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-slate-400" />
-                  <h3 className="text-base font-bold text-slate-100">
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
                     Histórico Financeiro
                   </h3>
                   {!loadingCobrancas && (
-                    <span className="text-xs font-bold text-slate-500 bg-slate-900 border border-slate-700/50 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/50 px-2 py-0.5 rounded-full">
                       {cobrancas.length}
                     </span>
                   )}
@@ -356,7 +356,7 @@ export default function DetalhePaciente() {
                 <button
                   className="
                     flex items-center gap-2 text-sm font-bold
-                    text-white bg-green-600 hover:bg-green-500
+                    text-slate-800 dark:text-slate-100 dark:text-white bg-green-600 hover:bg-green-500
                     border border-green-500 px-4 py-2 rounded-xl
                     shadow-sm shadow-green-500/20
                     transition-all active:scale-95
@@ -379,7 +379,7 @@ export default function DetalhePaciente() {
                   <p className="text-xs text-slate-400 mb-3">{erroCobrancas}</p>
                   <button
                     onClick={carregarCobrancas}
-                    className="text-xs font-bold text-slate-300 bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg hover:bg-slate-700 transition-all active:scale-95"
+                    className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-4 py-2 rounded-lg hover:bg-slate-700 transition-all active:scale-95"
                   >
                     Tentar novamente
                   </button>
@@ -391,7 +391,7 @@ export default function DetalhePaciente() {
                   <div className="h-12 w-12 bg-green-500/10 border border-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-3">
                     <DollarSign className="h-5 w-5" />
                   </div>
-                  <h4 className="text-slate-100 font-bold mb-1 text-base">Nenhuma cobrança registrada</h4>
+                  <h4 className="text-slate-800 dark:text-slate-100 font-bold mb-1 text-base">Nenhuma cobrança registrada</h4>
                   <p className="text-slate-400 text-sm mb-4">
                     Este paciente ainda não possui histórico financeiro.
                   </p>
@@ -399,9 +399,9 @@ export default function DetalhePaciente() {
               )}
 
               {!loadingCobrancas && !erroCobrancas && cobrancas.length > 0 && (
-                <div className="rounded-xl border border-slate-700/50 overflow-hidden">
-                  <table className="w-full text-left text-sm text-slate-300">
-                    <thead className="bg-slate-900/50 text-xs uppercase text-slate-500">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
+                  <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                    <thead className="bg-white dark:bg-slate-900/50 text-xs uppercase text-slate-500 dark:text-slate-400">
                       <tr>
                         <th className="px-6 py-4 font-semibold">Descrição</th>
                         <th className="px-6 py-4 font-semibold">Data</th>
@@ -416,7 +416,7 @@ export default function DetalhePaciente() {
                           <td className="px-6 py-4 text-slate-400">
                             {new Date(c.created_at).toLocaleDateString('pt-BR')}
                           </td>
-                          <td className="px-6 py-4 font-bold text-slate-100">
+                          <td className="px-6 py-4 font-bold text-slate-800 dark:text-slate-100">
                             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(c.valor)}
                           </td>
                           <td className="px-6 py-4">
@@ -444,11 +444,11 @@ export default function DetalhePaciente() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <ClipboardList className="h-5 w-5 text-slate-400" />
-                  <h3 className="text-base font-bold text-slate-100">
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
                     Evoluções Clínicas
                   </h3>
                   {!loadingEvolucoes && (
-                    <span className="text-xs font-bold text-slate-500 bg-slate-900 border border-slate-700/50 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/50 px-2 py-0.5 rounded-full">
                       {evolucoes.length}
                     </span>
                   )}
@@ -461,7 +461,7 @@ export default function DetalhePaciente() {
                   }}
                   className="
                     flex items-center gap-2 text-sm font-bold
-                    text-white bg-blue-600 hover:bg-blue-500
+                    text-slate-800 dark:text-slate-100 dark:text-white bg-blue-600 hover:bg-blue-500
                     border border-blue-500 px-4 py-2 rounded-xl
                     shadow-sm shadow-blue-500/20
                     transition-all active:scale-95
@@ -474,7 +474,7 @@ export default function DetalhePaciente() {
 
               {/* Loading skeleton */}
               {loadingEvolucoes && (
-                <div className="rounded-xl border border-slate-700/50 overflow-hidden">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
                   {Array.from({ length: 3 }).map((_, i) => <EvolucaoSkeleton key={i} />)}
                 </div>
               )}
@@ -486,7 +486,7 @@ export default function DetalhePaciente() {
                   <p className="text-xs text-slate-400 mb-3">{erroEvolucoes}</p>
                   <button
                     onClick={carregarEvolucoes}
-                    className="text-xs font-bold text-slate-300 bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg hover:bg-slate-700 transition-all active:scale-95"
+                    className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-4 py-2 rounded-lg hover:bg-slate-700 transition-all active:scale-95"
                   >
                     Tentar novamente
                   </button>
@@ -499,7 +499,7 @@ export default function DetalhePaciente() {
                   <div className="h-12 w-12 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full flex items-center justify-center mx-auto mb-3">
                     <FileText className="h-5 w-5" />
                   </div>
-                  <h4 className="text-slate-100 font-bold mb-1 text-base">Nenhuma evolução registrada</h4>
+                  <h4 className="text-slate-800 dark:text-slate-100 font-bold mb-1 text-base">Nenhuma evolução registrada</h4>
                   <p className="text-slate-400 text-sm mb-4">
                     Clique em{' '}
                     <button
@@ -518,13 +518,13 @@ export default function DetalhePaciente() {
 
               {/* Lista de evoluções */}
               {!loadingEvolucoes && !erroEvolucoes && evolucoes.length > 0 && (
-                <div className="rounded-xl border border-slate-700/50 overflow-hidden">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
                   {evolucoes.map((ev, index) => (
                     <div
                       key={ev.id}
                       className={`
                         p-5 sm:p-6 hover:bg-slate-700/20 transition-colors
-                        ${index < evolucoes.length - 1 ? 'border-b border-slate-700/50' : ''}
+                        ${index < evolucoes.length - 1 ? 'border-b border-slate-200 dark:border-slate-700/50' : ''}
                       `}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-1">
@@ -537,7 +537,7 @@ export default function DetalhePaciente() {
                           </span>
                         </div>
                         <div className="flex items-center gap-4 pl-4 sm:pl-0">
-                          <span className="text-[10px] text-slate-600 font-mono">
+                          <span className="text-[10px] text-slate-600 dark:text-slate-300 font-mono">
                             Registrado: {new Date(ev.created_at).toLocaleString('pt-BR', {
                               day: '2-digit', month: '2-digit', year: '2-digit',
                               hour: '2-digit', minute: '2-digit',
@@ -564,7 +564,7 @@ export default function DetalhePaciente() {
                           </div>
                         </div>
                       </div>
-                      <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap pl-4">
+                      <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap pl-4">
                         {ev.descricao}
                       </p>
                     </div>
@@ -578,12 +578,12 @@ export default function DetalhePaciente() {
       </div>
 
       {activeTab === 'anamnese' && (
-        <div className="bg-slate-800 rounded-2xl border border-slate-700/50 shadow-sm p-8 mt-2 mb-8 flex flex-col items-center gap-6 text-center">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm p-8 mt-2 mb-8 flex flex-col items-center gap-6 text-center">
           <div className="p-4 bg-blue-500/10 rounded-2xl">
             <HeartPulse className="h-10 w-10 text-blue-400" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-100 mb-1">Anamnese Digital</h3>
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Anamnese Digital</h3>
             <p className="text-sm text-slate-400 max-w-sm">Clique abaixo para preencher ou revisar a ficha de anamnese e histórico de saúde deste paciente.</p>
           </div>
           <button onClick={() => setAnamneseOpen(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors shadow-sm shadow-blue-500/20">

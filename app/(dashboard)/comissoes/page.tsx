@@ -84,12 +84,12 @@ export default function ComissoesPage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 overflow-y-auto">
-      <header className="p-8 bg-white border-b border-slate-200 shadow-sm shrink-0">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 overflow-y-auto">
+      <header className="p-8 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">Controle de Comissões</h1>
-            <p className="text-sm font-semibold text-slate-500 mt-1">Histórico de repasses e comissões por profissional</p>
+            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Controle de Comissões</h1>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">Histórico de repasses e comissões por profissional</p>
           </div>
         </div>
       </header>
@@ -97,25 +97,25 @@ export default function ComissoesPage() {
       <main className="flex-1 p-8 max-w-7xl mx-auto w-full space-y-6">
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm col-span-2 md:col-span-1">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm col-span-2 md:col-span-1">
             <div className="p-2.5 bg-amber-50 text-amber-600 rounded-xl w-fit mb-3"><DollarSign className="h-5 w-5" /></div>
-            <p className="text-2xl font-extrabold text-slate-800">R$ {totalPendente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-            <p className="text-xs font-semibold text-slate-500 mt-1">A Repassar</p>
+            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">R$ {totalPendente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">A Repassar</p>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm col-span-2 md:col-span-1">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm col-span-2 md:col-span-1">
             <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl w-fit mb-3"><CheckCircle2 className="h-5 w-5" /></div>
-            <p className="text-2xl font-extrabold text-slate-800">R$ {totalPago.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-            <p className="text-xs font-semibold text-slate-500 mt-1">Já Repassado</p>
+            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">R$ {totalPago.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Já Repassado</p>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm col-span-2 md:col-span-1">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm col-span-2 md:col-span-1">
             <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl w-fit mb-3"><Users className="h-5 w-5" /></div>
-            <p className="text-2xl font-extrabold text-slate-800">{dentistas.length}</p>
-            <p className="text-xs font-semibold text-slate-500 mt-1">Profissionais</p>
+            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">{dentistas.length}</p>
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Profissionais</p>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm col-span-2 md:col-span-1">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm col-span-2 md:col-span-1">
             <div className="p-2.5 bg-purple-50 text-purple-600 rounded-xl w-fit mb-3"><TrendingUp className="h-5 w-5" /></div>
-            <p className="text-2xl font-extrabold text-slate-800">{allProcs.length}</p>
-            <p className="text-xs font-semibold text-slate-500 mt-1">Procedimentos</p>
+            <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">{allProcs.length}</p>
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Procedimentos</p>
           </div>
         </div>
 
@@ -124,11 +124,11 @@ export default function ComissoesPage() {
           {dentistas.map(d => {
             const pendente = d.procedimentos.filter(p => p.status === 'pendente').reduce((acc, p) => acc + calcComissao(p.valor, p.taxaComissao), 0)
             return (
-              <div key={d.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <div key={d.id} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="font-bold text-slate-800">{d.nome}</h3>
-                    <p className="text-xs text-slate-500">{d.especialidade} · {d.taxaPadrao}% comissão</p>
+                    <h3 className="font-bold text-slate-800 dark:text-slate-100">{d.nome}</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{d.especialidade} · {d.taxaPadrao}% comissão</p>
                   </div>
                   <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-extrabold text-sm">
                     {d.nome.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -149,42 +149,42 @@ export default function ComissoesPage() {
         </div>
 
         {/* Filtros */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap gap-3 items-center">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm flex flex-wrap gap-3 items-center">
           <div className="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2 flex-1 min-w-48">
             <Search className="h-4 w-4 text-slate-400" />
-            <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar por paciente ou procedimento..." className="bg-transparent outline-none text-sm text-slate-700 w-full font-medium" />
+            <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar por paciente ou procedimento..." className="bg-transparent outline-none text-sm text-slate-700 dark:text-slate-200 w-full font-medium" />
           </div>
-          <select value={selectedDentista} onChange={e => setSelectedDentista(e.target.value === 'todos' ? 'todos' : Number(e.target.value))} className="border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 focus:outline-none">
+          <select value={selectedDentista} onChange={e => setSelectedDentista(e.target.value === 'todos' ? 'todos' : Number(e.target.value))} className="border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 focus:outline-none">
             <option value="todos">Todos os Dentistas</option>
             {dentistas.map(d => <option key={d.id} value={d.id}>{d.nome}</option>)}
           </select>
           <div className="flex gap-2">
             {(['todos', 'pendente', 'pago'] as const).map(s => (
-              <button key={s} onClick={() => setFiltroStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors capitalize ${filtroStatus === s ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>{s === 'todos' ? 'Todos' : s === 'pendente' ? 'Pendente' : 'Pago'}</button>
+              <button key={s} onClick={() => setFiltroStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors capitalize ${filtroStatus === s ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}`}>{s === 'todos' ? 'Todos' : s === 'pendente' ? 'Pendente' : 'Pago'}</button>
             ))}
           </div>
         </div>
 
         {/* Tabela */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 border-b border-slate-200">
+              <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
                 <tr>
                   {['Paciente', 'Procedimento', 'Dentista', 'Data', 'Valor Proc.', 'Comissão (%)', 'Valor Comissão', 'Status'].map(h => (
-                    <th key={h} className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                    <th key={h} className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filtrado.map(p => (
-                  <tr key={p.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-5 py-3.5 font-bold text-slate-800">{p.paciente}</td>
-                    <td className="px-5 py-3.5 text-slate-600">{p.descricao}</td>
-                    <td className="px-5 py-3.5 text-slate-600">{p.dentistaNome}</td>
-                    <td className="px-5 py-3.5 text-slate-500">{p.data}</td>
-                    <td className="px-5 py-3.5 font-semibold text-slate-800">R$ {p.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                    <td className="px-5 py-3.5 text-slate-600">{p.taxaComissao}%</td>
+                  <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 transition-colors">
+                    <td className="px-5 py-3.5 font-bold text-slate-800 dark:text-slate-100">{p.paciente}</td>
+                    <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{p.descricao}</td>
+                    <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{p.dentistaNome}</td>
+                    <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{p.data}</td>
+                    <td className="px-5 py-3.5 font-semibold text-slate-800 dark:text-slate-100">R$ {p.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                    <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{p.taxaComissao}%</td>
                     <td className="px-5 py-3.5 font-extrabold text-blue-700">R$ {calcComissao(p.valor, p.taxaComissao).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                     <td className="px-5 py-3.5">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${p.status === 'pago' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{p.status === 'pago' ? 'Pago' : 'Pendente'}</span>
@@ -203,14 +203,14 @@ export default function ComissoesPage() {
       {/* Modal Quitar */}
       {quitarModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 text-center">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-sm p-8 text-center">
             <div className="text-4xl mb-4">💸</div>
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Confirmar Quitação</h3>
-            <p className="text-sm text-slate-500 mb-6">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Confirmar Quitação</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
               Marcar <strong>{quitarModal.procIds.length}</strong> comissão(ões) como pagas para <strong>{dentistas.find(d => d.id === quitarModal.dentistaId)?.nome}</strong>?
             </p>
             <div className="flex gap-3">
-              <button onClick={() => setQuitarModal(null)} className="flex-1 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancelar</button>
+              <button onClick={() => setQuitarModal(null)} className="flex-1 py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancelar</button>
               <button onClick={confirmarQuitacao} className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-colors">Confirmar</button>
             </div>
           </div>
