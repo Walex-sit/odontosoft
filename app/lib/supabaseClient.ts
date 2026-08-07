@@ -21,7 +21,7 @@ if (!supabaseAnonKey) {
   )
 }
 
-if (!supabaseServiceKey) {
+if (typeof window === 'undefined' && !supabaseServiceKey) {
   console.warn(
     '[Supabase] SUPABASE_SERVICE_ROLE_KEY não está definida. ' +
     'Server Actions que exigem privilégios de admin podem falhar.'
@@ -54,7 +54,7 @@ function getSupabaseClient(): SupabaseClient<Database> {
 }
 
 function getSupabaseAdmin(): SupabaseClient<Database> {
-  // Trava de segurança: impede o crash se o código for executado no navegador
+  // Trava de segurança crucial: impede o crash se o código for executado no navegador
   if (!supabaseServiceKey) {
     return null as unknown as SupabaseClient<Database>
   }
