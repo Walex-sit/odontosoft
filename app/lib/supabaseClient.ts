@@ -5,6 +5,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 // ---------------------------------------------------------------------------
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!supabaseUrl) {
   throw new Error(
@@ -20,8 +21,15 @@ if (!supabaseAnonKey) {
   )
 }
 
+if (!supabaseServiceKey) {
+  console.warn(
+    '[Supabase] SUPABASE_SERVICE_ROLE_KEY não está definida. ' +
+    'Server Actions que exigem privilégios de admin podem falhar.'
+  )
+}
+
 // ---------------------------------------------------------------------------
-// Singleton — garante uma única instância do cliente em toda a aplicação
+// Singletons — garante uma única instância dos clientes em toda a aplicação
 // ---------------------------------------------------------------------------
 // Tipagem do banco (gerada pelo Supabase CLI: `supabase gen types typescript`)
 // Por ora usada como `unknown` até a geração dos tipos automáticos.
@@ -29,6 +37,7 @@ if (!supabaseAnonKey) {
 type Database = any
 
 let _supabase: SupabaseClient<Database> | null = null
+let _supabaseAdmin: SupabaseClient<Database> | null = null
 
 function getSupabaseClient(): SupabaseClient<Database> {
   if (!_supabase) {
@@ -44,13 +53,34 @@ function getSupabaseClient(): SupabaseClient<Database> {
   return _supabase
 }
 
+function getSupabaseAdmin(): SupabaseClient<Database> {
+  // Trava de segurança: impede o crash se o código for executado no navegador
+  if (!supabaseServiceKey) {
+    return null as unknown as SupabaseClient<Database>
+  }
+
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient<Database>(supabaseUrl!, supabaseServiceKey, {
+      auth: {
+        // Desativado pois o servidor não usa localStorage (Server Actions)
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    })
+  }
+  return _supabaseAdmin
+}
+
 // ---------------------------------------------------------------------------
 // Exports
 // ---------------------------------------------------------------------------
 
-/** Instância singleton do cliente Supabase. Use em Client Components e Hooks. */
+/** Instância singleton do cliente Supabase padrão. Use em Client Components e Hooks. */
 export const supabase = getSupabaseClient()
 
-/** Alternativa funcional — retorna sempre a mesma instância singleton. */
-export { getSupabaseClient as getSupabase }
+/** Instância singleton do cliente Admin. Use APENAS no lado do servidor (Server Actions). */
+export const supabaseAdmin = getSupabaseAdmin()
 
+/** Alternativas funcionais — retornam sempre as mesmas instâncias singleton. */
+export { getSupabaseClient as getSupabase }
