@@ -1,7 +1,7 @@
 import Topbar from '../components/Topbar'
 import RequireAuth from '../components/RequireAuth'
 import RouteGuard from '../components/RouteGuard'
-import { BottomNav } from '@/components/BottomNav'' // <-- 1. Importe a BottomNav aqui
+import { BottomNav } from '@/components/BottomNav' // <-- 1. Importe a BottomNav aqui
 
 export default function DashboardLayout({
   children,
