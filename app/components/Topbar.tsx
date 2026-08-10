@@ -65,9 +65,12 @@ export default function Topbar() {
 
   const [notifications, setNotifications] = useState<Notification[]>([])
 
-  // Carrega notificações iniciais
+  // Carrega notificações iniciais garantindo a sessão
   useEffect(() => {
     async function fetchNotifications() {
+      const { data: { session: currentSession } } = await supabase.auth.getSession()
+      if (!currentSession) return
+
       const { data, error } = await supabase
         .from('alertas')
         .select('id, type, title, description, created_at, read')
@@ -75,7 +78,7 @@ export default function Topbar() {
         .limit(20)
 
       if (error) {
-        console.error('Erro ao buscar notificações:', error, JSON.stringify(error, null, 2))
+        console.error('Erro ao buscar notificações:', error)
         return
       }
 
@@ -93,33 +96,45 @@ export default function Topbar() {
     fetchNotifications()
   }, [])
 
-  // Escuta em tempo real alterações na tabela alertas
+  // Escuta em tempo real alterações na tabela alertas com verificação prévia
   useEffect(() => {
-    const channel = supabase
-      .channel('public:alertas')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas' }, payload => {
-        const newRecord = payload.new as any
-        if (payload.eventType === 'INSERT') {
-          const notif: Notification = {
-            id: newRecord.id,
-            type: newRecord.type,
-            title: newRecord.title,
-            description: newRecord.description,
-            time: new Date(newRecord.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            unread: !newRecord.read,
+    let channel: any = null
+
+    async function setupRealtimeAlerts() {
+      const { data: { session: currentSession } } = await supabase.auth.getSession()
+      if (!currentSession) return
+
+      channel = supabase
+        .channel('public:alertas')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas' }, payload => {
+          const newRecord = payload.new as any
+          if (payload.eventType === 'INSERT') {
+            const notif: Notification = {
+              id: newRecord.id,
+              type: newRecord.type,
+              title: newRecord.title,
+              description: newRecord.description,
+              time: new Date(newRecord.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              unread: !newRecord.read,
+            }
+            setNotifications(prev => [notif, ...prev])
+          } else if (payload.eventType === 'UPDATE') {
+            setNotifications(prev =>
+              prev.map(n => (n.id === newRecord.id ? { ...n, unread: !newRecord.read } : n))
+            )
+          } else if (payload.eventType === 'DELETE') {
+            setNotifications(prev => prev.filter(n => n.id !== payload.old.id))
           }
-          setNotifications(prev => [notif, ...prev])
-        } else if (payload.eventType === 'UPDATE') {
-          setNotifications(prev =>
-            prev.map(n => (n.id === newRecord.id ? { ...n, unread: !newRecord.read } : n))
-          )
-        } else if (payload.eventType === 'DELETE') {
-          setNotifications(prev => prev.filter(n => n.id !== payload.old.id))
-        }
-      })
-      .subscribe()
+        })
+        .subscribe()
+    }
+
+    setupRealtimeAlerts()
+
     return () => {
-      supabase.removeChannel(channel)
+      if (channel) {
+        supabase.removeChannel(channel)
+      }
     }
   }, [])
 
@@ -165,7 +180,7 @@ export default function Topbar() {
   }
 
   return (
-    <header className="h-16 w-full flex items-center justify-between px-6 z-50 bg-slate-50 dark:bg-slate-950 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0 transition-colors duration-200">
+    <header className="h-16 w-full flex items-center justify-between px-6 z-50 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0 transition-colors duration-200">
       
       {/* Esquerda: Logo e Navegação Principal */}
       <div className="flex items-center gap-8">
@@ -193,7 +208,7 @@ export default function Topbar() {
                 className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
                   isActive 
                     ? 'bg-white text-slate-900 shadow-sm dark:bg-white dark:text-slate-900' 
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 hover:text-slate-800 dark:text-slate-100'
+                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100'
                 }`}
               >
                 {link.name}
@@ -212,22 +227,22 @@ export default function Topbar() {
           <div className="relative">
             <button 
               onClick={() => setIsToolsOpen(!isToolsOpen)}
-              className="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-colors border border-slate-200 dark:border-slate-700"
+              className="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-colors border border-slate-200 dark:border-slate-700"
             >
               <LayoutGrid className="h-4 w-4" /> Ferramentas
             </button>
             {isToolsOpen && (
-              <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2">
+              <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-2 z-50 animate-in fade-in slide-in-from-top-2">
                 <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ferramentas Clínicas</p>
-                <button onClick={() => { setIsCalculadoraOpen(true); setIsToolsOpen(false) }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 font-medium transition-colors flex items-center justify-between">Calculadora</button>
-                <button onClick={() => { setIsReceituarioOpen(true); setIsToolsOpen(false) }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 font-medium transition-colors flex items-center justify-between">Receituário Rápido</button>
-                <button onClick={() => { setIsAtestadoOpen(true); setIsToolsOpen(false) }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 font-medium transition-colors flex items-center justify-between">Atestado Médico</button>
-                <div className="h-px bg-slate-100 my-1" />
+                <button onClick={() => { setIsCalculadoraOpen(true); setIsToolsOpen(false) }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium transition-colors flex items-center justify-between">Calculadora</button>
+                <button onClick={() => { setIsReceituarioOpen(true); setIsToolsOpen(false) }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium transition-colors flex items-center justify-between">Receituário Rápido</button>
+                <button onClick={() => { setIsAtestadoOpen(true); setIsToolsOpen(false) }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium transition-colors flex items-center justify-between">Atestado Médico</button>
+                <div className="h-px bg-slate-100 dark:bg-slate-700 my-1" />
                 <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Módulos Avançados</p>
-                <Link href="/estoque" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 font-medium">Gestão de Estoque</Link>
-                <Link href="/comissoes" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 font-medium">Controle de Comissões</Link>
-                <Link href="/regua-cobranca" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 font-medium">Régua de Cobrança</Link>
-                <Link href="/planos-tratamento" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 font-medium">Planos de Tratamento</Link>
+                <Link href="/estoque" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium">Gestão de Estoque</Link>
+                <Link href="/comissoes" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium">Controle de Comissões</Link>
+                <Link href="/regua-cobranca" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium">Régua de Cobrança</Link>
+                <Link href="/planos-tratamento" onClick={() => setIsToolsOpen(false)} className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium">Planos de Tratamento</Link>
               </div>
             )}
           </div>
@@ -240,7 +255,7 @@ export default function Topbar() {
           </button>
         </div>
 
-        <div className="h-8 w-px bg-slate-200 hidden lg:block mx-1"></div>
+        <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden lg:block mx-1"></div>
 
         {/* Busca com Atalho */}
         <button 
@@ -260,12 +275,12 @@ export default function Topbar() {
           <div className="relative">
             <button 
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:text-slate-100 rounded-xl transition-colors relative"
+              className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100 rounded-xl transition-colors relative"
               title="Notificações"
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border-2 border-white dark:border-slate-950"></span>
               )}
             </button>
             <NotificacoesDropdown
@@ -279,22 +294,22 @@ export default function Topbar() {
 
           <Link 
             href="/messages"
-            className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:text-slate-100 rounded-xl transition-colors relative"
+            className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100 rounded-xl transition-colors relative"
             title="Central de Mensagens"
           >
             <MessageSquare className="h-5 w-5" />
-            <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-blue-600 border-2 border-white"></span>
+            <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-blue-600 border-2 border-white dark:border-slate-950"></span>
           </Link>
 
           <button 
             onClick={handleTarefas}
-            className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:text-slate-100 rounded-xl transition-colors" 
+            className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100 rounded-xl transition-colors" 
             title="Tarefas do Dia"
           >
             <CheckSquare className="h-5 w-5" />
           </button>
           
-          <Link href="/configuracoes" className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:text-slate-100 dark:hover:text-slate-200 rounded-xl transition-colors" title="Configurações">
+          <Link href="/configuracoes" className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100 rounded-xl transition-colors" title="Configurações">
             <Settings className="h-5 w-5" />
           </Link>
           <ThemeToggle />
@@ -315,21 +330,21 @@ export default function Topbar() {
           </button>
 
           {isUserMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2">
-              <div className="px-4 py-3 border-b border-slate-100 mb-1">
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-2 z-50 animate-in fade-in slide-in-from-top-2">
+              <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700 mb-1">
                 <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{profile?.nome || 'Usuário'}</p>
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">{session?.user?.email || 'testealex@gmail.com'}</p>
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">{session?.user?.email || ''}</p>
               </div>
-              <Link href="/minha-conta" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 hover:text-blue-600 font-medium transition-colors">
+              <Link href="/minha-conta" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-blue-600 font-medium transition-colors">
                 <User className="h-4 w-4" /> Meu Perfil
               </Link>
-              <Link href="/establishment/subscription" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 hover:text-blue-600 font-medium transition-colors">
+              <Link href="/establishment/subscription" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-blue-600 font-medium transition-colors">
                 <CreditCard className="h-4 w-4" /> Meu Plano
               </Link>
-              <div className="h-px bg-slate-100 my-1"></div>
+              <div className="h-px bg-slate-100 dark:bg-slate-700 my-1"></div>
               <button 
                 onClick={logout}
-                className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-bold flex items-center gap-3 transition-colors"
+                className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 font-bold flex items-center gap-3 transition-colors"
               >
                 <LogOut className="h-4 w-4" /> Sair
               </button>
