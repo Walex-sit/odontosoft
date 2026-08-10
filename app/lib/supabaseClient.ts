@@ -10,14 +10,14 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 if (!supabaseUrl) {
   throw new Error(
     '[Supabase] NEXT_PUBLIC_SUPABASE_URL não está definida. ' +
-    'Verifique o arquivo .env.local na raiz do projeto.'
+    'Verifique as variáveis de ambiente na Vercel.'
   )
 }
 
 if (!supabaseAnonKey) {
   throw new Error(
     '[Supabase] NEXT_PUBLIC_SUPABASE_ANON_KEY não está definida. ' +
-    'Verifique o arquivo .env.local na raiz do projeto.'
+    'Verifique as variáveis de ambiente na Vercel.'
   )
 }
 
@@ -31,9 +31,6 @@ if (typeof window === 'undefined' && !supabaseServiceKey) {
 // ---------------------------------------------------------------------------
 // Singletons — garante uma única instância dos clientes em toda a aplicação
 // ---------------------------------------------------------------------------
-// Tipagem do banco (gerada pelo Supabase CLI: `supabase gen types typescript`)
-// Por ora usada como `unknown` até a geração dos tipos automáticos.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Database = any
 
 let _supabase: SupabaseClient<Database> | null = null
@@ -43,9 +40,7 @@ function getSupabaseClient(): SupabaseClient<Database> {
   if (!_supabase) {
     _supabase = createClient<Database>(supabaseUrl!, supabaseAnonKey!, {
       auth: {
-        // Persiste a sessão no localStorage (padrão para apps web)
         persistSession: true,
-        // Detecta a sessão na URL após redirecionamentos de auth
         detectSessionInUrl: true,
       },
     })
@@ -54,7 +49,6 @@ function getSupabaseClient(): SupabaseClient<Database> {
 }
 
 function getSupabaseAdmin(): SupabaseClient<Database> {
-  // Trava de segurança crucial: impede o crash se o código for executado no navegador
   if (!supabaseServiceKey) {
     return null as unknown as SupabaseClient<Database>
   }
@@ -62,7 +56,6 @@ function getSupabaseAdmin(): SupabaseClient<Database> {
   if (!_supabaseAdmin) {
     _supabaseAdmin = createClient<Database>(supabaseUrl!, supabaseServiceKey, {
       auth: {
-        // Desativado pois o servidor não usa localStorage (Server Actions)
         persistSession: false,
         autoRefreshToken: false,
         detectSessionInUrl: false,
