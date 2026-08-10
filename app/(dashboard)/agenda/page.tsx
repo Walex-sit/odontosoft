@@ -8,7 +8,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { useEffect, useState, useRef } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { useAuth } from '../../components/RequireAuth'
-import { Filter, Users, Calendar as CalendarIcon, Plus } from 'lucide-react'
+import { Filter, Users, Calendar as CalendarIcon, Plus, X } from 'lucide-react'
 import NovoAgendamentoModal from '../../components/NovoAgendamentoModal'
 import DetalhesAgendamentoModal from '../../components/DetalhesAgendamentoModal'
 import { toast } from 'sonner'
@@ -20,8 +20,9 @@ export default function Agenda() {
   const [agendamentos, setAgendamentos] = useState<any[]>([])
   const [carregando, setCarregando] = useState(true)
 
-  // Filtros
+  // Filtros e Estado Mobile
   const [filtroDentista, setFiltroDentista] = useState('')
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const calendarRef = useRef<FullCalendar>(null)
 
   // Modais
@@ -166,19 +167,62 @@ export default function Agenda() {
   }
 
   return (
-    <div className="flex w-full flex-1 overflow-hidden text-slate-800 dark:text-slate-100 font-sans text-sm bg-slate-50 dark:bg-slate-950 relative">
+    <div className="flex flex-col md:flex-row w-full flex-1 overflow-hidden text-slate-800 dark:text-slate-100 font-sans text-sm bg-slate-50 dark:bg-slate-950 relative">
       
-      {/* Sidebar: Filtros */}
-      <aside className="w-72 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex flex-col h-full shrink-0 shadow-sm z-10">
-        <div className="p-6 border-b border-slate-100 bg-white dark:bg-slate-800">
-          <h2 className="text-xl font-heading font-extrabold text-slate-800 dark:text-slate-100">Agenda</h2>
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">Gerenciamento de consultas</p>
+      {/* Barra superior mobile para abrir filtros e novo agendamento */}
+      <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shrink-0 z-20">
+        <div>
+          <h2 className="text-lg font-heading font-extrabold text-slate-800 dark:text-slate-100">Agenda</h2>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">Gerenciamento de consultas</p>
         </div>
-
-        <div className="p-6">
+        <div className="flex items-center gap-2">
           <button 
             onClick={() => { setInitialDate(''); setInitialTime(''); setIsNovoModalOpen(true); }}
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-3 text-sm font-bold shadow-md shadow-blue-500/20 transition-all active:scale-95 mb-6"
+            className="flex items-center gap-1 bg-blue-600 text-white rounded-xl px-3 py-2 text-xs font-bold shadow-md shadow-blue-500/20"
+          >
+            <Plus size={14} /> Novo
+          </button>
+          <button 
+            onClick={() => setIsMobileFilterOpen(true)}
+            className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-3 py-2 text-xs font-bold"
+          >
+            <Filter size={14} /> Filtros
+          </button>
+        </div>
+      </div>
+
+      {/* Overlay escuro para fechar o menu mobile de filtros */}
+      {isMobileFilterOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 md:hidden backdrop-blur-sm"
+          onClick={() => setIsMobileFilterOpen(false)}
+        />
+      )}
+
+      {/* Sidebar: Filtros (Drawer no mobile, fixo no desktop) */}
+      <aside className={`
+        fixed md:relative inset-y-0 left-0 z-40 w-72 
+        transform ${isMobileFilterOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+        transition-transform duration-200 ease-in-out
+        border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex flex-col h-full shrink-0 shadow-sm
+      `}>
+        <div className="p-6 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-heading font-extrabold text-slate-800 dark:text-slate-100">Agenda</h2>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">Gerenciamento de consultas</p>
+          </div>
+          <button 
+            onClick={() => setIsMobileFilterOpen(false)}
+            className="md:hidden text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 p-1"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-6 overflow-y-auto flex-1">
+          <button 
+            onClick={() => { setInitialDate(''); setInitialTime(''); setIsNovoModalOpen(true); setIsMobileFilterOpen(false); }}
+            className="w-full hidden md:flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-3 text-sm font-bold shadow-md shadow-blue-500/20 transition-all active:scale-95 mb-6"
           >
             <Plus size={16} /> Novo Agendamento
           </button>
@@ -204,7 +248,7 @@ export default function Agenda() {
               </select>
             </div>
             
-            <div className="pt-4 border-t border-slate-100">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
               <label className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 mb-3">Legenda de Status</label>
               <div className="space-y-2">
                 <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500"></div><span className="text-xs font-medium">Agendado</span></div>
@@ -219,15 +263,18 @@ export default function Agenda() {
       </aside>
 
       {/* Main Content: Calendário */}
-      <main className="flex-1 flex flex-col bg-slate-50 dark:bg-slate-950 relative min-w-0">
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col">
-          <div className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[24px] shadow-sm p-4 overflow-hidden flex flex-col">
+      <main className="flex-1 flex flex-col bg-slate-50 dark:bg-slate-950 relative min-w-0 overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col">
+          <div className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[24px] shadow-sm p-3 md:p-4 overflow-hidden flex flex-col min-h-[500px]">
             <div className="flex-1 min-h-0 custom-calendar">
               <style dangerouslySetInnerHTML={{__html: `
-                .custom-calendar .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 800 !important; color: #1e293b !important; }
-                .custom-calendar .fc-button-primary { background-color: #f1f5f9 !important; border-color: transparent !important; color: #475569 !important; font-weight: 600 !important; border-radius: 0.5rem !important; text-transform: capitalize !important; }
+                .custom-calendar .fc-toolbar-title { font-size: 1.1rem !important; font-weight: 800 !important; color: #1e293b !important; }
+                @media (min-width: 768px) {
+                  .custom-calendar .fc-toolbar-title { font-size: 1.25rem !important; }
+                }
+                .custom-calendar .fc-button-primary { background-color: #f1f5f9 !important; border-color: transparent !important; color: #475569 !important; font-weight: 600 !important; border-radius: 0.5rem !important; text-transform: capitalize !important; padding: 0.4rem 0.6rem !important; font-size: 0.8rem !important; }
                 .custom-calendar .fc-button-primary:not(:disabled):active, .custom-calendar .fc-button-primary:not(:disabled).fc-button-active { background-color: #2563eb !important; color: white !important; }
-                .custom-calendar .fc-theme-standard th { border-color: var(--calendar-border, #f1f5f9); padding: 12px 0; font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+                .custom-calendar .fc-theme-standard th { border-color: var(--calendar-border, #f1f5f9); padding: 8px 0; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
                 .custom-calendar .fc-theme-standard td { border-color: var(--calendar-border, #f1f5f9); cursor: pointer; }
                 .custom-calendar .fc-timegrid-col-bg { background-color: #f8fafc !important; }
                 .custom-calendar .fc-timegrid-slot { cursor: pointer; background-color: rgba(248, 250, 252, 0.6); }
@@ -268,15 +315,15 @@ export default function Agenda() {
                   margin-top: -5px !important;
                 }
               `}} />
-              <div className="w-full overflow-x-auto">
-                <div className="min-w-[600px]">
+              <div className="w-full h-full overflow-x-auto">
+                <div className="min-w-[650px] h-full">
                   <FullCalendar
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
                     initialView="timeGridWeek"
                     events={eventos}
                     eventDisplay="block"
-                    height="700px"
+                    height="100%"
                     locale="pt-br"
                     buttonText={{ today: 'Hoje', month: 'Mês', week: 'Semana', day: 'Dia', list: 'Lista' }}
                     headerToolbar={{
