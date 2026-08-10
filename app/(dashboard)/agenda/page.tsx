@@ -12,7 +12,6 @@ import { Filter, Users, Calendar as CalendarIcon, Plus } from 'lucide-react'
 import NovoAgendamentoModal from '../../components/NovoAgendamentoModal'
 import DetalhesAgendamentoModal from '../../components/DetalhesAgendamentoModal'
 import { toast } from 'sonner'
-import { useRealtimeSync } from '../../hooks/useRealtimeSync' // <- Caminho corrigido para a pasta hooks
 
 export default function Agenda() {
   const { session } = useAuth()
@@ -93,11 +92,6 @@ export default function Agenda() {
   useEffect(() => {
     carregarDados()
   }, [filtroDentista])
-
-  // Ativa a sincronização em tempo real de forma segura
-  useRealtimeSync(() => {
-    carregarDados()
-  })
 
   const statusColors: any = {
     agendado: '#3b82f6', // blue-500
