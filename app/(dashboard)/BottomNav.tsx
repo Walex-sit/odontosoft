@@ -11,7 +11,7 @@ export function BottomNav() {
 
   // Defina aqui as rotas principais do seu sistema
   const navItems = [
-    { name: "Início", href: "/dashboard", icon: Home },
+    { name: "Início", href: "/", icon: Home },
     { name: "Agenda", href: "/agenda", icon: CalendarDays },
     { name: "Pacientes", href: "/pacientes", icon: Users },
     { name: "Finanças", href: "/financeiro", icon: CircleDollarSign },

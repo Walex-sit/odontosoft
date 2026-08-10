@@ -6,6 +6,8 @@ import { useRouter, useParams } from 'next/navigation'
 import { useAuth } from '@/app/components/RequireAuth'
 import ModalNovaEvolucao from '@/app/components/ModalNovaEvolucao'
 import AnamneseDigitalModal from '@/app/components/AnamneseDigitalModal'
+import ModalNovoOrcamento from '@/app/components/ModalNovoOrcamento'
+import ModalNovaCobranca from '@/app/components/ModalNovaCobranca' // <- Importado corretamente
 import {
   ChevronLeft, Info, Calendar, DollarSign, FileText,
   Plus, ClipboardList, Loader2, Pencil, Trash2, CreditCard, HeartPulse
@@ -108,6 +110,10 @@ export default function DetalhePaciente() {
   const [cobrancas, setCobrancas] = useState<Cobranca[]>([])
   const [loadingCobrancas, setLoadingCobrancas] = useState(false)
   const [erroCobrancas, setErroCobrancas] = useState<string | null>(null)
+  const [cobrancaModalOpen, setCobrancaModalOpen] = useState(false) // <- Estado do Modal de Cobrança
+
+  // Estado para controlar o Modal de Orçamento
+  const [orcamentoModalOpen, setOrcamentoModalOpen] = useState(false)
 
   // ── Excluir evolução ──────────────────────────────────────────────────────
 
@@ -171,7 +177,6 @@ export default function DetalhePaciente() {
     setLoadingEvolucoes(false)
   }, [pacienteId])
 
-  // Carrega evoluções ao entrar na aba prontuário
   useEffect(() => {
     if (activeTab === 'prontuario' && session) {
       carregarEvolucoes()
@@ -234,11 +239,11 @@ export default function DetalhePaciente() {
 
   const tabs = [
     { id: 'informacoes', name: 'Informações', icon: Info },
-    { id: 'historico',   name: 'Consultas',   icon: Calendar },
-    { id: 'proximo',     name: 'Tratamentos', icon: DollarSign },
-    { id: 'financeiro',  name: 'Financeiro',  icon: CreditCard },
-    { id: 'prontuario',  name: 'Prontuário',  icon: FileText },
-    { id: 'anamnese',    name: 'Anamnese',    icon: HeartPulse },
+    { id: 'historico',    name: 'Consultas',    icon: Calendar },
+    { id: 'proximo',      name: 'Tratamentos', icon: DollarSign },
+    { id: 'financeiro',   name: 'Financeiro',   icon: CreditCard },
+    { id: 'prontuario',   name: 'Prontuário',   icon: FileText },
+    { id: 'anamnese',     name: 'Anamnese',     icon: HeartPulse },
   ]
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -330,8 +335,11 @@ export default function DetalhePaciente() {
                 <DollarSign className="h-5 w-5" />
               </div>
               <h4 className="text-slate-800 dark:text-slate-100 font-bold mb-1 text-base">Planejamento de Tratamento</h4>
-              <p className="text-slate-400 text-sm mb-4">Módulo de orçamento e tratamentos em breve.</p>
-              <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all border border-blue-500 shadow-sm active:scale-95">
+              <p className="text-slate-400 text-sm mb-4">Gerencie os orçamentos e tratamentos deste paciente.</p>
+              <button 
+                onClick={() => setOrcamentoModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all border border-blue-500 shadow-sm active:scale-95"
+              >
                 Novo Orçamento
               </button>
             </div>
@@ -353,7 +361,9 @@ export default function DetalhePaciente() {
                   )}
                 </div>
 
+                {/* Botão conectado para abrir o modal de cobrança */}
                 <button
+                  onClick={() => setCobrancaModalOpen(true)}
                   className="
                     flex items-center gap-2 text-sm font-bold
                     text-slate-800 dark:text-slate-100 dark:text-white bg-green-600 hover:bg-green-500
@@ -440,7 +450,6 @@ export default function DetalhePaciente() {
           {/* ── Prontuário ────────────────────────────────────────────────── */}
           {activeTab === 'prontuario' && (
             <div>
-              {/* Header da aba com botão Nova Evolução */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <ClipboardList className="h-5 w-5 text-slate-400" />
@@ -472,14 +481,12 @@ export default function DetalhePaciente() {
                 </button>
               </div>
 
-              {/* Loading skeleton */}
               {loadingEvolucoes && (
                 <div className="rounded-xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
                   {Array.from({ length: 3 }).map((_, i) => <EvolucaoSkeleton key={i} />)}
                 </div>
               )}
 
-              {/* Erro */}
               {!loadingEvolucoes && erroEvolucoes && (
                 <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-5 text-center">
                   <p className="text-sm font-bold text-red-400 mb-1">Erro ao carregar evoluções</p>
@@ -493,7 +500,6 @@ export default function DetalhePaciente() {
                 </div>
               )}
 
-              {/* Vazio */}
               {!loadingEvolucoes && !erroEvolucoes && evolucoes.length === 0 && (
                 <div className="text-center py-12">
                   <div className="h-12 w-12 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -516,7 +522,6 @@ export default function DetalhePaciente() {
                 </div>
               )}
 
-              {/* Lista de evoluções */}
               {!loadingEvolucoes && !erroEvolucoes && evolucoes.length > 0 && (
                 <div className="rounded-xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
                   {evolucoes.map((ev, index) => (
@@ -592,7 +597,7 @@ export default function DetalhePaciente() {
         </div>
       )}
 
-      {/* ── Modal Nova Evolução ─────────────────────────────────────────────── */}
+      {/* ── Modais ──────────────────────────────────────────────────────────── */}
       {modalAberto && session?.user?.id && (
         <ModalNovaEvolucao
           pacienteId={pacienteId}
@@ -603,11 +608,29 @@ export default function DetalhePaciente() {
         />
       )}
 
-      {/* ── Modal Anamnese ────────────────────────────────────────────────────── */}
       <AnamneseDigitalModal
         pacienteNome={paciente?.nome || ''}
         isOpen={anamneseOpen}
         onClose={() => setAnamneseOpen(false)}
+      />
+
+      <ModalNovoOrcamento
+        pacienteId={pacienteId}
+        isOpen={orcamentoModalOpen}
+        onClose={() => setOrcamentoModalOpen(false)}
+        onSuccess={() => {
+          setOrcamentoModalOpen(false)
+        }}
+      />
+
+      <ModalNovaCobranca
+        pacienteId={pacienteId}
+        isOpen={cobrancaModalOpen}
+        onClose={() => setCobrancaModalOpen(false)}
+        onSuccess={() => {
+          setCobrancaModalOpen(false)
+          carregarCobrancas()
+        }}
       />
     </>
   )

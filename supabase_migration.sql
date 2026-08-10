@@ -151,3 +151,33 @@ USING (
 WITH CHECK (
   true
 );
+
+-- ----------------------------------------------------
+-- Alertas (Notificações) Table
+-- ----------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.alertas (
+  id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  type text NOT NULL,
+  title text NOT NULL,
+  description text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  read boolean DEFAULT false
+);
+
+ALTER TABLE public.alertas ENABLE ROW LEVEL SECURITY;
+
+-- Users can insert notifications for themselves
+CREATE POLICY "allow insert own alerts"
+  ON public.alertas FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+-- Users can select their own alerts
+CREATE POLICY "allow select own alerts"
+  ON public.alertas FOR SELECT
+  USING (auth.uid() = user_id);
+
+-- Users can update (mark as read) their own alerts
+CREATE POLICY "allow update own alerts"
+  ON public.alertas FOR UPDATE
+  USING (auth.uid() = user_id);

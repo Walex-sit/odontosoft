@@ -112,20 +112,21 @@ export default function Agenda() {
   const eventos = agendamentos.map((a) => {
     let start = `${a.data_consulta}T${a.hora_consulta}`
     let end = a.hora_fim ? `${a.data_consulta}T${a.hora_fim}` : start
+    const corStatus = statusColors[a.status || 'agendado']
 
     return {
       id: a.id,
-      title: `${a.pacientes?.nome || 'Consulta'}${a.procedimento ? ` - ${a.procedimento}` : ''}`,
+      title: `${a.hora_consulta} - ${a.pacientes?.nome || 'Consulta'}${a.procedimento ? ` (${a.procedimento})` : ''}`,
       start,
       end,
-      backgroundColor: statusColors[a.status || 'agendado'],
-      borderColor: 'transparent',
+      backgroundColor: corStatus,
+      borderColor: corStatus,
+      textColor: '#ffffff',
       extendedProps: { ...a }
     }
   })
 
   function handleDateClick(info: any) {
-    // Se clicou na visão de mês (sem hora), ou na de tempo (com hora)
     const parts = info.dateStr.split('T')
     const data = parts[0]
     const hora = parts[1] ? parts[1].substring(0, 5) : '08:00'
@@ -232,17 +233,27 @@ export default function Agenda() {
                 .custom-calendar .fc-timegrid-slot { cursor: pointer; background-color: rgba(248, 250, 252, 0.6); }
                 .custom-calendar .fc-timegrid-slot:hover { background-color: rgba(37, 99, 235, 0.04) !important; }
 
-                /* Dark mode overrides — neutralise light-only slot tints */
+                /* Forçar bloco preenchido completo no mês */
+                .custom-calendar .fc-daygrid-event {
+                  border-radius: 6px !important;
+                  padding: 4px 8px !important;
+                  font-weight: 700 !important;
+                  font-size: 0.75rem !important;
+                  border: none !important;
+                  margin-top: 3px !important;
+                }
+                .custom-calendar .fc-daygrid-event:hover {
+                  filter: brightness(0.9);
+                  transform: translateY(-1px);
+                }
+
+                /* Dark mode overrides */
                 .dark .custom-calendar .fc-timegrid-col-bg { background-color: transparent !important; }
                 .dark .custom-calendar .fc-timegrid-slot { background-color: transparent !important; }
                 .dark .custom-calendar .fc-timegrid-slot:hover { background-color: rgba(255,255,255,0.03) !important; }
                 .dark .custom-calendar .fc-toolbar-title { color: #f8fafc !important; }
                 .dark .custom-calendar .fc-button-primary { background-color: #1e293b !important; color: #cbd5e1 !important; }
                 .dark .custom-calendar .fc-theme-standard th, .dark .custom-calendar .fc-theme-standard td { border-color: #1e293b !important; color: #94a3b8; }
-                .custom-calendar .fc-event { border-radius: 10px; padding: 4px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.2) !important; }
-                .custom-calendar .fc-event:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); opacity: 0.95; }
-                .custom-calendar .fc-v-event { border: none !important; }
-                .custom-calendar .fc-daygrid-event { margin-top: 2px; }
                 
                 /* Estilização do Indicador de Hora Atual */
                 .custom-calendar .fc-timegrid-now-indicator-line {
@@ -257,33 +268,38 @@ export default function Agenda() {
                   margin-top: -5px !important;
                 }
               `}} />
-              <FullCalendar
-                ref={calendarRef}
-                plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
-                initialView="timeGridWeek"
-                events={eventos}
-                height="100%"
-                locale="pt-br"
-                buttonText={{ today: 'Hoje', month: 'Mês', week: 'Semana', day: 'Dia', list: 'Lista' }}
-                headerToolbar={{
-                  left: 'prev,next today',
-                  center: 'title',
-                  right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-                }}
-                slotMinTime="07:00:00"
-                slotMaxTime="20:00:00"
-                slotDuration="00:30:00"
-                selectable={true}
-                selectMirror={true}
-                select={handleSelectSlot}
-                allDaySlot={false}
-                dateClick={handleDateClick}
-                eventClick={handleEventClick}
-                eventMouseEnter={handleEventMouseEnter}
-                eventMouseLeave={handleEventMouseLeave}
-                nowIndicator={true}
-                dayMaxEvents={true}
-              />
+              <div className="w-full overflow-x-auto">
+                <div className="min-w-[600px]">
+                  <FullCalendar
+                    ref={calendarRef}
+                    plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
+                    initialView="timeGridWeek"
+                    events={eventos}
+                    eventDisplay="block"
+                    height="700px"
+                    locale="pt-br"
+                    buttonText={{ today: 'Hoje', month: 'Mês', week: 'Semana', day: 'Dia', list: 'Lista' }}
+                    headerToolbar={{
+                      left: 'prev,next today',
+                      center: 'title',
+                      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                    }}
+                    slotMinTime="07:00:00"
+                    slotMaxTime="20:00:00"
+                    slotDuration="00:30:00"
+                    selectable={true}
+                    selectMirror={true}
+                    select={handleSelectSlot}
+                    allDaySlot={false}
+                    dateClick={handleDateClick}
+                    eventClick={handleEventClick}
+                    eventMouseEnter={handleEventMouseEnter}
+                    eventMouseLeave={handleEventMouseLeave}
+                    nowIndicator={true}
+                    dayMaxEvents={true}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>

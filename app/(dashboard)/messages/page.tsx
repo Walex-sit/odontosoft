@@ -63,22 +63,22 @@ export default function MessagesPage() {
     <div className="flex-1 flex h-full bg-slate-50 dark:bg-slate-950 overflow-hidden relative">
       
       {/* Coluna Esquerda: Lista de Conversas */}
-      <aside className="w-full md:w-96 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col h-full shrink-0 z-10">
+      <aside className="w-full md:w-96 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full shrink-0 z-10">
         
         {/* Header Esquerdo */}
-        <div className="h-16 px-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-slate-950/50">
-          <h2 className="text-xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Mensagens</h2>
-          <div className="flex items-center gap-2">
+        <div className="h-16 px-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-slate-900/50">
+          <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Mensagens</h2>
+          <div className="flex items-center gap-1">
             <button 
               onClick={() => toast.success('Tela de Nova Conversa iniciada')}
-              className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-full transition-colors" 
+              className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors" 
               title="Nova Conversa"
             >
               <MessagePlusIcon className="h-5 w-5" />
             </button>
             <button 
               onClick={() => toast.info('Menu de Opções Gerais aberto')}
-              className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-full transition-colors"
+              className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
             >
               <MoreVertical className="h-5 w-5" />
             </button>
@@ -86,22 +86,22 @@ export default function MessagesPage() {
         </div>
 
         {/* Busca */}
-        <div className="p-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
-          <div className="flex items-center w-full bg-slate-100 rounded-xl px-4 py-2 border border-slate-200 dark:border-slate-700 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+        <div className="p-3 border-b border-slate-200 dark:border-slate-800 shrink-0">
+          <div className="flex items-center w-full bg-slate-100 dark:bg-slate-800 rounded-xl px-4 py-2 border border-slate-200 dark:border-slate-700/60 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
             <Search className="h-4 w-4 text-slate-400 mr-2 shrink-0" />
             <input 
               type="text" 
               placeholder="Pesquisar ou começar uma nova conversa" 
-              className="bg-transparent border-none outline-none text-sm w-full text-slate-800 dark:text-slate-100 placeholder-slate-500 font-medium"
+              className="bg-transparent border-none outline-none text-sm w-full text-slate-900 dark:text-slate-100 placeholder-slate-400 font-medium"
             />
           </div>
         </div>
 
         {/* Filtros rápidos (Campanhas, Lidas) */}
-        <div className="flex gap-2 px-4 py-2 border-b border-slate-100 shrink-0 overflow-x-auto no-scrollbar">
-          <button className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">Todas</button>
-          <button className="bg-slate-100 hover:bg-slate-200 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors">Não Lidas</button>
-          <button className="bg-slate-100 hover:bg-slate-200 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors">Campanhas Automáticas</button>
+        <div className="flex gap-2 px-4 py-2 border-b border-slate-100 dark:border-slate-800 shrink-0 overflow-x-auto no-scrollbar">
+          <button className="bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">Todas</button>
+          <button className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors">Não Lidas</button>
+          <button className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors">Campanhas Automáticas</button>
         </div>
 
         {/* Lista */}
@@ -116,24 +116,24 @@ export default function MessagesPage() {
               <div 
                 key={chat.id}
                 onClick={() => setActiveChat(chat.id)}
-                className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-b border-slate-100 last:border-none ${activeChat === chat.id ? 'bg-blue-50' : 'hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950'}`}
+                className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-b border-slate-100 dark:border-slate-800/60 last:border-none ${activeChat === chat.id ? 'bg-blue-50/80 dark:bg-blue-950/30' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
               >
                 <div className="relative">
-                  <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0">
+                  <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold shrink-0">
                     {chat.avatar}
                   </div>
                   {chat.online && (
-                    <div className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 border-2 border-white rounded-full"></div>
+                    <div className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
                   )}
                 </div>
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline mb-1">
-                    <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 truncate">{chat.name}</h3>
-                    <span className={`text-xs font-semibold ${chat.unread > 0 ? 'text-blue-600' : 'text-slate-400'}`}>{displayTime}</span>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">{chat.name}</h3>
+                    <span className={`text-xs font-semibold ${chat.unread > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}`}>{displayTime}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <p className={`text-sm truncate ${chat.unread > 0 ? 'text-slate-800 dark:text-slate-100 font-semibold' : 'text-slate-500 dark:text-slate-400 font-medium'}`}>
+                    <p className={`text-sm truncate ${chat.unread > 0 ? 'text-slate-900 dark:text-slate-100 font-semibold' : 'text-slate-500 dark:text-slate-400 font-medium'}`}>
                       {displayLastMsg}
                     </p>
                     {chat.unread > 0 && (
@@ -150,18 +150,18 @@ export default function MessagesPage() {
       </aside>
 
       {/* Coluna Direita: Chat Ativo */}
-      <main className="flex-1 flex flex-col h-full bg-[#EFEAE2] relative hidden md:flex">
+      <main className="flex-1 flex flex-col h-full bg-[#EFEAE2] dark:bg-slate-950 relative hidden md:flex">
         
         {activeChat && activeChatDetails ? (
           <>
             {/* Header Direito */}
-            <header className="h-16 px-6 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-between shrink-0 shadow-sm z-10">
+            <header className="h-16 px-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between shrink-0 shadow-sm z-10">
               <div className="flex items-center gap-3 cursor-pointer">
-                <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0">
+                <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold shrink-0">
                   {activeChatDetails.avatar}
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">{activeChatDetails.name}</h2>
+                  <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">{activeChatDetails.name}</h2>
                   <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {activeChatDetails.online ? 'online' : 'visto por último recentemente'}
                   </p>
@@ -171,26 +171,26 @@ export default function MessagesPage() {
               <div className="flex items-center gap-4">
                 <button 
                   onClick={() => toast.info(`Iniciando chamada de vídeo com ${activeChatDetails.name}...`)}
-                  className="text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors"
+                  className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <Video className="h-5 w-5" />
                 </button>
                 <button 
                   onClick={() => toast.info(`Ligando para ${activeChatDetails.name}...`)}
-                  className="text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors"
+                  className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <Phone className="h-5 w-5" />
                 </button>
-                <div className="w-px h-6 bg-slate-200"></div>
+                <div className="w-px h-6 bg-slate-200 dark:bg-slate-800"></div>
                 <button 
                   onClick={() => toast.info('Barra de pesquisa do chat aberta')}
-                  className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-100 transition-colors"
+                  className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
                 >
                   <Search className="h-5 w-5" />
                 </button>
                 <button 
                   onClick={() => toast.info('Opções do contato abertas')}
-                  className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-100 transition-colors"
+                  className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
                 >
                   <MoreVertical className="h-5 w-5" />
                 </button>
@@ -199,20 +199,20 @@ export default function MessagesPage() {
 
             {/* Área de Mensagens */}
             <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-2 relative">
-              <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://w0.peakpx.com/wallpaper/818/148/HD-wallpaper-whatsapp-background-cool-dark-green-light-pattern-soft-whatsapp-logo-white.jpg")', backgroundSize: 'cover' }}></div>
+              <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'url("https://w0.peakpx.com/wallpaper/818/148/HD-wallpaper-whatsapp-background-cool-dark-green-light-pattern-soft-whatsapp-logo-white.jpg")', backgroundSize: 'cover' }}></div>
               
               <div className="text-center my-4 z-10">
-                <span className="bg-white dark:bg-slate-800/80 backdrop-blur text-slate-500 dark:text-slate-400 text-xs font-bold px-3 py-1 rounded-lg shadow-sm">HOJE</span>
+                <span className="bg-white dark:bg-slate-800 backdrop-blur text-slate-600 dark:text-slate-300 text-xs font-bold px-3 py-1 rounded-lg shadow-sm">HOJE</span>
               </div>
 
               {currentMessages.map(msg => (
                 <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'} mb-2 z-10`}>
-                  <div className={`max-w-[70%] rounded-2xl px-4 py-2 shadow-sm relative ${msg.sender === 'me' ? 'bg-[#D9FDD3] rounded-tr-none text-slate-800 dark:text-slate-100' : 'bg-white dark:bg-slate-800 rounded-tl-none text-slate-800 dark:text-slate-100'}`}>
+                  <div className={`max-w-[70%] rounded-2xl px-4 py-2 shadow-sm relative ${msg.sender === 'me' ? 'bg-[#D9FDD3] dark:bg-emerald-900/80 rounded-tr-none text-slate-900 dark:text-slate-100' : 'bg-white dark:bg-slate-800 rounded-tl-none text-slate-900 dark:text-slate-100'}`}>
                     <p className="text-[15px] leading-relaxed break-words">{msg.text}</p>
                     <div className="flex items-center justify-end gap-1 mt-1">
                       <span className="text-[10px] font-semibold text-slate-400">{msg.time}</span>
                       {msg.sender === 'me' && (
-                        <CheckCircle2 className={`h-3.5 w-3.5 ${msg.status === 'read' ? 'text-blue-500' : 'text-slate-400'}`} />
+                        <CheckCircle2 className={`h-3.5 w-3.5 ${msg.status === 'read' ? 'text-blue-500 dark:text-blue-400' : 'text-slate-400'}`} />
                       )}
                     </div>
                   </div>
@@ -221,16 +221,16 @@ export default function MessagesPage() {
             </div>
 
             {/* Input Footer */}
-            <footer className="h-16 px-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-700 flex items-center gap-3 shrink-0">
+            <footer className="h-16 px-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-3 shrink-0">
               <button 
                 onClick={() => toast.info('Menu de Emojis')}
-                className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-full transition-colors shrink-0"
+                className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0"
               >
                 <Smile className="h-6 w-6" />
               </button>
               <button 
                 onClick={() => toast.info('Anexar Arquivo ou Foto')}
-                className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-full transition-colors shrink-0"
+                className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0"
               >
                 <Paperclip className="h-5 w-5" />
               </button>
@@ -242,7 +242,7 @@ export default function MessagesPage() {
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="bg-transparent border-none outline-none text-sm w-full text-slate-800 dark:text-slate-100 placeholder-slate-400 font-medium"
+                  className="bg-transparent border-none outline-none text-sm w-full text-slate-900 dark:text-slate-100 placeholder-slate-400 font-medium"
                 />
               </div>
 
@@ -256,7 +256,7 @@ export default function MessagesPage() {
               ) : (
                 <button 
                   onClick={() => toast.info('Gravando áudio...')}
-                  className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 rounded-full transition-colors shrink-0"
+                  className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0"
                 >
                   <Mic className="h-5 w-5" />
                 </button>
@@ -264,11 +264,11 @@ export default function MessagesPage() {
             </footer>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 border-l border-slate-200 dark:border-slate-700">
-            <div className="h-32 w-32 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-              <MessageSquare className="h-12 w-12 text-blue-200" />
+          <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800">
+            <div className="h-32 w-32 bg-blue-50 dark:bg-blue-950/50 rounded-full flex items-center justify-center mb-6">
+              <MessageSquare className="h-12 w-12 text-blue-200 dark:text-blue-500/40" />
             </div>
-            <h2 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mb-2">Central de Mensagens</h2>
+            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">Central de Mensagens</h2>
             <p className="text-slate-500 dark:text-slate-400 font-medium text-center max-w-sm">
               Selecione uma conversa ao lado ou inicie um novo chat para interagir com seus pacientes.
             </p>

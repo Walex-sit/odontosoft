@@ -16,13 +16,11 @@ function getAdminClient() {
 // ==========================================
 // 1. Métricas Principais (KPIs)
 // ==========================================
-// ==========================================
-// 1. Métricas Principais (KPIs)
-// ==========================================
-export async function fetchDashboardMetrics(): Promise<{
+export async function fetchDashboardMetrics(anoParam?: number, mesParam?: number): Promise<{
   success: boolean;
   data: {
     faturamentoMensal: number;
+    faturamentoMesAnterior: number;
     faturamentoCrescimento: number;
     pacientesAtivos: number;
     pacientesCrescimento: number;
@@ -35,30 +33,52 @@ export async function fetchDashboardMetrics(): Promise<{
   try {
     const supabase = getAdminClient();
     
-    // Datas para filtros
+    // Datas para filtros baseadas no parâmetro ou no momento atual
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+    const targetYear = anoParam ?? now.getFullYear();
+    const targetMonth = mesParam !== undefined ? mesParam : now.getMonth(); // 0 a 11
+
+    const startOfMonth = new Date(targetYear, targetMonth, 1).toISOString();
+    const endOfMonth = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59).toISOString();
+    
+    const startOfLastMonth = new Date(targetYear, targetMonth - 1, 1).toISOString();
+    const endOfLastMonth = new Date(targetYear, targetMonth, 0, 23, 59, 59).toISOString();
+
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
+    
+    const yearStr = targetYear;
+    const monthStr = String(targetMonth + 1).padStart(2, '0');
+    const dayStr = String(now.getDate()).padStart(2, '0');
+    const todayStr = `${yearStr}-${monthStr}-${dayStr}`;
 
-    // 1.1 Faturamento Mensal Atual
+    // 1.1 Faturamento do Mês Selecionado (buscando da tabela 'receitas')
     const { data: faturamentoData } = await supabase
-      .from('procedimentos_realizados')
-      .select('valor_cobrado')
-      .gte('data_realizacao', startOfMonth);
+      .from('receitas')
+      .select('valor, status, created_at')
+      .gte('created_at', startOfMonth)
+      .lte('created_at', endOfMonth);
       
-    const faturamentoMensal = (faturamentoData || []).reduce((acc, curr) => acc + (parseFloat(curr.valor_cobrado) || 0), 0);
+    const faturamentoMensal = (faturamentoData || [])
+      .filter(r => {
+        const st = (r.status || '').toLowerCase();
+        return st === 'pago' || st === 'recebido' || st === 'concluido';
+      })
+      .reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
 
-    // 1.1.2 Faturamento Mês Anterior (para cálculo do crescimento %)
+    // 1.1.2 Faturamento Mês Anterior ao Selecionado (para cálculo do crescimento %)
     const { data: faturamentoPassadoData } = await supabase
-      .from('procedimentos_realizados')
-      .select('valor_cobrado')
-      .gte('data_realizacao', startOfLastMonth)
-      .lt('data_realizacao', startOfMonth);
+      .from('receitas')
+      .select('valor, status, created_at')
+      .gte('created_at', startOfLastMonth)
+      .lte('created_at', endOfLastMonth);
 
-    const faturamentoMesAnterior = (faturamentoPassadoData || []).reduce((acc, curr) => acc + (parseFloat(curr.valor_cobrado) || 0), 0);
+    const faturamentoMesAnterior = (faturamentoPassadoData || [])
+      .filter(r => {
+        const st = (r.status || '').toLowerCase();
+        return st === 'pago' || st === 'recebido' || st === 'concluido';
+      })
+      .reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+
     const faturamentoCrescimento = faturamentoMesAnterior > 0
       ? Math.round(((faturamentoMensal - faturamentoMesAnterior) / faturamentoMesAnterior) * 100)
       : 0;
@@ -78,15 +98,16 @@ export async function fetchDashboardMetrics(): Promise<{
 
     const pacientesCrescimento = novosPacientesCount || 0;
 
-    // 1.3 Consultas Hoje (da tabela agendamentos)
+    // 1.3 Consultas Hoje (da tabela agendamentos) usando a coluna data_consulta
     const { data: agendaHoje } = await supabase
       .from('agendamentos')
       .select('status')
-      .gte('data_hora', todayStart)
-      .lte('data_hora', todayEnd);
+      .eq('data_consulta', todayStr);
 
     const consultasHoje = (agendaHoje || []).length;
-    const consultasRealizadasHoje = (agendaHoje || []).filter(a => a.status === 'atendido' || a.status === 'realizado' || a.status === 'concluido').length;
+    const consultasRealizadasHoje = (agendaHoje || []).filter(a => 
+      ['atendido', 'realizado', 'concluido', 'confirmado'].includes(a.status)
+    ).length;
 
     // 1.4 Taxa de Comparecimento
     const taxaComparecimento = consultasHoje > 0 
@@ -97,6 +118,7 @@ export async function fetchDashboardMetrics(): Promise<{
       success: true,
       data: {
         faturamentoMensal,
+        faturamentoMesAnterior,
         faturamentoCrescimento,
         pacientesAtivos,
         pacientesCrescimento,
@@ -112,6 +134,7 @@ export async function fetchDashboardMetrics(): Promise<{
       success: true,
       data: {
         faturamentoMensal: 0,
+        faturamentoMesAnterior: 0,
         faturamentoCrescimento: 0,
         pacientesAtivos: 0,
         pacientesCrescimento: 0,
@@ -140,7 +163,7 @@ export async function fetchDashboardCharts(): Promise<{
     const supabase = getAdminClient();
     const now = new Date();
 
-    // ── 1. Fluxo de Caixa: últimos 7 meses ─────────────────────────────────
+    // ── 1. Fluxo de Caixa: últimos 7 meses (buscando da tabela 'receitas') ──
     const cashFlow: { name: string; receitas: number; despesas: number }[] = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -148,26 +171,32 @@ export async function fetchDashboardCharts(): Promise<{
       const end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59).toISOString();
       const label = d.toLocaleDateString('pt-BR', { month: 'short' });
 
-      const { data: procs } = await supabase
-        .from('procedimentos_realizados')
-        .select('valor_cobrado')
-        .gte('data_realizacao', start)
-        .lte('data_realizacao', end);
+      const { data: recs } = await supabase
+        .from('receitas')
+        .select('valor, status, created_at')
+        .gte('created_at', start)
+        .lte('created_at', end);
 
-      const receitas = (procs || []).reduce((s: number, r: any) => s + parseFloat(r.valor_cobrado ?? 0), 0);
+      const receitas = (recs || [])
+        .filter(r => {
+          const st = (r.status || '').toLowerCase();
+          return st === 'pago' || st === 'recebido' || st === 'concluido';
+        })
+        .reduce((s: number, r: any) => s + parseFloat(r.valor ?? 0), 0);
+
       cashFlow.push({ name: label.charAt(0).toUpperCase() + label.slice(1, 3), receitas, despesas: 0 });
     }
 
-    // ── 2. Top Procedimentos ────────────────────────────────────────────────
+    // ── 2. Top Procedimentos (buscando da tabela 'receitas' via descricao) ──
     const startOfYear = new Date(now.getFullYear(), 0, 1).toISOString();
-    const { data: procsRaw } = await supabase
-      .from('procedimentos_realizados')
-      .select('procedimentos(nome)')
-      .gte('data_realizacao', startOfYear);
+    const { data: recsRaw } = await supabase
+      .from('receitas')
+      .select('descricao, created_at')
+      .gte('created_at', startOfYear);
 
     const procCount: Record<string, number> = {};
-    (procsRaw || []).forEach((r: any) => {
-      const nome = r.procedimentos?.nome || 'Outros';
+    (recsRaw || []).forEach((r: any) => {
+      const nome = r.descricao || 'Outros';
       procCount[nome] = (procCount[nome] || 0) + 1;
     });
 
@@ -197,15 +226,12 @@ export async function fetchDashboardCharts(): Promise<{
 
       dentistas.forEach((d: any, i: number) => {
         const value = countByDentist[d.id] || 0;
-        // Inclui apenas dentistas com pelo menos 1 atendimento (ou todos se nenhum tiver)
         dentistDistribution.push({
           name: d.nome,
           value,
           fill: CHART_COLORS[i % CHART_COLORS.length],
         });
       });
-
-      // Se nenhum tiver atendimentos, mantém todos com 0 para mostrar os nomes reais
     }
 
     return {

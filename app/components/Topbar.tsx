@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from './RequireAuth'
@@ -25,6 +25,7 @@ import CalculadoraModal from './CalculadoraModal'
 import ReceituarioRapidoModal from './ReceituarioRapidoModal'
 import AtestadoMedicoModal from './AtestadoMedicoModal'
 import { ThemeToggle } from './ThemeToggle'
+import GlobalSearchModal from './GlobalSearchModal'
 
 export default function Topbar() {
   const pathname = usePathname()
@@ -38,25 +39,102 @@ export default function Topbar() {
   const [isCalculadoraOpen, setIsCalculadoraOpen] = useState(false)
   const [isReceituarioOpen, setIsReceituarioOpen] = useState(false)
   const [isAtestadoOpen, setIsAtestadoOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
 
-  const [notifications, setNotifications] = useState([
-    {
-      id: '1',
-      type: 'appointment' as const,
-      title: 'Próximo Agendamento',
-      description: 'João Silva - 15:30 (Hoje)',
-      time: '10m',
-      unread: true,
+  // Listen to Ctrl+K globally from the Topbar
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setIsSearchOpen((open) => !open)
+      }
     }
-  ])
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
+
+  // Tipo de notificação
+  interface Notification {
+    id: string
+    type: 'appointment' | 'patient' | 'financial'
+    title: string
+    description: string
+    time: string
+    unread: boolean
+  }
+
+  const [notifications, setNotifications] = useState<Notification[]>([])
+
+  // Carrega notificações iniciais
+  useEffect(() => {
+    async function fetchNotifications() {
+      const { data, error } = await supabase
+        .from('alertas')
+        .select('id, type, title, description, created_at, read')
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+      if (error) {
+        console.error('Erro ao buscar notificações:', error, JSON.stringify(error, null, 2))
+        return
+      }
+
+      const formatted = (data || []).map((n: any) => ({
+        id: n.id,
+        type: n.type as Notification['type'],
+        title: n.title,
+        description: n.description,
+        time: new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        unread: !n.read,
+      }))
+      setNotifications(formatted)
+    }
+
+    fetchNotifications()
+  }, [])
+
+  // Escuta em tempo real alterações na tabela alertas
+  useEffect(() => {
+    const channel = supabase
+      .channel('public:alertas')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas' }, payload => {
+        const newRecord = payload.new as any
+        if (payload.eventType === 'INSERT') {
+          const notif: Notification = {
+            id: newRecord.id,
+            type: newRecord.type,
+            title: newRecord.title,
+            description: newRecord.description,
+            time: new Date(newRecord.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            unread: !newRecord.read,
+          }
+          setNotifications(prev => [notif, ...prev])
+        } else if (payload.eventType === 'UPDATE') {
+          setNotifications(prev =>
+            prev.map(n => (n.id === newRecord.id ? { ...n, unread: !newRecord.read } : n))
+          )
+        } else if (payload.eventType === 'DELETE') {
+          setNotifications(prev => prev.filter(n => n.id !== payload.old.id))
+        }
+      })
+      .subscribe()
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const unreadCount = notifications.filter(n => n.unread).length
 
-  const handleMarkAsRead = (id: string) => {
+  const handleMarkAsRead = async (id: string) => {
+    const { error } = await supabase.from('alertas').update({ read: true }).eq('id', id)
+    if (error) console.error('Erro ao marcar como lida:', error)
     setNotifications(prev => prev.map(n => (n.id === id ? { ...n, unread: false } : n)))
   }
 
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
+    const ids = notifications.map(n => n.id)
+    const { error } = await supabase.from('alertas').update({ read: true }).in('id', ids)
+    if (error) console.error('Erro ao marcar tudo como lido:', error)
     setNotifications(prev => prev.map(n => ({ ...n, unread: false })))
   }
 
@@ -75,7 +153,7 @@ export default function Topbar() {
   ]
 
   const handleBusca = () => {
-    toast.info('Barra de pesquisa global (Busca de Pacientes/Atalhos) será aberta!')
+    setIsSearchOpen(true)
   }
 
   const handleTarefas = () => {
@@ -83,7 +161,6 @@ export default function Topbar() {
   }
 
   const handleSuporte = () => {
-    // Exemplo: Abrir WhatsApp de suporte ou chat flutuante
     window.open('https://wa.me/5511999999999?text=Preciso%20de%20suporte%20no%20Odontosoft', '_blank')
   }
 
@@ -280,6 +357,11 @@ export default function Topbar() {
       <AtestadoMedicoModal
         isOpen={isAtestadoOpen}
         onClose={() => setIsAtestadoOpen(false)}
+      />
+
+      <GlobalSearchModal 
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
       />
     </header>
   )
