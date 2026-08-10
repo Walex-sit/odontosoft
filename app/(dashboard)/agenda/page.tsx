@@ -263,10 +263,10 @@ export default function Agenda() {
       </aside>
 
       {/* Main Content: Calendário */}
-      <main className="flex-1 flex flex-col bg-slate-50 dark:bg-slate-950 relative min-w-0 overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col">
-          <div className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[24px] shadow-sm p-3 md:p-4 overflow-hidden flex flex-col min-h-[500px]">
-            <div className="flex-1 min-h-0 custom-calendar">
+      <main className="flex-1 flex flex-col bg-slate-50 dark:bg-slate-950 relative min-w-0 overflow-y-auto">
+        <div className="p-4 md:p-6 flex flex-col">
+          <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[24px] shadow-sm p-3 md:p-4 flex flex-col min-h-[650px]">
+            <div className="w-full custom-calendar">
               <style dangerouslySetInnerHTML={{__html: `
                 .custom-calendar .fc-toolbar-title { font-size: 1.1rem !important; font-weight: 800 !important; color: #1e293b !important; }
                 @media (min-width: 768px) {
@@ -315,15 +315,15 @@ export default function Agenda() {
                   margin-top: -5px !important;
                 }
               `}} />
-              <div className="w-full h-full overflow-x-auto">
-                <div className="min-w-[650px] h-full">
+              <div className="w-full overflow-x-auto">
+                <div className="min-w-[650px]">
                   <FullCalendar
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
                     initialView="timeGridWeek"
                     events={eventos}
                     eventDisplay="block"
-                    height="100%"
+                    height="650px"
                     locale="pt-br"
                     buttonText={{ today: 'Hoje', month: 'Mês', week: 'Semana', day: 'Dia', list: 'Lista' }}
                     headerToolbar={{
