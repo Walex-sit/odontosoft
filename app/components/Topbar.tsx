@@ -96,48 +96,6 @@ export default function Topbar() {
     fetchNotifications()
   }, [])
 
-  // Escuta em tempo real alterações na tabela alertas com verificação prévia
-  useEffect(() => {
-    let channel: any = null
-
-    async function setupRealtimeAlerts() {
-      const { data: { session: currentSession } } = await supabase.auth.getSession()
-      if (!currentSession) return
-
-      channel = supabase
-        .channel('public:alertas')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas' }, payload => {
-          const newRecord = payload.new as any
-          if (payload.eventType === 'INSERT') {
-            const notif: Notification = {
-              id: newRecord.id,
-              type: newRecord.type,
-              title: newRecord.title,
-              description: newRecord.description,
-              time: new Date(newRecord.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              unread: !newRecord.read,
-            }
-            setNotifications(prev => [notif, ...prev])
-          } else if (payload.eventType === 'UPDATE') {
-            setNotifications(prev =>
-              prev.map(n => (n.id === newRecord.id ? { ...n, unread: !newRecord.read } : n))
-            )
-          } else if (payload.eventType === 'DELETE') {
-            setNotifications(prev => prev.filter(n => n.id !== payload.old.id))
-          }
-        })
-        .subscribe()
-    }
-
-    setupRealtimeAlerts()
-
-    return () => {
-      if (channel) {
-        supabase.removeChannel(channel)
-      }
-    }
-  }, [])
-
   const unreadCount = notifications.filter(n => n.unread).length
 
   const handleMarkAsRead = async (id: string) => {
