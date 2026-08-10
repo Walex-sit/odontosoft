@@ -8,7 +8,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { name: "Início", href: "/", icon: Home },
+    { name: "Início", href: "/overview", icon: Home }, // <- Alterado de "/" para "/overview"
     { name: "Agenda", href: "/agenda", icon: CalendarDays },
     { name: "Pacientes", href: "/pacientes", icon: Users },
     { name: "Finanças", href: "/financeiro", icon: CircleDollarSign },
