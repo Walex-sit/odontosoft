@@ -11,6 +11,7 @@ export interface UserProfile {
   id: string
   nome: string
   role: UserRole
+  clinica_id?: string | null
 }
 
 interface AuthContextType {
@@ -39,7 +40,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
 
     const { data: profileData } = await supabase
       .from('user_profiles')
-      .select('id, nome, role')
+      .select('id, nome, role, clinica_id')
       .eq('id', session.user.id)
       .maybeSingle()
 

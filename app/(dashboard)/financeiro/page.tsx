@@ -181,30 +181,30 @@ export default function FinanceiroPage() {
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-slate-900">
 
       {/* ── PAGE HEADER ──────────────────────────────── */}
-      <div className="px-8 pt-6 pb-0 shrink-0">
-        <div className="flex items-center justify-between mb-5">
+      <div className="px-4 sm:px-8 pt-6 pb-0 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
           <div>
             <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Financeiro</h1>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5">Gestão financeira completa da sua clínica</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 self-start sm:self-auto">
             <button
               onClick={() => setShowNewModal('receita')}
-              className="h-10 px-5 rounded-xl font-bold text-sm bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center gap-2"
+              className="h-9 sm:h-10 px-3 sm:px-5 rounded-xl font-bold text-sm bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center gap-2"
             >
-              <Plus className="h-4 w-4" /> Nova Receita
+              <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Nova </span>Receita
             </button>
             <button
               onClick={() => setShowNewModal('despesa')}
-              className="h-10 px-5 rounded-xl font-bold text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 dark:hover:bg-slate-700 transition-colors shadow-sm flex items-center gap-2"
+              className="h-9 sm:h-10 px-3 sm:px-5 rounded-xl font-bold text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm flex items-center gap-2"
             >
-              <Plus className="h-4 w-4" /> Nova Despesa
+              <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Nova </span>Despesa
             </button>
           </div>
         </div>
 
         {/* ── TABS ────────────────────────────────────── */}
-        <div className="flex gap-1 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex gap-0.5 sm:gap-1 border-b border-slate-200 dark:border-slate-700 overflow-x-auto scrollbar-none">
           {tabs.map(tab => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -212,13 +212,13 @@ export default function FinanceiroPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-5 py-3 text-sm font-bold border-b-2 transition-all -mb-px ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all -mb-px whitespace-nowrap ${
                   isActive
                     ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:bg-slate-800/50 rounded-t-lg'
                     : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200 hover:border-slate-300 dark:border-slate-700'
                 }`}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 {tab.label}
               </button>
             )
@@ -231,7 +231,7 @@ export default function FinanceiroPage() {
 
         {/* ═══ ABA: PAINEL ═══════════════════════════ */}
         {activeTab === 'painel' && (
-          <div className="p-8 space-y-8 animate-in fade-in duration-300">
+          <div className="p-4 sm:p-8 space-y-8 animate-in fade-in duration-300">
 
             {/* KPIs */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -308,17 +308,17 @@ export default function FinanceiroPage() {
               </div>
               <div className="space-y-3">
                 {lancamentos.slice(0, 4).map(l => (
-                  <div key={l.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                  <div key={l.id} className="flex items-center justify-between gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`p-2 rounded-lg shrink-0 ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
                         {l.tipo === 'entrada' ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                       </div>
-                      <div>
-                        <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{l.descricao}</p>
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{l.data} · {l.categoria}</p>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{l.descricao}</p>
+                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">{l.data} · {l.categoria}</p>
                       </div>
                     </div>
-                    <span className={`text-sm font-extrabold ${l.tipo === 'entrada' ? 'text-green-600' : 'text-red-500'}`}>
+                    <span className={`text-sm font-extrabold shrink-0 ${l.tipo === 'entrada' ? 'text-green-600' : 'text-red-500'}`}>
                       {l.tipo === 'entrada' ? '+' : '-'} {fmt(l.valor)}
                     </span>
                   </div>
@@ -330,7 +330,7 @@ export default function FinanceiroPage() {
 
         {/* ═══ ABA: FLUXO DE CAIXA ═══════════════════ */}
         {activeTab === 'fluxo' && (
-          <div className="p-8 space-y-6 animate-in fade-in duration-300">
+          <div className="p-4 sm:p-8 space-y-6 animate-in fade-in duration-300">
 
             {/* Filtros */}
             <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-wrap gap-3 items-center">
@@ -362,43 +362,45 @@ export default function FinanceiroPage() {
             {/* Lista de Lançamentos em Cards */}
             <div className="space-y-3">
               {lancamentos.map(l => (
-                <div key={l.id} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all flex items-center gap-4">
-                  {/* Ícone Tipo */}
-                  <div className={`p-2.5 rounded-xl shrink-0 ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
-                    {l.tipo === 'entrada' ? <ArrowUpRight className="h-5 w-5" /> : <ArrowDownRight className="h-5 w-5" />}
-                  </div>
-
-                  {/* Info Principal */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate">{l.descricao}</p>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{l.data}</span>
-                      <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">{l.categoria}</span>
+                <div key={l.id} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all">
+                  {/* Linha superior: ícone + descrição + botão ações */}
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2.5 rounded-xl shrink-0 mt-0.5 ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                      {l.tipo === 'entrada' ? <ArrowUpRight className="h-5 w-5" /> : <ArrowDownRight className="h-5 w-5" />}
                     </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate leading-tight">{l.descricao}</p>
+                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">{l.data}</p>
+                    </div>
+
+                    <button className="p-1.5 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors shrink-0">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </button>
                   </div>
 
-                  {/* Forma de Pagamento */}
-                  <div className="hidden md:flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700/50 shrink-0">
-                    {formaIcon(l.forma)}
-                    {l.forma}
+                  {/* Linha inferior: categoria + forma (desktop) + status + valor */}
+                  <div className="flex flex-wrap items-center gap-2 mt-3 pl-[52px]">
+                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">{l.categoria}</span>
+
+                    <span className="hidden md:flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                      {formaIcon(l.forma)}
+                      {l.forma}
+                    </span>
+
+                    <span className={`text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-lg ${
+                      l.status === 'pago' ? 'bg-green-50 text-green-600 border border-green-200' : 'bg-amber-50 text-amber-600 border border-amber-200'
+                    }`}>
+                      {l.status}
+                    </span>
+
+                    {/* Valor alinhado à direita com ml-auto */}
+                    <span className={`ml-auto text-base font-extrabold ${
+                      l.tipo === 'entrada' ? 'text-green-600' : 'text-red-500'
+                    }`}>
+                      {l.tipo === 'entrada' ? '+' : '-'} {fmt(l.valor)}
+                    </span>
                   </div>
-
-                  {/* Status */}
-                  <span className={`text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-lg shrink-0 ${
-                    l.status === 'pago' ? 'bg-green-50 text-green-600 border border-green-200' : 'bg-amber-50 text-amber-600 border border-amber-200'
-                  }`}>
-                    {l.status}
-                  </span>
-
-                  {/* Valor */}
-                  <span className={`text-base font-extrabold shrink-0 w-32 text-right ${l.tipo === 'entrada' ? 'text-green-600' : 'text-red-500'}`}>
-                    {l.tipo === 'entrada' ? '+' : '-'} {fmt(l.valor)}
-                  </span>
-
-                  {/* Ações */}
-                  <button className="p-1.5 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors shrink-0">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
                 </div>
               ))}
             </div>

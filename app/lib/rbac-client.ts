@@ -40,6 +40,8 @@ export const ROUTE_PERMISSIONS: Record<UserRole, string[]> = {
     '/minha-conta',
     '/messages',
     '/controle-de-protese',
+    '/estoque',
+    '/planos-tratamento',
   ],
   recepcao: [
     '/overview',
@@ -48,10 +50,14 @@ export const ROUTE_PERMISSIONS: Record<UserRole, string[]> = {
     '/patients',
     '/minha-conta',
     '/messages',
+    '/estoque',
+    '/planos-tratamento',
   ],
   financeiro: [
     '/overview',
     '/financeiro',
+    '/comissoes',
+    '/regua-cobranca',
     '/minha-conta',
   ],
 }

@@ -31,12 +31,6 @@ const ITENS_INICIAIS: Item[] = [
 
 type MovType = 'entrada' | 'saida'
 
-interface Movimentacao {
-  tipo: MovType
-  itemId: number
-  qtd: number
-}
-
 export default function EstoquePage() {
   const [itens, setItens] = useState<Item[]>(ITENS_INICIAIS)
   const [busca, setBusca] = useState('')
@@ -118,13 +112,13 @@ export default function EstoquePage() {
 
         {/* Filtros */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm flex flex-wrap gap-3 items-center">
-          <div className="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2 flex-1 min-w-48">
+          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-xl px-3 py-2 flex-1 min-w-48">
             <Search className="h-4 w-4 text-slate-400" />
             <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar item ou fornecedor..." className="bg-transparent outline-none text-sm text-slate-700 dark:text-slate-200 w-full font-medium" />
           </div>
           <div className="flex flex-wrap gap-2">
             {CATEGORIAS.map(cat => (
-              <button key={cat} onClick={() => setCategoria(cat)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${categoria === cat ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}`}>{cat}</button>
+              <button key={cat} onClick={() => setCategoria(cat)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${categoria === cat ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}`}>{cat}</button>
             ))}
           </div>
         </div>
@@ -133,18 +127,18 @@ export default function EstoquePage() {
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
+              <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
                 <tr>
                   {['Item', 'Categoria', 'Qtd Atual', 'Mín.', 'Unidade', 'Fornecedor', 'Custo Unit.', 'Status', 'Ações'].map(h => (
                     <th key={h} className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                 {itensFiltrados.map(item => {
                   const st = statusColor(item)
                   return (
-                    <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 transition-colors">
+                    <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                       <td className="px-5 py-3.5 font-bold text-slate-800 dark:text-slate-100">{item.nome}</td>
                       <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{item.categoria}</td>
                       <td className={`px-5 py-3.5 font-extrabold ${item.quantidade < item.minimo ? 'text-red-600' : 'text-slate-800 dark:text-slate-100'}`}>{item.quantidade}</td>

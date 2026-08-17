@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Building2, Users, ShieldCheck, Cpu, Save, Sliders, Smartphone, Mail, Globe,
   UserPlus, Loader2, Pencil, Trash2, Percent, FileText, CheckCircle2, AlertTriangle,
-  Clock, Lock, ExternalLink, RefreshCw, Download,
+  Clock, Lock, ExternalLink, RefreshCw, Download, Upload, X, Camera,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import ManageRolePermissionsModal, { Role } from '@/app/components/ManageRolePermissionsModal'
@@ -14,8 +14,11 @@ import { fetchTeamMembers, deleteUserAccount } from '@/app/actions/users'
 import CommissionModal from '@/app/components/CommissionModal'
 import { fetchCommissions } from '@/app/actions/commissions'
 import { fetchAuditLogs, fetchComplianceStats, AuditLog, ComplianceStats } from '@/app/actions/audit'
+import { fetchClinicaSettings, updateClinicaSettings, uploadClinicaLogo, removeClinicaLogo, ClinicaSettings } from '@/app/actions/clinica'
 import { useAuth } from '@/app/components/RequireAuth'
+import { useClinica } from '@/app/contexts/ClinicaContext'
 import Link from 'next/link'
+import Image from 'next/image'
 
 // ─── Badge de ação colorido ──────────────────────────────────────────────────
 
@@ -68,8 +71,28 @@ function MetricCard({
 
 export default function ConfiguracoesPage() {
   const { profile } = useAuth()
+  const { clinica: ctxClinica, refreshClinica } = useClinica()
   const [activeTab, setActiveTab] = useState<'perfil' | 'usuarios' | 'integracoes' | 'comissoes' | 'seguranca'>('perfil')
   const [salvando, setSalvando] = useState(false)
+
+  // ─── Perfil da Clínica (dados reais) ──────────────────────────────────────
+  const [clinicaId, setClinicaId] = useState<string | null>(null)
+  const [clinica, setClinica] = useState({
+    nome: '',
+    cnpj: '',
+    telefone: '',
+    email: '',
+    croResponsavel: '',
+    endereco: '',
+    site: '',
+  })
+  const [nomeExibido, setNomeExibido] = useState('')
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [isLoadingPerfil, setIsLoadingPerfil] = useState(false)
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false)
+  const logoInputRef = useRef<HTMLInputElement>(null)
 
   // Estados para o Modal de Permissões
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -96,6 +119,32 @@ export default function ConfiguracoesPage() {
   const [filtroAction, setFiltroAction] = useState('')
 
   // ─── Loaders ──────────────────────────────────────────────────────────────
+
+  const loadClinicaSettings = async () => {
+    setIsLoadingPerfil(true)
+    try {
+      const res = await fetchClinicaSettings()
+      if (res.success && res.data) {
+        const d = res.data
+        setClinicaId(d.id)
+        setClinica({
+          nome: d.nome ?? '',
+          cnpj: d.cnpj ?? '',
+          telefone: d.telefone ?? '',
+          email: d.email ?? '',
+          croResponsavel: d.cro_responsavel ?? '',
+          endereco: d.endereco ?? '',
+          site: d.site ?? '',
+        })
+        setNomeExibido(d.nome_exibido ?? '')
+        setLogoUrl(d.logo_url ?? null)
+      }
+    } catch (e) {
+      console.error('Erro ao carregar configurações da clínica:', e)
+    } finally {
+      setIsLoadingPerfil(false)
+    }
+  }
 
   const loadCommissions = async () => {
     setIsLoadingCommissions(true)
@@ -140,6 +189,9 @@ export default function ConfiguracoesPage() {
     }
   }
 
+  // Carrega ao montar (aba perfil é a padrão)
+  useEffect(() => { loadClinicaSettings() }, [])
+
   useEffect(() => {
     if (activeTab === 'usuarios') loadTeamMembers()
     else if (activeTab === 'comissoes') loadCommissions()
@@ -176,24 +228,91 @@ export default function ConfiguracoesPage() {
   }
 
   const handleSalvar = async () => {
+    if (!clinicaId) {
+      toast.error('ID da clínica não encontrado. Recarregue a página.')
+      return
+    }
     setSalvando(true)
-    await new Promise(r => setTimeout(r, 600))
-    setSalvando(false)
-    toast.success('Configurações salvas com sucesso!')
+    try {
+      const res = await updateClinicaSettings({
+        id: clinicaId,
+        target_clinica_id: ctxClinica?.id || undefined,
+        nome: clinica.nome,
+        cnpj: clinica.cnpj,
+        telefone: clinica.telefone,
+        email: clinica.email,
+        cro_responsavel: clinica.croResponsavel,
+        endereco: clinica.endereco,
+        site: clinica.site,
+        nome_exibido: nomeExibido.trim() || null,
+      })
+      if (res.success) {
+        await refreshClinica()
+        toast.success('Configurações salvas com sucesso!')
+      } else {
+        toast.error(res.error || 'Erro ao salvar configurações.')
+      }
+    } catch {
+      toast.error('Erro inesperado ao salvar.')
+    } finally {
+      setSalvando(false)
+    }
   }
 
-  // Estado mock para o Perfil da Clínica
-  const [clinica, setClinica] = useState({
-    nome: 'OdontoSoft Clínica Odontológica Especializada',
-    cnpj: '12.345.678/0001-90',
-    telefone: '(11) 99999-8888',
-    email: 'contato@odontosoft.com.br',
-    croResponsavel: 'CRO-SP 123456',
-    endereco: 'Av. Paulista, 1000 - Bela Vista, São Paulo - SP',
-    site: 'https://odontosoft.com.br'
-  })
+  const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setLogoFile(file)
+    const reader = new FileReader()
+    reader.onload = (ev) => setLogoPreview(ev.target?.result as string)
+    reader.readAsDataURL(file)
+  }
 
-  // Estado mock de Integrações
+  const handleLogoUpload = async () => {
+    if (!logoFile || !clinicaId) return
+    setIsUploadingLogo(true)
+    try {
+      const fd = new FormData()
+      fd.append('logo', logoFile)
+      fd.append('clinicaId', clinicaId)
+      const res = await uploadClinicaLogo(fd)
+      if (res.success && res.logo_url) {
+        setLogoUrl(res.logo_url)
+        setLogoPreview(null)
+        setLogoFile(null)
+        toast.success('Logo atualizada com sucesso!')
+      } else {
+        toast.error(res.error || 'Erro ao fazer upload.')
+      }
+    } catch {
+      toast.error('Erro inesperado no upload.')
+    } finally {
+      setIsUploadingLogo(false)
+    }
+  }
+
+  const handleRemoveLogo = async () => {
+    if (!clinicaId) return
+    if (!confirm('Tem certeza que deseja remover a logo da clínica?')) return
+    setIsUploadingLogo(true)
+    try {
+      const res = await removeClinicaLogo(clinicaId)
+      if (res.success) {
+        setLogoUrl(null)
+        setLogoPreview(null)
+        setLogoFile(null)
+        toast.success('Logo removida com sucesso!')
+      } else {
+        toast.error(res.error || 'Erro ao remover a logo.')
+      }
+    } catch {
+      toast.error('Erro inesperado ao remover.')
+    } finally {
+      setIsUploadingLogo(false)
+    }
+  }
+
+  // Estado de Integrações (mantido como mock por ora)
   const [integracoes, setIntegracoes] = useState({
     whatsapp: true,
     nfe: false,
@@ -272,80 +391,212 @@ export default function ConfiguracoesPage() {
       <main className="flex-1 p-8 max-w-6xl mx-auto w-full">
         {/* ABA 1: PERFIL DA CLÍNICA */}
         {activeTab === 'perfil' && (
-          <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4 border-b border-slate-100 pb-3">Informações Cadastrais</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Razão Social / Nome da Clínica</label>
-                <input
-                  type="text"
-                  value={clinica.nome}
-                  onChange={e => setClinica(p => ({ ...p, nome: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
+          <div className="space-y-6">
+            {isLoadingPerfil ? (
+              <div className="flex flex-col items-center justify-center py-24">
+                <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-3" />
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando dados da clínica...</p>
               </div>
+            ) : (
+              <>
+                {/* ── Seção: Emblema / Logo ─────────────────────────────── */}
+                <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Emblema / Logo da Clínica</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">A logo é exibida na barra superior para todos os usuários da clínica.</p>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">CNPJ</label>
-                <input
-                  type="text"
-                  value={clinica.cnpj}
-                  onChange={e => setClinica(p => ({ ...p, cnpj: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                    {/* Preview */}
+                    <div className="relative shrink-0">
+                      <div className="h-28 w-28 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 flex items-center justify-center overflow-hidden">
+                        {logoPreview ? (
+                          <img src={logoPreview} alt="Preview da logo" className="h-full w-full object-contain p-2" />
+                        ) : logoUrl ? (
+                          <img src={logoUrl} alt="Logo da clínica" className="h-full w-full object-contain p-2" />
+                        ) : (
+                          <div className="flex flex-col items-center gap-1 text-slate-400">
+                            <Camera className="h-8 w-8" />
+                            <span className="text-[10px] font-bold uppercase tracking-wider">Sem logo</span>
+                          </div>
+                        )}
+                      </div>
+                      {/* Badge de estado */}
+                      {logoPreview && (
+                        <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">PENDENTE</span>
+                      )}
+                      {logoUrl && !logoPreview && (
+                        <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">ATIVO</span>
+                      )}
+                    </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Telefone de Contato</label>
-                <input
-                  type="text"
-                  value={clinica.telefone}
-                  onChange={e => setClinica(p => ({ ...p, telefone: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
+                    {/* Controles */}
+                    <div className="flex flex-col gap-3 flex-1">
+                      <div className="flex flex-wrap gap-2">
+                        {/* Input de arquivo oculto */}
+                        <input
+                          ref={logoInputRef}
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                          className="hidden"
+                          onChange={handleLogoFileChange}
+                        />
+                        <button
+                          onClick={() => logoInputRef.current?.click()}
+                          className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-bold transition-colors"
+                        >
+                          <Upload className="h-4 w-4" />
+                          {logoUrl || logoPreview ? 'Alterar Logo' : 'Selecionar Logo'}
+                        </button>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">E-mail Comercial</label>
-                <input
-                  type="email"
-                  value={clinica.email}
-                  onChange={e => setClinica(p => ({ ...p, email: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
+                        {/* Botão de confirmar upload (aparece só após selecionar nova imagem) */}
+                        {logoPreview && (
+                          <button
+                            onClick={handleLogoUpload}
+                            disabled={isUploadingLogo}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-md shadow-blue-500/20"
+                          >
+                            {isUploadingLogo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                            {isUploadingLogo ? 'Enviando...' : 'Confirmar Upload'}
+                          </button>
+                        )}
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">CRO do Responsável Técnico</label>
-                <input
-                  type="text"
-                  value={clinica.croResponsavel}
-                  onChange={e => setClinica(p => ({ ...p, croResponsavel: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
+                        {/* Botão de cancelar (descarta preview) */}
+                        {logoPreview && (
+                          <button
+                            onClick={() => { setLogoPreview(null); setLogoFile(null) }}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-900/30 text-slate-500 hover:text-red-600 rounded-xl text-sm font-bold transition-colors"
+                          >
+                            <X className="h-4 w-4" /> Cancelar
+                          </button>
+                        )}
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Website</label>
-                <input
-                  type="text"
-                  value={clinica.site}
-                  onChange={e => setClinica(p => ({ ...p, site: e.target.value }))}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                />
-              </div>
-            </div>
+                        {/* Remover logo existente */}
+                        {logoUrl && !logoPreview && (
+                          <button
+                            onClick={handleRemoveLogo}
+                            disabled={isUploadingLogo}
+                            className="flex items-center gap-2 px-4 py-2.5 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl text-sm font-bold transition-colors disabled:opacity-50"
+                          >
+                            {isUploadingLogo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                            Remover Logo
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400 font-medium">Formatos aceitos: PNG, JPG, WEBP, SVG · Tamanho máximo: 2 MB · Recomendado: 256×256 px ou maior</p>
+                    </div>
+                  </div>
 
-            <div className="pt-4">
-              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Endereço Completo</label>
-              <input
-                type="text"
-                value={clinica.endereco}
-                onChange={e => setClinica(p => ({ ...p, endereco: e.target.value }))}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-              />
-            </div>
+                  {/* ── Campo: Nome Exibido no Topo do Sistema ──────────── */}
+                  <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                      Nome Exibido no Topo do Sistema
+                    </label>
+                    <p className="text-xs text-slate-400 font-medium mb-3">
+                      Substitui a Razão Social na barra superior para todos os usuários.
+                      Deixe em branco para usar a Razão Social automaticamente.
+                    </p>
+                    <div className="relative">
+                      <input
+                        id="nome-exibido-input"
+                        type="text"
+                        value={nomeExibido}
+                        onChange={e => setNomeExibido(e.target.value)}
+                        placeholder={clinica.nome || 'Ex.: Clínica Sorrisos'}
+                        maxLength={80}
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all pr-20"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-300 select-none">
+                        {nomeExibido.length}/80
+                      </span>
+                    </div>
+                    {nomeExibido.trim() && (
+                      <p className="mt-2 text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Topbar exibirá: &ldquo;{nomeExibido.trim()}&rdquo;
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* ── Seção: Dados Cadastrais ───────────────────────────── */}
+                <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">Informações Cadastrais</h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Razão Social / Nome da Clínica</label>
+                      <input
+                        type="text"
+                        value={clinica.nome}
+                        onChange={e => setClinica(p => ({ ...p, nome: e.target.value }))}
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">CNPJ</label>
+                      <input
+                        type="text"
+                        value={clinica.cnpj}
+                        onChange={e => setClinica(p => ({ ...p, cnpj: e.target.value }))}
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Telefone de Contato</label>
+                      <input
+                        type="text"
+                        value={clinica.telefone}
+                        onChange={e => setClinica(p => ({ ...p, telefone: e.target.value }))}
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">E-mail Comercial</label>
+                      <input
+                        type="email"
+                        value={clinica.email}
+                        onChange={e => setClinica(p => ({ ...p, email: e.target.value }))}
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">CRO do Responsável Técnico</label>
+                      <input
+                        type="text"
+                        value={clinica.croResponsavel}
+                        onChange={e => setClinica(p => ({ ...p, croResponsavel: e.target.value }))}
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Website</label>
+                      <input
+                        type="text"
+                        value={clinica.site}
+                        onChange={e => setClinica(p => ({ ...p, site: e.target.value }))}
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4">
+                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Endereço Completo</label>
+                    <input
+                      type="text"
+                      value={clinica.endereco}
+                      onChange={e => setClinica(p => ({ ...p, endereco: e.target.value }))}
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
 

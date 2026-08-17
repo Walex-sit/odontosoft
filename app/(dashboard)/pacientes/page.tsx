@@ -127,7 +127,7 @@ function EmptyState({ filtered }: { filtered: boolean }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Pacientes() {
-  const { session } = useAuth()
+  const { session, profile } = useAuth()
   const router = useRouter()
 
   // Form state
@@ -152,14 +152,22 @@ export default function Pacientes() {
     setCarregando(true)
     setErro(null)
 
-    const { data, error } = await supabase
+    const clinicaId = (profile as any)?.clinica_id || (profile as any)?.establishment_id
+    console.log('[pacientes] carregarPacientes — clinica_id do perfil:', clinicaId, '| role:', profile?.role)
+
+    const { data, error, count } = await supabase
       .from('pacientes')
-      .select('id, nome, telefone, cpf, email, data_nascimento, endereco, convenio, created_at, user_id')
+      .select('id, nome, telefone, cpf, email, data_nascimento, endereco, convenio, created_at, user_id', { count: 'exact' })
       .order('nome', { ascending: true })
 
     if (error) {
+      const detail = error instanceof Error
+        ? error.message
+        : (typeof error === 'object' ? JSON.stringify(error, Object.getOwnPropertyNames(error)) : String(error))
+      console.error('[pacientes] erro ao carregar:', detail)
       setErro(error.message)
     } else {
+      console.log('[pacientes] registros retornados pelo RLS:', count)
       setPacientes((data ?? []) as Paciente[])
     }
 
@@ -170,9 +178,13 @@ export default function Pacientes() {
     if (!nome.trim() || !session?.user?.id) return
     setSalvando(true)
 
+    const clinicaId = (profile as any)?.clinica_id || (profile as any)?.establishment_id
+    const payload: Record<string, any> = { nome: nome.trim(), user_id: session.user.id }
+    if (clinicaId) payload.clinica_id = clinicaId
+
     const { error } = await supabase
       .from('pacientes')
-      .insert([{ nome: nome.trim(), user_id: session.user.id }])
+      .insert([payload])
 
     if (error) {
       alert('Erro ao adicionar paciente: ' + error.message)
@@ -192,7 +204,7 @@ export default function Pacientes() {
       setCarregando(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session])
+  }, [session, profile])
 
   // ── Derived: filtered list ──────────────────────────────────────────────────
 
