@@ -49,7 +49,8 @@ export default function Agenda() {
 
     // Carrega Dentistas (perfis com role dentista)
     const { data: dents } = await supabase.from('user_profiles').select('*').eq('role', 'dentista')
-    setDentistas(dents || [])
+    const dentsList = (dents as Array<{ id: string; nome: string }>) || []
+    setDentistas(dentsList)
 
     // Carrega Agendamentos com fallback gracioso se o JOIN no PostgREST falhar
     let query = supabase
@@ -60,7 +61,9 @@ export default function Agenda() {
       query = query.eq('dentista_id', filtroDentista)
     }
     
-    let { data: agends, error: agendErr } = await query
+    const { data: agendsData, error: agendErr } = await query
+
+    let finalAgends: any[] = []
 
     if (agendErr) {
       console.warn('Busca com JOIN falhou, executando fallback simples:', agendErr.message)
@@ -69,24 +72,24 @@ export default function Agenda() {
         fbQuery = fbQuery.eq('dentista_id', filtroDentista)
       }
       const { data: fbData } = await fbQuery
-      agends = (fbData || []).map(a => {
-        const dent = (dents || []).find(d => d.id === (a.dentista_id || a.profissional_id))
+      finalAgends = (fbData || []).map((a: any) => {
+        const dent = dentsList.find((d) => d.id === (a.dentista_id || a.profissional_id))
         return {
           ...a,
           dentistas: dent ? { nome: dent.nome } : null
         }
       })
     } else {
-      agends = (agends || []).map(a => {
+      finalAgends = ((agendsData as any[]) || []).map((a: any) => {
         if (!a.dentistas) {
-          const dent = (dents || []).find(d => d.id === (a.dentista_id || a.profissional_id))
+          const dent = dentsList.find((d) => d.id === (a.dentista_id || a.profissional_id))
           if (dent) a.dentistas = { nome: dent.nome }
         }
         return a
       })
     }
 
-    setAgendamentos(agends || [])
+    setAgendamentos(finalAgends)
     setCarregando(false)
   }
 
@@ -111,8 +114,8 @@ export default function Agenda() {
   }
 
   const eventos = agendamentos.map((a) => {
-    let start = `${a.data_consulta}T${a.hora_consulta}`
-    let end = a.hora_fim ? `${a.data_consulta}T${a.hora_fim}` : start
+    const start = `${a.data_consulta}T${a.hora_consulta}`
+    const end = a.hora_fim ? `${a.data_consulta}T${a.hora_fim}` : start
     const corStatus = statusColors[a.status || 'agendado']
 
     return {

@@ -13,18 +13,19 @@ interface Atestado {
   motivo: string
   cid: string | null
   cid_descricao: string | null
-  pacientes: {
+  pacientes?: {
     nome: string
     cpf: string | null
-  }
-  profiles: {
-    full_name: string
-    cro: string | null
-  }
+  } | null
+  profiles?: {
+    nome: string
+    especialidade: string | null
+  } | null
 }
 
 export default function ImprimirAtestado() {
-  const { id } = useParams()
+  const params = useParams()
+  const id = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : ''
   const [atestado, setAtestado] = useState<Atestado | null>(null)
   const [clinica, setClinica] = useState<ClinicaSettings | null>(null)
   const [loading, setLoading] = useState(true)
@@ -48,13 +49,13 @@ export default function ImprimirAtestado() {
         .select(`
           *,
           pacientes (nome, cpf),
-          profiles:profissional_id (full_name, cro)
+          profiles:profissional_id (nome, especialidade)
         `)
         .eq('id', id)
-        .single()
+        .maybeSingle()
 
       if (atestadoData) {
-        setAtestado(atestadoData as any)
+        setAtestado(atestadoData as unknown as Atestado)
       }
 
       setLoading(false)
@@ -80,8 +81,8 @@ export default function ImprimirAtestado() {
   const dataFormatada = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(dataAtestado)
   
   // Tratar a data de início (pode vir no formato YYYY-MM-DD)
-  const [ano, mes, dia] = atestado.data_inicio.split('-')
-  const dataInicioFormatada = `${dia}/${mes}/${ano}`
+  const [ano, mes, dia] = (atestado.data_inicio || '').split('-')
+  const dataInicioFormatada = dia && mes && ano ? `${dia}/${mes}/${ano}` : atestado.data_inicio
 
   return (
     <div className="bg-white min-h-screen w-full text-slate-900 print:bg-white p-8 max-w-[210mm] mx-auto print:p-0 print:m-0 flex flex-col">
@@ -97,7 +98,7 @@ export default function ImprimirAtestado() {
           />
         )}
         <h1 className="text-2xl font-bold text-slate-800 uppercase tracking-wide">
-          {clinica?.nome || 'Clínica Odontológica'}
+          {clinica?.nome_exibido || clinica?.nome || 'Clínica Odontológica'}
         </h1>
         <div className="text-sm text-slate-500 mt-1 flex flex-col items-center gap-1">
           {clinica?.endereco && <span>{clinica.endereco}</span>}
@@ -118,7 +119,7 @@ export default function ImprimirAtestado() {
       {/* CORPO DO ATESTADO */}
       <section className="mb-12 flex-1 text-lg leading-relaxed text-justify px-4">
         <p className="indent-8">
-          Atesto para os devidos fins que o(a) paciente <strong className="uppercase">{atestado.pacientes?.nome}</strong>
+          Atesto para os devidos fins que o(a) paciente <strong className="uppercase">{atestado.pacientes?.nome || 'Paciente'}</strong>
           {atestado.pacientes?.cpf ? `, inscrito(a) no CPF sob o nº ${atestado.pacientes.cpf}` : ''}, foi submetido(a) a tratamento odontológico 
           nesta data e necessita de <strong>{atestado.dias_afastamento}</strong> {atestado.dias_afastamento === 1 ? 'dia' : 'dias'} de repouso 
           a partir de <strong>{dataInicioFormatada}</strong>, por motivo de {atestado.motivo}.
@@ -139,9 +140,9 @@ export default function ImprimirAtestado() {
         
         <div className="flex flex-col items-center justify-center">
           <div className="w-80 border-t border-slate-800 mb-2"></div>
-          <div className="font-bold text-slate-800 text-lg">{atestado.profiles?.full_name || 'Dr(a).'}</div>
-          {atestado.profiles?.cro && (
-            <div className="text-base text-slate-500">CRO: {atestado.profiles.cro}</div>
+          <div className="font-bold text-slate-800 text-lg">{atestado.profiles?.nome || 'Dr(a).'}</div>
+          {atestado.profiles?.especialidade && (
+            <div className="text-base text-slate-500">{atestado.profiles.especialidade}</div>
           )}
         </div>
       </footer>

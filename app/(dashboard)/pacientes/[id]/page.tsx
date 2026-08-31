@@ -10,9 +10,11 @@ import ModalNovoOrcamento from '@/app/components/ModalNovoOrcamento'
 import ModalNovaCobranca from '@/app/components/ModalNovaCobranca' // <- Importado corretamente
 import {
   ChevronLeft, Info, Calendar, DollarSign, FileText,
-  Plus, ClipboardList, Loader2, Pencil, Trash2, CreditCard, HeartPulse
+  Plus, ClipboardList, Loader2, Pencil, Trash2, CreditCard, HeartPulse,
+  ShieldCheck, AlertTriangle
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { regularizarLgpd } from '@/app/actions/pacientes'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -23,6 +25,8 @@ interface Paciente {
   cpf: string | null
   email: string | null
   created_at: string
+  lgpd_aceite: boolean | null
+  lgpd_aceite_em: string | null
 }
 
 interface Evolucao {
@@ -132,28 +136,43 @@ export default function DetalhePaciente() {
     }
   }
 
+  const [regularizandoLgpd, setRegularizandoLgpd] = useState(false)
+
   // ── Carrega paciente ──────────────────────────────────────────────────────
 
+  const carregarPaciente = useCallback(async () => {
+    if (!pacienteId) return
+
+    const { data } = await supabase
+      .from('pacientes')
+      .select('id, nome, telefone, cpf, email, created_at, lgpd_aceite, lgpd_aceite_em')
+      .eq('id', pacienteId)
+      .single()
+
+    setPaciente(data as Paciente | null)
+    setLoadingPaciente(false)
+  }, [pacienteId])
+
   useEffect(() => {
-    async function carregarPaciente() {
-      if (!pacienteId) return
-
-      const { data } = await supabase
-        .from('pacientes')
-        .select('id, nome, telefone, cpf, email, created_at')
-        .eq('id', pacienteId)
-        .single()
-
-      setPaciente(data as Paciente | null)
-      setLoadingPaciente(false)
-    }
-
     if (session) {
       carregarPaciente()
     } else if (session === null) {
       setLoadingPaciente(false)
     }
-  }, [pacienteId, session])
+  }, [session, carregarPaciente])
+
+  async function handleRegularizarLgpd() {
+    if (!paciente) return
+    setRegularizandoLgpd(true)
+    const res = await regularizarLgpd(paciente.id, true, session?.user?.id)
+    setRegularizandoLgpd(false)
+    if (res.success) {
+      toast.success('Aceite LGPD regularizado com sucesso!')
+      setPaciente(prev => prev ? { ...prev, lgpd_aceite: true, lgpd_aceite_em: new Date().toISOString() } : null)
+    } else {
+      toast.error('Erro ao regularizar LGPD: ' + res.error)
+    }
+  }
 
   // ── Carrega evoluções ─────────────────────────────────────────────────────
 
@@ -251,25 +270,61 @@ export default function DetalhePaciente() {
   return (
     <>
       {/* Cabeçalho do paciente */}
-      <div className="mb-6">
-        <button
-          onClick={() => router.push('/pacientes')}
-          className="flex items-center gap-2 text-slate-400 hover:text-slate-800 dark:text-slate-100 font-medium text-sm transition-colors mb-4 active:scale-95"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar para lista
-        </button>
+      <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <button
+            onClick={() => router.push('/pacientes')}
+            className="flex items-center gap-2 text-slate-400 hover:text-slate-800 dark:text-slate-100 font-medium text-sm transition-colors mb-4 active:scale-95"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Voltar para lista
+          </button>
 
-        <div className="flex items-center gap-4">
-          <div className="h-14 w-14 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-xl shadow-sm shrink-0">
-            {paciente.nome.charAt(0).toUpperCase()}
+          <div className="flex items-center gap-4">
+            <div className="h-14 w-14 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-xl shadow-sm shrink-0">
+              {paciente.nome.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <div className="flex items-center gap-3 flex-wrap">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">{paciente.nome}</h2>
+                {paciente.lgpd_aceite ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                    <ShieldCheck className="h-3.5 w-3.5" /> Conforme LGPD
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                    <AlertTriangle className="h-3.5 w-3.5" /> Pendente LGPD
+                  </span>
+                )}
+              </div>
+              <p className="text-slate-500 dark:text-slate-400 mt-0.5 text-xs sm:text-sm font-medium">
+                Paciente Ativo · ID: {paciente.id.substring(0, 8)}
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100">{paciente.nome}</h2>
-            <p className="text-slate-500 dark:text-slate-400 mt-0.5 text-xs sm:text-sm font-medium">
-              Paciente Ativo · ID: {paciente.id.substring(0, 8)}
-            </p>
-          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {!paciente.lgpd_aceite && (
+            <button
+              onClick={handleRegularizarLgpd}
+              disabled={regularizandoLgpd}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50"
+            >
+              {regularizandoLgpd ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ShieldCheck className="h-4 w-4" />
+              )}
+              {regularizandoLgpd ? 'Regularizando...' : 'Regularizar Aceite LGPD'}
+            </button>
+          )}
+          <button
+            onClick={() => router.push(`/pacientes/${paciente.id}/edit`)}
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition-all active:scale-95"
+          >
+            <Pencil className="h-3.5 w-3.5" /> Editar Cadastro
+          </button>
         </div>
       </div>
 
@@ -313,6 +368,49 @@ export default function DetalhePaciente() {
                 <InfoField label="Telefone" value={formatarTelefone(paciente.telefone)} />
                 <InfoField label="Email" value={paciente.email} />
                 <InfoField label="CPF" value={formatarCPF(paciente.cpf)} />
+              </div>
+
+              {/* Seção LGPD na aba Informações */}
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-700/50">
+                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-blue-500" />
+                  Conformidade LGPD (Proteção de Dados)
+                </h3>
+                <div className={`p-4 rounded-2xl border transition-all ${
+                  paciente.lgpd_aceite
+                    ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/60'
+                    : 'bg-amber-50/60 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/60'
+                }`}>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                        {paciente.lgpd_aceite
+                          ? '✓ Termo de Consentimento LGPD Aceito'
+                          : '⚠️ Termo de Consentimento LGPD Pendente'}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        {paciente.lgpd_aceite && paciente.lgpd_aceite_em
+                          ? `Aceite registrado eletronicamente em ${new Date(paciente.lgpd_aceite_em).toLocaleString('pt-BR')}`
+                          : 'O paciente ainda não possui registro formal de consentimento para tratamento de dados segundo a Lei 13.709/2018.'}
+                      </p>
+                    </div>
+
+                    {!paciente.lgpd_aceite && (
+                      <button
+                        onClick={handleRegularizarLgpd}
+                        disabled={regularizandoLgpd}
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shrink-0 shadow-sm transition-all active:scale-95 disabled:opacity-50"
+                      >
+                        {regularizandoLgpd ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <ShieldCheck className="h-4 w-4" />
+                        )}
+                        Regularizar Agora
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}

@@ -65,9 +65,9 @@ export default function Usuarios() {
     }
   }
 
-  async function alterarRole(userId: string, novaRole: string) {
+  async function alterarRole(userId: string, novaRole: Role) {
     const roleAnterior = usuarios.find(u => u.id === userId)?.role
-    setUsuarios(prev => prev.map(u => u.id === userId ? { ...u, role: novaRole as Role } : u))
+    setUsuarios(prev => prev.map(u => u.id === userId ? { ...u, role: novaRole } : u))
 
     try {
       const { error } = await supabase.from('user_profiles').update({ role: novaRole }).eq('id', userId)
@@ -295,7 +295,7 @@ export default function Usuarios() {
                           <select
                             className={`w-full px-2 py-1 text-xs font-bold uppercase rounded border focus:outline-none ${info.color}`}
                             value={u.role}
-                            onChange={(e) => alterarRole(u.id, e.target.value)}
+                            onChange={(e) => alterarRole(u.id, e.target.value as Role)}
                           >
                             <option value="admin">Administrador</option>
                             <option value="dentista">Dentista</option>

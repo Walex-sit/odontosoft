@@ -1,9 +1,16 @@
 'use client';
 
+/**
+ * app/components/EditPatientModal.tsx
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Modal de edição de dados cadastrais de pacientes com suporte a consentimento LGPD.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, ShieldCheck, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { updatePatient, Paciente } from '@/app/actions/patients';
+import { updatePatient, type Paciente } from '@/app/actions/pacientes';
 
 interface EditPatientModalProps {
   isOpen: boolean;
@@ -18,7 +25,11 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
 
   useEffect(() => {
     if (patient) {
-      setFormData(patient);
+      setFormData({
+        ...patient,
+        lgpd_aceite: Boolean(patient.lgpd_aceite),
+        lgpd_aceite_em: patient.lgpd_aceite_em || null,
+      });
     } else {
       setFormData({});
     }
@@ -30,13 +41,23 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleLgpdToggle = (checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      lgpd_aceite: checked,
+      lgpd_aceite_em: checked ? (prev.lgpd_aceite_em || new Date().toISOString()) : null,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSalvando(true);
     
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
-      data.append(key, (value as string) || '');
+      if (value !== undefined && value !== null) {
+        data.append(key, String(value));
+      }
     });
 
     try {
@@ -48,7 +69,7 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
       } else {
         toast.error(res.error || 'Erro ao atualizar paciente');
       }
-    } catch (err) {
+    } catch {
       toast.error('Ocorreu um erro inesperado.');
     } finally {
       setSalvando(false);
@@ -159,6 +180,49 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
                 onChange={handleChange}
                 className="w-full px-4 py-2.5 bg-slate-900/60 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               />
+            </div>
+
+            {/* Seção de Consentimento LGPD */}
+            <div className={`md:col-span-2 p-4 rounded-xl border transition-all ${
+              formData.lgpd_aceite
+                ? 'bg-emerald-950/30 border-emerald-800/80'
+                : 'bg-amber-950/30 border-amber-800/80'
+            }`}>
+              <div className="flex items-start gap-3">
+                <div className="pt-0.5">
+                  {formData.lgpd_aceite ? (
+                    <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                  ) : (
+                    <AlertCircle className="h-5 w-5 text-amber-400" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <label htmlFor="modal_lgpd_aceite" className="flex items-center gap-2 cursor-pointer font-bold text-sm text-slate-100">
+                    <input
+                      type="checkbox"
+                      id="modal_lgpd_aceite"
+                      name="lgpd_aceite"
+                      checked={Boolean(formData.lgpd_aceite)}
+                      onChange={(e) => handleLgpdToggle(e.target.checked)}
+                      className="h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span>Aceite LGPD (Consentimento de Uso de Dados)</span>
+                  </label>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Autorização para tratamento e armazenamento de dados pessoais e de saúde para fins de prontuário clínico e atendimento odontológico (Lei Federal nº 13.709/2018).
+                  </p>
+                  {formData.lgpd_aceite && formData.lgpd_aceite_em && (
+                    <p className="text-xs font-semibold text-emerald-400 mt-1.5">
+                      ✓ Aceite registrado em: {new Date(formData.lgpd_aceite_em).toLocaleString('pt-BR')}
+                    </p>
+                  )}
+                  {!formData.lgpd_aceite && (
+                    <p className="text-xs font-semibold text-amber-400 mt-1.5">
+                      ⚠️ Paciente sem consentimento registrado. Marque a caixa para regularizar.
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           </form>
         </div>

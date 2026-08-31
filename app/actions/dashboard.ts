@@ -1,17 +1,19 @@
 'use server';
 
-import { createClient } from '@supabase/supabase-js';
+/**
+ * app/actions/dashboard.ts
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Ações de agregação de métricas e gráficos do Dashboard.
+ *
+ * Segurança (T001):
+ *  ✅ Usa createServerClient() — autenticado via JWT/cookie → RLS ativo.
+ *  ✅ Todas as leituras em receitas, pacientes, agendamentos, procedimentos_realizados
+ *     e user_profiles respeitam as políticas de RLS da clínica do usuário logado.
+ *  ✅ Sem uso indevido de service_role.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
 
-function getAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) {
-    throw new Error('Variáveis de ambiente Supabase ausentes');
-  }
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
+import { createServerClient } from '@/app/lib/supabase/server';
 
 // ==========================================
 // 1. Métricas Principais (KPIs)
@@ -31,7 +33,24 @@ export async function fetchDashboardMetrics(anoParam?: number, mesParam?: number
   error?: string;
 }> {
   try {
-    const supabase = getAdminClient();
+    const supabase = await createServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return {
+        success: false,
+        data: {
+          faturamentoMensal: 0,
+          faturamentoMesAnterior: 0,
+          faturamentoCrescimento: 0,
+          pacientesAtivos: 0,
+          pacientesCrescimento: 0,
+          consultasHoje: 0,
+          consultasRealizadasHoje: 0,
+          taxaComparecimento: 0,
+        },
+        error: 'Não autorizado: sessão inválida.',
+      };
+    }
     
     // Datas para filtros baseadas no parâmetro ou no momento atual
     const now = new Date();
@@ -52,18 +71,22 @@ export async function fetchDashboardMetrics(anoParam?: number, mesParam?: number
     const todayStr = `${yearStr}-${monthStr}-${dayStr}`;
 
     // 1.1 Faturamento do Mês Selecionado (buscando da tabela 'receitas')
-    const { data: faturamentoData } = await supabase
+    const { data: faturamentoData, error: fatError } = await supabase
       .from('receitas')
       .select('valor, status, created_at')
       .gte('created_at', startOfMonth)
       .lte('created_at', endOfMonth);
+
+    if (fatError) {
+      console.error('[dashboard.fetchDashboardMetrics] Erro ao buscar receitas do mês:', fatError.message);
+    }
       
     const faturamentoMensal = (faturamentoData || [])
       .filter(r => {
         const st = (r.status || '').toLowerCase();
         return st === 'pago' || st === 'recebido' || st === 'concluido';
       })
-      .reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+      .reduce((acc, curr) => acc + (Number(curr.valor) || 0), 0);
 
     // 1.1.2 Faturamento Mês Anterior ao Selecionado (para cálculo do crescimento %)
     const { data: faturamentoPassadoData } = await supabase
@@ -77,7 +100,7 @@ export async function fetchDashboardMetrics(anoParam?: number, mesParam?: number
         const st = (r.status || '').toLowerCase();
         return st === 'pago' || st === 'recebido' || st === 'concluido';
       })
-      .reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+      .reduce((acc, curr) => acc + (Number(curr.valor) || 0), 0);
 
     const faturamentoCrescimento = faturamentoMesAnterior > 0
       ? Math.round(((faturamentoMensal - faturamentoMesAnterior) / faturamentoMesAnterior) * 100)
@@ -128,10 +151,11 @@ export async function fetchDashboardMetrics(anoParam?: number, mesParam?: number
       }
     };
 
-  } catch (error: any) {
-    console.error('Erro em fetchDashboardMetrics:', error.message);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Erro desconhecido';
+    console.error('Erro em fetchDashboardMetrics:', msg);
     return {
-      success: true,
+      success: false,
       data: {
         faturamentoMensal: 0,
         faturamentoMesAnterior: 0,
@@ -141,7 +165,8 @@ export async function fetchDashboardMetrics(anoParam?: number, mesParam?: number
         consultasHoje: 0,
         consultasRealizadasHoje: 0,
         taxaComparecimento: 0
-      }
+      },
+      error: msg
     };
   }
 }
@@ -151,20 +176,48 @@ export async function fetchDashboardMetrics(anoParam?: number, mesParam?: number
 // ==========================================
 const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
 
+export interface CashFlowPoint {
+  name: string;
+  receitas: number;
+  despesas: number;
+}
+
+export interface ProcedureRank {
+  name: string;
+  count: number;
+  fill: string;
+}
+
+export interface DentistDist {
+  name: string;
+  value: number;
+  fill: string;
+}
+
 export async function fetchDashboardCharts(): Promise<{
   success: boolean;
   data: {
-    cashFlow: any[];
-    topProcedures: any[];
-    dentistDistribution: any[];
+    cashFlow: CashFlowPoint[];
+    topProcedures: ProcedureRank[];
+    dentistDistribution: DentistDist[];
   };
+  error?: string;
 }> {
   try {
-    const supabase = getAdminClient();
+    const supabase = await createServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return {
+        success: false,
+        data: { cashFlow: [], topProcedures: [], dentistDistribution: [] },
+        error: 'Não autorizado: sessão inválida.',
+      };
+    }
+
     const now = new Date();
 
     // ── 1. Fluxo de Caixa: últimos 7 meses (buscando da tabela 'receitas') ──
-    const cashFlow: { name: string; receitas: number; despesas: number }[] = [];
+    const cashFlow: CashFlowPoint[] = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const start = new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
@@ -182,7 +235,7 @@ export async function fetchDashboardCharts(): Promise<{
           const st = (r.status || '').toLowerCase();
           return st === 'pago' || st === 'recebido' || st === 'concluido';
         })
-        .reduce((s: number, r: any) => s + parseFloat(r.valor ?? 0), 0);
+        .reduce((s: number, r) => s + (Number(r.valor) || 0), 0);
 
       cashFlow.push({ name: label.charAt(0).toUpperCase() + label.slice(1, 3), receitas, despesas: 0 });
     }
@@ -195,12 +248,12 @@ export async function fetchDashboardCharts(): Promise<{
       .gte('created_at', startOfYear);
 
     const procCount: Record<string, number> = {};
-    (recsRaw || []).forEach((r: any) => {
+    (recsRaw || []).forEach((r) => {
       const nome = r.descricao || 'Outros';
       procCount[nome] = (procCount[nome] || 0) + 1;
     });
 
-    const topProcedures = Object.entries(procCount)
+    const topProcedures: ProcedureRank[] = Object.entries(procCount)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 6)
       .map(([name, count], i) => ({ name, count, fill: CHART_COLORS[i % CHART_COLORS.length] }));
@@ -211,7 +264,7 @@ export async function fetchDashboardCharts(): Promise<{
       .select('id, nome')
       .eq('role', 'dentista');
 
-    const dentistDistribution: { name: string; value: number; fill: string }[] = [];
+    const dentistDistribution: DentistDist[] = [];
 
     if (dentistas && dentistas.length > 0) {
       const { data: atendimentos } = await supabase
@@ -220,11 +273,13 @@ export async function fetchDashboardCharts(): Promise<{
         .gte('data_realizacao', new Date(now.getFullYear(), now.getMonth(), 1).toISOString());
 
       const countByDentist: Record<string, number> = {};
-      (atendimentos || []).forEach((a: any) => {
-        countByDentist[a.dentista_id] = (countByDentist[a.dentista_id] || 0) + 1;
+      (atendimentos || []).forEach((a) => {
+        if (a.dentista_id) {
+          countByDentist[a.dentista_id] = (countByDentist[a.dentista_id] || 0) + 1;
+        }
       });
 
-      dentistas.forEach((d: any, i: number) => {
+      dentistas.forEach((d, i: number) => {
         const value = countByDentist[d.id] || 0;
         dentistDistribution.push({
           name: d.nome,
@@ -242,11 +297,13 @@ export async function fetchDashboardCharts(): Promise<{
         dentistDistribution,
       },
     };
-  } catch (error: any) {
-    console.error('Erro em fetchDashboardCharts:', error.message);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Erro desconhecido';
+    console.error('Erro em fetchDashboardCharts:', msg);
     return {
-      success: true,
+      success: false,
       data: { cashFlow: [], topProcedures: [], dentistDistribution: [] },
+      error: msg
     };
   }
 }

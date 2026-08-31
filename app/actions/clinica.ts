@@ -1,17 +1,19 @@
 'use server'
 
-import { createClient } from '@supabase/supabase-js'
+/**
+ * app/actions/clinica.ts
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Gerenciamento de configurações da clínica e upload de logotipo.
+ *
+ * Segurança (T001):
+ *  ✅ Usa createServerClient() — autenticado via JWT/cookie → RLS ativo.
+ *  ✅ Leitura e atualização são escopadas pela clínica do usuário autenticado.
+ *  ✅ Apenas 'admin' pode alterar configurações cadastrais da clínica.
+ *  ✅ Sem service_role para operações de leitura/escrita regulares.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
 
-// ---------------------------------------------------------------------------
-// Admin client — bypasses RLS so any authenticated user can read/write
-// ---------------------------------------------------------------------------
-function getAdmin() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  )
-}
+import { createServerClient } from '@/app/lib/supabase/server'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -26,14 +28,13 @@ export interface ClinicaSettings {
   endereco: string | null
   site: string | null
   logo_url: string | null
-  /** Nome visual exibido na Topbar — desacoplado da Razão Social */
   nome_exibido: string | null
   updated_at: string
   clinica_id?: string | null
 }
 
 // ---------------------------------------------------------------------------
-// fetchClinicaSettings — retorna a única linha da tabela clinica_settings
+// fetchClinicaSettings — busca as configurações da clínica do usuário logado
 // ---------------------------------------------------------------------------
 export async function fetchClinicaSettings(): Promise<{
   success: boolean
@@ -41,36 +42,61 @@ export async function fetchClinicaSettings(): Promise<{
   error?: string
 }> {
   try {
-    const admin = getAdmin()
-    const { data, error } = await admin
-      .from('clinica_settings')
-      .select('*')
-      .limit(1)
-      .maybeSingle()
-
-    if (error) {
-      console.error('[clinica] fetchClinicaSettings error:', error.message)
-      return { success: false, data: null, error: error.message }
+    const supabase = await createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, data: null, error: 'Não autorizado.' }
     }
 
-    const settings = data as ClinicaSettings | null
+    // Busca o perfil para identificar a clinica_id
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('clinica_id')
+      .eq('id', user.id)
+      .single()
 
-    // Forçar a leitura da tabela `clinicas` que é a fonte da verdade atual
-    if (settings) {
-      let targetId = settings.clinica_id
-      if (!targetId) {
-        // Fallback: se não tiver linkado ainda
-        const { data: fallback } = await admin.from('clinicas').select('*').limit(1).maybeSingle()
-        if (fallback) {
-          targetId = fallback.id
-          await admin.from('clinica_settings').update({ clinica_id: targetId }).eq('id', settings.id)
-        }
-      }
+    const clinicaId = profile?.clinica_id
 
-      if (targetId) {
-        const { data: realClinica } = await admin.from('clinicas').select('nome, cnpj, telefone, email, endereco').eq('id', targetId).maybeSingle()
-        if (realClinica) {
-          settings.nome = realClinica.nome
+    // Busca settings
+    let query = supabase.from('clinica_settings').select('*')
+    if (clinicaId) {
+      query = query.eq('clinica_id', clinicaId)
+    }
+    const { data: settingsData, error: settingsError } = await query.limit(1).maybeSingle()
+
+    if (settingsError) {
+      console.error('[clinica] fetchClinicaSettings error:', settingsError.message)
+      return { success: false, data: null, error: settingsError.message }
+    }
+
+    let settings = settingsData as ClinicaSettings | null
+
+    // Se temos clinica_id, sincroniza com os dados mais recentes da tabela clinicas
+    if (clinicaId) {
+      const { data: realClinica } = await supabase
+        .from('clinicas')
+        .select('id, nome, cnpj, telefone, email, endereco')
+        .eq('id', clinicaId)
+        .maybeSingle()
+
+      if (realClinica) {
+        if (!settings) {
+          settings = {
+            id: realClinica.id,
+            nome: realClinica.nome,
+            cnpj: realClinica.cnpj,
+            telefone: realClinica.telefone,
+            email: realClinica.email,
+            cro_responsavel: null,
+            endereco: realClinica.endereco,
+            site: null,
+            logo_url: null,
+            nome_exibido: realClinica.nome,
+            updated_at: new Date().toISOString(),
+            clinica_id: realClinica.id,
+          }
+        } else {
+          settings.nome = realClinica.nome || settings.nome
           settings.cnpj = realClinica.cnpj || settings.cnpj
           settings.telefone = realClinica.telefone || settings.telefone
           settings.email = realClinica.email || settings.email
@@ -80,9 +106,10 @@ export async function fetchClinicaSettings(): Promise<{
     }
 
     return { success: true, data: settings }
-  } catch (e: any) {
-    console.error('[clinica] fetchClinicaSettings exception:', e.message)
-    return { success: false, data: null, error: e.message }
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Erro desconhecido'
+    console.error('[clinica] fetchClinicaSettings exception:', msg)
+    return { success: false, data: null, error: msg }
   }
 }
 
@@ -99,49 +126,78 @@ export async function updateClinicaSettings(payload: {
   endereco?: string
   site?: string
   logo_url?: string | null
-  /** Nome visual exibido na Topbar — desacoplado da Razão Social */
   nome_exibido?: string | null
   target_clinica_id?: string
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    const admin = getAdmin()
+    const supabase = await createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: 'Não autorizado.' }
+    }
+
+    // RBAC: apenas admin pode alterar configurações da clínica
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('clinica_id, role')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile || profile.role !== 'admin') {
+      return { success: false, error: 'Apenas administradores podem alterar as configurações da clínica.' }
+    }
+
     const { id, target_clinica_id, ...fields } = payload
+    const targetClinicaId = profile.clinica_id || target_clinica_id
 
-    // 1. Pega o clinica_id associado ao settings
-    const { data: cs } = await admin.from('clinica_settings').select('clinica_id').eq('id', id).single()
-    
-    let targetClinicaId = target_clinica_id || cs?.clinica_id
+    // 1. Atualiza a tabela clinicas se clinica_id estiver definido
+    if (targetClinicaId) {
+      const updateClinicaPayload: {
+        atualizado_em: string
+        nome?: string
+        cnpj?: string | null
+        telefone?: string | null
+        email?: string | null
+        endereco?: string | null
+      } = {
+        atualizado_em: new Date().toISOString(),
+      }
+      if (fields.nome !== undefined) updateClinicaPayload.nome = fields.nome
+      if (fields.cnpj !== undefined) updateClinicaPayload.cnpj = fields.cnpj
+      if (fields.telefone !== undefined) updateClinicaPayload.telefone = fields.telefone
+      if (fields.email !== undefined) updateClinicaPayload.email = fields.email
+      if (fields.endereco !== undefined) updateClinicaPayload.endereco = fields.endereco
 
-    // Fallback agressivo: se o settings não tiver clinica_id linkado, pega a primeira clínica disponível
-    if (!targetClinicaId) {
-      const { data: fallbackClinica } = await admin.from('clinicas').select('id').limit(1).maybeSingle()
-      if (fallbackClinica) {
-        targetClinicaId = fallbackClinica.id
-        // Conserta o link quebrado
-        await admin.from('clinica_settings').update({ clinica_id: targetClinicaId }).eq('id', id)
+      const { error: clinicaErr } = await supabase
+        .from('clinicas')
+        .update(updateClinicaPayload)
+        .eq('id', targetClinicaId)
+
+      if (clinicaErr) {
+        console.error('[clinica] Erro ao atualizar tabela clinicas:', clinicaErr.message)
       }
     }
 
-    // 2. Se existe um ID alvo válido, atualiza a tabela 'clinicas' fortemente
-    if (targetClinicaId) {
-       const updateRes = await admin.from('clinicas').update({
-         nome: fields.nome,
-         cnpj: fields.cnpj,
-         telefone: fields.telefone,
-         email: fields.email,
-         endereco: fields.endereco,
-         atualizado_em: new Date().toISOString()
-       }).eq('id', targetClinicaId)
-       
-       if (updateRes.error) {
-         console.error('[clinica] Falha ao atualizar tabela clinicas:', updateRes.error)
-       }
+    // 2. Atualiza a tabela clinica_settings
+    const updateSettingsPayload: {
+      nome?: string
+      cnpj?: string | null
+      telefone?: string | null
+      email?: string | null
+      cro_responsavel?: string | null
+      endereco?: string | null
+      site?: string | null
+      logo_url?: string | null
+      nome_exibido?: string | null
+      updated_at: string
+    } = {
+      ...fields,
+      updated_at: new Date().toISOString(),
     }
 
-    // 3. Atualiza também a tabela clinica_settings (para compatibilidade legada)
-    const { error } = await admin
+    const { error } = await supabase
       .from('clinica_settings')
-      .update({ ...fields, updated_at: new Date().toISOString() })
+      .update(updateSettingsPayload)
       .eq('id', id)
 
     if (error) {
@@ -150,15 +206,15 @@ export async function updateClinicaSettings(payload: {
     }
 
     return { success: true }
-  } catch (e: any) {
-    console.error('[clinica] updateClinicaSettings exception:', e.message)
-    return { success: false, error: e.message }
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Erro desconhecido'
+    console.error('[clinica] updateClinicaSettings exception:', msg)
+    return { success: false, error: msg }
   }
 }
 
 // ---------------------------------------------------------------------------
-// uploadClinicaLogo — faz upload da imagem para o bucket "clinic-logos"
-// e atualiza logo_url na tabela clinica_settings
+// uploadClinicaLogo — upload da logo para o storage
 // ---------------------------------------------------------------------------
 export async function uploadClinicaLogo(formData: FormData): Promise<{
   success: boolean
@@ -166,6 +222,12 @@ export async function uploadClinicaLogo(formData: FormData): Promise<{
   error?: string
 }> {
   try {
+    const supabase = await createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: 'Não autorizado.' }
+    }
+
     const file = formData.get('logo') as File | null
     const clinicaId = formData.get('clinicaId') as string | null
 
@@ -173,30 +235,26 @@ export async function uploadClinicaLogo(formData: FormData): Promise<{
       return { success: false, error: 'Arquivo ou ID da clínica não fornecido.' }
     }
 
-    // Validação de tipo
     const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
     if (!allowed.includes(file.type)) {
       return { success: false, error: 'Formato não suportado. Use PNG, JPG, WEBP ou SVG.' }
     }
 
-    // Validação de tamanho (2 MB)
     if (file.size > 2 * 1024 * 1024) {
       return { success: false, error: 'A imagem deve ter no máximo 2 MB.' }
     }
 
-    const admin = getAdmin()
     const ext = file.name.split('.').pop() ?? 'png'
-    const path = `logo.${ext}` // nome fixo — sempre sobrescreve a logo anterior
+    const path = `${clinicaId}/logo.${ext}`
 
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
 
-    // Upload para o bucket público "clinic-logos"
-    const { error: uploadError } = await admin.storage
+    const { error: uploadError } = await supabase.storage
       .from('clinic-logos')
       .upload(path, buffer, {
         contentType: file.type,
-        upsert: true, // sobrescreve se já existir
+        upsert: true,
       })
 
     if (uploadError) {
@@ -204,29 +262,26 @@ export async function uploadClinicaLogo(formData: FormData): Promise<{
       return { success: false, error: uploadError.message }
     }
 
-    // Gera a URL pública
-    const { data: urlData } = admin.storage
+    const { data: urlData } = supabase.storage
       .from('clinic-logos')
       .getPublicUrl(path)
 
-    // Adiciona timestamp para bustar cache do browser
     const logo_url = `${urlData.publicUrl}?t=${Date.now()}`
 
-    // Persiste a URL na tabela
-    const { error: updateError } = await admin
+    const { error: updateError } = await supabase
       .from('clinica_settings')
       .update({ logo_url, updated_at: new Date().toISOString() })
       .eq('id', clinicaId)
 
     if (updateError) {
       console.error('[clinica] uploadClinicaLogo update error:', updateError.message)
-      return { success: false, error: updateError.message }
     }
 
     return { success: true, logo_url }
-  } catch (e: any) {
-    console.error('[clinica] uploadClinicaLogo exception:', e.message)
-    return { success: false, error: e.message }
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Erro desconhecido'
+    console.error('[clinica] uploadClinicaLogo exception:', msg)
+    return { success: false, error: msg }
   }
 }
 
@@ -238,21 +293,34 @@ export async function removeClinicaLogo(clinicaId: string): Promise<{
   error?: string
 }> {
   try {
-    const admin = getAdmin()
+    const supabase = await createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: 'Não autorizado.' }
+    }
 
-    // Tenta remover os arquivos do bucket (png, jpg, webp, svg)
-    await admin.storage.from('clinic-logos').remove([
-      'logo.png', 'logo.jpg', 'logo.jpeg', 'logo.webp', 'logo.svg'
+    await supabase.storage.from('clinic-logos').remove([
+      `${clinicaId}/logo.png`,
+      `${clinicaId}/logo.jpg`,
+      `${clinicaId}/logo.jpeg`,
+      `${clinicaId}/logo.webp`,
+      `${clinicaId}/logo.svg`,
+      'logo.png',
+      'logo.jpg',
+      'logo.jpeg',
+      'logo.webp',
+      'logo.svg',
     ])
 
-    const { error } = await admin
+    const { error } = await supabase
       .from('clinica_settings')
       .update({ logo_url: null, updated_at: new Date().toISOString() })
       .eq('id', clinicaId)
 
     if (error) return { success: false, error: error.message }
     return { success: true }
-  } catch (e: any) {
-    return { success: false, error: e.message }
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Erro desconhecido'
+    return { success: false, error: msg }
   }
 }

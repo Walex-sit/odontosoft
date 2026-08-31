@@ -8,34 +8,29 @@ import {
   Plus, ArrowUpRight, ArrowDownRight, Search, Filter, Download,
   Send, FileText, Settings, Users, CheckCircle2, Clock, XCircle,
   BarChart3, Wallet, Receipt, Percent, ChevronDown, MoreHorizontal,
-  Banknote, QrCode, Smartphone, Copy, Trash2, CheckCheck, Check, Minus, Loader2
+  Banknote, QrCode, Smartphone, Copy, Trash2, CheckCheck, Check, Minus, Loader2,
+  Pencil, X
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { fetchExtratoComissoes, ExtratoComissoes, fetchDentistasComComissoes, DentistaComissao } from '@/app/actions/performance'
+import {
+  fetchLancamentosFinanceiros,
+  fetchProfissionaisSelect,
+  createLancamentoFinanceiro,
+  marcarLancamentoComoPago,
+  deleteLancamentoFinanceiro,
+  updateLancamentoFinanceiro,
+  type LancamentoFinanceiro,
+  type PeriodoFilter,
+  type StatusFilter,
+  type KpisFinanceiro,
+  type ProfissionalSelectItem,
+} from '@/app/actions/financeiro'
 
 // ─── Tipos ────────────────────────────────────────────────
 type TabId = 'painel' | 'fluxo' | 'boletos' | 'comissoes'
 
-// ─── Dados Mock ───────────────────────────────────────────
-const kpis = [
-  { label: 'Faturamento Total', value: 'R$ 48.750,00', change: '+12%', trend: 'up', icon: DollarSign, color: 'blue' },
-  { label: 'Total Recebido', value: 'R$ 39.200,00', change: '+8%', trend: 'up', icon: TrendingUp, color: 'green' },
-  { label: 'A Receber', value: 'R$ 9.550,00', change: '15 títulos', trend: 'neutral', icon: Clock, color: 'amber' },
-  { label: 'Inadimplência', value: 'R$ 3.180,00', change: '6,5%', trend: 'down', icon: AlertTriangle, color: 'red' },
-  { label: 'Despesas do Mês', value: 'R$ 12.430,00', change: '-3%', trend: 'down', icon: TrendingDown, color: 'purple' },
-]
-
-const lancamentos = [
-  { id: 1, data: '29/07/2026', descricao: 'Limpeza - João Silva', categoria: 'Procedimento', forma: 'Pix', valor: 350, tipo: 'entrada', status: 'pago' },
-  { id: 2, data: '29/07/2026', descricao: 'Aluguel do consultório', categoria: 'Despesa Fixa', forma: 'Boleto', valor: 4500, tipo: 'saida', status: 'pago' },
-  { id: 3, data: '28/07/2026', descricao: 'Clareamento - Maria Fernanda', categoria: 'Estético', forma: 'Cartão Crédito', valor: 1200, tipo: 'entrada', status: 'pago' },
-  { id: 4, data: '28/07/2026', descricao: 'Restauração - Roberto Almeida', categoria: 'Procedimento', forma: 'Dinheiro', valor: 480, tipo: 'entrada', status: 'pendente' },
-  { id: 5, data: '27/07/2026', descricao: 'Material Odontológico (Resina)', categoria: 'Insumos', forma: 'Cartão Crédito', valor: 890, tipo: 'saida', status: 'pago' },
-  { id: 6, data: '26/07/2026', descricao: 'Implante - Ana Paula', categoria: 'Cirúrgico', forma: 'Pix', valor: 3500, tipo: 'entrada', status: 'pendente' },
-  { id: 7, data: '25/07/2026', descricao: 'Energia Elétrica', categoria: 'Despesa Fixa', forma: 'Débito Automático', valor: 620, tipo: 'saida', status: 'pago' },
-  { id: 8, data: '25/07/2026', descricao: 'Ortodontia (Mensalidade) - Carlos', categoria: 'Procedimento', forma: 'Boleto', valor: 450, tipo: 'entrada', status: 'pago' },
-]
-
+// ─── Dados Mock (painel e boletos permanecem estáticos por ora) ───────────
 const boletos = [
   { id: 1, paciente: 'Roberto Almeida', descricao: 'Restauração Classe II', valor: 480, vencimento: '05/08/2026', status: 'aberto', banco: 'Banco Inter' },
   { id: 2, paciente: 'Ana Paula Souza', descricao: 'Implante - Parcela 2/6', valor: 1200, vencimento: '10/08/2026', status: 'aberto', banco: 'Itaú' },
@@ -44,7 +39,7 @@ const boletos = [
   { id: 5, paciente: 'João Silva', descricao: 'Limpeza Periodontal', valor: 350, vencimento: '15/07/2026', status: 'pago', banco: 'Banco Inter' },
 ]
 
-const profissionais = [
+const profissionaisMock = [
   { id: 1, nome: 'Dra. Camila Ribeiro', especialidade: 'Ortodontia', atendimentos: 42, faturado: 18500, comissao: 40, repasse: 7400, status: 'pendente' },
   { id: 2, nome: 'Dr. João Pedro', especialidade: 'Implantodontia', atendimentos: 28, faturado: 32000, comissao: 50, repasse: 16000, status: 'pendente' },
   { id: 3, nome: 'Dra. Mariana Costa', especialidade: 'Endodontia', atendimentos: 35, faturado: 14200, comissao: 35, repasse: 4970, status: 'pago' },
@@ -52,6 +47,14 @@ const profissionais = [
 
 // ─── Helpers ──────────────────────────────────────────────
 const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
+
+const fmtData = (iso: string) => {
+  try {
+    return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  } catch {
+    return iso
+  }
+}
 
 const formaIcon = (forma: string) => {
   if (forma.toLowerCase().includes('pix')) return <QrCode className="h-3.5 w-3.5" />
@@ -78,6 +81,212 @@ export default function FinanceiroPage() {
   const [activeTab, setActiveTab] = useState<TabId>('painel')
   const [showNewModal, setShowNewModal] = useState<'receita' | 'despesa' | null>(null)
   const [comissaoModal, setComissaoModal] = useState(false)
+
+  // ── Estados do modal de criação ──────────────────────────
+  const [novoDescricao, setNovoDescricao] = useState('')
+  const [novoValor, setNovoValor] = useState('')
+  const [novoData, setNovoData] = useState(new Date().toISOString().split('T')[0])
+  const [novoCategoria, setNovoCategoria] = useState('Procedimento')
+  const [novoForma, setNovoForma] = useState('Pix')
+  const [novoPaciente, setNovoPaciente] = useState('')
+  const [modalSaving, setModalSaving] = useState(false)
+
+  // ── Estados dos Filtros do Fluxo de Caixa ───────────────
+  const [periodoFilter, setPeriodoFilter] = useState<PeriodoFilter>('este_mes')
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('todos')
+  const [profissionalFilter, setProfissionalFilter] = useState<string>('todos')
+  const [searchFilter, setSearchFilter] = useState('')
+
+  // ── Dados dinâmicos do Fluxo de Caixa ───────────────────
+  const [lancamentosLoading, setLancamentosLoading] = useState(true)
+  const [lancamentosList, setLancamentosList] = useState<LancamentoFinanceiro[]>([])
+  const [kpisDinamicos, setKpisDinamicos] = useState<KpisFinanceiro>({
+    faturamentoTotal: 0,
+    totalRecebido: 0,
+    aReceber: 0,
+    inadimplencia: 0,
+    despesasPeriodo: 0,
+  })
+  const kpis = kpisDinamicos
+  const [profissionaisList, setProfissionaisList] = useState<ProfissionalSelectItem[]>([])
+
+  // Busca profissionais ao montar
+  useEffect(() => {
+    fetchProfissionaisSelect().then(res => {
+      if (res.success) setProfissionaisList(res.data)
+    })
+  }, [])
+
+  // Busca lançamentos sempre que os filtros mudarem
+  const carregarLancamentos = useCallback(async () => {
+    setLancamentosLoading(true)
+    const res = await fetchLancamentosFinanceiros({
+      periodo: periodoFilter,
+      status: statusFilter,
+      profissionalId: profissionalFilter,
+      busca: searchFilter,
+    })
+    if (res.success) {
+      setLancamentosList(res.data)
+      setKpisDinamicos(res.kpis)
+    } else {
+      toast.error('Erro ao carregar lançamentos: ' + res.error)
+    }
+    setLancamentosLoading(false)
+  }, [periodoFilter, statusFilter, profissionalFilter, searchFilter])
+
+  useEffect(() => {
+    carregarLancamentos()
+  }, [carregarLancamentos])
+
+  // ── Exportação CSV ───────────────────────────────────────
+  function handleExportCSV() {
+    if (lancamentosList.length === 0) {
+      toast.error('Nenhum lançamento para exportar com os filtros atuais.')
+      return
+    }
+
+    const BOM = '\uFEFF'
+    const headers = ['Data', 'Descrição', 'Categoria', 'Tipo', 'Forma de Pagamento', 'Status', 'Valor (R$)']
+    const rows = lancamentosList.map(l => [
+      fmtData(l.data),
+      `"${l.descricao.replace(/"/g, '""')}"`,
+      `"${l.categoria.replace(/"/g, '""')}"`,
+      l.tipo === 'entrada' ? 'Receita' : 'Despesa',
+      `"${l.forma.replace(/"/g, '""')}"`,
+      l.status,
+      String(l.valor.toFixed(2)).replace('.', ','),
+    ])
+
+    const csvContent =
+      BOM +
+      [headers.join(';'), ...rows.map(r => r.join(';'))].join('\r\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    const dataHoje = new Date().toISOString().split('T')[0]
+    link.href = url
+    link.download = `lancamentos_financeiros_${dataHoje}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+    toast.success(`${lancamentosList.length} lançamentos exportados com sucesso!`)
+  }
+
+  // ── Salvar novo lançamento ───────────────────────────────
+  async function handleSalvarLancamento() {
+    if (!novoDescricao.trim() || !novoValor || !novoData) {
+      toast.error('Preencha todos os campos obrigatórios.')
+      return
+    }
+    setModalSaving(true)
+    const res = await createLancamentoFinanceiro({
+      tipo: showNewModal === 'receita' ? 'receita' : 'despesa',
+      descricao: novoDescricao,
+      valor: Number(novoValor),
+      data: novoData,
+      categoria: novoCategoria,
+      forma_pagamento: novoForma,
+      paciente: novoPaciente || undefined,
+    })
+    if (res.success) {
+      toast.success('Lançamento salvo com sucesso!')
+      setShowNewModal(null)
+      setNovoDescricao('')
+      setNovoValor('')
+      setNovoData(new Date().toISOString().split('T')[0])
+      setNovoCategoria('Procedimento')
+      setNovoForma('Pix')
+      setNovoPaciente('')
+      // Recarrega se estiver na aba de fluxo
+      if (activeTab === 'fluxo') carregarLancamentos()
+    } else {
+      toast.error('Erro ao salvar lançamento: ' + res.error)
+    }
+    setModalSaving(false)
+  }
+
+  // ── Estado do Menu de Ações dos Lançamentos ───────────────
+  const [activeLancamentoMenuId, setActiveLancamentoMenuId] = useState<string | null>(null)
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null)
+
+  // ── Estado do Modal de Edição de Lançamento ───────────────
+  const [editingLancamento, setEditingLancamento] = useState<LancamentoFinanceiro | null>(null)
+  const [editDescricao, setEditDescricao] = useState('')
+  const [editValor, setEditValor] = useState('')
+  const [editData, setEditData] = useState('')
+  const [editCategoria, setEditCategoria] = useState('')
+  const [editForma, setEditForma] = useState('')
+  const [editStatus, setEditStatus] = useState('pago')
+  const [editSaving, setEditSaving] = useState(false)
+
+  // Handlers para ações de lançamentos
+  async function handleMarcarComoPago(l: LancamentoFinanceiro) {
+    setActiveLancamentoMenuId(null)
+    setActionLoadingId(l.id)
+    const res = await marcarLancamentoComoPago(l.id, l.origem)
+    if (res.success) {
+      toast.success(l.tipo === 'entrada' ? 'Lançamento marcado como recebido!' : 'Lançamento marcado como pago!')
+      carregarLancamentos()
+    } else {
+      toast.error('Erro ao atualizar status: ' + (res.error || 'Erro desconhecido'))
+    }
+    setActionLoadingId(null)
+  }
+
+  async function handleExcluirLancamento(l: LancamentoFinanceiro) {
+    setActiveLancamentoMenuId(null)
+    if (!window.confirm(`Tem certeza que deseja excluir o lançamento "${l.descricao}"?`)) {
+      return
+    }
+    setActionLoadingId(l.id)
+    const res = await deleteLancamentoFinanceiro(l.id, l.origem)
+    if (res.success) {
+      toast.success('Lançamento excluído com sucesso!')
+      carregarLancamentos()
+    } else {
+      toast.error('Erro ao excluir lançamento: ' + (res.error || 'Erro desconhecido'))
+    }
+    setActionLoadingId(null)
+  }
+
+  function handleAbrirEdicao(l: LancamentoFinanceiro) {
+    setActiveLancamentoMenuId(null)
+    setEditingLancamento(l)
+    setEditDescricao(l.descricao)
+    setEditValor(String(l.valor))
+    setEditData(l.data ? l.data.split('T')[0] : new Date().toISOString().split('T')[0])
+    setEditCategoria(l.categoria)
+    setEditForma(l.forma)
+    setEditStatus(l.status)
+  }
+
+  async function handleSalvarEdicao() {
+    if (!editingLancamento) return
+    if (!editDescricao.trim() || !editValor || !editData) {
+      toast.error('Preencha os campos obrigatórios.')
+      return
+    }
+    setEditSaving(true)
+    const res = await updateLancamentoFinanceiro({
+      id: editingLancamento.id,
+      origem: editingLancamento.origem,
+      descricao: editDescricao.trim(),
+      valor: Number(editValor),
+      data: editData,
+      categoria: editCategoria,
+      forma: editForma,
+      status: editStatus,
+    })
+    if (res.success) {
+      toast.success('Lançamento atualizado com sucesso!')
+      setEditingLancamento(null)
+      carregarLancamentos()
+    } else {
+      toast.error('Erro ao atualizar lançamento: ' + (res.error || 'Erro desconhecido'))
+    }
+    setEditSaving(false)
+  }
 
   // ── Estado da aba de Boletos ─────────────────────────────
   const [boletosData, setBoletosData] = useState(boletos)
@@ -235,7 +444,13 @@ export default function FinanceiroPage() {
 
             {/* KPIs */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-              {kpis.map((kpi, i) => {
+              {[
+                { label: 'Faturamento Total', value: fmt(kpisDinamicos.faturamentoTotal), change: 'Total', trend: 'up', icon: DollarSign, color: 'blue' },
+                { label: 'Total Recebido', value: fmt(kpisDinamicos.totalRecebido), change: 'Recebido', trend: 'up', icon: TrendingUp, color: 'green' },
+                { label: 'A Receber', value: fmt(kpisDinamicos.aReceber), change: 'Pendente', trend: 'neutral', icon: Clock, color: 'amber' },
+                { label: 'Inadimplência', value: fmt(kpisDinamicos.inadimplencia), change: '> 30 dias', trend: 'down', icon: AlertTriangle, color: 'red' },
+                { label: 'Despesas do Mês', value: fmt(kpisDinamicos.despesasPeriodo), change: 'Saídas', trend: 'down', icon: TrendingDown, color: 'purple' },
+              ].map((kpi, i) => {
                 const Icon = kpi.icon
                 const colorMap: Record<string, string> = {
                   blue: 'bg-blue-50 text-blue-600',
@@ -307,22 +522,30 @@ export default function FinanceiroPage() {
                 </button>
               </div>
               <div className="space-y-3">
-                {lancamentos.slice(0, 4).map(l => (
-                  <div key={l.id} className="flex items-center justify-between gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`p-2 rounded-lg shrink-0 ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
-                        {l.tipo === 'entrada' ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{l.descricao}</p>
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">{l.data} · {l.categoria}</p>
-                      </div>
-                    </div>
-                    <span className={`text-sm font-extrabold shrink-0 ${l.tipo === 'entrada' ? 'text-green-600' : 'text-red-500'}`}>
-                      {l.tipo === 'entrada' ? '+' : '-'} {fmt(l.valor)}
-                    </span>
+                {lancamentosLoading ? (
+                  <div className="flex items-center justify-center py-6 text-slate-400 text-sm gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" /> Carregando lançamentos...
                   </div>
-                ))}
+                ) : lancamentosList.length === 0 ? (
+                  <p className="text-sm text-slate-400 text-center py-6">Nenhum lançamento recente.</p>
+                ) : (
+                  lancamentosList.slice(0, 4).map(l => (
+                    <div key={l.id} className="flex items-center justify-between gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`p-2 rounded-lg shrink-0 ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                          {l.tipo === 'entrada' ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{l.descricao}</p>
+                          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">{fmtData(l.data)} · {l.categoria}</p>
+                        </div>
+                      </div>
+                      <span className={`text-sm font-extrabold shrink-0 ${l.tipo === 'entrada' ? 'text-green-600' : 'text-red-500'}`}>
+                        {l.tipo === 'entrada' ? '+' : '-'} {fmt(l.valor)}
+                      </span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -336,74 +559,214 @@ export default function FinanceiroPage() {
             <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-wrap gap-3 items-center">
               <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 flex-1 min-w-[200px] max-w-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
                 <Search className="h-4 w-4 text-slate-400" />
-                <input type="text" placeholder="Buscar lançamento ou paciente..." className="bg-transparent border-none outline-none text-sm w-full text-slate-800 dark:text-slate-100 placeholder-slate-500 font-medium" />
+                <input
+                  type="text"
+                  placeholder="Buscar lançamento ou categoria..."
+                  value={searchFilter}
+                  onChange={e => setSearchFilter(e.target.value)}
+                  className="bg-transparent border-none outline-none text-sm w-full text-slate-800 dark:text-slate-100 placeholder-slate-500 font-medium"
+                />
               </div>
-              <select className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500">
-                <option>Este Mês</option>
-                <option>Mês Passado</option>
-                <option>Últimos 90 dias</option>
-                <option>Personalizado</option>
+              <select
+                value={periodoFilter}
+                onChange={e => setPeriodoFilter(e.target.value as PeriodoFilter)}
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+              >
+                <option value="este_mes">Este Mês</option>
+                <option value="mes_passado">Mês Passado</option>
+                <option value="7">Últimos 7 dias</option>
+                <option value="30">Últimos 30 dias</option>
+                <option value="90">Últimos 90 dias</option>
+                <option value="este_ano">Este Ano</option>
+                <option value="todos">Todos</option>
               </select>
-              <select className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500">
-                <option>Todos os Status</option>
-                <option>Pago</option>
-                <option>Pendente</option>
+              <select
+                value={statusFilter}
+                onChange={e => setStatusFilter(e.target.value as StatusFilter)}
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+              >
+                <option value="todos">Todos os Status</option>
+                <option value="pago">Pago</option>
+                <option value="pendente">Pendente</option>
+                <option value="vencido">Vencido</option>
               </select>
-              <select className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500">
-                <option>Todos os Profissionais</option>
-                <option>Dra. Camila</option>
-                <option>Dr. João</option>
+              <select
+                value={profissionalFilter}
+                onChange={e => setProfissionalFilter(e.target.value)}
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+              >
+                <option value="todos">Todos os Profissionais</option>
+                {profissionaisList.map(p => (
+                  <option key={p.id} value={p.id}>{p.nome}</option>
+                ))}
               </select>
-              <button className="ml-auto h-9 px-4 rounded-xl text-sm font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950 dark:hover:bg-slate-700 flex items-center gap-2 shadow-sm">
+              <button
+                onClick={handleExportCSV}
+                disabled={lancamentosLoading || lancamentosList.length === 0}
+                className="ml-auto h-9 px-4 rounded-xl text-sm font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
                 <Download className="h-4 w-4" /> Exportar
               </button>
             </div>
 
+            {/* Resumo KPIs Dinâmicos */}
+            {!lancamentosLoading && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {[
+                  { label: 'Faturamento', value: kpisDinamicos.faturamentoTotal, color: 'blue', icon: DollarSign },
+                  { label: 'Recebido', value: kpisDinamicos.totalRecebido, color: 'green', icon: TrendingUp },
+                  { label: 'A Receber', value: kpisDinamicos.aReceber, color: 'amber', icon: Clock },
+                  { label: 'Inadimplência', value: kpisDinamicos.inadimplencia, color: 'red', icon: AlertTriangle },
+                  { label: 'Despesas', value: kpisDinamicos.despesasPeriodo, color: 'purple', icon: TrendingDown },
+                ].map((k, i) => {
+                  const Icon = k.icon
+                  const colorMap: Record<string, string> = {
+                    blue: 'text-blue-600 bg-blue-50',
+                    green: 'text-green-600 bg-green-50',
+                    amber: 'text-amber-600 bg-amber-50',
+                    red: 'text-red-600 bg-red-50',
+                    purple: 'text-purple-600 bg-purple-50',
+                  }
+                  return (
+                    <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                      <div className={`inline-flex p-1.5 rounded-lg mb-2 ${colorMap[k.color]}`}>
+                        <Icon className="h-3.5 w-3.5" />
+                      </div>
+                      <p className="text-base font-extrabold text-slate-800 dark:text-slate-100 leading-tight">{fmt(k.value)}</p>
+                      <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">{k.label}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
             {/* Lista de Lançamentos em Cards */}
-            <div className="space-y-3">
-              {lancamentos.map(l => (
-                <div key={l.id} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all">
-                  {/* Linha superior: ícone + descrição + botão ações */}
-                  <div className="flex items-start gap-3">
-                    <div className={`p-2.5 rounded-xl shrink-0 mt-0.5 ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
-                      {l.tipo === 'entrada' ? <ArrowUpRight className="h-5 w-5" /> : <ArrowDownRight className="h-5 w-5" />}
+            {lancamentosLoading ? (
+              <div className="flex flex-col items-center justify-center py-24 gap-3">
+                <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Buscando lançamentos no Supabase...</p>
+              </div>
+            ) : lancamentosList.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <Wallet className="h-14 w-14 text-slate-300 dark:text-slate-600 mb-3" />
+                <p className="text-base font-bold text-slate-600 dark:text-slate-300">Nenhum lançamento encontrado</p>
+                <p className="text-sm font-medium text-slate-400 mt-1">Tente ajustar os filtros ou adicione uma nova receita ou despesa.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {lancamentosList.map(l => (
+                  <div key={l.id} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all">
+                    {/* Linha superior: ícone + descrição + botão ações */}
+                    <div className="flex items-start gap-3">
+                      <div className={`p-2.5 rounded-xl shrink-0 mt-0.5 ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                        {l.tipo === 'entrada' ? <ArrowUpRight className="h-5 w-5" /> : <ArrowDownRight className="h-5 w-5" />}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate leading-tight">{l.descricao}</p>
+                        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                          {fmtData(l.data)}
+                          {l.profissional_nome && <> · <span className="text-blue-500">{l.profissional_nome}</span></>}
+                        </p>
+                      </div>
+
+                      {/* Menu Flutuante de Ações (...) */}
+                      <div className="relative shrink-0">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setActiveLancamentoMenuId(activeLancamentoMenuId === l.id ? null : l.id)
+                          }}
+                          disabled={actionLoadingId === l.id}
+                          className={`p-1.5 rounded-lg transition-colors ${
+                            activeLancamentoMenuId === l.id
+                              ? 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100'
+                              : 'text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                          }`}
+                          title="Mais opções"
+                        >
+                          {actionLoadingId === l.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+                          ) : (
+                            <MoreHorizontal className="h-4 w-4" />
+                          )}
+                        </button>
+
+                        {activeLancamentoMenuId === l.id && (
+                          <>
+                            {/* Backdrop invisível para fechar com click-outside */}
+                            <div
+                              className="fixed inset-0 z-30"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setActiveLancamentoMenuId(null)
+                              }}
+                            />
+                            <div
+                              className="absolute right-0 top-full mt-1.5 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 py-1.5 z-40 animate-in fade-in slide-in-from-top-2 duration-150"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <button
+                                onClick={() => handleAbrirEdicao(l)}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold transition-colors"
+                              >
+                                <Pencil className="h-4 w-4 text-blue-500" /> Editar Lançamento
+                              </button>
+
+                              {l.status !== 'pago' && l.status !== 'recebido' && l.status !== 'concluido' && (
+                                <button
+                                  onClick={() => handleMarcarComoPago(l)}
+                                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 font-semibold transition-colors"
+                                >
+                                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                                  {l.tipo === 'entrada' ? 'Marcar como Recebido' : 'Marcar como Pago'}
+                                </button>
+                              )}
+
+                              <div className="h-px bg-slate-100 dark:bg-slate-700 my-1" />
+
+                              <button
+                                onClick={() => handleExcluirLancamento(l)}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold transition-colors"
+                              >
+                                <Trash2 className="h-4 w-4 text-red-500" /> Excluir
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate leading-tight">{l.descricao}</p>
-                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">{l.data}</p>
+                    {/* Linha inferior: categoria + forma (desktop) + status + valor */}
+                    <div className="flex flex-wrap items-center gap-2 mt-3 pl-[52px]">
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">{l.categoria}</span>
+
+                      <span className="hidden md:flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                        {formaIcon(l.forma)}
+                        {l.forma}
+                      </span>
+
+                      <span className={`text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-lg ${
+                        l.status === 'pago' || l.status === 'recebido' || l.status === 'concluido'
+                          ? 'bg-green-50 text-green-600 border border-green-200'
+                          : l.status === 'vencido'
+                            ? 'bg-red-50 text-red-600 border border-red-200'
+                            : 'bg-amber-50 text-amber-600 border border-amber-200'
+                      }`}>
+                        {l.status}
+                      </span>
+
+                      {/* Valor alinhado à direita com ml-auto */}
+                      <span className={`ml-auto text-base font-extrabold ${
+                        l.tipo === 'entrada' ? 'text-green-600' : 'text-red-500'
+                      }`}>
+                        {l.tipo === 'entrada' ? '+' : '-'} {fmt(l.valor)}
+                      </span>
                     </div>
-
-                    <button className="p-1.5 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors shrink-0">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </button>
                   </div>
-
-                  {/* Linha inferior: categoria + forma (desktop) + status + valor */}
-                  <div className="flex flex-wrap items-center gap-2 mt-3 pl-[52px]">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">{l.categoria}</span>
-
-                    <span className="hidden md:flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-100 dark:border-slate-700/50">
-                      {formaIcon(l.forma)}
-                      {l.forma}
-                    </span>
-
-                    <span className={`text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-lg ${
-                      l.status === 'pago' ? 'bg-green-50 text-green-600 border border-green-200' : 'bg-amber-50 text-amber-600 border border-amber-200'
-                    }`}>
-                      {l.status}
-                    </span>
-
-                    {/* Valor alinhado à direita com ml-auto */}
-                    <span className={`ml-auto text-base font-extrabold ${
-                      l.tipo === 'entrada' ? 'text-green-600' : 'text-red-500'
-                    }`}>
-                      {l.tipo === 'entrada' ? '+' : '-'} {fmt(l.valor)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -621,7 +984,7 @@ export default function FinanceiroPage() {
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <Users className="h-12 w-12 text-slate-300 mb-3" />
                 <p className="text-base font-bold text-slate-600 dark:text-slate-300">Nenhum dentista cadastrado</p>
-                <p className="text-sm font-medium text-slate-400 mt-1">Cadastre profissionais com a função "Dentista" em Configurações → Equipe.</p>
+                <p className="text-sm font-medium text-slate-400 mt-1">Cadastre profissionais com a função &quot;Dentista&quot; em Configurações → Equipe.</p>
               </div>
             ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -708,23 +1071,45 @@ export default function FinanceiroPage() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Descrição</label>
-                <input type="text" placeholder="Ex: Consulta odontológica" className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Descrição *</label>
+                <input
+                  type="text"
+                  placeholder="Ex: Consulta odontológica"
+                  value={novoDescricao}
+                  onChange={e => setNovoDescricao(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Valor (R$)</label>
-                  <input type="number" step="0.01" placeholder="0,00" className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Valor (R$) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="0,00"
+                    value={novoValor}
+                    onChange={e => setNovoValor(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Data</label>
-                  <input type="date" className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Data *</label>
+                  <input
+                    type="date"
+                    value={novoData}
+                    onChange={e => setNovoData(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Categoria</label>
-                  <select className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500">
+                  <select
+                    value={novoCategoria}
+                    onChange={e => setNovoCategoria(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+                  >
                     <option>Procedimento</option>
                     <option>Consulta</option>
                     <option>Estético</option>
@@ -735,7 +1120,11 @@ export default function FinanceiroPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Forma de Pagamento</label>
-                  <select className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500">
+                  <select
+                    value={novoForma}
+                    onChange={e => setNovoForma(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+                  >
                     <option>Pix</option>
                     <option>Cartão Crédito</option>
                     <option>Cartão Débito</option>
@@ -747,16 +1136,153 @@ export default function FinanceiroPage() {
               {showNewModal === 'receita' && (
                 <div>
                   <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Paciente (opcional)</label>
-                  <input type="text" placeholder="Buscar paciente..." className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                  <input
+                    type="text"
+                    placeholder="Buscar paciente..."
+                    value={novoPaciente}
+                    onChange={e => setNovoPaciente(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  />
                 </div>
               )}
             </div>
             <div className="flex gap-3 mt-8">
-              <button onClick={() => setShowNewModal(null)} className="flex-1 py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">
+              <button
+                onClick={() => setShowNewModal(null)}
+                disabled={modalSaving}
+                className="flex-1 py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors disabled:opacity-50"
+              >
                 Cancelar
               </button>
-              <button className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)]">
-                Salvar Lançamento
+              <button
+                onClick={handleSalvarLancamento}
+                disabled={modalSaving}
+                className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center justify-center gap-2 disabled:opacity-70"
+              >
+                {modalSaving ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Salvando...</>
+                ) : 'Salvar Lançamento'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ MODAL: EDITAR LANÇAMENTO ═══════════════ */}
+      {editingLancamento && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setEditingLancamento(null)}></div>
+          <div className="relative bg-white dark:bg-slate-800 rounded-[24px] p-6 sm:p-8 w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 fade-in duration-200">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className={`p-2.5 rounded-xl ${editingLancamento.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                  {editingLancamento.tipo === 'entrada' ? <ArrowUpRight className="h-5 w-5" /> : <ArrowDownRight className="h-5 w-5" />}
+                </div>
+                <div>
+                  <h2 className="text-xl font-extrabold text-slate-800 dark:text-slate-100">
+                    Editar {editingLancamento.tipo === 'entrada' ? 'Receita' : 'Despesa'}
+                  </h2>
+                  <p className="text-xs font-semibold text-slate-400">Origem: {editingLancamento.origem}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setEditingLancamento(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Descrição *</label>
+                <input
+                  type="text"
+                  value={editDescricao}
+                  onChange={e => setEditDescricao(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Valor (R$) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editValor}
+                    onChange={e => setEditValor(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Data *</label>
+                  <input
+                    type="date"
+                    value={editData}
+                    onChange={e => setEditData(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 [color-scheme:dark]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Categoria</label>
+                  <input
+                    type="text"
+                    value={editCategoria}
+                    onChange={e => setEditCategoria(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Forma de Pagamento</label>
+                  <select
+                    value={editForma}
+                    onChange={e => setEditForma(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="Pix">Pix</option>
+                    <option value="Cartão Crédito">Cartão Crédito</option>
+                    <option value="Cartão Débito">Cartão Débito</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Boleto">Boleto</option>
+                    <option value="Transferência">Transferência</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Status</label>
+                <select
+                  value={editStatus}
+                  onChange={e => setEditStatus(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500"
+                >
+                  <option value="pago">Pago / Recebido / Concluído</option>
+                  <option value="pendente">Pendente</option>
+                  <option value="vencido">Vencido</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-8">
+              <button
+                onClick={() => setEditingLancamento(null)}
+                disabled={editSaving}
+                className="flex-1 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSalvarEdicao}
+                disabled={editSaving}
+                className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center justify-center gap-2 disabled:opacity-70"
+              >
+                {editSaving ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Salvando...</>
+                ) : 'Salvar Alterações'}
               </button>
             </div>
           </div>
@@ -772,7 +1298,7 @@ export default function FinanceiroPage() {
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Defina o percentual de repasse para cada profissional.</p>
 
             <div className="space-y-4">
-              {profissionais.map(p => (
+              {profissionaisMock.map(p => (
                 <div key={p.id} className="flex items-center justify-between bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                   <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs shrink-0">

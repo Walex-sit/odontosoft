@@ -1,17 +1,19 @@
 'use server';
 
-import { createClient } from '@supabase/supabase-js';
+/**
+ * app/actions/performance.ts
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Painel de Desempenho e Comissões de Dentistas.
+ *
+ * Segurança (T001):
+ *  ✅ Usa createServerClient() — autenticado via JWT/cookie → RLS ativo.
+ *  ✅ user_profiles, procedimentos_realizados, procedimentos e pacientes
+ *     são filtrados automaticamente pelo RLS de cada clínica.
+ *  ✅ Sem service_role.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
 
-function getAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) {
-    throw new Error('Variáveis de ambiente Supabase ausentes');
-  }
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
+import { createServerClient } from '@/app/lib/supabase/server';
 
 // ---------------------------------------------------------------------------
 // Lista dentistas com totais de atendimentos e comissões (últimos N dias)
@@ -22,7 +24,7 @@ export interface DentistaComissao {
   especialidade: string;
   atendimentos: number;
   faturado: number;
-  comissao: number; // percentual salvo no perfil (fallback 0)
+  comissao: number; // percentual aproximado calculado
   repasse: number;  // soma de comissao_gerada
   status: 'pendente' | 'pago';
 }
@@ -31,9 +33,13 @@ export async function fetchDentistasComComissoes(
   periodDays: number = 30
 ): Promise<{ success: boolean; data: DentistaComissao[]; error?: string }> {
   try {
-    const supabase = getAdminClient();
+    const supabase = await createServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, data: [], error: 'Não autorizado.' };
+    }
 
-    // 1. Busca todos os dentistas cadastrados
+    // 1. Busca todos os dentistas da clínica
     const { data: dentistas, error: dentError } = await supabase
       .from('user_profiles')
       .select('id, nome, especialidade')
@@ -54,10 +60,10 @@ export async function fetchDentistasComComissoes(
 
     if (procError) throw procError;
 
-    const resultado: DentistaComissao[] = dentistas.map((d: any) => {
-      const meus = (procs || []).filter((p: any) => p.dentista_id === d.id);
-      const faturado = meus.reduce((s: number, p: any) => s + parseFloat(p.valor_cobrado ?? 0), 0);
-      const repasse = meus.reduce((s: number, p: any) => s + parseFloat(p.comissao_gerada ?? 0), 0);
+    const resultado: DentistaComissao[] = dentistas.map((d) => {
+      const meus = (procs || []).filter((p) => p.dentista_id === d.id);
+      const faturado = meus.reduce((s: number, p) => s + (Number(p.valor_cobrado) || 0), 0);
+      const repasse = meus.reduce((s: number, p) => s + (Number(p.comissao_gerada) || 0), 0);
       const comissaoPct = faturado > 0 ? Math.round((repasse / faturado) * 100) : 0;
       return {
         id: d.id,
@@ -72,9 +78,10 @@ export async function fetchDentistasComComissoes(
     });
 
     return { success: true, data: resultado };
-  } catch (err: any) {
-    console.error('fetchDentistasComComissoes:', err.message);
-    return { success: false, data: [], error: err.message };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Erro desconhecido';
+    console.error('fetchDentistasComComissoes:', msg);
+    return { success: false, data: [], error: msg };
   }
 }
 
@@ -82,57 +89,83 @@ export async function fetchDentistasComComissoes(
 // Painel de Desempenho
 // ---------------------------------------------------------------------------
 
+export interface ProcedimentoDesempenho {
+  id: string;
+  data_realizacao: string;
+  valor_cobrado: number | null;
+  comissao_gerada: number | null;
+  procedimento_nome: string;
+  paciente_id: string | null;
+  dentista_id: string | null;
+}
+
 export async function fetchDentistPerformance(dentistaId: string, periodDays: number = 30): Promise<{
   success: boolean;
   data: {
     totalComissoes: number;
-    procedimentos: any[];
+    procedimentos: ProcedimentoDesempenho[];
   };
   error?: string;
 }> {
   try {
-    const supabase = getAdminClient();
+    const supabase = await createServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, data: { totalComissoes: 0, procedimentos: [] }, error: 'Não autorizado.' };
+    }
     
     // Calcula a data de corte
     const dateLimit = new Date();
     dateLimit.setDate(dateLimit.getDate() - periodDays);
     const dateLimitIso = dateLimit.toISOString();
 
-    const { data, error } = await supabase
-      .from('procedimentos_realizados')
-      .select(`
-        *,
-        procedimentos(nome)
-      `)
-      .eq('dentista_id', dentistaId)
-      .gte('data_realizacao', dateLimitIso)
-      .order('data_realizacao', { ascending: false });
+    const [procsRes, procedimentosDefRes] = await Promise.all([
+      supabase
+        .from('procedimentos_realizados')
+        .select('id, data_realizacao, valor_cobrado, comissao_gerada, procedimento_id, paciente_id, dentista_id')
+        .eq('dentista_id', dentistaId)
+        .gte('data_realizacao', dateLimitIso)
+        .order('data_realizacao', { ascending: false }),
+      supabase
+        .from('procedimentos')
+        .select('id, nome'),
+    ]);
 
-    if (error) throw error;
+    if (procsRes.error) throw procsRes.error;
 
-    const procedimentosList = data || [];
+    const procedimentosList = procsRes.data || [];
+    const procedimentosDefMap = new Map((procedimentosDefRes.data || []).map((p) => [p.id, p.nome]));
     
     // Soma total das comissões geradas
     const totalComissoes = procedimentosList.reduce((acc, curr) => {
-      const valor = parseFloat(curr.comissao_gerada);
+      const valor = Number(curr.comissao_gerada);
       return acc + (isNaN(valor) ? 0 : valor);
     }, 0);
+
+    const procsFormatados: ProcedimentoDesempenho[] = procedimentosList.map((p) => ({
+      id: p.id,
+      data_realizacao: p.data_realizacao,
+      valor_cobrado: p.valor_cobrado,
+      comissao_gerada: p.comissao_gerada,
+      procedimento_nome: (p.procedimento_id && procedimentosDefMap.get(p.procedimento_id)) || 'Desconhecido',
+      paciente_id: p.paciente_id,
+      dentista_id: p.dentista_id,
+    }));
 
     return { 
       success: true, 
       data: {
         totalComissoes,
-        procedimentos: procedimentosList.map(p => ({
-          ...p,
-          procedimento_nome: p.procedimentos?.nome || 'Desconhecido'
-        }))
+        procedimentos: procsFormatados,
       } 
     };
-  } catch (error: any) {
-    console.error('Erro ao buscar desempenho:', error.message);
-    return { success: false, data: { totalComissoes: 0, procedimentos: [] }, error: error.message };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Erro desconhecido';
+    console.error('Erro ao buscar desempenho:', msg);
+    return { success: false, data: { totalComissoes: 0, procedimentos: [] }, error: msg };
   }
 }
+
 // ---------------------------------------------------------------------------
 // Extrato de Comissões por Dentista (para modal no Financeiro)
 // ---------------------------------------------------------------------------
@@ -157,41 +190,47 @@ export async function fetchExtratoComissoes(
 ): Promise<{ success: boolean; data: ExtratoComissoes; error?: string }> {
   const empty: ExtratoComissoes = { totalFaturado: 0, totalComissoes: 0, procedimentos: [] };
   try {
-    const supabase = getAdminClient();
+    const supabase = await createServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, data: empty, error: 'Não autorizado.' };
+    }
+
     const dateLimit = new Date();
     dateLimit.setDate(dateLimit.getDate() - periodDays);
 
-    const { data, error } = await supabase
-      .from('procedimentos_realizados')
-      .select(`
-        id,
-        data_realizacao,
-        valor_cobrado,
-        comissao_gerada,
-        procedimentos(nome),
-        pacientes(nome)
-      `)
-      .eq('dentista_id', dentistaId)
-      .gte('data_realizacao', dateLimit.toISOString())
-      .order('data_realizacao', { ascending: false });
+    const [realizadosRes, procedimentosRes, pacientesRes] = await Promise.all([
+      supabase
+        .from('procedimentos_realizados')
+        .select('id, data_realizacao, valor_cobrado, comissao_gerada, procedimento_id, paciente_id')
+        .eq('dentista_id', dentistaId)
+        .gte('data_realizacao', dateLimit.toISOString())
+        .order('data_realizacao', { ascending: false }),
+      supabase.from('procedimentos').select('id, nome'),
+      supabase.from('pacientes').select('id, nome'),
+    ]);
 
-    if (error) throw error;
+    if (realizadosRes.error) throw realizadosRes.error;
 
-    const lista: ExtratoItem[] = (data || []).map((r: any) => ({
+    const procMap = new Map((procedimentosRes.data || []).map((p) => [p.id, p.nome]));
+    const pacMap = new Map((pacientesRes.data || []).map((p) => [p.id, p.nome]));
+
+    const lista: ExtratoItem[] = (realizadosRes.data || []).map((r) => ({
       id: r.id,
       data_realizacao: r.data_realizacao,
-      procedimento_nome: r.procedimentos?.nome ?? 'Procedimento',
-      paciente_nome: r.pacientes?.nome ?? 'Paciente',
-      valor_cobrado: parseFloat(r.valor_cobrado ?? 0),
-      comissao_gerada: parseFloat(r.comissao_gerada ?? 0),
+      procedimento_nome: (r.procedimento_id && procMap.get(r.procedimento_id)) ?? 'Procedimento',
+      paciente_nome: (r.paciente_id && pacMap.get(r.paciente_id)) ?? 'Paciente',
+      valor_cobrado: Number(r.valor_cobrado ?? 0),
+      comissao_gerada: Number(r.comissao_gerada ?? 0),
     }));
 
     const totalFaturado = lista.reduce((s, i) => s + i.valor_cobrado, 0);
     const totalComissoes = lista.reduce((s, i) => s + i.comissao_gerada, 0);
 
     return { success: true, data: { totalFaturado, totalComissoes, procedimentos: lista } };
-  } catch (err: any) {
-    console.error('fetchExtratoComissoes:', err.message);
-    return { success: false, data: empty, error: err.message };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Erro desconhecido';
+    console.error('fetchExtratoComissoes:', msg);
+    return { success: false, data: empty, error: msg };
   }
 }

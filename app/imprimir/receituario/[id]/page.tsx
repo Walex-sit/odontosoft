@@ -8,31 +8,32 @@ import { ClinicaSettings } from '../../../actions/clinica'
 interface ReceitaItem {
   id: string
   medicamento: string
-  concentracao: string
-  forma_farm: string
-  quantidade: string
-  posologia: string
-  instrucoes: string
-  ordem: number
+  concentracao?: string | null
+  forma_farm?: string | null
+  quantidade?: string | null
+  posologia?: string | null
+  instrucoes?: string | null
+  ordem?: number | null
 }
 
 interface Receita {
   id: string
   created_at: string
-  tipo_receituario: string
-  observacoes: string
-  pacientes: {
+  tipo_receituario?: string | null
+  observacoes?: string | null
+  pacientes?: {
     nome: string
-    cpf: string | null
-    data_nascimento: string | null
-  }
-  profiles: {
+    cpf?: string | null
+    data_nascimento?: string | null
+  } | null
+  profiles?: {
     nome: string
-  }
+  } | null
 }
 
 export default function ImprimirReceituario() {
-  const { id } = useParams()
+  const params = useParams()
+  const id = Array.isArray(params.id) ? params.id[0] : params.id as string
   const [receita, setReceita] = useState<Receita | null>(null)
   const [itens, setItens] = useState<ReceitaItem[]>([])
   const [clinica, setClinica] = useState<ClinicaSettings | null>(null)

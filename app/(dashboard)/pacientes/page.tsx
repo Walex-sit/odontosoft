@@ -1,26 +1,26 @@
 'use client'
 
+/**
+ * app/(dashboard)/pacientes/page.tsx
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Painel de gerenciamento de pacientes da clínica.
+ *
+ * Segurança (T001):
+ *  ✅ Cadastro utiliza Server Action consolidada (createPatient).
+ *  ✅ clinica_id não é manipulado ou injetado manualmente no frontend.
+ *  ✅ RLS no Supabase garante o isolamento multi-tenant da clínica.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
 import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/app/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
-import { logAction } from '@/app/lib/logger'
 import { useAuth } from '@/app/components/RequireAuth'
 import {
   UserPlus, Users, Eye, Search, AlertCircle, RefreshCw, X, Edit2
 } from 'lucide-react'
 import EditPatientModal from '@/app/components/EditPatientModal'
-import { Paciente as PacienteActionType } from '@/app/actions/patients'
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface Paciente extends Omit<Partial<PacienteActionType>, 'telefone' | 'cpf'> {
-  id: string
-  nome: string
-  telefone: string | null
-  cpf: string | null
-  created_at: string
-  user_id: string
-}
+import { createPatient, type Paciente as PacienteType } from '@/app/actions/pacientes'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -135,16 +135,19 @@ export default function Pacientes() {
   const [salvando, setSalvando] = useState(false)
 
   // List state
-  const [pacientes, setPacientes] = useState<Paciente[]>([])
+  const [pacientes, setPacientes] = useState<PacienteType[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
 
   // Search
   const [busca, setBusca] = useState('')
 
+  // LGPD Aceite para Cadastro Rápido
+  const [lgpdAceiteRapido, setLgpdAceiteRapido] = useState(true)
+
   // Edit Modal
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [editingPatient, setEditingPatient] = useState<Paciente | null>(null)
+  const [editingPatient, setEditingPatient] = useState<PacienteType | null>(null)
 
   // ── Data fetching ───────────────────────────────────────────────────────────
 
@@ -152,23 +155,16 @@ export default function Pacientes() {
     setCarregando(true)
     setErro(null)
 
-    const clinicaId = (profile as any)?.clinica_id || (profile as any)?.establishment_id
-    console.log('[pacientes] carregarPacientes — clinica_id do perfil:', clinicaId, '| role:', profile?.role)
-
-    const { data, error, count } = await supabase
+    const { data, error } = await supabase
       .from('pacientes')
-      .select('id, nome, telefone, cpf, email, data_nascimento, endereco, convenio, created_at, user_id', { count: 'exact' })
+      .select('id, clinica_id, nome, telefone, cpf, rg, email, data_nascimento, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id, cep, rua, numero, bairro, cidade, genero, whatsapp')
       .order('nome', { ascending: true })
 
     if (error) {
-      const detail = error instanceof Error
-        ? error.message
-        : (typeof error === 'object' ? JSON.stringify(error, Object.getOwnPropertyNames(error)) : String(error))
-      console.error('[pacientes] erro ao carregar:', detail)
+      console.error('[pacientes] erro ao carregar:', error.message)
       setErro(error.message)
     } else {
-      console.log('[pacientes] registros retornados pelo RLS:', count)
-      setPacientes((data ?? []) as Paciente[])
+      setPacientes((data ?? []) as PacienteType[])
     }
 
     setCarregando(false)
@@ -178,18 +174,17 @@ export default function Pacientes() {
     if (!nome.trim() || !session?.user?.id) return
     setSalvando(true)
 
-    const clinicaId = (profile as any)?.clinica_id || (profile as any)?.establishment_id
-    const payload: Record<string, any> = { nome: nome.trim(), user_id: session.user.id }
-    if (clinicaId) payload.clinica_id = clinicaId
+    const res = await createPatient({
+      nome: nome.trim(),
+      lgpd_aceite: lgpdAceiteRapido,
+      lgpd_aceite_em: lgpdAceiteRapido ? new Date().toISOString() : null,
+      _userId: session.user.id,
+      _userNome: profile?.nome,
+    })
 
-    const { error } = await supabase
-      .from('pacientes')
-      .insert([payload])
-
-    if (error) {
-      alert('Erro ao adicionar paciente: ' + error.message)
+    if (!res.success) {
+      alert('Erro ao adicionar paciente: ' + (res.error || 'Erro desconhecido'))
     } else {
-      await logAction(session.user.id, 'criacao', 'pacientes', { nome })
       setNome('')
       carregarPacientes()
     }
@@ -203,8 +198,7 @@ export default function Pacientes() {
     } else if (session === null) {
       setCarregando(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, profile])
+  }, [session])
 
   // ── Derived: filtered list ──────────────────────────────────────────────────
 
@@ -260,12 +254,21 @@ export default function Pacientes() {
               onChange={(e) => setNome(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && adicionarPaciente()}
             />
+            <label className="flex items-center gap-2 cursor-pointer mt-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={lgpdAceiteRapido}
+                onChange={(e) => setLgpdAceiteRapido(e.target.checked)}
+                className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500"
+              />
+              <span>Aceite LGPD (Consentimento de Uso de Dados)</span>
+            </label>
           </div>
 
           <button
             onClick={adicionarPaciente}
             disabled={salvando || !nome.trim()}
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl transition-all font-bold text-sm h-[42px] border border-blue-500 shadow-sm flex items-center justify-center gap-2 shrink-0 active:scale-95"
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl transition-all font-bold text-sm h-[42px] border border-blue-500 shadow-sm flex items-center justify-center gap-2 shrink-0 active:scale-95 mb-0.5"
           >
             {salvando ? (
               <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white inline-block" />
@@ -320,6 +323,7 @@ export default function Pacientes() {
                   <th className="px-6 py-4 text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider">Paciente</th>
                   <th className="px-6 py-4 text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider">Telefone</th>
                   <th className="px-6 py-4 text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider">CPF</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider">LGPD</th>
                   <th className="px-6 py-4 text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider">Cadastro</th>
                   <th className="px-6 py-4 text-right text-xs font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider">Ações</th>
                 </tr>
@@ -330,7 +334,7 @@ export default function Pacientes() {
                   Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
                 ) : pacientesFiltrados.length === 0 ? (
                   <tr>
-                    <td colSpan={5}>
+                    <td colSpan={6}>
                       <EmptyState filtered={isFiltered} />
                     </td>
                   </tr>
@@ -364,6 +368,19 @@ export default function Pacientes() {
                       {/* CPF */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300 font-medium tracking-wide">
                         {formatarCPF(p.cpf)}
+                      </td>
+
+                      {/* LGPD */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {p.lgpd_aceite ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                            ✓ Conforme
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                            ⚠️ Pendente
+                          </span>
+                        )}
                       </td>
 
                       {/* Data */}
@@ -423,10 +440,16 @@ export default function Pacientes() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-bold text-slate-900 dark:text-white truncate">{p.nome}</div>
-                      <div className="text-[10px] text-slate-600 dark:text-slate-400 mt-0.5 flex gap-2">
+                      <div className="text-[10px] text-slate-600 dark:text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
                         <span>{formatarTelefone(p.telefone)}</span>
                         <span>·</span>
                         <span>{formatarCPF(p.cpf)}</span>
+                        <span>·</span>
+                        {p.lgpd_aceite ? (
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ LGPD</span>
+                        ) : (
+                          <span className="text-amber-600 dark:text-amber-400 font-bold">⚠️ Pendente LGPD</span>
+                        )}
                       </div>
                     </div>
                     <span className="text-[10px] font-bold text-slate-700 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/50 px-2 py-1 rounded shrink-0">
@@ -484,7 +507,7 @@ export default function Pacientes() {
           setEditingPatient(null)
         }}
         onSuccess={carregarPacientes}
-        patient={editingPatient as any}
+        patient={editingPatient}
       />
     </>
   )

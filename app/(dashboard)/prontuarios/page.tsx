@@ -1,32 +1,76 @@
 'use client'
 
+/**
+ * app/(dashboard)/prontuarios/page.tsx
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Painel de Prontuários e Histórico Clínico dos Pacientes.
+ *
+ * Multi-Tenancy (T001):
+ *  ✅ Pacientes da clínica são listados respeitando RLS da clínica.
+ *  ✅ Prontuários inseridos são vinculados automaticamente à clínica via trigger.
+ *  ✅ Tipagem limpa sem 'any'.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
 import { useEffect, useState } from 'react'
-import { supabase } from '../../lib/supabaseClient'
+import { supabase } from '@/app/lib/supabaseClient'
 import { Search } from 'lucide-react'
-import { useAuth } from '../../components/RequireAuth'
+import { useAuth } from '@/app/components/RequireAuth'
+
+interface PacienteItem {
+  id: string
+  nome: string
+}
+
+interface ProntuarioItem {
+  id: string
+  paciente_id: string | null
+  dentista_id: string | null
+  descricao: string
+  tratamento: string | null
+  data_registro?: string
+  created_at?: string
+  pacientes?: {
+    nome: string
+  } | null
+}
 
 export default function Prontuarios() {
   const { session } = useAuth()
-  const [pacientes, setPacientes] = useState<any[]>([])
-  const [prontuarios, setProntuarios] = useState<any[]>([])
+  const [pacientes, setPacientes] = useState<PacienteItem[]>([])
+  const [prontuarios, setProntuarios] = useState<ProntuarioItem[]>([])
   const [pacienteId, setPacienteId] = useState('')
   const [descricao, setDescricao] = useState('')
   const [tratamento, setTratamento] = useState('')
   const [carregando, setCarregando] = useState(true)
 
-  async function carregarDados(userId: string) {
+  async function carregarDados() {
     try {
-      const { data: pacs } = await supabase.from('pacientes').select('*').eq('user_id', userId)
-      setPacientes(pacs || [])
+      // Busca todos os pacientes da clínica via RLS
+      const { data: pacs, error: pacError } = await supabase
+        .from('pacientes')
+        .select('id, nome')
+        .order('nome', { ascending: true })
 
-      const { data: prns } = await supabase
+      if (pacError) {
+        console.error('[prontuarios] Erro ao carregar pacientes:', pacError.message)
+      } else {
+        setPacientes(pacs || [])
+      }
+
+      // Busca todos os prontuários da clínica via RLS
+      const { data: prns, error: prnError } = await supabase
         .from('prontuarios')
-        .select('*, pacientes(nome)')
-        .order('created_at', { ascending: false })
+        .select('id, paciente_id, dentista_id, descricao, tratamento, data_registro, pacientes(nome)')
+        .order('data_registro', { ascending: false })
 
-      setProntuarios(prns || [])
+      if (prnError) {
+        console.error('[prontuarios] Erro ao carregar prontuários:', prnError.message)
+      } else {
+        setProntuarios((prns || []) as unknown as ProntuarioItem[])
+      }
     } catch (e) {
-      console.error(e)
+      console.error('[prontuarios] Exceção ao carregar dados:', e)
     } finally {
       setCarregando(false)
     }
@@ -35,22 +79,28 @@ export default function Prontuarios() {
   async function salvarProntuario() {
     if (!pacienteId || !descricao.trim() || !session?.user?.id) return
 
-    await supabase.from('prontuarios').insert([{
+    const { error } = await supabase.from('prontuarios').insert([{
       paciente_id: pacienteId,
       dentista_id: session.user.id,
       descricao,
-      tratamento
+      tratamento: tratamento || null,
+      data_registro: new Date().toISOString(),
     }])
+
+    if (error) {
+      alert('Erro ao salvar prontuário: ' + error.message)
+      return
+    }
 
     setPacienteId('')
     setDescricao('')
     setTratamento('')
-    carregarDados(session.user.id)
+    carregarDados()
   }
 
   useEffect(() => {
     if (session?.user?.id) {
-      carregarDados(session.user.id)
+      carregarDados()
     } else if (session === null) {
       setCarregando(false)
     }
@@ -155,7 +205,7 @@ export default function Prontuarios() {
                   prontuarios.map((p) => (
                     <tr key={p.id} className="hover:bg-slate-700/50 transition-colors align-top">
                       <td className="px-4 py-3 whitespace-nowrap text-xs text-slate-300 font-medium">
-                        {new Date(p.created_at).toLocaleDateString('pt-BR')}
+                        {p.data_registro ? new Date(p.data_registro).toLocaleDateString('pt-BR') : '—'}
                       </td>
                       <td className="px-4 py-3 text-xs font-bold text-slate-100">
                         {p.pacientes?.nome || '—'}
