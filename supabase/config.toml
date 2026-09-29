@@ -1,2 +1,1 @@
-[db.settings.custom]
-"app.settings.cpf_key" = "chave-secreta-local-odonto-2026"
+# Supabase local configuration

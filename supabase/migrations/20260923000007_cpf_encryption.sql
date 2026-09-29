@@ -8,23 +8,36 @@
 --                   Não reversível — não expõe o CPF real.
 --
 --   • cpf_encrypted : CPF cifrado com AES-256-CBC via pgp_sym_encrypt().
---                     Reversível apenas com a chave em SUPABASE_CPF_ENCRYPTION_KEY.
+--                     Reversível apenas com a chave armazenada em private.secrets.
 --                     Armazenado em TEXT (saída base64 do pgcrypto).
 --
 -- Chave de criptografia:
---   Lida de app.settings.cpf_key (configurada via Supabase Dashboard → Settings →
---   Vault, ou supabase/config.toml[db.settings]).
---   Em produção, definir com:
---     ALTER DATABASE postgres SET app.settings.cpf_key = '<chave-segura-256-bits>';
---   Em desenvolvimento local, o reset já popula via supabase/seed.sql se existir.
+--   Armazenada na tabela privada private.secrets (key = 'cpf_key').
+--   O schema private não é exposto via API PostgREST.
+--   Em desenvolvimento local, o seed.sql insere a chave de teste local.
+--   Em produção, inserir no SQL Editor:
+--     INSERT INTO private.secrets (key, value) VALUES ('cpf_key', '<chave-segura>')
+--     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 --
 -- Base legal: LGPD art. 46 (segurança); CFO 198/2019 (proteção de dados clínicos).
 -- ==============================================================================
 
 -- ============================================================
--- SEÇÃO 1 — Habilitar extensão pgcrypto
+-- SEÇÃO 1 — Habilitar extensão pgcrypto e Schema Privado
 -- ============================================================
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE SCHEMA IF NOT EXISTS private;
+REVOKE ALL ON SCHEMA private FROM PUBLIC, anon, authenticated;
+
+CREATE TABLE IF NOT EXISTS private.secrets (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
+REVOKE ALL ON TABLE private.secrets FROM PUBLIC, anon, authenticated;
+
+COMMENT ON TABLE private.secrets IS
+    'Tabela de segredos do sistema (chaves de encriptação, etc.). Schema privado protegido de acesso público / API.';
 
 
 -- ============================================================
@@ -43,7 +56,7 @@ COMMENT ON COLUMN public.pacientes.cpf_hash IS
     'SHA-256 (hex) do CPF normalizado (somente dígitos). Usado para busca determinística sem expor o dado real. Não reversível. Base legal: LGPD art. 46.';
 
 COMMENT ON COLUMN public.pacientes.cpf_encrypted IS
-    'CPF cifrado com AES-256-CBC (pgp_sym_encrypt). Decifrável apenas com a chave em app.settings.cpf_key. Nunca expor diretamente em queries ou logs. Base legal: LGPD art. 46.';
+    'CPF cifrado com AES-256-CBC (pgp_sym_encrypt). Decifrável apenas com a chave em private.secrets. Nunca expor diretamente em queries ou logs. Base legal: LGPD art. 46.';
 
 
 -- ============================================================
@@ -52,7 +65,7 @@ COMMENT ON COLUMN public.pacientes.cpf_encrypted IS
 -- ============================================================
 
 -- Normaliza CPF: remove caracteres não-dígitos (pontos, traços, espaços)
--- Calcula hash SHA-256 e cifra com a chave configurada
+-- Calcula hash SHA-256 e cifra com a chave configurada em private.secrets
 UPDATE public.pacientes
 SET
     cpf_hash = encode(
@@ -64,18 +77,17 @@ SET
     ),
     cpf_encrypted = pgp_sym_encrypt(
         regexp_replace(cpf, '[^0-9]', '', 'g'),
-        current_setting('app.settings.cpf_key', true)
+        (SELECT value FROM private.secrets WHERE key = 'cpf_key')
     )
 WHERE cpf IS NOT NULL
-  AND cpf != '';
+  AND cpf != ''
+  AND EXISTS (SELECT 1 FROM private.secrets WHERE key = 'cpf_key');
 
 
 -- ============================================================
 -- SEÇÃO 4 — Remover coluna cpf plaintext
 -- ============================================================
 
--- Antes de dropar, verificar que a migração foi bem-sucedida:
--- Garantir que todos os pacientes com cpf preenchido têm cpf_hash preenchido
 DO $$
 DECLARE
     v_sem_hash INTEGER;
@@ -88,7 +100,7 @@ BEGIN
     IF v_sem_hash > 0 THEN
         RAISE EXCEPTION
             '[CPF Encryption] % paciente(s) com CPF não foram migrados para cpf_hash. '
-            'Verifique se app.settings.cpf_key está configurada corretamente antes de prosseguir.',
+            'Verifique se a chave cpf_key está cadastrada em private.secrets antes de prosseguir.',
             v_sem_hash;
     END IF;
 END;
@@ -143,21 +155,20 @@ COMMENT ON FUNCTION public.cpf_to_hash(TEXT) IS
     'Retorna o SHA-256 (hex) de um CPF normalizado. Usar em queries WHERE cpf_hash = public.cpf_to_hash($1). Nunca armazena o CPF real.';
 
 
--- 6.3 Cifra um CPF usando a chave configurada (SECURITY DEFINER para ler app.settings)
+-- 6.3 Cifra um CPF usando a chave em private.secrets
 CREATE OR REPLACE FUNCTION public.cpf_encrypt(p_cpf TEXT)
 RETURNS TEXT
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, private
 AS $$
 DECLARE
     v_key TEXT;
     v_cpf_norm TEXT;
 BEGIN
-    v_key := current_setting('app.settings.cpf_key', true);
+    SELECT value INTO v_key FROM private.secrets WHERE key = 'cpf_key';
     IF v_key IS NULL OR v_key = '' THEN
-        RAISE EXCEPTION '[CPF Encrypt] app.settings.cpf_key não está configurada. '
-            'Configure via: ALTER DATABASE postgres SET app.settings.cpf_key = ''<chave>'';'
+        RAISE EXCEPTION '[CPF Encrypt] A chave ''cpf_key'' não foi encontrada em private.secrets.'
             USING ERRCODE = 'configuration_limit_exceeded';
     END IF;
 
@@ -172,8 +183,8 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.cpf_encrypt(TEXT) IS
-    'Cifra um CPF com AES-256 (pgp_sym_encrypt) usando a chave em app.settings.cpf_key. '
-    'SECURITY DEFINER para que a chave não seja exposta a roles sem acesso a app.settings. '
+    'Cifra um CPF com AES-256 (pgp_sym_encrypt) usando a chave em private.secrets. '
+    'SECURITY DEFINER para proteger a chave de acessos públicos. '
     'Retorna o texto cifrado em formato ASCII-armored do pgcrypto.';
 
 
@@ -182,7 +193,7 @@ CREATE OR REPLACE FUNCTION public.cpf_decrypt(p_cpf_encrypted TEXT)
 RETURNS TEXT
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, private
 AS $$
 DECLARE
     v_key TEXT;
@@ -193,9 +204,9 @@ BEGIN
             USING ERRCODE = 'insufficient_privilege';
     END IF;
 
-    v_key := current_setting('app.settings.cpf_key', true);
+    SELECT value INTO v_key FROM private.secrets WHERE key = 'cpf_key';
     IF v_key IS NULL OR v_key = '' THEN
-        RAISE EXCEPTION '[CPF Decrypt] app.settings.cpf_key não está configurada.'
+        RAISE EXCEPTION '[CPF Decrypt] A chave ''cpf_key'' não foi encontrada em private.secrets.'
             USING ERRCODE = 'configuration_limit_exceeded';
     END IF;
 
@@ -205,20 +216,15 @@ $$;
 
 COMMENT ON FUNCTION public.cpf_decrypt(TEXT) IS
     'Decifra um CPF armazenado em cpf_encrypted. Restrito a admins (is_admin()). '
-    'Nunca expor o resultado em views públicas ou logs. '
-    'Usar apenas em contextos de atendimento que exijam o dado real (ex: faturamento a planos).';
+    'Nunca expor o resultado em views públicas ou logs.';
 
 
 -- ============================================================
 -- SEÇÃO 7 — Trigger: auto-criptografia no INSERT/UPDATE
 -- ============================================================
 
--- Trigger que processa cpf_raw (campo virtual) em cpf_hash + cpf_encrypted
--- A aplicação envia o CPF em um campo temporário; o trigger cuida da criptografia
--- e nunca persiste o plaintext.
-
 ALTER TABLE public.pacientes
-    ADD COLUMN IF NOT EXISTS cpf_raw TEXT;  -- Campo temporário processado pelo trigger
+    ADD COLUMN IF NOT EXISTS cpf_raw TEXT;
 
 COMMENT ON COLUMN public.pacientes.cpf_raw IS
     'Campo de passagem temporária: recebe o CPF em texto puro na operação de INSERT/UPDATE. '
@@ -230,7 +236,7 @@ CREATE OR REPLACE FUNCTION public.fn_encrypt_cpf()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, private
 AS $$
 DECLARE
     v_key  TEXT;
@@ -242,9 +248,9 @@ BEGIN
         RETURN NEW;
     END IF;
 
-    v_key := current_setting('app.settings.cpf_key', true);
+    SELECT value INTO v_key FROM private.secrets WHERE key = 'cpf_key';
     IF v_key IS NULL OR v_key = '' THEN
-        RAISE EXCEPTION '[CPF Trigger] app.settings.cpf_key não configurada.'
+        RAISE EXCEPTION '[CPF Trigger] A chave ''cpf_key'' não foi encontrada em private.secrets.'
             USING ERRCODE = 'configuration_limit_exceeded';
     END IF;
 
