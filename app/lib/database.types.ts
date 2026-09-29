@@ -144,7 +144,9 @@ export interface Database {
           clinica_id: string | null
           user_id: string | null
           nome: string
-          cpf: string | null
+          cpf_hash: string
+          cpf_encrypted: string | null
+          cpf_raw?: string | null
           rg: string | null
           data_nascimento: string | null
           genero: string | null
@@ -193,7 +195,9 @@ export interface Database {
           clinica_id?: string | null
           user_id?: string | null
           nome: string
-          cpf?: string | null
+          cpf_hash?: string
+          cpf_encrypted?: string | null
+          cpf_raw?: string | null
           rg?: string | null
           data_nascimento?: string | null
           genero?: string | null
@@ -241,7 +245,9 @@ export interface Database {
           clinica_id?: string | null
           user_id?: string | null
           nome?: string
-          cpf?: string | null
+          cpf_hash?: string
+          cpf_encrypted?: string | null
+          cpf_raw?: string | null
           rg?: string | null
           data_nascimento?: string | null
           genero?: string | null
@@ -943,6 +949,147 @@ export interface Database {
         }
         Relationships: []
       }
+      termos_privacidade: {
+        Row: {
+          id: string
+          clinica_id: string
+          tipo: 'LGPD' | 'TCLE' | 'TCLE_MENOR'
+          versao: string
+          texto_hash: string
+          publicado_em: string
+          ativo: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          clinica_id?: string
+          tipo: 'LGPD' | 'TCLE' | 'TCLE_MENOR'
+          versao: string
+          texto_hash: string
+          publicado_em?: string
+          ativo?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          clinica_id?: string
+          tipo?: 'LGPD' | 'TCLE' | 'TCLE_MENOR'
+          versao?: string
+          texto_hash?: string
+          publicado_em?: string
+          ativo?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      paciente_consentimentos: {
+        Row: {
+          id: string
+          paciente_id: string
+          clinica_id: string
+          termo_id: string
+          status: 'ativo' | 'revogado' | 'expirado' | 'pendente'
+          manifestado_em: string | null
+          revogado_em: string | null
+          meio: 'eletronico_interno' | 'upload_legado' | 'email_confirmado' | 'whatsapp_confirmado'
+          responsavel_nome: string | null
+          responsavel_tipo: 'proprio_paciente' | 'pai_mae' | 'tutor_legal' | 'curador'
+          registrado_por_user_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          paciente_id: string
+          clinica_id?: string
+          termo_id: string
+          status?: 'ativo' | 'revogado' | 'expirado' | 'pendente'
+          manifestado_em?: string | null
+          revogado_em?: string | null
+          meio?: 'eletronico_interno' | 'upload_legado' | 'email_confirmado' | 'whatsapp_confirmado'
+          responsavel_nome?: string | null
+          responsavel_tipo?: 'proprio_paciente' | 'pai_mae' | 'tutor_legal' | 'curador'
+          registrado_por_user_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          paciente_id?: string
+          clinica_id?: string
+          termo_id?: string
+          status?: 'ativo' | 'revogado' | 'expirado' | 'pendente'
+          manifestado_em?: string | null
+          revogado_em?: string | null
+          meio?: 'eletronico_interno' | 'upload_legado' | 'email_confirmado' | 'whatsapp_confirmado'
+          responsavel_nome?: string | null
+          responsavel_tipo?: 'proprio_paciente' | 'pai_mae' | 'tutor_legal' | 'curador'
+          registrado_por_user_id?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      consentimento_finalidades: {
+        Row: {
+          id: string
+          paciente_consentimento_id: string
+          clinica_id: string
+          finalidade: string
+          autorizado: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          paciente_consentimento_id: string
+          clinica_id?: string
+          finalidade: string
+          autorizado?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          paciente_consentimento_id?: string
+          clinica_id?: string
+          finalidade?: string
+          autorizado?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      consentimento_evidencias: {
+        Row: {
+          id: string
+          paciente_consentimento_id: string
+          clinica_id: string
+          tipo: string
+          storage_path: string | null
+          hash_sha256: string | null
+          ip: string | null
+          user_agent: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          paciente_consentimento_id: string
+          clinica_id?: string
+          tipo: string
+          storage_path?: string | null
+          hash_sha256?: string | null
+          ip?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          paciente_consentimento_id?: string
+          clinica_id?: string
+          tipo?: string
+          storage_path?: string | null
+          hash_sha256?: string | null
+          ip?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       v_fluxo_caixa: {
@@ -950,6 +1097,26 @@ export interface Database {
           total_receitas: number | null
           total_despesas: number | null
           saldo_liquido: number | null
+        }
+        Relationships: []
+      }
+      vw_conformidade_consentimentos: {
+        Row: {
+          paciente_id: string | null
+          paciente_nome: string | null
+          clinica_id: string | null
+          tipo_termo: 'LGPD' | 'TCLE' | 'TCLE_MENOR' | null
+          versao_termo: string | null
+          consentimento_id: string | null
+          status: 'ativo' | 'revogado' | 'expirado' | 'pendente' | null
+          manifestado_em: string | null
+          revogado_em: string | null
+          meio: 'eletronico_interno' | 'upload_legado' | 'email_confirmado' | 'whatsapp_confirmado' | null
+          responsavel_nome: string | null
+          responsavel_tipo: 'proprio_paciente' | 'pai_mae' | 'tutor_legal' | 'curador' | null
+          finalidades: Record<string, boolean> | null
+          possui_evidencia: boolean | null
+          registrado_em: string | null
         }
         Relationships: []
       }
@@ -967,9 +1134,20 @@ export interface Database {
         Args: Record<string, never>
         Returns: boolean
       }
+      registrar_revogacao_consentimento: {
+        Args: {
+          p_paciente_consentimento_id: string
+        }
+        Returns: void
+      }
     }
     Enums: {
       user_role: UserRole
+      tipo_termo: 'LGPD' | 'TCLE' | 'TCLE_MENOR'
+      meio_consentimento: 'eletronico_interno' | 'upload_legado' | 'email_confirmado' | 'whatsapp_confirmado'
+      status_consentimento: 'ativo' | 'revogado' | 'expirado' | 'pendente'
+      status_prontuario: 'registrada' | 'retificada' | 'cancelada'
+      tipo_responsavel: 'proprio_paciente' | 'pai_mae' | 'tutor_legal' | 'curador'
     }
     CompositeTypes: Record<string, never>
   }

@@ -125,7 +125,7 @@ export default function EditPatientForm({ patient }: Props) {
         genero: form.genero,
         estrangeiro: form.estrangeiro,
         data_nascimento: form.data_nascimento,
-        cpf: form.cpf,
+        cpf_raw: form.cpf,
         rg: form.rg,
         observacoes: form.observacoes,
         categoria: form.categoria,

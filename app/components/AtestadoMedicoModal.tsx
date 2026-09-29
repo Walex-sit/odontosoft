@@ -15,7 +15,7 @@ interface AtestadoMedicoModalProps {
 interface Paciente {
   id: string
   nome: string
-  cpf: string | null
+  cpf_hash: string | null
 }
 
 export default function AtestadoMedicoModal({ isOpen, onClose }: AtestadoMedicoModalProps) {
@@ -53,7 +53,7 @@ export default function AtestadoMedicoModal({ isOpen, onClose }: AtestadoMedicoM
       setIsSearching(true)
       const { data, error } = await supabase
         .from('pacientes')
-        .select('id, nome, cpf')
+        .select('id, nome, cpf_hash')
         .ilike('nome', `%${searchTerm}%`)
         .order('nome')
         .limit(10)
@@ -225,7 +225,7 @@ export default function AtestadoMedicoModal({ isOpen, onClose }: AtestadoMedicoM
                         className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-0"
                       >
                         <span className="font-medium">{p.nome}</span>
-                        {p.cpf && <span className="text-xs text-slate-400 block">CPF: {p.cpf}</span>}
+                        {p.cpf_hash && <span className="text-xs text-slate-400 block">CPF: ***.{p.cpf_hash.substring(0, 6)}</span>}
                       </button>
                     ))
                   ) : (

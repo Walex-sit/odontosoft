@@ -114,7 +114,7 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
               <input
                 required
                 name="cpf"
-                value={formData.cpf || ''}
+                value={formData.cpf_raw || ''}
                 onChange={handleChange}
                 className="w-full px-4 py-2.5 bg-slate-900/60 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               />

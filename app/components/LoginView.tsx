@@ -150,6 +150,7 @@ export default function LoginView() {
               <input
                 type="email"
                 required
+                data-testid="input-login-email"
                 disabled={carregando}
                 className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:outline-none focus:border-[#1258b8] focus:ring-1 focus:ring-[#1258b8] transition-all shadow-sm"
                 placeholder="E-mail"
@@ -166,6 +167,7 @@ export default function LoginView() {
               <input
                 type={mostrarSenha ? 'text' : 'password'}
                 required
+                data-testid="input-login-password"
                 disabled={carregando}
                 className="w-full pl-10 pr-10 py-3 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:outline-none focus:border-[#1258b8] focus:ring-1 focus:ring-[#1258b8] transition-all shadow-sm"
                 placeholder="Senha"
@@ -210,6 +212,7 @@ export default function LoginView() {
             {/* Botão Entrar */}
             <button
               type="submit"
+              data-testid="btn-login-submit"
               disabled={carregando}
               className="w-full bg-[#1e88e5] hover:bg-[#1565c0] active:scale-[0.99] disabled:bg-[#90caf9] text-white py-3 rounded-lg font-semibold text-base shadow-md transition-all mt-4"
             >

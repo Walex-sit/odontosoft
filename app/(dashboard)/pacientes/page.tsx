@@ -34,11 +34,9 @@ function iniciais(nome: string) {
     .join('')
 }
 
-function formatarCPF(cpf: string | null) {
-  if (!cpf) return '—'
-  const digits = cpf.replace(/\D/g, '')
-  if (digits.length !== 11) return cpf
-  return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+function formatarCPF(cpfHash: string | null) {
+  if (!cpfHash) return '—'
+  return `***.${cpfHash.substring(0, 6)}`
 }
 
 function formatarTelefone(tel: string | null) {
@@ -157,7 +155,7 @@ export default function Pacientes() {
 
     const { data, error } = await supabase
       .from('pacientes')
-      .select('id, clinica_id, nome, telefone, cpf, rg, email, data_nascimento, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id, cep, rua, numero, bairro, cidade, genero, whatsapp')
+      .select('id, clinica_id, nome, telefone, cpf_hash, cpf_encrypted, rg, email, data_nascimento, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id, cep, rua, numero, bairro, cidade, genero, whatsapp')
       .order('nome', { ascending: true })
 
     if (error) {
@@ -248,6 +246,7 @@ export default function Pacientes() {
               Nome completo
             </label>
             <input
+              data-testid="input-quick-paciente-nome"
               className="appearance-none block w-full px-4 py-2.5 bg-white dark:bg-slate-900/60 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm transition-all shadow-sm"
               placeholder="Ex: João da Silva"
               value={nome}
@@ -257,6 +256,7 @@ export default function Pacientes() {
             <label className="flex items-center gap-2 cursor-pointer mt-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
               <input
                 type="checkbox"
+                data-testid="checkbox-quick-lgpd-aceite"
                 checked={lgpdAceiteRapido}
                 onChange={(e) => setLgpdAceiteRapido(e.target.checked)}
                 className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500"
@@ -268,6 +268,7 @@ export default function Pacientes() {
           <button
             onClick={adicionarPaciente}
             disabled={salvando || !nome.trim()}
+            data-testid="btn-quick-adicionar-paciente"
             className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl transition-all font-bold text-sm h-[42px] border border-blue-500 shadow-sm flex items-center justify-center gap-2 shrink-0 active:scale-95 mb-0.5"
           >
             {salvando ? (
@@ -365,9 +366,9 @@ export default function Pacientes() {
                         {formatarTelefone(p.telefone)}
                       </td>
 
-                      {/* CPF */}
+                      {/* CPF (Protegido por Criptografia/Hash LGPD) */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300 font-medium tracking-wide">
-                        {formatarCPF(p.cpf)}
+                        {formatarCPF(p.cpf_hash)}
                       </td>
 
                       {/* LGPD */}
@@ -443,7 +444,7 @@ export default function Pacientes() {
                       <div className="text-[10px] text-slate-600 dark:text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
                         <span>{formatarTelefone(p.telefone)}</span>
                         <span>·</span>
-                        <span>{formatarCPF(p.cpf)}</span>
+                        <span>{formatarCPF(p.cpf_hash)}</span>
                         <span>·</span>
                         {p.lgpd_aceite ? (
                           <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ LGPD</span>

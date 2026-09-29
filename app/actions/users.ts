@@ -7,11 +7,10 @@
  *
  * Segurança (T001):
  *  ✅ Leitura de equipe via createServerClient() com RLS ativo.
- *  ✅ supabaseAdmin usado EXCLUSIVAMENTE para operações de infraestrutura
- *     (auth.admin.createUser, auth.admin.deleteUser).
+ *  ✅ supabaseAdmin usado EXCLUSIVAMENTE para operações de infraestrutura.
  *  ✅ Verificação estrita de role 'admin' antes de criar ou remover usuários.
  *  ✅ clinica_id herdado automaticamente do admin logado.
- *  ✅ Sem retorno falso de success: true em caso de erro.
+ *  ✅ Validação de tenant cruzado em updateUserAccount (P1.7).
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -46,7 +45,6 @@ export async function createUserAccount(data: {
       return { success: false, error: 'Não autorizado: faça login como administrador.' }
     }
 
-    // Verifica se o usuário atual é admin e obtém o clinica_id
     const { data: profile, error: profileErr } = await supabase
       .from('user_profiles')
       .select('role, clinica_id')
@@ -59,7 +57,6 @@ export async function createUserAccount(data: {
 
     const clinicaId = profile.clinica_id
 
-    // 1. Cria no auth.users via Admin API (único ponto justificado de service_role)
     const { data: authData, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
       password: data.password,
@@ -76,7 +73,6 @@ export async function createUserAccount(data: {
       return { success: false, error: 'Usuário criado no Auth, mas sem dados retornados.' }
     }
 
-    // 2. Insere o perfil com a clinica_id do admin logado
     const { error: profileInsertError } = await supabaseAdmin
       .from('user_profiles')
       .upsert({
@@ -90,12 +86,11 @@ export async function createUserAccount(data: {
 
     if (profileInsertError) {
       console.error('[users.createUserAccount] Erro ao criar perfil:', profileInsertError.message)
-      // Rollback: remove o usuário no Auth para manter consistência
       await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
       return { success: false, error: 'Erro ao criar perfil do usuário: ' + profileInsertError.message }
     }
 
-    // 3. Log de auditoria
+    // Log de auditoria (P2.3)
     await logAction(
       user.id,
       'criacao',
@@ -105,6 +100,7 @@ export async function createUserAccount(data: {
         created_user_nome: data.nome,
         created_user_email: data.email,
         created_user_role: data.role,
+        clinica_id: clinicaId,
       }
     )
 
@@ -150,7 +146,7 @@ export async function fetchTeamMembers(): Promise<{
 }
 
 // ---------------------------------------------------------------------------
-// Exclui usuário do Auth e da tabela user_profiles
+// Exclui usuário do Auth e da tabela user_profiles com validação de tenant
 // ---------------------------------------------------------------------------
 export async function deleteUserAccount(
   userId: string,
@@ -164,7 +160,6 @@ export async function deleteUserAccount(
       return { success: false, error: 'Não autorizado.' }
     }
 
-    // RBAC: apenas admin pode deletar membros
     const { data: currentProfile } = await supabase
       .from('user_profiles')
       .select('role, clinica_id')
@@ -175,7 +170,6 @@ export async function deleteUserAccount(
       return { success: false, error: 'Apenas administradores podem excluir membros da equipe.' }
     }
 
-    // Busca o usuário alvo para garantir que pertence à mesma clínica
     const { data: targetProfile } = await supabase
       .from('user_profiles')
       .select('id, nome, email, role, clinica_id')
@@ -190,7 +184,6 @@ export async function deleteUserAccount(
       return { success: false, error: 'Acesso negado: usuário pertence a outra clínica.' }
     }
 
-    // 1. Remove da tabela pública
     const { error: profileError } = await supabaseAdmin
       .from('user_profiles')
       .delete()
@@ -201,7 +194,6 @@ export async function deleteUserAccount(
       return { success: false, error: 'Erro ao remover perfil: ' + profileError.message }
     }
 
-    // 2. Remove do Auth do Supabase
     const { error: authDeleteError } = await supabaseAdmin.auth.admin.deleteUser(userId)
 
     if (authDeleteError) {
@@ -209,7 +201,6 @@ export async function deleteUserAccount(
       return { success: false, error: 'Perfil removido, mas erro ao remover do Auth: ' + authDeleteError.message }
     }
 
-    // 3. Registra log de auditoria
     const effectiveActorId = actorId || user.id
     await logAction(
       effectiveActorId,
@@ -220,6 +211,7 @@ export async function deleteUserAccount(
         deleted_user_nome: targetProfile.nome,
         deleted_user_email: targetProfile.email,
         deleted_user_role: targetProfile.role,
+        clinica_id: currentProfile.clinica_id,
       },
       actorNome
     )
@@ -233,7 +225,7 @@ export async function deleteUserAccount(
 }
 
 // ---------------------------------------------------------------------------
-// Atualiza dados de um membro da equipe em user_profiles
+// Atualiza dados de um membro da equipe com validação estrita de tenant (P1.7)
 // ---------------------------------------------------------------------------
 export async function updateUserAccount(data: {
   id: string
@@ -250,12 +242,27 @@ export async function updateUserAccount(data: {
 
     const { data: currentProfile } = await supabase
       .from('user_profiles')
-      .select('role')
+      .select('role, clinica_id')
       .eq('id', user.id)
       .single()
 
     if (!currentProfile || currentProfile.role !== 'admin') {
       return { success: false, error: 'Apenas administradores podem alterar membros da equipe.' }
+    }
+
+    // CORREÇÃO P1.7: Verifica se o usuário alvo pertence estritamente à mesma clínica
+    const { data: targetProfile } = await supabase
+      .from('user_profiles')
+      .select('clinica_id')
+      .eq('id', data.id)
+      .single()
+
+    if (!targetProfile) {
+      return { success: false, error: 'Usuário não encontrado.' }
+    }
+
+    if (currentProfile.clinica_id && targetProfile.clinica_id !== currentProfile.clinica_id) {
+      return { success: false, error: 'Acesso negado: o usuário pertence a outra clínica.' }
     }
 
     const { error } = await supabase
@@ -271,6 +278,13 @@ export async function updateUserAccount(data: {
       console.error('[users.updateUserAccount] Erro:', error.message)
       return { success: false, error: error.message }
     }
+
+    await logAction(
+      user.id,
+      'edicao',
+      'usuarios',
+      { updated_user_id: data.id, new_role: data.role, clinica_id: currentProfile.clinica_id }
+    )
 
     return { success: true }
   } catch (e: unknown) {

@@ -11,7 +11,7 @@
  */
 
 import * as pacientesService from './pacientes'
-export type { Paciente } from './pacientes'
+export type { Paciente, ConformidadeConsentimento, TermoPrivacidade } from './pacientes'
 
 export async function createPatient(
   payload: Parameters<typeof pacientesService.createPatient>[0]
@@ -38,3 +38,27 @@ export async function deletePatient(
 ) {
   return pacientesService.deletePatient(id, actorId, actorNome)
 }
+
+export async function getConformidadeConsentimentos(pacienteId: string) {
+  return pacientesService.getConformidadeConsentimentos(pacienteId)
+}
+
+export async function getTermosPrivacidade() {
+  return pacientesService.getTermosPrivacidade()
+}
+
+export async function registrarConsentimento(
+  payload: Parameters<typeof pacientesService.registrarConsentimento>[0]
+) {
+  return pacientesService.registrarConsentimento(payload)
+}
+
+export async function revogarConsentimento(
+  consentimentoId: string,
+  pacienteId?: string,
+  userId?: string,
+  userNome?: string
+) {
+  return pacientesService.revogarConsentimento(consentimentoId, pacienteId, userId, userNome)
+}
+

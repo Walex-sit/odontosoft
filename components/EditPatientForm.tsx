@@ -93,7 +93,7 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
       genero: form.genero,
       estrangeiro: form.estrangeiro,
       data_nascimento: form.data_nascimento,
-      cpf: form.cpf,
+      cpf_raw: form.cpf,
       rg: form.rg,
       foto_url: form.foto_url,
       observacoes: form.observacoes,
