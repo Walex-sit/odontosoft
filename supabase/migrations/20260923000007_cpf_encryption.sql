@@ -25,7 +25,7 @@
 -- ============================================================
 -- SEÇÃO 1 — Habilitar extensão pgcrypto e Schema Privado
 -- ============================================================
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
 
 CREATE SCHEMA IF NOT EXISTS private;
 REVOKE ALL ON SCHEMA private FROM PUBLIC, anon, authenticated;
@@ -69,13 +69,13 @@ COMMENT ON COLUMN public.pacientes.cpf_encrypted IS
 UPDATE public.pacientes
 SET
     cpf_hash = encode(
-        digest(
+        extensions.digest(
             regexp_replace(cpf, '[^0-9]', '', 'g'),
             'sha256'
         ),
         'hex'
     ),
-    cpf_encrypted = pgp_sym_encrypt(
+    cpf_encrypted = extensions.pgp_sym_encrypt(
         regexp_replace(cpf, '[^0-9]', '', 'g'),
         (SELECT value FROM private.secrets WHERE key = 'cpf_key')
     )
@@ -120,7 +120,7 @@ CREATE INDEX IF NOT EXISTS idx_pacientes_cpf_hash
 
 COMMENT ON INDEX idx_pacientes_cpf_hash IS
     'Índice para busca determinística de paciente por CPF (via hash). '
-    'Usar: WHERE clinica_id = get_my_clinica_id() AND cpf_hash = encode(digest(normalize_cpf($1), ''sha256''), ''hex'').';
+    'Usar: WHERE clinica_id = get_my_clinica_id() AND cpf_hash = encode(extensions.digest(normalize_cpf($1), ''sha256''), ''hex'').';
 
 
 -- ============================================================
@@ -148,7 +148,7 @@ LANGUAGE SQL
 IMMUTABLE
 STRICT
 AS $$
-    SELECT encode(digest(public.normalizar_cpf(p_cpf), 'sha256'), 'hex');
+    SELECT encode(extensions.digest(public.normalizar_cpf(p_cpf), 'sha256'), 'hex');
 $$;
 
 COMMENT ON FUNCTION public.cpf_to_hash(TEXT) IS
@@ -160,7 +160,7 @@ CREATE OR REPLACE FUNCTION public.cpf_encrypt(p_cpf TEXT)
 RETURNS TEXT
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, private
+SET search_path = public, private, extensions
 AS $$
 DECLARE
     v_key TEXT;
@@ -178,7 +178,7 @@ BEGIN
             USING ERRCODE = 'check_violation';
     END IF;
 
-    RETURN pgp_sym_encrypt(v_cpf_norm, v_key);
+    RETURN extensions.pgp_sym_encrypt(v_cpf_norm, v_key);
 END;
 $$;
 
@@ -193,7 +193,7 @@ CREATE OR REPLACE FUNCTION public.cpf_decrypt(p_cpf_encrypted TEXT)
 RETURNS TEXT
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, private
+SET search_path = public, private, extensions
 AS $$
 DECLARE
     v_key TEXT;
@@ -210,7 +210,7 @@ BEGIN
             USING ERRCODE = 'configuration_limit_exceeded';
     END IF;
 
-    RETURN pgp_sym_decrypt(p_cpf_encrypted::bytea, v_key);
+    RETURN extensions.pgp_sym_decrypt(p_cpf_encrypted::bytea, v_key);
 END;
 $$;
 
@@ -236,7 +236,7 @@ CREATE OR REPLACE FUNCTION public.fn_encrypt_cpf()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, private
+SET search_path = public, private, extensions
 AS $$
 DECLARE
     v_key  TEXT;
@@ -257,10 +257,10 @@ BEGIN
     v_norm := public.normalizar_cpf(NEW.cpf_raw);
 
     -- Calcula hash para busca determinística
-    NEW.cpf_hash      := encode(digest(v_norm, 'sha256'), 'hex');
+    NEW.cpf_hash      := encode(extensions.digest(v_norm, 'sha256'), 'hex');
 
     -- Cifra para armazenamento seguro
-    NEW.cpf_encrypted := pgp_sym_encrypt(v_norm, v_key);
+    NEW.cpf_encrypted := extensions.pgp_sym_encrypt(v_norm, v_key);
 
     -- Apaga o plaintext — nunca persiste em disco
     NEW.cpf_raw := NULL;
