@@ -41,6 +41,8 @@ export interface Patient {
   titular_convenio?: string;
   numero_carteirinha?: string;
   cpf_responsavel_convenio?: string;
+  lgpd_aceite?: boolean | null;
+  lgpd_aceite_em?: string | null;
 }
 
 interface Props {
@@ -81,7 +83,9 @@ export default function EditPatientForm({ patient }: Props) {
     convenio: patient.convenio || '',
     titular_convenio: patient.titular_convenio || '',
     numero_carteirinha: patient.numero_carteirinha || '',
-    cpf_responsavel_convenio: patient.cpf_responsavel_convenio || ''
+    cpf_responsavel_convenio: patient.cpf_responsavel_convenio || '',
+    lgpd_aceite: Boolean(patient.lgpd_aceite),
+    lgpd_aceite_em: patient.lgpd_aceite_em || null,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -93,8 +97,20 @@ export default function EditPatientForm({ patient }: Props) {
     }));
   };
 
+  const handleLgpdToggle = (checked: boolean) => {
+    setForm(prev => ({
+      ...prev,
+      lgpd_aceite: checked,
+      lgpd_aceite_em: checked ? (prev.lgpd_aceite_em || new Date().toISOString()) : null,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const lgpdAceiteEm = form.lgpd_aceite
+      ? (form.lgpd_aceite_em || new Date().toISOString())
+      : null;
+
     const { error } = await supabase
       .from('pacientes')
       .update({
@@ -109,7 +125,7 @@ export default function EditPatientForm({ patient }: Props) {
         genero: form.genero,
         estrangeiro: form.estrangeiro,
         data_nascimento: form.data_nascimento,
-        cpf: form.cpf,
+        cpf_raw: form.cpf,
         rg: form.rg,
         observacoes: form.observacoes,
         categoria: form.categoria,
@@ -128,7 +144,9 @@ export default function EditPatientForm({ patient }: Props) {
         convenio: form.convenio,
         titular_convenio: form.titular_convenio,
         numero_carteirinha: form.numero_carteirinha,
-        cpf_responsavel_convenio: form.cpf_responsavel_convenio
+        cpf_responsavel_convenio: form.cpf_responsavel_convenio,
+        lgpd_aceite: form.lgpd_aceite,
+        lgpd_aceite_em: lgpdAceiteEm,
       })
       .eq('id', patient.id);
     if (error) {
@@ -224,6 +242,35 @@ export default function EditPatientForm({ patient }: Props) {
             <input type="file" name="foto" className="mt-1 block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" disabled />
           </div>
           {Input({ label: 'Observações', name: 'observacoes', placeholder: 'Observações gerais' })}
+        </div>
+      </section>
+
+      {/* Consentimento LGPD */}
+      <section className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl bg-slate-50/50 dark:bg-slate-900/30">
+        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2">Consentimento LGPD (Uso de Dados)</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+          Autorização para tratamento e armazenamento de dados pessoais e de saúde conforme a Lei Geral de Proteção de Dados (LGPD — Lei Federal nº 13.709/2018).
+        </p>
+        <div className="flex items-start space-x-3 bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+          <input
+            type="checkbox"
+            id="lgpd_aceite"
+            name="lgpd_aceite"
+            checked={form.lgpd_aceite}
+            onChange={(e) => handleLgpdToggle(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500"
+          />
+          <label htmlFor="lgpd_aceite" className="cursor-pointer text-sm text-slate-700 dark:text-slate-200">
+            <span className="font-bold block">Aceite LGPD (Consentimento de Uso de Dados)</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 block mt-0.5">
+              O paciente concorda com o uso de seus dados cadastrais e histórico clínico para prestação de serviços odontológicos.
+            </span>
+            {form.lgpd_aceite && form.lgpd_aceite_em && (
+              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 block mt-1.5">
+                ✓ Aceite registrado em: {new Date(form.lgpd_aceite_em).toLocaleString('pt-BR')}
+              </span>
+            )}
+          </label>
         </div>
       </section>
 

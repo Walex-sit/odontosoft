@@ -1,13 +1,12 @@
-// app/lib/supabaseAdmin.ts
-import { createClient } from '@supabase/supabase-js'
-import 'server-only' // Isso é o seu "escudo anti-erro": se alguém tentar usar no cliente, o código quebra avisando o erro
+/**
+ * app/lib/supabaseAdmin.ts
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Re-exporta o cliente admin padronizado (T001 — Fase 1).
+ * Mantido para compatibilidade com imports existentes de infraestrutura.
+ *
+ * USO RESTRITO — Apenas em operações auth.admin.* (criação/deleção de usuários).
+ * O guard `server-only` é aplicado via '@/app/lib/supabase/admin'.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-  },
-})
+export { supabaseAdmin } from './supabase/admin'

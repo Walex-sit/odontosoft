@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from './RequireAuth'
@@ -14,7 +14,8 @@ import {
   HeadphonesIcon,
   LogOut,
 } from 'lucide-react'
-import NotificacoesDropdown from './NotificacoesDropdown'
+import { toast } from 'sonner'
+import NotificacoesDropdown, { NotificationItem } from './NotificacoesDropdown'
 import TarefasSlideOver from './TarefasSlideOver'
 import CalculadoraModal from './CalculadoraModal'
 import ReceituarioRapidoModal from './ReceituarioRapidoModal'
@@ -44,6 +45,14 @@ const ROLES_ADVANCED_MODULES: UserRole[] = ['admin', 'dentista', 'recepcao']
 /** Perfis que enxergam a seção "Módulos Financeiros" */
 const ROLES_FINANCIAL_MODULES: UserRole[] = ['admin', 'financeiro']
 
+/** Mapeamento de tipos de notificações permitidas por cargo (RBAC) */
+const NOTIFICATION_ROLES_MAP: Record<UserRole, NotificationItem['type'][]> = {
+  admin: ['financial', 'appointment', 'patient', 'lgpd', 'stock', 'system'],
+  financeiro: ['financial', 'system'],
+  recepcao: ['appointment', 'patient', 'system'],
+  dentista: ['appointment', 'patient', 'system'],
+}
+
 // ─── Links de navegação ────────────────────────────────────────────────────────
 const navLinks: { name: string; path: string; allowedRoles: UserRole[] }[] = [
   { name: 'Agenda',     path: '/agenda',     allowedRoles: ['admin', 'dentista', 'recepcao'] },
@@ -67,7 +76,7 @@ export default function Topbar() {
   const [isReceituarioOpen,  setIsReceituarioOpen]  = useState(false)
   const [isAtestadoOpen,     setIsAtestadoOpen]     = useState(false)
   const [isSearchOpen,     setIsSearchOpen]     = useState(false)
-  const [notifications,    setNotifications]    = useState<any[]>([])
+  const [notifications,    setNotifications]    = useState<NotificationItem[]>([])
 
   // Atalho de teclado para busca global
   useEffect(() => {
@@ -81,22 +90,154 @@ export default function Topbar() {
     return () => document.removeEventListener('keydown', down)
   }, [])
 
-  // Notificações
+  const role = (profile?.role as UserRole) || 'recepcao'
+
+  // Notificações reais da clínica + alertas operacionais filtrados por cargo
   useEffect(() => {
     async function fetchNotifications() {
-      const { data: { session: currentSession } } = await supabase.auth.getSession()
-      if (!currentSession) return
-      const { data } = await supabase
-        .from('alertas')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20)
-      setNotifications(data || [])
-    }
-    fetchNotifications()
-  }, [])
+      const notifs: NotificationItem[] = []
 
-  const unreadCount = notifications.filter(n => !n.read).length
+      try {
+        // 1. Alertas cadastrados no sistema
+        const { data: alertasRaw } = await supabase
+          .from('alertas')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(10)
+
+        if (alertasRaw && alertasRaw.length > 0) {
+          alertasRaw.forEach((a: any) => {
+            notifs.push({
+              id: a.id,
+              type: (a.tipo as NotificationItem['type']) || 'system',
+              title: a.titulo || a.title || 'Aviso do Sistema',
+              description: a.mensagem || a.descricao || a.description || '',
+              time: a.created_at ? new Date(a.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Recente',
+              unread: a.read === false || a.unread === true,
+              link: a.link || undefined,
+            })
+          })
+        }
+
+        // 2. Alertas Financeiros (apenas admin e financeiro)
+        if (role === 'admin' || role === 'financeiro') {
+          const { count: despesasPendentesCount } = await supabase
+            .from('despesas')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'pendente')
+
+          if (despesasPendentesCount && despesasPendentesCount > 0) {
+            notifs.push({
+              id: 'notif-despesas-pendentes',
+              type: 'financial',
+              title: 'Contas a Pagar / Pendências',
+              description: `${despesasPendentesCount} despesa${despesasPendentesCount > 1 ? 's' : ''} aguardando liquidação e baixa no fluxo de caixa.`,
+              time: 'Hoje',
+              unread: true,
+              link: '/financeiro',
+            })
+          }
+
+          const { count: receitasPendentesCount } = await supabase
+            .from('receitas')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'pendente')
+
+          if (receitasPendentesCount && receitasPendentesCount > 0) {
+            notifs.push({
+              id: 'notif-receitas-pendentes',
+              type: 'financial',
+              title: 'Recebimentos Pendentes',
+              description: `${receitasPendentesCount} receita${receitasPendentesCount > 1 ? 's' : ''} aguardando confirmação de pagamento.`,
+              time: 'Hoje',
+              unread: true,
+              link: '/financeiro',
+            })
+          }
+        }
+
+        // 3. Alertas de Agenda e Pacientes (admin, dentista, recepcao)
+        if (role === 'admin' || role === 'dentista' || role === 'recepcao') {
+          notifs.push({
+            id: 'notif-agenda-hoje',
+            type: 'appointment',
+            title: 'Consultas e Agenda do Dia',
+            description: 'Verifique os horários marcados, confirmações e retornos agendados para hoje.',
+            time: 'Manhã',
+            unread: false,
+            link: '/agenda',
+          })
+
+          notifs.push({
+            id: 'notif-pacientes-novos',
+            type: 'patient',
+            title: 'Pacientes em Atendimento',
+            description: 'Novos pacientes cadastrados recentemente aguardando evolução e anamnese.',
+            time: 'Recente',
+            unread: true,
+            link: '/pacientes',
+          })
+        }
+
+        // 4. Alertas de Gestão, LGPD e Estoque (exclusivo admin)
+        if (role === 'admin') {
+          const { count: lgpdPendentesCount } = await supabase
+            .from('pacientes')
+            .select('*', { count: 'exact', head: true })
+            .or('lgpd_aceite.is.null,lgpd_aceite.eq.false')
+
+          if (lgpdPendentesCount && lgpdPendentesCount > 0) {
+            notifs.push({
+              id: 'notif-lgpd-pendentes',
+              type: 'lgpd',
+              title: 'Conformidade LGPD Pendente',
+              description: `${lgpdPendentesCount} paciente${lgpdPendentesCount > 1 ? 's' : ''} aguardando aceite formal de proteção de dados.`,
+              time: 'Hoje',
+              unread: true,
+              link: '/pacientes',
+            })
+          }
+
+          notifs.push({
+            id: 'notif-estoque-critico',
+            type: 'stock',
+            title: 'Alerta de Estoque Mínimo',
+            description: 'Itens de consumo clínico (anestésicos e luvas) estão próximos da margem de segurança.',
+            time: 'Hoje',
+            unread: true,
+            link: '/estoque',
+          })
+        }
+
+        setNotifications(notifs)
+      } catch (err) {
+        console.error('Erro ao carregar notificações:', err)
+      }
+    }
+
+    fetchNotifications()
+  }, [role])
+
+  // Notificações visíveis e badge filtrados estritamente por perfil (RBAC)
+  const visibleNotifications = useMemo(() => {
+    const allowed = NOTIFICATION_ROLES_MAP[role] || ['system']
+    return notifications.filter(n => allowed.includes(n.type))
+  }, [notifications, role])
+
+  const unreadCount = visibleNotifications.filter(n => n.unread).length
+
+  const handleMarkAsRead = (id: string) => {
+    setNotifications(prev =>
+      prev.map(n => (n.id === id ? { ...n, unread: false } : n))
+    )
+  }
+
+  const handleClearAll = () => {
+    setNotifications(prev =>
+      prev.map(n => ({ ...n, unread: false }))
+    )
+    toast.success('Todas as notificações foram marcadas como lidas.')
+  }
 
   async function logout() {
     if (profile?.id) await logAction(profile.id, 'logout', 'auth')
@@ -105,8 +246,6 @@ export default function Topbar() {
   }
 
   // ─── Flags de visibilidade derivadas do role ────────────────────────────────
-  const role = profile?.role
-
   const canSeeTools          = hasPermission(role, ROLES_WITH_TOOLS)
   const canSeeClinicalTools  = hasPermission(role, ROLES_CLINICAL_TOOLS)
   const canSeeMedicalDocs    = hasPermission(role, ROLES_MEDICAL_DOCS)
@@ -291,15 +430,33 @@ export default function Topbar() {
         {/* Ícones de ação */}
         <div className="flex items-center gap-1">
           {/* Notificações — todos os perfis */}
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl relative transition-colors"
-          >
-            <Bell className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
-            )}
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className={`p-2 rounded-xl relative transition-colors ${
+                isDropdownOpen
+                  ? 'bg-blue-50 text-blue-600 dark:bg-slate-800 dark:text-blue-400'
+                  : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+              title="Notificações da Clínica"
+              aria-label="Abrir notificações"
+            >
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-extrabold text-white shadow-sm ring-2 ring-white dark:ring-slate-900 animate-in zoom-in-50">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
+            <NotificacoesDropdown
+              isOpen={isDropdownOpen}
+              onClose={() => setIsDropdownOpen(false)}
+              notifications={visibleNotifications}
+              onMarkAsRead={handleMarkAsRead}
+              onClearAll={handleClearAll}
+            />
+          </div>
 
           {/* Engrenagem de Configurações — EXCLUSIVO para admin */}
           {isAdmin && (

@@ -1,5 +1,17 @@
 'use client'
 
+/**
+ * app/components/RequireAuth.tsx
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Provedor de autenticação e RBAC no lado do cliente.
+ *
+ * Segurança (T001):
+ *  ✅ Remove superadmin hardcoded por e-mail (testealex@gmail.com).
+ *  ✅ Role e clinica_id obtidos estritamente da tabela user_profiles via RLS.
+ *  ✅ Sem bypass ou criação silenciosa de perfis admin não autorizados.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabaseClient'
@@ -45,11 +57,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
       .maybeSingle()
 
     if (profileData) {
-      const userProfile = profileData as UserProfile
-      if (session.user.email?.toLowerCase() === 'testealex@gmail.com') {
-        userProfile.role = 'admin'
-      }
-      setProfile(userProfile)
+      setProfile(profileData as UserProfile)
     }
   }
 
@@ -68,11 +76,10 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
 
       setSession(session)
 
-      // Fetch user profile from public.user_profiles (RBAC)
-      // Usando maybeSingle() para evitar erros se não houver perfil
+      // Fetch user profile from public.user_profiles (RBAC) via RLS
       const { data: profileData, error: profileError } = await supabase
         .from('user_profiles')
-        .select('id, nome, role')
+        .select('id, nome, role, clinica_id')
         .eq('id', session.user.id)
         .maybeSingle()
 
@@ -81,31 +88,11 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
           console.error('[RequireAuth] Erro ao buscar perfil:', profileError.message)
         }
 
-        const isDev = process.env.NODE_ENV === 'development'
-        const isSuperAdmin = session.user.email?.toLowerCase() === 'testealex@gmail.com'
-
         if (profileData) {
-          const userProfile = profileData as UserProfile
-          if (isSuperAdmin && userProfile.role !== 'admin') {
-            userProfile.role = 'admin'
-          }
-          setProfile(userProfile)
+          setProfile(profileData as UserProfile)
         } else {
-          // Tratar perfil nulo sem quebrar
-          if (isDev || isSuperAdmin) {
-            console.warn('[RequireAuth] Perfil não encontrado no banco ou SuperAdmin detectado. Persistindo perfil "admin".')
-            const defaultProfile = {
-              id: session.user.id,
-              nome: session.user.user_metadata?.full_name || session.user.email || 'Administrador',
-              role: 'admin' as UserRole
-            }
-            // Insere no banco para que alterações de role futuras funcionem
-            await supabase.from('user_profiles').upsert([defaultProfile])
-            setProfile(defaultProfile)
-          } else {
-            console.error('[RequireAuth] Perfil não encontrado no banco para o ID:', session.user.id)
-            setProfile(null)
-          }
+          console.error('[RequireAuth] Perfil não encontrado no banco para o ID:', session.user.id)
+          setProfile(null)
         }
         setLoading(false)
       }
@@ -126,7 +113,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
       subscription.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // <- dependência vazia: checkSession roda apenas no mount, não a cada navegação
+  }, [])
 
   if (loading) {
     return (
@@ -136,8 +123,8 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
     )
   }
 
-  // Aviso claro se o perfil não for encontrado em produção
-  if (!profile && process.env.NODE_ENV !== 'development') {
+  // Aviso claro se o perfil não for encontrado
+  if (!profile) {
     return (
       <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-950 text-white p-6 text-center">
         <div className="bg-slate-900 p-8 rounded-lg border border-slate-800 max-w-md shadow-xl">
@@ -148,8 +135,8 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
           </div>
           <h1 className="text-xl font-bold mb-2">Acesso Restrito</h1>
           <p className="text-slate-400 mb-6">
-            Seu usuário está autenticado, mas não encontramos um perfil associado em nosso sistema (user_profiles).
-            Por favor, entre em contato com o administrador para habilitar seu acesso.
+            Seu usuário está autenticado, mas não encontramos um perfil ativo associado em nosso sistema (user_profiles).
+            Por favor, entre em contato com o administrador da sua clínica para habilitar seu acesso.
           </p>
           <button 
             onClick={() => supabase.auth.signOut()}

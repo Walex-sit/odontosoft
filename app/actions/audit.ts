@@ -1,21 +1,21 @@
 'use server'
 
-import { createClient } from '@supabase/supabase-js'
-
 /**
- * Cria um cliente Supabase Admin com service role para bypassing RLS.
- * Necessário para que o painel de conformidade leia todos os logs da clínica.
+ * app/actions/audit.ts
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Logs de auditoria e métricas de conformidade LGPD.
+ *
+ * Segurança (T001):
+ *  ✅ Usa createServerClient() — autenticado via JWT/cookie → RLS ativo.
+ *  ✅ O RLS em system_logs permite que admins vejam logs de sua clínica.
+ *  ✅ Erros propagados corretamente — sem success:true em caso de falha.
+ *
+ *  NOTA: Não usa admin client — o RLS de system_logs (policy: admins leem
+ *  registros da própria clinica_id) é suficiente para o painel de conformidade.
+ * ─────────────────────────────────────────────────────────────────────────────
  */
-function getAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!url || !serviceKey) {
-    throw new Error('[Audit] Variáveis de ambiente Supabase ausentes.')
-  }
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  })
-}
+
+import { createServerClient } from '@/app/lib/supabase/server'
 
 export interface AuditLog {
   id: string
@@ -36,103 +36,93 @@ export interface ComplianceStats {
 }
 
 /**
- * Busca os logs de auditoria mais recentes, com filtro opcional por ação.
- *
- * @param filters.action - Tipo de ação para filtrar (ex: 'exclusao')
- * @param filters.limit  - Quantidade máxima de registros (padrão: 50)
+ * Busca os logs de auditoria mais recentes da clínica do usuário logado.
+ * O RLS em system_logs garante que apenas logs da própria clínica retornam.
  */
 export async function fetchAuditLogs(
   filters?: { action?: string; limit?: number }
 ): Promise<{ success: boolean; data: AuditLog[]; error?: string }> {
-  const supabase = getAdminClient()
+  const supabase = await createServerClient()
   const limit = filters?.limit ?? 50
 
-  try {
-    let query = supabase
-      .from('system_logs')
-      .select('id, user_id, user_nome, action, entity, details, created_at')
-      .order('created_at', { ascending: false })
-      .limit(limit)
-
-    if (filters?.action) {
-      query = query.eq('action', filters.action)
-    }
-
-    const { data, error } = await query
-
-    if (error) {
-      console.error('[fetchAuditLogs] Erro:', error.message)
-      return { success: false, data: [], error: error.message }
-    }
-
-    return { success: true, data: (data as AuditLog[]) ?? [] }
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : 'Erro desconhecido'
-    console.error('[fetchAuditLogs] Exceção:', msg)
-    return { success: false, data: [], error: msg }
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) {
+    return { success: false, data: [], error: 'Não autorizado.' }
   }
+
+  let query = supabase
+    .from('system_logs')
+    .select('id, user_id, user_nome, action, entity, details, created_at')
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (filters?.action) {
+    query = query.eq('action', filters.action)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error('[audit.fetchAuditLogs] Erro:', error.message)
+    return { success: false, data: [], error: error.message }
+  }
+
+  return { success: true, data: (data as AuditLog[]) ?? [] }
 }
 
 /**
- * Busca as métricas de conformidade LGPD para o painel de gestão:
- * - Total de pacientes cadastrados
- * - Pacientes com aceite LGPD registrado
- * - Pacientes sem consentimento (pendentes)
- * - Total de logs gerados nas últimas 24h
- * - Data/hora do último evento registrado
+ * Métricas de conformidade LGPD da clínica do usuário logado.
+ * O RLS em pacientes e system_logs filtra automaticamente pela clínica.
  */
 export async function fetchComplianceStats(): Promise<{
   success: boolean
   data: ComplianceStats | null
   error?: string
 }> {
-  const supabase = getAdminClient()
+  const supabase = await createServerClient()
 
-  try {
-    // Contagem total de pacientes e com aceite LGPD
-    const { data: pacientesData, error: pacError } = await supabase
-      .from('pacientes')
-      .select('lgpd_aceite')
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) {
+    return { success: false, data: null, error: 'Não autorizado.' }
+  }
 
-    if (pacError) {
-      console.error('[fetchComplianceStats] Erro pacientes:', pacError.message)
-      return { success: false, data: null, error: pacError.message }
-    }
+  const { data: pacientesData, error: pacError } = await supabase
+    .from('pacientes')
+    .select('lgpd_aceite')
 
-    const totalPacientes = pacientesData?.length ?? 0
-    const pacientesComAceite = pacientesData?.filter((p) => p.lgpd_aceite === true).length ?? 0
-    const pacientesSemAceite = totalPacientes - pacientesComAceite
+  if (pacError) {
+    console.error('[audit.fetchComplianceStats] Erro pacientes:', pacError.message)
+    return { success: false, data: null, error: pacError.message }
+  }
 
-    // Logs das últimas 24 horas
-    const agora = new Date()
-    const h24Atras = new Date(agora.getTime() - 24 * 60 * 60 * 1000).toISOString()
+  const totalPacientes = pacientesData?.length ?? 0
+  const pacientesComAceite = pacientesData?.filter((p) => p.lgpd_aceite === true).length ?? 0
+  const pacientesSemAceite = totalPacientes - pacientesComAceite
 
-    const { data: logsHoje, error: logsError } = await supabase
-      .from('system_logs')
-      .select('id, created_at')
-      .gte('created_at', h24Atras)
-      .order('created_at', { ascending: false })
+  const h24Atras = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
 
-    if (logsError) {
-      console.error('[fetchComplianceStats] Erro logs:', logsError.message)
-    }
+  const { data: logsHoje, error: logsError } = await supabase
+    .from('system_logs')
+    .select('id, created_at')
+    .gte('created_at', h24Atras)
+    .order('created_at', { ascending: false })
 
-    const totalLogsHoje = logsHoje?.length ?? 0
-    const ultimoEvento = logsHoje && logsHoje.length > 0 ? logsHoje[0].created_at : null
+  if (logsError) {
+    console.error('[audit.fetchComplianceStats] Erro logs:', logsError.message)
+    // Logs de auditoria falhando não são bloqueantes para pacientes — continue
+  }
 
-    return {
-      success: true,
-      data: {
-        totalPacientes,
-        pacientesComAceite,
-        pacientesSemAceite,
-        totalLogsHoje,
-        ultimoEvento,
-      },
-    }
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : 'Erro desconhecido'
-    console.error('[fetchComplianceStats] Exceção:', msg)
-    return { success: false, data: null, error: msg }
+  const totalLogsHoje = logsHoje?.length ?? 0
+  const ultimoEvento = logsHoje && logsHoje.length > 0 ? logsHoje[0].created_at : null
+
+  return {
+    success: true,
+    data: {
+      totalPacientes,
+      pacientesComAceite,
+      pacientesSemAceite,
+      totalLogsHoje,
+      ultimoEvento,
+    },
   }
 }

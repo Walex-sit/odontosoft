@@ -43,12 +43,13 @@ export default function ManageRolePermissionsModal({
       const loadPermissions = async () => {
         setIsLoading(true)
         try {
-          const fetchedPerms = await getRolePermissions(role)
+          const result = await getRolePermissions(role)
+          const data = result.data
           setPermissions([
-            { id: 'agenda', label: 'Acessar Agenda', description: 'Visualizar e gerenciar agendamentos de consultas', enabled: !!fetchedPerms?.agenda },
-            { id: 'pacientes', label: 'Gerenciar Pacientes', description: 'Criar, editar e visualizar prontuários de pacientes', enabled: !!fetchedPerms?.pacientes },
-            { id: 'financeiro', label: 'Acesso Financeiro', description: 'Visualizar entradas, saídas, boletos e recebimentos', enabled: !!fetchedPerms?.financeiro },
-            { id: 'configuracoes', label: 'Configurações do Sistema', description: 'Acesso às configurações da clínica e RBAC', enabled: !!fetchedPerms?.configuracoes },
+            { id: 'agenda', label: 'Acessar Agenda', description: 'Visualizar e gerenciar agendamentos de consultas', enabled: !!data?.agenda },
+            { id: 'pacientes', label: 'Gerenciar Pacientes', description: 'Criar, editar e visualizar prontuários de pacientes', enabled: !!data?.pacientes },
+            { id: 'financeiro', label: 'Acesso Financeiro', description: 'Visualizar entradas, saídas, boletos e recebimentos', enabled: !!data?.financeiro },
+            { id: 'configuracoes', label: 'Configurações do Sistema', description: 'Acesso às configurações da clínica e RBAC', enabled: !!data?.configuracoes },
           ])
         } catch (error) {
           toast.error('Erro ao carregar permissões do perfil.')

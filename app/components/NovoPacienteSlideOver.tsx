@@ -60,7 +60,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
     // Payload com todos os dados (incluindo LGPD e metadados de auditoria)
     const payload = {
       nome,
-      cpf: cpf || null,
+      cpf_raw: cpf || null,
       rg: rg || null,
       data_nascimento: dataNascimento || null,
       genero: genero || null,
@@ -105,13 +105,14 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
       />
       
       {/* Painel */}
-      <div className="fixed right-0 top-0 h-screen w-full sm:w-[500px] bg-slate-700 shadow-2xl z-[70] flex flex-col transform transition-transform duration-300 ease-in-out translate-x-0 border-l border-slate-600">
+      <div data-testid="slideover-novo-paciente" className="fixed right-0 top-0 h-screen w-full sm:w-[500px] bg-slate-700 shadow-2xl z-[70] flex flex-col transform transition-transform duration-300 ease-in-out translate-x-0 border-l border-slate-600">
         
         {/* Cabeçalho */}
         <div className="flex items-center justify-between p-6 border-b border-slate-600 shrink-0">
           <h2 className="text-slate-100 font-bold text-lg">Cadastrar Novo Paciente</h2>
           <button 
             onClick={onClose}
+            data-testid="btn-fechar-slideover-paciente"
             className="text-slate-400 hover:text-slate-100 transition-colors bg-slate-800 p-1.5 rounded-md hover:bg-slate-600 border border-slate-600"
           >
             <X size={18} />
@@ -130,6 +131,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                 <input 
                   type="text" 
                   required
+                  data-testid="input-paciente-nome"
                   value={nome}
                   onChange={e => setNome(e.target.value)}
                   className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
@@ -141,6 +143,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                   <label className="block text-sm font-medium text-slate-300 mb-1">CPF</label>
                   <input 
                     type="text" 
+                    data-testid="input-paciente-cpf"
                     value={cpf}
                     onChange={e => setCpf(e.target.value)}
                     className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
@@ -151,6 +154,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                   <label className="block text-sm font-medium text-slate-300 mb-1">RG</label>
                   <input 
                     type="text" 
+                    data-testid="input-paciente-rg"
                     value={rg}
                     onChange={e => setRg(e.target.value)}
                     className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
@@ -162,6 +166,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                   <label className="block text-sm font-medium text-slate-300 mb-1">Data de Nascimento</label>
                   <input 
                     type="date" 
+                    data-testid="input-paciente-data-nascimento"
                     value={dataNascimento}
                     onChange={e => setDataNascimento(e.target.value)}
                     className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
@@ -170,6 +175,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">Gênero</label>
                   <select 
+                    data-testid="select-paciente-genero"
                     value={genero}
                     onChange={e => setGenero(e.target.value)}
                     className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
@@ -191,6 +197,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                   <label className="block text-sm font-medium text-slate-300 mb-1">Celular</label>
                   <input 
                     type="text" 
+                    data-testid="input-paciente-telefone"
                     value={telefone}
                     onChange={e => setTelefone(e.target.value)}
                     className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
@@ -201,6 +208,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                   <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-300 hover:text-slate-100 transition-colors">
                     <input 
                       type="checkbox" 
+                      data-testid="checkbox-paciente-whatsapp"
                       checked={whatsapp}
                       onChange={e => setWhatsapp(e.target.checked)}
                       className="rounded bg-slate-800 border-slate-600 text-blue-600 focus:ring-blue-500/50 focus:ring-2 h-4 w-4 transition-all"
@@ -213,6 +221,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                 <label className="block text-sm font-medium text-slate-300 mb-1">E-mail</label>
                 <input 
                   type="email" 
+                  data-testid="input-paciente-email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
@@ -284,6 +293,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
+                  data-testid="checkbox-lgpd-aceite"
                   checked={lgpdAceite}
                   onChange={e => setLgpdAceite(e.target.checked)}
                   className="mt-0.5 rounded bg-slate-800 border-slate-600 text-blue-600 focus:ring-blue-500/50 focus:ring-2 h-4 w-4 shrink-0 transition-all"
@@ -383,6 +393,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
             type="submit"
             form="novo-paciente-form"
             disabled={loading}
+            data-testid="btn-salvar-paciente"
             className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[140px]"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Salvar Paciente'}

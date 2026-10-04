@@ -113,6 +113,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
 
       {/* Dialog */}
       <div
+        data-testid="modal-nova-evolucao"
         className="
           relative z-10 w-full sm:max-w-lg
           bg-white dark:bg-slate-800 border-none
@@ -146,6 +147,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
 
           <button
             onClick={onClose}
+            data-testid="btn-fechar-modal-evolucao"
             className="h-8 w-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-95"
             aria-label="Fechar modal"
           >
@@ -167,6 +169,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
             <input
               id="evo-data"
               type="date"
+              data-testid="input-evolucao-data"
               value={data}
               max={today}
               onChange={(e) => setData(e.target.value)}
@@ -191,6 +194,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
             </label>
             <textarea
               id="evo-descricao"
+              data-testid="input-evolucao-descricao"
               ref={textareaRef}
               value={evolucao}
               onChange={(e) => setEvolucao(e.target.value)}
@@ -223,6 +227,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
           <button
             onClick={onClose}
             disabled={salvando}
+            data-testid="btn-cancelar-evolucao"
             className="
               w-full sm:w-auto px-5 py-2.5 rounded-xl
               text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:text-slate-100
@@ -236,6 +241,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
           <button
             onClick={salvar}
             disabled={salvando || !evolucao.trim() || !data}
+            data-testid="btn-salvar-evolucao"
             className="
               w-full sm:w-auto px-6 py-2.5 rounded-xl
               text-sm font-bold text-white
