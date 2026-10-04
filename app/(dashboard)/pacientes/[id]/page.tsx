@@ -28,7 +28,8 @@ interface Paciente {
   id: string
   nome: string
   telefone: string | null
-  cpf: string | null
+  /** cpf foi removido do schema. CPF é armazenado como hash + encrypted. */
+  cpf_hash: string | null
   email: string | null
   created_at: string
   lgpd_aceite: boolean | null
@@ -52,10 +53,11 @@ interface Cobranca {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function formatarCPF(cpf: string | null) {
-  if (!cpf) return null
-  const d = cpf.replace(/\D/g, '')
-  return d.length === 11 ? d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : cpf
+/** Exibe o CPF mascarado a partir do hash (não expõe o dado real). */
+function formatarCPF(cpfHash: string | null) {
+  if (!cpfHash) return null
+  // Mostra primeiros 6 hex chars do hash como anonimização visual
+  return `***.***.*${cpfHash.substring(0, 3).toUpperCase()}-**`
 }
 
 function formatarTelefone(tel: string | null) {
@@ -195,7 +197,7 @@ export default function DetalhePaciente() {
 
     const { data } = await supabase
       .from('pacientes')
-      .select('id, nome, telefone, cpf, email, created_at, lgpd_aceite, lgpd_aceite_em')
+      .select('id, nome, telefone, cpf_hash, email, created_at, lgpd_aceite, lgpd_aceite_em')
       .eq('id', pacienteId)
       .single()
 
@@ -497,7 +499,7 @@ export default function DetalhePaciente() {
                 <InfoField label="Data de Cadastro" value={new Date(paciente.created_at).toLocaleDateString('pt-BR')} />
                 <InfoField label="Telefone" value={formatarTelefone(paciente.telefone)} />
                 <InfoField label="Email" value={paciente.email} />
-                <InfoField label="CPF" value={formatarCPF(paciente.cpf)} />
+                <InfoField label="CPF" value={formatarCPF(paciente.cpf_hash)} />
               </div>
 
               {/* Seção LGPD Dinâmica na aba Informações */}

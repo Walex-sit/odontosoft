@@ -23,7 +23,7 @@ interface Receita {
   observacoes?: string | null
   pacientes?: {
     nome: string
-    cpf?: string | null
+    cpf_hash?: string | null
     data_nascimento?: string | null
   } | null
   profiles?: {
@@ -57,7 +57,7 @@ export default function ImprimirReceituario() {
         .from('receitas')
         .select(`
           *,
-          pacientes (nome, cpf, data_nascimento),
+          pacientes (nome, cpf_hash, data_nascimento),
           profiles:profissional_id (nome)
         `)
         .eq('id', id)
@@ -149,10 +149,10 @@ export default function ImprimirReceituario() {
             <span className="font-semibold text-slate-500">Nome: </span>
             <span className="font-medium text-slate-800">{receita.pacientes?.nome}</span>
           </div>
-          {receita.pacientes?.cpf && (
+          {receita.pacientes?.cpf_hash && (
             <div>
               <span className="font-semibold text-slate-500">CPF: </span>
-              <span className="font-medium text-slate-800">{receita.pacientes.cpf}</span>
+              <span className="font-medium text-slate-800">***.{receita.pacientes.cpf_hash.substring(0, 6)}</span>
             </div>
           )}
         </div>

@@ -15,7 +15,7 @@ interface Atestado {
   cid_descricao: string | null
   pacientes?: {
     nome: string
-    cpf: string | null
+    cpf_hash: string | null
   } | null
   profiles?: {
     nome: string
@@ -48,7 +48,7 @@ export default function ImprimirAtestado() {
         .from('atestados')
         .select(`
           *,
-          pacientes (nome, cpf),
+          pacientes (nome, cpf_hash),
           profiles:profissional_id (nome, especialidade)
         `)
         .eq('id', id)
@@ -120,7 +120,7 @@ export default function ImprimirAtestado() {
       <section className="mb-12 flex-1 text-lg leading-relaxed text-justify px-4">
         <p className="indent-8">
           Atesto para os devidos fins que o(a) paciente <strong className="uppercase">{atestado.pacientes?.nome || 'Paciente'}</strong>
-          {atestado.pacientes?.cpf ? `, inscrito(a) no CPF sob o nº ${atestado.pacientes.cpf}` : ''}, foi submetido(a) a tratamento odontológico 
+          {atestado.pacientes?.cpf_hash ? `, inscrito(a) no CPF sob o nº ***.${atestado.pacientes.cpf_hash.substring(0, 6)}` : ''}, foi submetido(a) a tratamento odontológico 
           nesta data e necessita de <strong>{atestado.dias_afastamento}</strong> {atestado.dias_afastamento === 1 ? 'dia' : 'dias'} de repouso 
           a partir de <strong>{dataInicioFormatada}</strong>, por motivo de {atestado.motivo}.
         </p>

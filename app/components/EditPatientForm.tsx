@@ -21,7 +21,8 @@ export interface Patient {
   genero?: string;
   estrangeiro?: boolean;
   data_nascimento?: string;
-  cpf?: string;
+  /** cpf foi removido — CPF agora é armazenado como cpf_hash + cpf_encrypted */
+  cpf_hash?: string;
   rg?: string;
   observacoes?: string;
   categoria?: string;
@@ -64,7 +65,10 @@ export default function EditPatientForm({ patient }: Props) {
     genero: patient.genero || '',
     estrangeiro: patient.estrangeiro || false,
     data_nascimento: patient.data_nascimento || '',
-    cpf: patient.cpf || '',
+    // cpf_raw: campo de entrada para novo CPF. Começa SEMPRE vazio — o CPF real
+    // está encriptado no banco e não desce para o frontend. Deixar em branco
+    // no submit omite cpf_raw do payload, mantendo o valor encriptado existente.
+    cpf_raw: '',
     rg: patient.rg || '',
     observacoes: patient.observacoes || '',
     categoria: patient.categoria || '',
@@ -111,6 +115,12 @@ export default function EditPatientForm({ patient }: Props) {
       ? (form.lgpd_aceite_em || new Date().toISOString())
       : null;
 
+    // Só inclui cpf_raw no payload se o utilizador digitou algo.
+    // Se vazio, omite a chave para que o trigger não apague o hash/encrypted existente.
+    const cpfPayload = form.cpf_raw.trim() !== ''
+      ? { cpf_raw: form.cpf_raw.trim() }
+      : {};
+
     const { error } = await supabase
       .from('pacientes')
       .update({
@@ -125,7 +135,7 @@ export default function EditPatientForm({ patient }: Props) {
         genero: form.genero,
         estrangeiro: form.estrangeiro,
         data_nascimento: form.data_nascimento,
-        cpf_raw: form.cpf,
+        ...cpfPayload,
         rg: form.rg,
         observacoes: form.observacoes,
         categoria: form.categoria,
@@ -234,7 +244,7 @@ export default function EditPatientForm({ patient }: Props) {
             </label>
           </div>
           {Input({ label: 'Data de nasci mento', name: 'data_nascimento', type: 'date' })}
-          {Input({ label: 'CPF', name: 'cpf' })}
+          {Input({ label: 'CPF', name: 'cpf_raw', placeholder: 'Novo CPF (deixe em branco para manter)' })}
           {Input({ label: 'RG', name: 'rg' })}
           {/* Foto upload placeholder */}
           <div className="col-span-2">

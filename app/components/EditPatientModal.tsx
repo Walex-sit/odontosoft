@@ -55,7 +55,11 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
     
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
+      if (key === 'cpf_raw') {
+        if (typeof value === 'string' && value.trim() !== '') {
+          data.append('cpf_raw', value.trim());
+        }
+      } else if (value !== undefined && value !== null) {
         data.append(key, String(value));
       }
     });
@@ -109,11 +113,11 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
             
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                CPF *
+                CPF
               </label>
               <input
-                required
-                name="cpf"
+                name="cpf_raw"
+                placeholder="Deixe em branco para manter o CPF atual"
                 value={formData.cpf_raw || ''}
                 onChange={handleChange}
                 className="w-full px-4 py-2.5 bg-slate-900/60 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50"

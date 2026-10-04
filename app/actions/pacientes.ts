@@ -253,7 +253,7 @@ export async function updatePatient(
     lgpd_aceite_em?: string | null
   } = {
     nome,
-    cpf_raw: (formData.get('cpf') as string) || null,
+    cpf_raw: (formData.get('cpf_raw') as string) || (formData.get('cpf') as string) || null,
     rg: (formData.get('rg') as string) || null,
     data_nascimento: (formData.get('data_nascimento') as string) || null,
     genero: (formData.get('genero') as string) || null,
