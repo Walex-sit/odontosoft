@@ -41,7 +41,17 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const hasCpf = Boolean(
+    (formData.cpf_raw && formData.cpf_raw.trim() !== '') ||
+    patient.cpf_hash ||
+    patient.cpf_encrypted
+  );
+
   const handleLgpdToggle = (checked: boolean) => {
+    if (checked && !hasCpf) {
+      toast.warning('O preenchimento do CPF é obrigatório para registrar o aceite LGPD.');
+      return;
+    }
     setFormData(prev => ({
       ...prev,
       lgpd_aceite: checked,
@@ -201,26 +211,30 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
                   )}
                 </div>
                 <div className="flex-1">
-                  <label htmlFor="modal_lgpd_aceite" className="flex items-center gap-2 cursor-pointer font-bold text-sm text-slate-100">
+                  <label htmlFor="modal_lgpd_aceite" className={`flex items-center gap-2 font-bold text-sm text-slate-100 ${!hasCpf ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
                     <input
                       type="checkbox"
                       id="modal_lgpd_aceite"
                       name="lgpd_aceite"
+                      disabled={!hasCpf}
                       checked={Boolean(formData.lgpd_aceite)}
                       onChange={(e) => handleLgpdToggle(e.target.checked)}
-                      className="h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-blue-500"
+                      className="h-4 w-4 rounded border-slate-700 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
                     />
                     <span>Aceite LGPD (Consentimento de Uso de Dados)</span>
                   </label>
                   <p className="text-xs text-slate-400 mt-1">
                     Autorização para tratamento e armazenamento de dados pessoais e de saúde para fins de prontuário clínico e atendimento odontológico (Lei Federal nº 13.709/2018).
                   </p>
-                  {formData.lgpd_aceite && formData.lgpd_aceite_em && (
+                  {!hasCpf ? (
+                    <p className="text-xs font-semibold text-amber-400 mt-1.5">
+                      ⚠️ Identificação formal (CPF) é obrigatória para registrar o aceite LGPD. Preencha o CPF acima para habilitar.
+                    </p>
+                  ) : formData.lgpd_aceite && formData.lgpd_aceite_em ? (
                     <p className="text-xs font-semibold text-emerald-400 mt-1.5">
                       ✓ Aceite registrado em: {new Date(formData.lgpd_aceite_em).toLocaleString('pt-BR')}
                     </p>
-                  )}
-                  {!formData.lgpd_aceite && (
+                  ) : (
                     <p className="text-xs font-semibold text-amber-400 mt-1.5">
                       ⚠️ Paciente sem consentimento registrado. Marque a caixa para regularizar.
                     </p>
