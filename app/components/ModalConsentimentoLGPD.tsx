@@ -15,7 +15,9 @@ import {
   HeartHandshake,
   Microscope,
   Info,
+  Printer,
 } from 'lucide-react'
+import { jsPDF } from 'jspdf'
 import { toast } from 'sonner'
 import { supabase } from '@/app/lib/supabaseClient'
 import {
@@ -90,6 +92,7 @@ export default function ModalConsentimentoLGPD({
   const [termoSelecionadoId, setTermoSelecionadoId] = useState<string>('')
   const [loadingTermos, setLoadingTermos] = useState(true)
   const [salvando, setSalvando] = useState(false)
+  const [gerandoImpressao, setGerandoImpressao] = useState(false)
 
   // Campos do formulário
   const [responsavelTipo, setResponsavelTipo] = useState<
@@ -177,6 +180,252 @@ export default function ModalConsentimentoLGPD({
       ...prev,
       [id]: !prev[id],
     }))
+  }
+
+  function handleImprimirTermoFisico() {
+    setGerandoImpressao(true)
+    try {
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const mL = 20 // margem esquerda
+      const mR = 190 // margem direita
+      const lW = mR - mL // largura de linha
+      let y = 0
+
+      // ── CABEÇALHO ──────────────────────────────────────────────────────────
+      doc.setFillColor(15, 23, 42)
+      doc.rect(0, 0, 210, 14, 'F')
+      doc.setFontSize(9)
+      doc.setTextColor(255, 255, 255)
+      doc.setFont('helvetica', 'bold')
+      doc.text('ODONTOSOFT  ·  SISTEMA DE GESTÃO ODONTOLÓGICA', 105, 9, { align: 'center' })
+      y = 22
+
+      doc.setFontSize(15)
+      doc.setTextColor(15, 23, 42)
+      doc.setFont('helvetica', 'bold')
+      doc.text('TERMO DE CONSENTIMENTO LIVRE E ESCLARECIDO (TCLE)', 105, y, { align: 'center' })
+      y += 6
+
+      doc.setFontSize(9)
+      doc.setTextColor(100, 116, 139)
+      doc.setFont('helvetica', 'normal')
+      doc.text(
+        'Tratamento de Dados Pessoais — LGPD Lei nº 13.709/2018  ·  Resolução CFO nº 198/2019',
+        105, y, { align: 'center' }
+      )
+      y += 8
+
+      doc.setDrawColor(226, 232, 240)
+      doc.setLineWidth(0.4)
+      doc.line(mL, y, mR, y)
+      y += 8
+
+      // ── IDENTIFICAÇÃO DO PACIENTE ──────────────────────────────────────────
+      doc.setFontSize(10)
+      doc.setTextColor(15, 23, 42)
+      doc.setFont('helvetica', 'bold')
+      doc.text('DADOS DO TITULAR', mL, y)
+      y += 6
+
+      const titular = responsavelTipo === 'proprio_paciente'
+        ? `Paciente / Titular: ${pacienteNome.toUpperCase()}`
+        : `Paciente: ${pacienteNome.toUpperCase()}  |  Responsável (${responsavelTipo}): ${responsavelNome.toUpperCase()}`
+
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(10)
+      const linhasTitular = doc.splitTextToSize(titular, lW)
+      doc.text(linhasTitular, mL, y)
+      y += linhasTitular.length * 5.5 + 2
+
+      const meioLabel: Record<string, string> = {
+        eletronico_interno: 'Eletrônico Interno (Consultório / Tablet)',
+        whatsapp_confirmado: 'WhatsApp Confirmado',
+        email_confirmado: 'E-mail Confirmado',
+        upload_legado: 'Upload / Ficha Física Digitalizada',
+      }
+      doc.text(`Meio de coleta: ${meioLabel[meio] ?? meio}`, mL, y)
+      y += 8
+
+      doc.setDrawColor(226, 232, 240)
+      doc.line(mL, y, mR, y)
+      y += 8
+
+      // ── TEXTO PRINCIPAL ───────────────────────────────────────────────────
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(10)
+      doc.text('DECLARAÇÃO DE CONSENTIMENTO', mL, y)
+      y += 6
+
+      const textoDeclaracao =
+        `Eu, ${pacienteNome.toUpperCase()}, declaro que fui devidamente informado(a) sobre ` +
+        `a forma como a clínica odontológica coleta, armazena e utiliza meus dados pessoais ` +
+        `e dados sensíveis de saúde, conforme a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018) ` +
+        `e a Resolução do Conselho Federal de Odontologia nº 198/2019. ` +
+        `Manifesto livremente, de forma informada e inequívoca, o meu consentimento ` +
+        `para o tratamento de dados nas finalidades abaixo indicadas.`
+
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(9.5)
+      const linhasDecl = doc.splitTextToSize(textoDeclaracao, lW)
+      doc.text(linhasDecl, mL, y)
+      y += linhasDecl.length * 5 + 8
+
+      // ── TABELA DE FINALIDADES ─────────────────────────────────────────────
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(10)
+      doc.text('FINALIDADES DO TRATAMENTO DE DADOS', mL, y)
+      y += 5
+
+      // Cabeçalho da tabela
+      doc.setFillColor(15, 23, 42)
+      doc.rect(mL, y, lW, 7, 'F')
+      doc.setFontSize(8.5)
+      doc.setTextColor(255, 255, 255)
+      doc.setFont('helvetica', 'bold')
+      doc.text('FINALIDADE', mL + 3, y + 5)
+      doc.text('STATUS', mR - 22, y + 5)
+      y += 7
+
+      // Linhas da tabela
+      FINALIDADES_PADRAO.forEach((fin, idx) => {
+        const autorizado = Boolean(finalidades[fin.id])
+        const bgColor = idx % 2 === 0 ? [248, 250, 252] : [255, 255, 255]
+        doc.setFillColor(bgColor[0], bgColor[1], bgColor[2])
+        doc.rect(mL, y, lW, 14, 'F')
+
+        doc.setDrawColor(226, 232, 240)
+        doc.setLineWidth(0.2)
+        doc.rect(mL, y, lW, 14, 'S')
+
+        // Label
+        doc.setTextColor(15, 23, 42)
+        doc.setFont('helvetica', 'bold')
+        doc.setFontSize(8.5)
+        const labLines = doc.splitTextToSize(fin.label, lW - 35)
+        doc.text(labLines, mL + 3, y + 5)
+
+        // Descrição
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(7.5)
+        doc.setTextColor(100, 116, 139)
+        const descLines = doc.splitTextToSize(fin.descricao, lW - 35)
+        doc.text(descLines, mL + 3, y + 9.5)
+
+        // Badge Autorizado / Negado
+        if (autorizado) {
+          doc.setFillColor(16, 185, 129) // emerald-500
+          doc.roundedRect(mR - 28, y + 3.5, 22, 7, 2, 2, 'F')
+          doc.setTextColor(255, 255, 255)
+        } else {
+          doc.setFillColor(226, 232, 240) // slate-200
+          doc.roundedRect(mR - 28, y + 3.5, 22, 7, 2, 2, 'F')
+          doc.setTextColor(71, 85, 105)
+        }
+        doc.setFont('helvetica', 'bold')
+        doc.setFontSize(7)
+        doc.text(autorizado ? 'AUTORIZADO' : 'NEGADO', mR - 17, y + 8.5, { align: 'center' })
+
+        y += 14
+      })
+
+      y += 8
+
+      // ── DIREITOS DO TITULAR ───────────────────────────────────────────────
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(9.5)
+      doc.setTextColor(15, 23, 42)
+      doc.text('DIREITOS DO TITULAR (Art. 18 LGPD) — Posso, a qualquer tempo:', mL, y)
+      y += 5
+
+      const direitos = [
+        'Confirmar a existência do tratamento e acessar meus dados;',
+        'Solicitar a correção de dados incompletos, inexatos ou desatualizados;',
+        'Revogar este consentimento sem prejuízo da legalidade do tratamento anterior;',
+        'Solicitar a eliminação de dados tratados com base exclusivamente no meu consentimento.',
+      ]
+
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(9)
+      direitos.forEach(d => {
+        const ls = doc.splitTextToSize(`• ${d}`, lW)
+        doc.text(ls, mL, y)
+        y += ls.length * 4.8 + 1
+      })
+
+      y += 6
+
+      // ── LINHA SEPARADORA PRÉ-ASSINATURA ──────────────────────────────────
+      doc.setDrawColor(148, 163, 184)
+      doc.setLineWidth(0.3)
+      doc.line(mL, y, mR, y)
+      y += 10
+
+      // ── RODAPÉ DE ASSINATURA ──────────────────────────────────────────────
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(9)
+      doc.setTextColor(15, 23, 42)
+      doc.text('ASSINATURA E ANUÊNCIA', mL, y)
+      y += 7
+
+      // Linha local/data (col esquerda)
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(8.5)
+      doc.setTextColor(100, 116, 139)
+      doc.text('Local e Data:', mL, y)
+      doc.setDrawColor(100, 116, 139)
+      doc.setLineWidth(0.4)
+      doc.line(mL, y + 12, mL + 75, y + 12)
+      doc.setFontSize(7.5)
+      doc.text('(Cidade, __ / __ / ________)', mL, y + 17)
+
+      // Linha assinatura (col direita)
+      const colDir = mL + 90
+      doc.setFontSize(8.5)
+      doc.text('Assinatura do(a) Paciente / Responsável Legal:', colDir, y)
+      doc.line(colDir, y + 12, mR, y + 12)
+      doc.setFontSize(7.5)
+      doc.setTextColor(15, 23, 42)
+      doc.text(`Nome: ${pacienteNome.toUpperCase()}`, colDir, y + 17)
+
+      y += 28
+
+      // Assinatura do dentista
+      doc.setFontSize(8.5)
+      doc.setTextColor(100, 116, 139)
+      doc.text('Carimbo e Assinatura do(a) Cirurgião(ã)-Dentista Responsável:', mL, y)
+      doc.setDrawColor(100, 116, 139)
+      doc.line(mL, y + 12, mL + 85, y + 12)
+      doc.setFontSize(7.5)
+      doc.text('CRO: ___________________', mL, y + 17)
+
+      // ── RODAPÉ DA PÁGINA ─────────────────────────────────────────────────
+      const pY = 285
+      doc.setFillColor(248, 250, 252)
+      doc.rect(0, pY - 4, 210, 15, 'F')
+      doc.setDrawColor(226, 232, 240)
+      doc.line(0, pY - 4, 210, pY - 4)
+      doc.setFontSize(7)
+      doc.setTextColor(148, 163, 184)
+      doc.setFont('helvetica', 'normal')
+      doc.text(
+        `Documento gerado por Odontosoft em ${new Date().toLocaleString('pt-BR')}  ·  LGPD Lei 13.709/2018  ·  CFO Res. 198/2019`,
+        105, pY + 2, { align: 'center' }
+      )
+      doc.text(
+        'Este termo integra o prontuário do paciente e deve ser arquivado pela clínica por no mínimo 20 anos.',
+        105, pY + 7, { align: 'center' }
+      )
+
+      // ── DOWNLOAD ─────────────────────────────────────────────────────────
+      const nomeSanitizado = pacienteNome.replace(/\s+/g, '_').replace(/[^\w]/g, '')
+      const dataHoje = new Date().toISOString().slice(0, 10)
+      doc.save(`TermoFisico_LGPD_${nomeSanitizado}_${dataHoje}.pdf`)
+      toast.success('Termo físico gerado! Verifique seus downloads.')
+    } catch {
+      toast.error('Erro ao gerar o PDF. Tente novamente.')
+    } finally {
+      setGerandoImpressao(false)
+    }
   }
 
   async function handleSalvar() {
@@ -424,12 +673,33 @@ export default function ModalConsentimentoLGPD({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[11px] text-slate-400 text-center sm:text-left">
-            Ao salvar, um registro auditável de conformidade será anexado à ficha do paciente.
-          </p>
+        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col gap-3">
+          {/* Linha superior: dica + botão de impressão */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <p className="text-[11px] text-slate-400">
+              Ao salvar, um registro auditável de conformidade será anexado à ficha do paciente.
+            </p>
+            <button
+              type="button"
+              data-testid="btn-imprimir-termo-fisico"
+              onClick={handleImprimirTermoFisico}
+              disabled={gerandoImpressao || salvando}
+              className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl border border-blue-400 dark:border-blue-600
+                text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/30
+                text-xs font-bold transition-all active:scale-95
+                disabled:opacity-40 disabled:cursor-not-allowed
+                w-full sm:w-auto justify-center"
+            >
+              {gerandoImpressao
+                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                : <Printer className="h-3.5 w-3.5" />
+              }
+              {gerandoImpressao ? 'Gerando PDF...' : 'Imprimir Termo Físico (PDF)'}
+            </button>
+          </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          {/* Linha inferior: cancelar + salvar */}
+          <div className="flex items-center gap-3 w-full sm:justify-end">
             <button
               type="button"
               onClick={onClose}

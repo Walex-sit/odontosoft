@@ -45,6 +45,9 @@ export interface Paciente {
   convenio: string | null
   lgpd_aceite: boolean | null
   lgpd_aceite_em: string | null
+  anonimizado?: boolean | null
+  anonimizado_em?: string | null
+  motivo_anonimizacao?: string | null
   created_at: string
   user_id: string | null
 }
@@ -607,4 +610,64 @@ export async function revogarConsentimento(
 
   return { success: true }
 }
+
+// ─── anonimizarPaciente (LGPD Art. 18 / CFO 198/2019) ───────────────────────
+
+export async function anonimizarPaciente(
+  pacienteId: string,
+  motivo?: string,
+  _userId?: string,
+  _userNome?: string
+): Promise<{ success: boolean; data?: unknown; error?: string }> {
+  if (!pacienteId) {
+    return { success: false, error: 'ID do paciente não informado.' }
+  }
+
+  const supabase = await createServerClient()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) {
+    return { success: false, error: 'Não autorizado: faça login novamente.' }
+  }
+
+  // Verifica se o usuário é admin
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile || profile.role !== 'admin') {
+    return {
+      success: false,
+      error: 'Apenas administradores da clínica ou o DPO têm permissão para anonimizar pacientes.',
+    }
+  }
+
+  // Executa a RPC segura no PostgreSQL
+  const { data, error } = await supabase.rpc('anonimizar_paciente', {
+    p_paciente_id: pacienteId,
+    p_motivo: motivo || null,
+  })
+
+  if (error) {
+    console.error('[pacientes.anonimizarPaciente] Erro RPC:', error.message)
+    return { success: false, error: error.message }
+  }
+
+  const actorId = _userId ?? user.id
+  await logAction(
+    actorId,
+    'edicao' as LogAction,
+    'pacientes',
+    {
+      paciente_id: pacienteId,
+      acao: 'anonimizacao_lgpd_art_18',
+      motivo: motivo || 'Solicitação do titular LGPD',
+    },
+    _userNome
+  )
+
+  return { success: true, data }
+}
+
 

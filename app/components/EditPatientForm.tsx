@@ -5,7 +5,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/app/lib/supabaseClient';
 import { toast } from 'sonner';
-import { Pencil, XCircle, CheckCircle } from 'lucide-react';
+import { XCircle, CheckCircle, FileText, Loader2 } from 'lucide-react';
+import { mascaraCpf, validarCpf } from '@/app/lib/cpfUtils';
+import { gerarPdfTermoLGPD } from '@/app/lib/gerarPdfTermoLGPD';
 
 // Define a minimal Patient type covering requested fields
 export interface Patient {
@@ -53,6 +55,7 @@ interface Props {
 
 export default function EditPatientForm({ patient }: Props) {
   const router = useRouter();
+  const [gerandoPdf, setGerandoPdf] = useState(false);
   // Create local state for each field – start with patient values
   const [form, setForm] = useState({
     nome: patient.nome || '',
@@ -102,15 +105,28 @@ export default function EditPatientForm({ patient }: Props) {
     }));
   };
 
-  const hasCpf = Boolean(
-    (form.cpf_raw && form.cpf_raw.trim() !== '') ||
-    patient.cpf_hash ||
-    patient.cpf_encrypted
-  );
+  // CPF digitado no campo atual (sem máscara) — validação matemática real
+  const cpfDigitado = form.cpf_raw.trim();
+  const cpfDigitadoValido = cpfDigitado !== '' && validarCpf(cpfDigitado);
+
+  // O paciente já tem CPF criptografado no banco?
+  const cpfNobanco = Boolean(patient.cpf_hash || patient.cpf_encrypted);
+
+  // Permite aceite LGPD se: (a) CPF digitado agora é válido, ou (b) já existe CPF no banco
+  const cpfHabilitaLgpd = cpfDigitadoValido || cpfNobanco;
+
+  function handleCpfRawChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const mascara = mascaraCpf(e.target.value);
+    setForm(prev => ({ ...prev, cpf_raw: mascara }));
+    // Desmarca aceite LGPD se CPF ficou inválido
+    if (!validarCpf(mascara) && form.lgpd_aceite) {
+      setForm(prev => ({ ...prev, cpf_raw: mascara, lgpd_aceite: false, lgpd_aceite_em: null }));
+    }
+  }
 
   const handleLgpdToggle = (checked: boolean) => {
-    if (checked && !hasCpf) {
-      toast.warning('O preenchimento do CPF é obrigatório para registrar o aceite LGPD.');
+    if (checked && !cpfHabilitaLgpd) {
+      toast.warning('O CPF deve ser válido para registrar o aceite LGPD.');
       return;
     }
     setForm(prev => ({
@@ -119,6 +135,27 @@ export default function EditPatientForm({ patient }: Props) {
       lgpd_aceite_em: checked ? (prev.lgpd_aceite_em || new Date().toISOString()) : null,
     }));
   };
+
+  function handleGerarTermoPdf() {
+    const nomeOk = form.nome.trim().length >= 3;
+    const cpfOk = cpfDigitadoValido;
+    if (!nomeOk || !cpfOk) {
+      toast.warning('Preencha o nome e um CPF válido para gerar o termo LGPD.');
+      return;
+    }
+    setGerandoPdf(true);
+    try {
+      gerarPdfTermoLGPD({
+        pacienteNome: form.nome.trim(),
+        pacienteCpf: form.cpf_raw,
+      });
+      toast.success('Termo LGPD gerado! Verifique seus downloads.');
+    } catch {
+      toast.error('Erro ao gerar o PDF.');
+    } finally {
+      setGerandoPdf(false);
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -254,8 +291,34 @@ export default function EditPatientForm({ patient }: Props) {
               <span>Paciente estrangeiro</span>
             </label>
           </div>
-          {Input({ label: 'Data de nasci mento', name: 'data_nascimento', type: 'date' })}
-          {Input({ label: 'CPF', name: 'cpf_raw', placeholder: 'Novo CPF (deixe em branco para manter)' })}
+          {Input({ label: 'Data de nascimento', name: 'data_nascimento', type: 'date' })}
+          {/* CPF com máscara e validação matemática */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+              CPF {cpfNobanco && <span className="text-xs text-emerald-600 font-normal">(já cadastrado)</span>}
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              name="cpf_raw"
+              value={form.cpf_raw}
+              onChange={handleCpfRawChange}
+              maxLength={14}
+              placeholder={cpfNobanco ? 'Novo CPF para substituir (opcional)' : 'Digite o CPF — 000.000.000-00'}
+              className={`mt-1 block w-full rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white dark:bg-slate-800 border ${
+                form.cpf_raw && form.cpf_raw.replace(/\D/g, '').length === 11
+                  ? cpfDigitadoValido
+                    ? 'border-emerald-500'
+                    : 'border-red-500'
+                  : 'border-slate-200 dark:border-slate-700'
+              }`}
+            />
+            {form.cpf_raw && form.cpf_raw.replace(/\D/g, '').length === 11 && (
+              <p className={`mt-1 text-xs font-semibold ${ cpfDigitadoValido ? 'text-emerald-600' : 'text-red-500'}`}>
+                {cpfDigitadoValido ? '✓ CPF matematicamente válido' : '✗ CPF inválido — verifique os dígitos'}
+              </p>
+            )}
+          </div>
           {Input({ label: 'RG', name: 'rg' })}
           {/* Foto upload placeholder */}
           <div className="col-span-2">
@@ -268,28 +331,53 @@ export default function EditPatientForm({ patient }: Props) {
 
       {/* Consentimento LGPD */}
       <section className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl bg-slate-50/50 dark:bg-slate-900/30">
-        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2">Consentimento LGPD (Uso de Dados)</h3>
+        <div className="flex items-start justify-between mb-2 gap-4 flex-wrap">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Consentimento LGPD (Uso de Dados)</h3>
+          {/* Botão Gerar Termo LGPD PDF */}
+          <button
+            type="button"
+            data-testid="btn-gerar-termo-lgpd"
+            onClick={handleGerarTermoPdf}
+            disabled={!(form.nome.trim().length >= 3 && cpfDigitadoValido) || gerandoPdf}
+            title="Gerar Termo de Consentimento LGPD em PDF"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all
+              disabled:opacity-40 disabled:cursor-not-allowed
+              enabled:border-emerald-500 enabled:text-emerald-700 dark:enabled:text-emerald-400 enabled:hover:bg-emerald-50 dark:enabled:hover:bg-emerald-950/30
+              disabled:border-slate-300 dark:disabled:border-slate-700 disabled:text-slate-400"
+          >
+            {gerandoPdf ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5" />}
+            {gerandoPdf ? 'Gerando...' : 'Gerar Termo LGPD (PDF)'}
+          </button>
+        </div>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
           Autorização para tratamento e armazenamento de dados pessoais e de saúde conforme a Lei Geral de Proteção de Dados (LGPD — Lei Federal nº 13.709/2018).
+          {!(form.nome.trim().length >= 3 && cpfDigitadoValido) && (
+            <span className="block mt-1 text-amber-600 dark:text-amber-400 font-medium">
+              ⚠️ Digite o nome e um CPF válido para habilitar a geração do PDF.
+            </span>
+          )}
         </p>
-        <div className="flex items-start space-x-3 bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+        <div className={`flex items-start space-x-3 bg-white dark:bg-slate-800 p-3 rounded-lg border transition-colors ${
+          cpfHabilitaLgpd ? 'border-emerald-400/50 dark:border-emerald-700/50' : 'border-slate-200 dark:border-slate-700'
+        }`}>
           <input
             type="checkbox"
             id="lgpd_aceite"
             name="lgpd_aceite"
-            disabled={!hasCpf}
+            disabled={!cpfHabilitaLgpd}
             checked={form.lgpd_aceite}
             onChange={(e) => handleLgpdToggle(e.target.checked)}
             className="mt-1 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
           />
-          <label htmlFor="lgpd_aceite" className={`text-sm text-slate-700 dark:text-slate-200 ${!hasCpf ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
+          <label htmlFor="lgpd_aceite" className={`text-sm text-slate-700 dark:text-slate-200 ${!cpfHabilitaLgpd ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
             <span className="font-bold block">Aceite LGPD (Consentimento de Uso de Dados)</span>
             <span className="text-xs text-slate-500 dark:text-slate-400 block mt-0.5">
               O paciente concorda com o uso de seus dados cadastrais e histórico clínico para prestação de serviços odontológicos.
             </span>
-            {!hasCpf ? (
+            {!cpfHabilitaLgpd ? (
               <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 block mt-1.5">
-                ⚠️ Identificação formal (CPF) é obrigatória para registrar o aceite LGPD. Preencha o CPF para habilitar.
+                ⚠️ CPF válido é obrigatório para registrar o aceite LGPD.
+                {cpfNobanco && ' (O CPF atual está criptografado — para revalidar, insira o CPF no campo acima.)'}
               </span>
             ) : form.lgpd_aceite && form.lgpd_aceite_em ? (
               <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 block mt-1.5">
@@ -349,14 +437,14 @@ export default function EditPatientForm({ patient }: Props) {
       </section>
 
       {/* Footer actions */}
-      <div className="flex justify-between pt-4 border-t">
+      <div className="flex justify-between pt-4 border-t gap-3 flex-wrap">
         <button
           type="button"
           onClick={() => router.back()}
           className="px-6 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 flex items-center space-x-2"
         >
           <XCircle className="h-4 w-4" />
-          <span>Excluir</span>
+          <span>Cancelar</span>
         </button>
         <button
           type="submit"

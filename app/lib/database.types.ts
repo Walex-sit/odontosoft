@@ -189,6 +189,9 @@ export interface Database {
           cpf_responsavel_convenio: string | null
           lembretes: string | null
           foto_url: string | null
+          anonimizado?: boolean | null
+          anonimizado_em?: string | null
+          motivo_anonimizacao?: string | null
         }
         Insert: {
           id?: string
@@ -239,6 +242,9 @@ export interface Database {
           cpf_responsavel_convenio?: string | null
           lembretes?: string | null
           foto_url?: string | null
+          anonimizado?: boolean | null
+          anonimizado_em?: string | null
+          motivo_anonimizacao?: string | null
         }
         Update: {
           id?: string
@@ -289,6 +295,9 @@ export interface Database {
           cpf_responsavel_convenio?: string | null
           lembretes?: string | null
           foto_url?: string | null
+          anonimizado?: boolean | null
+          anonimizado_em?: string | null
+          motivo_anonimizacao?: string | null
         }
         Relationships: []
       }
@@ -343,6 +352,13 @@ export interface Database {
           descricao: string
           tratamento: string | null
           data_registro: string
+          finalizado: boolean
+          finalizado_em: string | null
+          tipo_registro: 'registro_clinico' | 'adendo_retificativo' | 'adendo_esclarecimento'
+          prontuario_origem_id: string | null
+          versao_anterior_id: string | null
+          status: 'registrada' | 'retificada' | 'cancelada'
+          motivo_alteracao: string | null
         }
         Insert: {
           id?: string
@@ -352,6 +368,13 @@ export interface Database {
           descricao: string
           tratamento?: string | null
           data_registro?: string
+          finalizado?: boolean
+          finalizado_em?: string | null
+          tipo_registro?: 'registro_clinico' | 'adendo_retificativo' | 'adendo_esclarecimento'
+          prontuario_origem_id?: string | null
+          versao_anterior_id?: string | null
+          status?: 'registrada' | 'retificada' | 'cancelada'
+          motivo_alteracao?: string | null
         }
         Update: {
           id?: string
@@ -361,6 +384,13 @@ export interface Database {
           descricao?: string
           tratamento?: string | null
           data_registro?: string
+          finalizado?: boolean
+          finalizado_em?: string | null
+          tipo_registro?: 'registro_clinico' | 'adendo_retificativo' | 'adendo_esclarecimento'
+          prontuario_origem_id?: string | null
+          versao_anterior_id?: string | null
+          status?: 'registrada' | 'retificada' | 'cancelada'
+          motivo_alteracao?: string | null
         }
         Relationships: []
       }
@@ -1139,6 +1169,42 @@ export interface Database {
           p_paciente_consentimento_id: string
         }
         Returns: void
+      }
+      get_tenant_audit_logs: {
+        Args: {
+          p_tabela?: string | null
+          p_acao?: string | null
+          p_limit?: number | null
+          p_offset?: number | null
+        }
+        Returns: {
+          id: string
+          id_usuario: string | null
+          user_email: string | null
+          acao: 'INSERT' | 'UPDATE' | 'DELETE' | 'ANONYMIZE'
+          tabela: string
+          registro_id: string
+          dados_anteriores: Json | null
+          dados_novos: Json | null
+          data_hora: string
+          ip: string | null
+        }[]
+      }
+      anonimizar_paciente: {
+        Args: {
+          p_paciente_id: string
+          p_motivo?: string | null
+        }
+        Returns: Json
+      }
+      criar_adendo_prontuario: {
+        Args: {
+          p_prontuario_origem_id: string
+          p_descricao: string
+          p_tipo_adendo?: string | null
+          p_tratamento?: string | null
+        }
+        Returns: string
       }
     }
     Enums: {

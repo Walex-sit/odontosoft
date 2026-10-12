@@ -126,3 +126,49 @@ export async function fetchComplianceStats(): Promise<{
     },
   }
 }
+
+export interface StrictAuditLog {
+  id: string
+  id_usuario: string | null
+  user_email: string | null
+  acao: 'INSERT' | 'UPDATE' | 'DELETE' | 'ANONYMIZE'
+  tabela: string
+  registro_id: string
+  dados_anteriores: Record<string, unknown> | null
+  dados_novos: Record<string, unknown> | null
+  data_hora: string
+  ip: string | null
+}
+
+/**
+ * Busca a trilha de auditoria estrita da clínica (tabela private.audit_logs)
+ * via RPC segura get_tenant_audit_logs. Restrita a administradores e DPO.
+ */
+export async function fetchStrictAuditLogs(filters?: {
+  tabela?: string
+  acao?: string
+  limit?: number
+  offset?: number
+}): Promise<{ success: boolean; data: StrictAuditLog[]; error?: string }> {
+  const supabase = await createServerClient()
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) {
+    return { success: false, data: [], error: 'Não autorizado.' }
+  }
+
+  const { data, error } = await supabase.rpc('get_tenant_audit_logs', {
+    p_tabela: filters?.tabela ?? null,
+    p_acao: filters?.acao ?? null,
+    p_limit: filters?.limit ?? 50,
+    p_offset: filters?.offset ?? 0,
+  })
+
+  if (error) {
+    console.error('[audit.fetchStrictAuditLogs] Erro RPC:', error.message)
+    return { success: false, data: [], error: error.message }
+  }
+
+  return { success: true, data: (data as StrictAuditLog[]) ?? [] }
+}
+
