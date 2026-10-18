@@ -22,6 +22,9 @@ import { createServerClient } from '@supabase/ssr'
 const PUBLIC_PATHS = [
   '/login',
   '/acesso-negado',
+  '/planos',
+  '/termos-de-uso',
+  '/politica-de-privacidade',
 ]
 
 export async function proxy(request: NextRequest) {

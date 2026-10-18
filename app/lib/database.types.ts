@@ -28,6 +28,12 @@ export interface Database {
           endereco: string | null
           plano: 'basico' | 'profissional' | 'enterprise'
           ativo: boolean
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          status_assinatura: 'trial' | 'ativo' | 'inadimplente' | 'cancelado' | 'pendente'
+          plano_preco_id: string | null
+          periodo_fim: string | null
+          cancelamento_em: string | null
           criado_em: string
           atualizado_em: string
         }
@@ -40,6 +46,12 @@ export interface Database {
           endereco?: string | null
           plano?: 'basico' | 'profissional' | 'enterprise'
           ativo?: boolean
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          status_assinatura?: 'trial' | 'ativo' | 'inadimplente' | 'cancelado' | 'pendente'
+          plano_preco_id?: string | null
+          periodo_fim?: string | null
+          cancelamento_em?: string | null
           criado_em?: string
           atualizado_em?: string
         }
@@ -52,6 +64,12 @@ export interface Database {
           endereco?: string | null
           plano?: 'basico' | 'profissional' | 'enterprise'
           ativo?: boolean
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          status_assinatura?: 'trial' | 'ativo' | 'inadimplente' | 'cancelado' | 'pendente'
+          plano_preco_id?: string | null
+          periodo_fim?: string | null
+          cancelamento_em?: string | null
           criado_em?: string
           atualizado_em?: string
         }
@@ -1203,6 +1221,17 @@ export interface Database {
           p_descricao: string
           p_tipo_adendo?: string | null
           p_tratamento?: string | null
+        }
+        Returns: string
+      }
+      provisionar_novo_tenant: {
+        Args: {
+          p_user_id: string
+          p_nome_clinica: string
+          p_plano: string
+          p_stripe_customer_id?: string | null
+          p_stripe_subscription_id?: string | null
+          p_plano_preco_id?: string | null
         }
         Returns: string
       }

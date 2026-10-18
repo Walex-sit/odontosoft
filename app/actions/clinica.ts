@@ -324,3 +324,139 @@ export async function removeClinicaLogo(clinicaId: string): Promise<{
     return { success: false, error: msg }
   }
 }
+
+// ---------------------------------------------------------------------------
+// completarOnboarding — salva os dados cadastrais da clínica no pós-pagamento
+// ---------------------------------------------------------------------------
+export async function completarOnboarding(payload: {
+  nomeClinica: string
+  cnpjOuCpf?: string
+  telefone?: string
+  endereco?: string
+  croResponsavel?: string
+  nomeResponsavel?: string
+}): Promise<{ success: boolean; clinicaId?: string; error?: string }> {
+  try {
+    const supabase = await createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: 'Não autorizado: faça login novamente.' }
+    }
+
+    if (!payload.nomeClinica || !payload.nomeClinica.trim()) {
+      return { success: false, error: 'O nome da clínica é obrigatório.' }
+    }
+
+    // Busca o perfil do usuário
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('id, clinica_id, role, nome')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    let clinicaId = profile?.clinica_id
+
+    if (!clinicaId) {
+      // Se a clínica ainda não foi criada via webhook (ex: teste local ou delay do gateway),
+      // cria a clínica agora e vincula o usuário como admin
+      const { data: novaClinica, error: clinicaErr } = await supabase
+        .from('clinicas')
+        .insert([{
+          nome: payload.nomeClinica.trim(),
+          cnpj: payload.cnpjOuCpf?.trim() || null,
+          telefone: payload.telefone?.trim() || null,
+          endereco: payload.endereco?.trim() || null,
+          plano: 'profissional',
+          status_assinatura: 'ativo',
+          ativo: true,
+        }])
+        .select('id')
+        .single()
+
+      if (clinicaErr || !novaClinica) {
+        console.error('[completarOnboarding] Erro ao criar clinica:', clinicaErr?.message)
+        return { success: false, error: clinicaErr?.message || 'Erro ao criar clínica.' }
+      }
+
+      clinicaId = novaClinica.id
+
+      // Vincula ao perfil do usuário como admin
+      await supabase
+        .from('user_profiles')
+        .update({
+          clinica_id: clinicaId,
+          role: 'admin',
+        })
+        .eq('id', user.id)
+
+      // Cria clinica_settings
+      await supabase
+        .from('clinica_settings')
+        .insert([{
+          clinica_id: clinicaId,
+          nome: payload.nomeClinica.trim(),
+          nome_exibido: payload.nomeClinica.trim(),
+          cnpj: payload.cnpjOuCpf?.trim() || null,
+          telefone: payload.telefone?.trim() || null,
+          endereco: payload.endereco?.trim() || null,
+          cro_responsavel: payload.croResponsavel?.trim() || null,
+          nome_responsavel: payload.nomeResponsavel?.trim() || profile?.nome || null,
+        }])
+    } else {
+      // Atualiza a clínica já existente
+      await supabase
+        .from('clinicas')
+        .update({
+          nome: payload.nomeClinica.trim(),
+          cnpj: payload.cnpjOuCpf?.trim() || null,
+          telefone: payload.telefone?.trim() || null,
+          endereco: payload.endereco?.trim() || null,
+          atualizado_em: new Date().toISOString(),
+        })
+        .eq('id', clinicaId)
+
+      // Atualiza ou insere clinica_settings
+      const { data: existingSettings } = await supabase
+        .from('clinica_settings')
+        .select('id')
+        .eq('clinica_id', clinicaId)
+        .maybeSingle()
+
+      if (existingSettings) {
+        await supabase
+          .from('clinica_settings')
+          .update({
+            nome: payload.nomeClinica.trim(),
+            nome_exibido: payload.nomeClinica.trim(),
+            cnpj: payload.cnpjOuCpf?.trim() || null,
+            telefone: payload.telefone?.trim() || null,
+            endereco: payload.endereco?.trim() || null,
+            cro_responsavel: payload.croResponsavel?.trim() || null,
+            nome_responsavel: payload.nomeResponsavel?.trim() || null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existingSettings.id)
+      } else {
+        await supabase
+          .from('clinica_settings')
+          .insert([{
+            clinica_id: clinicaId,
+            nome: payload.nomeClinica.trim(),
+            nome_exibido: payload.nomeClinica.trim(),
+            cnpj: payload.cnpjOuCpf?.trim() || null,
+            telefone: payload.telefone?.trim() || null,
+            endereco: payload.endereco?.trim() || null,
+            cro_responsavel: payload.croResponsavel?.trim() || null,
+            nome_responsavel: payload.nomeResponsavel?.trim() || null,
+          }])
+      }
+    }
+
+    return { success: true, clinicaId }
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Erro desconhecido'
+    console.error('[completarOnboarding] Exceção:', msg)
+    return { success: false, error: msg }
+  }
+}
+

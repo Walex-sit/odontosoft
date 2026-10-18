@@ -216,22 +216,25 @@ export async function fetchDashboardCharts(): Promise<{
 
     const now = new Date();
 
-    // ── 1. Fluxo de Caixa: últimos 7 meses (buscando da tabela 'receitas') ──
+    // ── 1. Fluxo de Caixa: últimos 7 meses (1 única consulta agregada) ──
+    const sevenMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, 1).toISOString();
+    const { data: recsAll } = await supabase
+      .from('receitas')
+      .select('valor, status, created_at')
+      .gte('created_at', sevenMonthsAgo);
+
     const cashFlow: CashFlowPoint[] = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const start = new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
-      const end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59).toISOString();
+      const ano = d.getFullYear();
+      const mes = d.getMonth();
       const label = d.toLocaleDateString('pt-BR', { month: 'short' });
 
-      const { data: recs } = await supabase
-        .from('receitas')
-        .select('valor, status, created_at')
-        .gte('created_at', start)
-        .lte('created_at', end);
-
-      const receitas = (recs || [])
-        .filter(r => {
+      const receitas = (recsAll || [])
+        .filter((r) => {
+          if (!r.created_at) return false;
+          const dt = new Date(r.created_at);
+          if (dt.getFullYear() !== ano || dt.getMonth() !== mes) return false;
           const st = (r.status || '').toLowerCase();
           return st === 'pago' || st === 'recebido' || st === 'concluido';
         })

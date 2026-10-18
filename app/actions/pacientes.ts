@@ -188,9 +188,10 @@ export async function getPatientById(id: string): Promise<ActionResult<Paciente>
     return { success: false, error: 'Não autorizado.' }
   }
 
+  // CORREÇÃO: Substituição de '*' pelas colunas explícitas para evitar erros de colunas antigas.
   const { data, error } = await supabase
     .from('pacientes')
-    .select('*')
+    .select('id, clinica_id, nome, cpf_hash, cpf_encrypted, rg, data_nascimento, genero, telefone, whatsapp, email, cep, rua, numero, bairro, cidade, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id')
     .eq('id', id)
     .maybeSingle()
 
@@ -669,5 +670,3 @@ export async function anonimizarPaciente(
 
   return { success: true, data }
 }
-
-
