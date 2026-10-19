@@ -6,17 +6,16 @@ import { toast } from 'sonner'
 import ModalAlterarCartao from '@/app/components/ModalAlterarCartao'
 import ModalPagamentoFatura from '@/app/components/ModalPagamentoFatura'
 
-// Dados Mockados para a página de Assinatura
-const faturas = [
-  { id: 'FAT-001', data: '2023-10-05', valor: 199.90, status: 'PAGO' },
-  { id: 'FAT-002', data: '2023-11-05', valor: 199.90, status: 'PAGO' },
-  { id: 'FAT-003', data: '2023-12-05', valor: 199.90, status: 'PENDENTE' },
-]
+// Faturas serão carregadas via Stripe Billing API / webhook.
+// Por enquanto, estado vazio até integração com Stripe Customer Portal.
+type Fatura = { id: string; data: string; valor: number; status: string }
 
 export default function AssinaturaPage() {
   const [alterarCartaoOpen, setAlterarCartaoOpen] = useState(false)
   const [pagamentoOpen, setPagamentoOpen] = useState(false)
   const [faturaSelecionada, setFaturaSelecionada] = useState<{id: string, valor: number} | null>(null)
+  // Faturas dinâmicas — integração futura com Stripe Billing
+  const [faturas] = useState<Fatura[]>([])
 
   function handleDownloadRecibo(faturaId: string) {
     toast.success(`Download do recibo ${faturaId} iniciado com sucesso.`)
@@ -94,6 +93,13 @@ export default function AssinaturaPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-700/50">
+                {faturas.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-400">
+                      Nenhuma fatura disponível. O histórico de cobranças aparecerá aqui após a integração com o Stripe.
+                    </td>
+                  </tr>
+                )}
                 {faturas.map((fatura) => (
                   <tr key={fatura.id} className="hover:bg-slate-700/50 transition-colors">
                     <td className="px-4 py-3 whitespace-nowrap text-xs text-slate-300 font-medium">

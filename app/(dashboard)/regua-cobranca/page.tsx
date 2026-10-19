@@ -36,13 +36,7 @@ const REGRAS_INICIAIS: Regra[] = [
   { id: 5, nome: 'Convite de Retorno', tipo: 'retorno', canal: 'whatsapp', antecedencia: '6 meses sem consulta', mensagem: 'Olá {paciente}! Faz 6 meses desde sua última visita. Que tal agendar uma consulta de revisão?', ativa: true },
 ]
 
-const LOG_MOCK: LogEnvio[] = [
-  { id: 1, paciente: 'João Silva', canal: 'whatsapp', tipo: 'lembrete', dataEnvio: '02/08/2026', horario: '14:30', status: 'enviado' },
-  { id: 2, paciente: 'Maria Fernanda', canal: 'sms', tipo: 'lembrete', dataEnvio: '02/08/2026', horario: '15:00', status: 'enviado' },
-  { id: 3, paciente: 'Carlos Petit', canal: 'whatsapp', tipo: 'cobranca', dataEnvio: '01/08/2026', horario: '10:00', status: 'enviado' },
-  { id: 4, paciente: 'Ana Souza', canal: 'email', tipo: 'cobranca', dataEnvio: '01/08/2026', horario: '09:15', status: 'falhou' },
-  { id: 5, paciente: 'Roberto Lima', canal: 'whatsapp', tipo: 'retorno', dataEnvio: '31/07/2026', horario: '11:00', status: 'enviado' },
-]
+// Logs de envio: serão carregados via Supabase (tabela comunicacao_logs) em iteração futura.
 
 const CANALICON: Record<Canal, { label: string; icon: React.ReactNode; color: string }> = {
   whatsapp: { label: 'WhatsApp', icon: <MessageSquare className="h-4 w-4" />, color: 'text-emerald-600 bg-emerald-50' },
@@ -58,7 +52,7 @@ const TIPO_LABEL: Record<TipoRegra, { label: string; color: string }> = {
 
 export default function ReguaCobrancaPage() {
   const [regras, setRegras] = useState<Regra[]>(REGRAS_INICIAIS)
-  const [logs] = useState<LogEnvio[]>(LOG_MOCK)
+  const [logs] = useState<LogEnvio[]>([])
   const [activeTab, setActiveTab] = useState<'regras' | 'logs' | 'inadimplentes'>('regras')
   const [editandoId, setEditandoId] = useState<number | null>(null)
 
@@ -72,11 +66,8 @@ export default function ReguaCobrancaPage() {
     toast.success(`📤 Disparo manual da régua "${nome}" iniciado! Verificando elegíveis...`)
   }
 
-  const inadimplentes = [
-    { paciente: 'Carlos Petit', valor: 450, diasAtraso: 12, telefone: '(11) 98765-4321' },
-    { paciente: 'Fernanda Torres', valor: 280, diasAtraso: 5, telefone: '(11) 91234-5678' },
-    { paciente: 'Marcos Antônio', valor: 820, diasAtraso: 31, telefone: '(11) 99876-5432' },
-  ]
+  // TODO: inadimplentes será carregado do Supabase (query em lancamentos com status='vencido')
+  const inadimplentes: { paciente: string; valor: number; diasAtraso: number; telefone: string }[] = []
 
   const totalPendente = inadimplentes.reduce((acc, i) => acc + i.valor, 0)
   const enviados = logs.filter(l => l.status === 'enviado').length

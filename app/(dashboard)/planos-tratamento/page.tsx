@@ -30,37 +30,7 @@ interface PlanoTratamento {
   dataFim: string
 }
 
-const PLANOS_MOCK: PlanoTratamento[] = [
-  {
-    id: 1, paciente: 'Maria Fernanda', tipo: 'Aparelho Ortodôntico', dentista: 'Dra. Beatriz Costa',
-    valorTotal: 4800, sessaoTotal: 24, status: 'ativo', dataInicio: '10/01/2026', dataFim: '10/01/2028',
-    sessoes: [
-      { id: 1, numero: 1, descricao: 'Instalação do aparelho', data: '10/01/2026', status: 'realizada', valorParcela: 200, parcelaPaga: true },
-      { id: 2, numero: 2, descricao: 'Manutenção mensal', data: '10/02/2026', status: 'realizada', valorParcela: 200, parcelaPaga: true },
-      { id: 3, numero: 3, descricao: 'Manutenção mensal', data: '10/03/2026', status: 'realizada', valorParcela: 200, parcelaPaga: false },
-      { id: 4, numero: 4, descricao: 'Manutenção mensal', data: '10/04/2026', status: 'agendada', valorParcela: 200, parcelaPaga: false },
-    ]
-  },
-  {
-    id: 2, paciente: 'Carlos Petit', tipo: 'Implante Dentário', dentista: 'Dr. Rafael Gomes',
-    valorTotal: 7000, sessaoTotal: 6, status: 'ativo', dataInicio: '15/06/2026', dataFim: '15/12/2026',
-    sessoes: [
-      { id: 5, numero: 1, descricao: 'Extração e planejamento', data: '15/06/2026', status: 'realizada', valorParcela: 1166.67, parcelaPaga: true },
-      { id: 6, numero: 2, descricao: 'Inserção do implante', data: '20/07/2026', status: 'realizada', valorParcela: 1166.67, parcelaPaga: true },
-      { id: 7, numero: 3, descricao: 'Acompanhamento osseointegração', data: '20/08/2026', status: 'agendada', valorParcela: 1166.67, parcelaPaga: false },
-    ]
-  },
-  {
-    id: 3, paciente: 'Ana Souza', tipo: 'Clareamento + Harmonização', dentista: 'Dr. Carlos Mendes',
-    valorTotal: 2400, sessaoTotal: 4, status: 'concluido', dataInicio: '01/04/2026', dataFim: '01/07/2026',
-    sessoes: [
-      { id: 8, numero: 1, descricao: 'Clareamento sessão 1', data: '01/04/2026', status: 'realizada', valorParcela: 600, parcelaPaga: true },
-      { id: 9, numero: 2, descricao: 'Clareamento sessão 2', data: '15/04/2026', status: 'realizada', valorParcela: 600, parcelaPaga: true },
-      { id: 10, numero: 3, descricao: 'Harmonização facial', data: '01/05/2026', status: 'realizada', valorParcela: 600, parcelaPaga: true },
-      { id: 11, numero: 4, descricao: 'Revisão e Polimento', data: '01/07/2026', status: 'realizada', valorParcela: 600, parcelaPaga: true },
-    ]
-  },
-]
+// TODO: Planos de tratamento serão carregados do Supabase (tabelas planos_tratamento + sessoes).
 
 const STATUS_PLANO_CONFIG: Record<StatusPlano, { label: string; bg: string; text: string }> = {
   ativo: { label: 'Ativo', bg: 'bg-blue-100', text: 'text-blue-700' },
@@ -77,7 +47,7 @@ const STATUS_SESSAO_CONFIG: Record<StatusSessao, { label: string; bg: string; te
 }
 
 export default function PlanosTratamentoPage() {
-  const [planos, setPlanos] = useState<PlanoTratamento[]>(PLANOS_MOCK)
+  const [planos, setPlanos] = useState<PlanoTratamento[]>([])
   const [selectedPlano, setSelectedPlano] = useState<number | null>(null)
   const [novoModal, setNovoModal] = useState(false)
   const [novoPlano, setNovoPlano] = useState({ paciente: '', tipo: '', dentista: '', valorTotal: 0, sessaoTotal: 1, dataInicio: '', dataFim: '' })

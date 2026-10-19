@@ -12,15 +12,9 @@ interface Tarefa {
   completed: boolean
 }
 
-const MOCK_TAREFAS: Tarefa[] = [
-  { id: 1, title: 'Ligar para João Silva', description: 'Confirmar consulta de retorno às 15:30', time: '14:00', priority: 'high', completed: false },
-  { id: 2, title: 'Conferir estoque de resinas', description: 'Fazer pedido com fornecedor DentalX', time: '16:00', priority: 'medium', completed: false },
-  { id: 3, title: 'Aprovação de Orçamento', description: 'Revisar orçamento da paciente Maria Oliveira', time: '17:30', priority: 'high', completed: false },
-  { id: 4, title: 'Organizar prontuários do dia', description: 'Arquivar fichas físicas e preencher prontuário digital', time: '18:00', priority: 'low', completed: true },
-]
-
+// Tarefas serão carregadas/persistidas via Supabase em iteração futura.
 export default function TarefasSlideOver({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [tarefas, setTarefas] = useState<Tarefa[]>(MOCK_TAREFAS)
+  const [tarefas, setTarefas] = useState<Tarefa[]>([])
   const [animateIn, setAnimateIn] = useState(false)
 
   useEffect(() => {

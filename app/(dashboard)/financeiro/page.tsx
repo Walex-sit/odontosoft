@@ -30,21 +30,6 @@ import {
 // ─── Tipos ────────────────────────────────────────────────
 type TabId = 'painel' | 'fluxo' | 'boletos' | 'comissoes'
 
-// ─── Dados Mock (painel e boletos permanecem estáticos por ora) ───────────
-const boletos = [
-  { id: 1, paciente: 'Roberto Almeida', descricao: 'Restauração Classe II', valor: 480, vencimento: '05/08/2026', status: 'aberto', banco: 'Banco Inter' },
-  { id: 2, paciente: 'Ana Paula Souza', descricao: 'Implante - Parcela 2/6', valor: 1200, vencimento: '10/08/2026', status: 'aberto', banco: 'Itaú' },
-  { id: 3, paciente: 'Carlos Eduardo', descricao: 'Ortodontia - Mensalidade Ago', valor: 450, vencimento: '01/08/2026', status: 'aberto', banco: 'Banco Inter' },
-  { id: 4, paciente: 'Fernanda Lima', descricao: 'Lente de Contato (4 un)', valor: 6800, vencimento: '20/07/2026', status: 'vencido', banco: 'Itaú' },
-  { id: 5, paciente: 'João Silva', descricao: 'Limpeza Periodontal', valor: 350, vencimento: '15/07/2026', status: 'pago', banco: 'Banco Inter' },
-]
-
-const profissionaisMock = [
-  { id: 1, nome: 'Dra. Camila Ribeiro', especialidade: 'Ortodontia', atendimentos: 42, faturado: 18500, comissao: 40, repasse: 7400, status: 'pendente' },
-  { id: 2, nome: 'Dr. João Pedro', especialidade: 'Implantodontia', atendimentos: 28, faturado: 32000, comissao: 50, repasse: 16000, status: 'pendente' },
-  { id: 3, nome: 'Dra. Mariana Costa', especialidade: 'Endodontia', atendimentos: 35, faturado: 14200, comissao: 35, repasse: 4970, status: 'pago' },
-]
-
 // ─── Helpers ──────────────────────────────────────────────
 const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 
@@ -64,15 +49,16 @@ const formaIcon = (forma: string) => {
   return <Wallet className="h-3.5 w-3.5" />
 }
 
-// ─── Gráfico de Barras Simples (CSS) ──────────────────────
-const chartData = [
-  { mes: 'Fev', entradas: 32, saidas: 18 },
-  { mes: 'Mar', entradas: 45, saidas: 22 },
-  { mes: 'Abr', entradas: 38, saidas: 25 },
-  { mes: 'Mai', entradas: 52, saidas: 20 },
-  { mes: 'Jun', entradas: 48, saidas: 28 },
-  { mes: 'Jul', entradas: 58, saidas: 24 },
-]
+// ─── Tipo para boletos (integração futura com Supabase) ────
+interface BoletoItem {
+  id: number
+  paciente: string
+  descricao: string
+  valor: number
+  vencimento: string
+  status: 'aberto' | 'vencido' | 'pago'
+  banco: string
+}
 
 // ═══════════════════════════════════════════════════════════
 // ─── COMPONENTE PRINCIPAL ─────────────────────────────────
@@ -289,7 +275,8 @@ export default function FinanceiroPage() {
   }
 
   // ── Estado da aba de Boletos ─────────────────────────────
-  const [boletosData, setBoletosData] = useState(boletos)
+  // Boletos: estado vazio — integração futura com Supabase (tabela boletos/cobranças)
+  const [boletosData, setBoletosData] = useState<BoletoItem[]>([])
   const [selectedBoletos, setSelectedBoletos] = useState<Set<number>>(new Set())
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -492,25 +479,53 @@ export default function FinanceiroPage() {
                   <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded-full bg-red-400"></div> Saídas</div>
                 </div>
               </div>
-              <div className="flex items-end gap-4 h-56">
-                {chartData.map((d, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                    <div className="w-full flex gap-1 items-end justify-center h-48">
-                      <div
-                        className="w-5 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg transition-all duration-500 hover:from-blue-600 hover:to-blue-500"
-                        style={{ height: `${(d.entradas / 60) * 100}%` }}
-                        title={`Entradas: R$ ${d.entradas}k`}
-                      ></div>
-                      <div
-                        className="w-5 bg-gradient-to-t from-red-400 to-red-300 rounded-t-lg transition-all duration-500 hover:from-red-500 hover:to-red-400"
-                        style={{ height: `${(d.saidas / 60) * 100}%` }}
-                        title={`Saídas: R$ ${d.saidas}k`}
-                      ></div>
+              {/* Gráfico derivado dos lançamentos reais (últimos 6 meses) */}
+              {(() => {
+                // Agrupa lancamentosLoading por mês (MM/YY) para exibir no gráfico
+                const mesesMap: Record<string, { entradas: number; saidas: number }> = {}
+                lancamentosList.forEach(l => {
+                  const d = new Date(l.data)
+                  if (isNaN(d.getTime())) return
+                  const key = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })
+                  if (!mesesMap[key]) mesesMap[key] = { entradas: 0, saidas: 0 }
+                  if (l.tipo === 'entrada') mesesMap[key].entradas += l.valor
+                  else mesesMap[key].saidas += l.valor
+                })
+                const chartPoints = Object.entries(mesesMap)
+                  .slice(-6)
+                  .map(([mes, vals]) => ({ mes, ...vals }))
+                const maxVal = Math.max(...chartPoints.flatMap(d => [d.entradas, d.saidas]), 1)
+
+                if (chartPoints.length === 0) {
+                  return (
+                    <div className="flex items-center justify-center h-48 text-slate-400 text-sm">
+                      Nenhum lançamento para exibir.
                     </div>
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{d.mes}</span>
+                  )
+                }
+
+                return (
+                  <div className="flex items-end gap-4 h-56">
+                    {chartPoints.map((d, i) => (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                        <div className="w-full flex gap-1 items-end justify-center h-48">
+                          <div
+                            className="w-5 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg transition-all duration-500 hover:from-blue-600 hover:to-blue-500"
+                            style={{ height: `${(d.entradas / maxVal) * 100}%` }}
+                            title={`Entradas: ${fmt(d.entradas)}`}
+                          ></div>
+                          <div
+                            className="w-5 bg-gradient-to-t from-red-400 to-red-300 rounded-t-lg transition-all duration-500 hover:from-red-500 hover:to-red-400"
+                            style={{ height: `${(d.saidas / maxVal) * 100}%` }}
+                            title={`Saídas: ${fmt(d.saidas)}`}
+                          ></div>
+                        </div>
+                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{d.mes}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                )
+              })()}
             </div>
 
             {/* Últimos Lançamentos (resumo) */}
@@ -774,24 +789,34 @@ export default function FinanceiroPage() {
         {activeTab === 'boletos' && (
           <div className="p-8 space-y-6 animate-in fade-in duration-300">
 
-            {/* Resumo Boletos */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Em Aberto</p>
-                <p className="text-2xl font-extrabold text-amber-600">R$ 2.130,00</p>
-                <p className="text-xs font-semibold text-slate-400 mt-1">3 boletos</p>
-              </div>
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Vencidos</p>
-                <p className="text-2xl font-extrabold text-red-600">R$ 6.800,00</p>
-                <p className="text-xs font-semibold text-slate-400 mt-1">1 boleto</p>
-              </div>
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Pagos no Mês</p>
-                <p className="text-2xl font-extrabold text-green-600">R$ 350,00</p>
-                <p className="text-xs font-semibold text-slate-400 mt-1">1 boleto</p>
-              </div>
-            </div>
+            {/* Resumo Boletos — calculado dinamicamente a partir do estado boletosData */}
+            {(() => {
+              const abertos = boletosData.filter(b => b.status === 'aberto')
+              const vencidos = boletosData.filter(b => b.status === 'vencido')
+              const pagos = boletosData.filter(b => b.status === 'pago')
+              const totalAberto = abertos.reduce((s, b) => s + b.valor, 0)
+              const totalVencido = vencidos.reduce((s, b) => s + b.valor, 0)
+              const totalPago = pagos.reduce((s, b) => s + b.valor, 0)
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Em Aberto</p>
+                    <p className="text-2xl font-extrabold text-amber-600">{fmt(totalAberto)}</p>
+                    <p className="text-xs font-semibold text-slate-400 mt-1">{abertos.length} {abertos.length === 1 ? 'boleto' : 'boletos'}</p>
+                  </div>
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Vencidos</p>
+                    <p className="text-2xl font-extrabold text-red-600">{fmt(totalVencido)}</p>
+                    <p className="text-xs font-semibold text-slate-400 mt-1">{vencidos.length} {vencidos.length === 1 ? 'boleto' : 'boletos'}</p>
+                  </div>
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Pagos no Mês</p>
+                    <p className="text-2xl font-extrabold text-green-600">{fmt(totalPago)}</p>
+                    <p className="text-xs font-semibold text-slate-400 mt-1">{pagos.length} {pagos.length === 1 ? 'boleto' : 'boletos'}</p>
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Barra de seleção em massa */}
             {selectedBoletos.size > 0 && (
@@ -1298,7 +1323,9 @@ export default function FinanceiroPage() {
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">Defina o percentual de repasse para cada profissional.</p>
 
             <div className="space-y-4">
-              {profissionaisMock.map(p => (
+              {profissionaisList.length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-4">Nenhum profissional cadastrado ainda.</p>
+              ) : profissionaisList.map(p => (
                 <div key={p.id} className="flex items-center justify-between bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                   <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs shrink-0">
@@ -1306,13 +1333,12 @@ export default function FinanceiroPage() {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{p.nome}</p>
-                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{p.especialidade}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
-                      defaultValue={p.comissao}
+                      defaultValue={30}
                       className="w-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-sm font-bold text-center text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500"
                     />
                     <span className="text-sm font-bold text-slate-500 dark:text-slate-400">%</span>

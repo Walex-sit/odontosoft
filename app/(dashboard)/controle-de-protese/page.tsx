@@ -3,44 +3,35 @@
 import { useState } from 'react'
 import { Plus, MoreHorizontal, FileText, CheckCircle2, Clock, Truck, ShieldAlert } from 'lucide-react'
 
-// Mock Data para as colunas do Kanban
+// Colunas do Kanban sem dados fictícios — cards serão criados pelo usuário ou carregados do Supabase.
 const initialColumns = [
   {
     id: 'solicitado',
     title: 'Solicitado',
     color: 'border-blue-500',
     bg: 'bg-blue-50',
-    cards: [
-      { id: 1, patient: 'Ana Paula Souza', item: 'Coroa Total Porcelana', dentist: 'Dra. Camila', date: '10/Oct', lab: 'Laboratório Master' }
-    ]
+    cards: [] as { id: number; patient: string; item: string; dentist: string; date: string; lab: string }[]
   },
   {
     id: 'em-producao',
     title: 'Em Produção no Laboratório',
     color: 'border-yellow-500',
     bg: 'bg-yellow-50',
-    cards: [
-      { id: 2, patient: 'Roberto Alves', item: 'Prótese Parcial Removível', dentist: 'Dr. João', date: '08/Oct', lab: 'Lab OdontoPrime' },
-      { id: 3, patient: 'Fernanda Lima', item: 'Lente de Contato (4 un)', dentist: 'Dra. Camila', date: '05/Oct', lab: 'Laboratório Master' }
-    ]
+    cards: [] as { id: number; patient: string; item: string; dentist: string; date: string; lab: string }[]
   },
   {
     id: 'entregue',
     title: 'Entregue p/ Clínica',
     color: 'border-purple-500',
     bg: 'bg-purple-50',
-    cards: [
-      { id: 4, patient: 'Marcos Vinicius', item: 'Placa de Bruxismo', dentist: 'Dr. Roberto', date: '01/Oct', lab: 'Lab OdontoPrime' }
-    ]
+    cards: [] as { id: number; patient: string; item: string; dentist: string; date: string; lab: string }[]
   },
   {
     id: 'finalizado',
     title: 'Instalado no Paciente',
     color: 'border-green-500',
     bg: 'bg-green-50',
-    cards: [
-      { id: 5, patient: 'Júlia Mendes', item: 'Implante (Coroa)', dentist: 'Dr. João', date: '28/Sep', lab: 'Lab Titanium' }
-    ]
+    cards: [] as { id: number; patient: string; item: string; dentist: string; date: string; lab: string }[]
   }
 ]
 

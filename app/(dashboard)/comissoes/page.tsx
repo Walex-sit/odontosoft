@@ -22,32 +22,10 @@ interface Dentista {
   procedimentos: Procedimento[]
 }
 
-const DENTISTAS_MOCK: Dentista[] = [
-  {
-    id: 1, nome: 'Dr. Carlos Mendes', especialidade: 'Clínico Geral', taxaPadrao: 40,
-    procedimentos: [
-      { id: 1, paciente: 'João Silva', descricao: 'Restauração Composta', data: '28/07/2026', valor: 350, taxaComissao: 40, status: 'pendente' },
-      { id: 2, paciente: 'Ana Souza', descricao: 'Extração Simples', data: '29/07/2026', valor: 200, taxaComissao: 40, status: 'pendente' },
-      { id: 3, paciente: 'Roberto Lima', descricao: 'Profilaxia + Aplicação de Flúor', data: '30/07/2026', valor: 180, taxaComissao: 40, status: 'pago' },
-    ]
-  },
-  {
-    id: 2, nome: 'Dra. Beatriz Costa', especialidade: 'Ortodontista', taxaPadrao: 35,
-    procedimentos: [
-      { id: 4, paciente: 'Maria Fernanda', descricao: 'Manutenção Aparelho', data: '27/07/2026', valor: 250, taxaComissao: 35, status: 'pago' },
-      { id: 5, paciente: 'Lucas Martins', descricao: 'Instalação Aparelho Fixo', data: '01/08/2026', valor: 1200, taxaComissao: 35, status: 'pendente' },
-    ]
-  },
-  {
-    id: 3, nome: 'Dr. Rafael Gomes', especialidade: 'Implantodontista', taxaPadrao: 45,
-    procedimentos: [
-      { id: 6, paciente: 'Carla Nunes', descricao: 'Implante Unitário', data: '02/08/2026', valor: 3500, taxaComissao: 45, status: 'pendente' },
-    ]
-  },
-]
+// TODO: Dentistas e procedimentos serão carregados do Supabase (tabelas profissionais + procedimentos).
 
 export default function ComissoesPage() {
-  const [dentistas, setDentistas] = useState<Dentista[]>(DENTISTAS_MOCK)
+  const [dentistas, setDentistas] = useState<Dentista[]>([])
   const [selectedDentista, setSelectedDentista] = useState<number | 'todos'>('todos')
   const [filtroStatus, setFiltroStatus] = useState<'todos' | 'pendente' | 'pago'>('todos')
   const [busca, setBusca] = useState('')
