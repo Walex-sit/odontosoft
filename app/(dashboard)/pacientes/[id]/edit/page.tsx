@@ -35,7 +35,7 @@ export default async function EditPatientPage({ params }: { params: Promise<{ id
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 p-8">
-      <EditPatientForm patient={patient} />
+      <EditPatientForm patient={patient as any} />
     </div>
   );
 }
