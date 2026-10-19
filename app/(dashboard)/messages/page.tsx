@@ -5,32 +5,13 @@ import { useState } from 'react'
 import { Search, Send, MoreVertical, Phone, Video, Info, Paperclip, Smile, Mic, CheckCircle2, MessageSquare } from 'lucide-react'
 
 export default function MessagesPage() {
-  const [activeChat, setActiveChat] = useState<number | null>(1)
+  // Conversas serão carregadas do Supabase (tabela mensagens) em iteração futura.
+  const chats: { id: number; name: string; avatar: string; lastMsg: string; time: string; unread: number; online: boolean }[] = []
+
+  const [activeChat, setActiveChat] = useState<number | null>(null)
   const [inputText, setInputText] = useState('')
-
-  const chats = [
-    { id: 1, name: 'João Silva', avatar: 'JS', lastMsg: 'Tudo bem, nos vemos às 15h.', time: '10:45', unread: 0, online: true },
-    { id: 2, name: 'Maria Fernanda', avatar: 'MF', lastMsg: 'Obrigada pelo retorno doutor!', time: 'Ontem', unread: 2, online: false },
-    { id: 3, name: 'Roberto Almeida', avatar: 'RA', lastMsg: 'Gostaria de reagendar minha consulta.', time: 'Ontem', unread: 0, online: false },
-    { id: 4, name: 'Ana Souza', avatar: 'AS', lastMsg: 'Bom dia. Vocês aceitam plano OdontoPrev?', time: 'Segunda', unread: 0, online: true },
-  ]
-
-  const [allMessages, setAllMessages] = useState<Record<number, any[]>>({
-    1: [
-      { id: 1, text: 'Olá João, lembrando da sua consulta hoje às 15:30.', sender: 'me', time: '10:30', status: 'read' },
-      { id: 2, text: 'Tudo bem, nos vemos às 15h. Chegarei um pouco mais cedo.', sender: 'them', time: '10:45', status: '' },
-    ],
-    2: [
-      { id: 1, text: 'Maria, os resultados dos seus exames chegaram.', sender: 'me', time: '14:20', status: 'read' },
-      { id: 2, text: 'Obrigada pelo retorno doutor!', sender: 'them', time: 'Ontem', status: '' },
-    ],
-    3: [
-      { id: 1, text: 'Gostaria de reagendar minha consulta.', sender: 'them', time: 'Ontem', status: '' },
-    ],
-    4: [
-      { id: 1, text: 'Bom dia. Vocês aceitam plano OdontoPrev?', sender: 'them', time: 'Segunda', status: '' },
-    ]
-  })
+  // Mensagens serão carregadas do Supabase em iteração futura.
+  const [allMessages, setAllMessages] = useState<Record<number, { id: number; text: string; sender: string; time: string; status: string }[]>>({})
 
   const currentMessages = activeChat ? (allMessages[activeChat] || []) : []
   const activeChatDetails = chats.find(c => c.id === activeChat)
@@ -106,7 +87,13 @@ export default function MessagesPage() {
 
         {/* Lista */}
         <div className="flex-1 overflow-y-auto">
-          {chats.map(chat => {
+          {chats.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full py-16 text-center px-6">
+              <MessageSquare className="h-10 w-10 text-slate-300 mb-3" />
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400">Nenhuma conversa ainda</p>
+              <p className="text-xs font-medium text-slate-400 mt-1">As mensagens dos pacientes aparecerão aqui após integração com WhatsApp/SMS.</p>
+            </div>
+          ) : chats.map(chat => {
             const msgs = allMessages[chat.id] || []
             const lastMsgObj = msgs[msgs.length - 1]
             const displayLastMsg = lastMsgObj ? lastMsgObj.text : chat.lastMsg

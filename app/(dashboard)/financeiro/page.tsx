@@ -843,7 +843,8 @@ export default function FinanceiroPage() {
               </div>
             )}
 
-            {/* Cabeçalho com Selecionar Todos */}
+            {/* Cabeçalho com Selecionar Todos — só aparece com boletos */}
+            {boletosData.length > 0 && (
             <div className="flex items-center gap-4 px-5 pb-1">
               <button
                 onClick={toggleSelectAll}
@@ -861,10 +862,17 @@ export default function FinanceiroPage() {
                 {allSelected ? 'Desmarcar todos' : 'Selecionar todos'}
               </span>
             </div>
+            )}
 
             {/* Lista de Boletos */}
             <div ref={dropdownRef} className="space-y-3">
-              {boletosData.map(b => (
+              {boletosData.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <Receipt className="h-12 w-12 text-slate-300 mb-3" />
+                  <p className="text-base font-bold text-slate-600 dark:text-slate-300">Nenhum boleto encontrado</p>
+                  <p className="text-sm font-medium text-slate-400 mt-1">Os boletos gerados aparecerão aqui após integração com o banco emissor.</p>
+                </div>
+              ) : boletosData.map(b => (
                 <div key={b.id} className={`bg-white dark:bg-slate-800 rounded-2xl p-5 border shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all flex items-center gap-4 ${
                   selectedBoletos.has(b.id) ? 'border-blue-300 ring-1 ring-blue-200' :
                   b.status === 'vencido' ? 'border-red-200 bg-red-50/30' : 'border-slate-200 dark:border-slate-700'
