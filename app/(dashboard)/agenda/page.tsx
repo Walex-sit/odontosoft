@@ -44,7 +44,7 @@ export default function Agenda() {
     setCarregando(true)
     
     // Carrega Pacientes
-    const { data: pacs } = await supabase.from('pacientes').select('*')
+    const { data: pacs } = await supabase.from('pacientes').select('id, nome, telefone, cpf_hash')
     setPacientes(pacs || [])
 
     // Carrega Dentistas (perfis com role dentista)

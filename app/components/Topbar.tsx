@@ -183,7 +183,7 @@ export default function Topbar() {
         if (role === 'admin') {
           const { count: lgpdPendentesCount } = await supabase
             .from('pacientes')
-            .select('*', { count: 'exact', head: true })
+            .select('id', { count: 'exact', head: true })
             .or('lgpd_aceite.is.null,lgpd_aceite.eq.false')
 
           if (lgpdPendentesCount && lgpdPendentesCount > 0) {

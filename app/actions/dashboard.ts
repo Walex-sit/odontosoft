@@ -109,14 +109,14 @@ export async function fetchDashboardMetrics(anoParam?: number, mesParam?: number
     // 1.2 Pacientes Ativos Total
     const { count: pacientesCount } = await supabase
       .from('pacientes')
-      .select('*', { count: 'exact', head: true });
+      .select('id', { count: 'exact', head: true });
 
     const pacientesAtivos = pacientesCount || 0;
 
     // Novos Pacientes nos últimos 7 dias
     const { count: novosPacientesCount } = await supabase
       .from('pacientes')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .gte('created_at', sevenDaysAgo);
 
     const pacientesCrescimento = novosPacientesCount || 0;

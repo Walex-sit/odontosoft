@@ -12,37 +12,39 @@ import { ShieldCheck, AlertCircle } from 'lucide-react';
 export interface Patient {
   id: string;
   nome: string;
-  celular: string | null;
-  ddd: string | null; // DDI selector value
-  lembretes: string | null;
-  email: string | null;
-  telefone_fixo: string | null;
-  como_conheceu: string | null;
-  profissao: string | null;
-  genero: string | null;
-  estrangeiro: boolean;
-  data_nascimento: string | null; // ISO date
-  cpf: string | null;
-  rg: string | null;
-  foto_url: string | null;
-  observacoes: string | null;
-  categoria_id: string | null;
-  contato_emerg_nome: string | null;
-  contato_emerg_telefone: string | null;
-  cep: string | null;
-  endereco: string | null;
-  numero: string | null;
-  complemento: string | null;
-  bairro: string | null;
-  cidade: string | null;
-  estado: string | null;
-  responsavel_nome: string | null;
-  responsavel_cpf: string | null;
-  responsavel_nascimento: string | null;
-  convenio: string | null;
-  titular_convenio: string | null;
-  numero_carteirinha: string | null;
-  cpf_responsavel_convenio: string | null;
+  celular?: string | null;
+  ddd?: string | null; // DDI selector value
+  lembretes?: string | null;
+  email?: string | null;
+  telefone_fixo?: string | null;
+  como_conheceu?: string | null;
+  profissao?: string | null;
+  genero?: string | null;
+  estrangeiro?: boolean;
+  data_nascimento?: string | null; // ISO date
+  cpf_hash?: string | null;
+  cpf_encrypted?: string | null;
+  cpf_raw?: string | null;
+  rg?: string | null;
+  foto_url?: string | null;
+  observacoes?: string | null;
+  categoria_id?: string | null;
+  contato_emerg_nome?: string | null;
+  contato_emerg_telefone?: string | null;
+  cep?: string | null;
+  endereco?: string | null;
+  numero?: string | null;
+  complemento?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+  responsavel_nome?: string | null;
+  responsavel_cpf?: string | null;
+  responsavel_nascimento?: string | null;
+  convenio?: string | null;
+  titular_convenio?: string | null;
+  numero_carteirinha?: string | null;
+  cpf_responsavel_convenio?: string | null;
   lgpd_aceite?: boolean | null;
   lgpd_aceite_em?: string | null;
 }
@@ -51,6 +53,8 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
   const router = useRouter();
   const [form, setForm] = useState({
     ...patient,
+    estrangeiro: Boolean(patient.estrangeiro),
+    cpf_raw: '',
     lgpd_aceite: Boolean(patient.lgpd_aceite),
     lgpd_aceite_em: patient.lgpd_aceite_em || null,
   });
@@ -81,6 +85,10 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
       ? (form.lgpd_aceite_em || new Date().toISOString())
       : null;
 
+    const cpfPayload = form.cpf_raw?.trim()
+      ? { cpf_raw: form.cpf_raw.trim() }
+      : {};
+
     const { error } = await supabase.from('pacientes').update({
       nome: form.nome,
       celular: form.celular,
@@ -93,7 +101,7 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
       genero: form.genero,
       estrangeiro: form.estrangeiro,
       data_nascimento: form.data_nascimento,
-      cpf_raw: form.cpf,
+      ...cpfPayload,
       rg: form.rg,
       foto_url: form.foto_url,
       observacoes: form.observacoes,
@@ -189,7 +197,7 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
             <span>Paciente estrangeiro</span>
           </label>
           <input type="date" name="data_nascimento" value={form.data_nascimento?.substring(0,10) || ''} onChange={handleChange} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="cpf" value={form.cpf || ''} onChange={handleChange} placeholder="CPF" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
+          <input name="cpf_raw" value={form.cpf_raw || ''} onChange={handleChange} placeholder={patient.cpf_hash ? `***.${patient.cpf_hash.substring(0, 6)}` : 'CPF'} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
           <input name="rg" value={form.rg || ''} onChange={handleChange} placeholder="RG" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
           <input name="foto_url" value={form.foto_url || ''} onChange={handleChange} placeholder="URL da foto" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
           <textarea name="observacoes" value={form.observacoes || ''} onChange={handleChange} placeholder="Observações" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm md:col-span-2" rows={3} />

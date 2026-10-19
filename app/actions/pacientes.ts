@@ -236,6 +236,8 @@ export async function updatePatient(
     lgpd_aceite_em = lgpd_aceite ? new Date().toISOString() : null
   }
 
+  const rawCpf = ((formData.get('cpf_raw') as string) || (formData.get('cpf') as string) || '').trim()
+
   const updatePayload: {
     nome: string
     /** cpf_raw: enviado ao banco e processado pelo trigger trg_encrypt_cpf.
@@ -257,7 +259,7 @@ export async function updatePatient(
     lgpd_aceite_em?: string | null
   } = {
     nome,
-    cpf_raw: (formData.get('cpf_raw') as string) || (formData.get('cpf') as string) || null,
+    ...(rawCpf ? { cpf_raw: rawCpf } : {}),
     rg: (formData.get('rg') as string) || null,
     data_nascimento: (formData.get('data_nascimento') as string) || null,
     genero: (formData.get('genero') as string) || null,
