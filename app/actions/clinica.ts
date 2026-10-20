@@ -228,11 +228,22 @@ export async function uploadClinicaLogo(formData: FormData): Promise<{
       return { success: false, error: 'Não autorizado.' }
     }
 
-    const file = formData.get('logo') as File | null
-    const clinicaId = formData.get('clinicaId') as string | null
+    // RBAC e Isolamento Multi-Tenant: valida a clínica real do usuário logado e permissão de admin
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('clinica_id, role')
+      .eq('id', user.id)
+      .single()
 
-    if (!file || !clinicaId) {
-      return { success: false, error: 'Arquivo ou ID da clínica não fornecido.' }
+    if (!profile || profile.role !== 'admin' || !profile.clinica_id) {
+      return { success: false, error: 'Apenas administradores podem alterar o logotipo da clínica.' }
+    }
+
+    const effectiveClinicaId = profile.clinica_id
+
+    const file = formData.get('logo') as File | null
+    if (!file) {
+      return { success: false, error: 'Arquivo do logotipo não fornecido.' }
     }
 
     const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
@@ -245,7 +256,7 @@ export async function uploadClinicaLogo(formData: FormData): Promise<{
     }
 
     const ext = file.name.split('.').pop() ?? 'png'
-    const path = `${clinicaId}/logo.${ext}`
+    const path = `${effectiveClinicaId}/logo.${ext}`
 
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
@@ -271,7 +282,7 @@ export async function uploadClinicaLogo(formData: FormData): Promise<{
     const { error: updateError } = await supabase
       .from('clinica_settings')
       .update({ logo_url, updated_at: new Date().toISOString() })
-      .eq('id', clinicaId)
+      .eq('clinica_id', effectiveClinicaId)
 
     if (updateError) {
       console.error('[clinica] uploadClinicaLogo update error:', updateError.message)
@@ -288,7 +299,7 @@ export async function uploadClinicaLogo(formData: FormData): Promise<{
 // ---------------------------------------------------------------------------
 // removeClinicaLogo — remove a logo e limpa logo_url
 // ---------------------------------------------------------------------------
-export async function removeClinicaLogo(clinicaId: string): Promise<{
+export async function removeClinicaLogo(clinicaId?: string): Promise<{
   success: boolean
   error?: string
 }> {
@@ -299,23 +310,31 @@ export async function removeClinicaLogo(clinicaId: string): Promise<{
       return { success: false, error: 'Não autorizado.' }
     }
 
+    // RBAC e Isolamento Multi-Tenant: valida a clínica real do usuário logado e permissão de admin
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('clinica_id, role')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile || profile.role !== 'admin' || !profile.clinica_id) {
+      return { success: false, error: 'Apenas administradores podem remover o logotipo da clínica.' }
+    }
+
+    const effectiveClinicaId = profile.clinica_id
+
     await supabase.storage.from('clinic-logos').remove([
-      `${clinicaId}/logo.png`,
-      `${clinicaId}/logo.jpg`,
-      `${clinicaId}/logo.jpeg`,
-      `${clinicaId}/logo.webp`,
-      `${clinicaId}/logo.svg`,
-      'logo.png',
-      'logo.jpg',
-      'logo.jpeg',
-      'logo.webp',
-      'logo.svg',
+      `${effectiveClinicaId}/logo.png`,
+      `${effectiveClinicaId}/logo.jpg`,
+      `${effectiveClinicaId}/logo.jpeg`,
+      `${effectiveClinicaId}/logo.webp`,
+      `${effectiveClinicaId}/logo.svg`,
     ])
 
     const { error } = await supabase
       .from('clinica_settings')
       .update({ logo_url: null, updated_at: new Date().toISOString() })
-      .eq('id', clinicaId)
+      .eq('clinica_id', effectiveClinicaId)
 
     if (error) return { success: false, error: error.message }
     return { success: true }

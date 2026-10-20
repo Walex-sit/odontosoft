@@ -1,5 +1,5 @@
 import EditPatientForm from '@/components/EditPatientForm';
-import { getPatientById } from '@/app/(dashboard)/pacientes/[id]/edit/actions';
+import { getPatientById } from '@/app/actions/pacientes';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -19,7 +19,8 @@ export default async function EditPatientPage({ params }: { params: Promise<{ id
     );
   }
 
-  const patient = await getPatientById(id);
+  const res = await getPatientById(id);
+  const patient = res.success ? res.data : null;
   
   if (!patient) {
     return (

@@ -29,6 +29,10 @@ export async function POST(request: NextRequest) {
     if (webhookSecret && !webhookSecret.includes('placeholder') && signature) {
       event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret)
     } else {
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[Webhook/Payment] Rejeitado: STRIPE_WEBHOOK_SECRET ou assinatura ausente em ambiente de produção.')
+        return NextResponse.json({ error: 'Configuração de webhook inválida para produção.' }, { status: 400 })
+      }
       // Modo de desenvolvimento/teste sem assinatura restrita
       const parsed = JSON.parse(rawBody)
       event = parsed as Stripe.Event
