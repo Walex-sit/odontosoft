@@ -14,7 +14,7 @@ import DetalhesAgendamentoModal from '../../components/DetalhesAgendamentoModal'
 import { toast } from 'sonner'
 
 export default function Agenda() {
-  const { session } = useAuth()
+  const { session, profile } = useAuth()
   const [pacientes, setPacientes] = useState<any[]>([])
   const [dentistas, setDentistas] = useState<any[]>([])
   const [agendamentos, setAgendamentos] = useState<any[]>([])
@@ -41,33 +41,53 @@ export default function Agenda() {
   } | null>(null)
 
   async function carregarDados() {
+    // Isolamento de tenant: aborta se o clinica_id ainda não estiver disponível.
+    // Isso garante que uma clínica nova nunca veja dados de outro tenant.
+    const clinicaId = profile?.clinica_id
+    if (!clinicaId) {
+      setCarregando(false)
+      return
+    }
+
     setCarregando(true)
-    
-    // Carrega Pacientes
-    const { data: pacs } = await supabase.from('pacientes').select('id, nome, telefone, cpf_hash')
+
+    // ── Pacientes — filtrado por clinica_id do tenant atual ──────────────────
+    const { data: pacs } = await supabase
+      .from('pacientes')
+      .select('id, nome, telefone, cpf_hash')
+      .eq('clinica_id', clinicaId)
     setPacientes(pacs || [])
 
-    // Carrega Dentistas (perfis com role dentista)
-    const { data: dents } = await supabase.from('user_profiles').select('*').eq('role', 'dentista')
+    // ── Dentistas — apenas da mesma clínica ──────────────────────────────────
+    const { data: dents } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('role', 'dentista')
+      .eq('clinica_id', clinicaId)
     const dentsList = (dents as Array<{ id: string; nome: string }>) || []
     setDentistas(dentsList)
 
-    // Carrega Agendamentos com fallback gracioso se o JOIN no PostgREST falhar
+    // ── Agendamentos — filtrados por clinica_id (+ filtro de dentista opcional) ─
     let query = supabase
       .from('agendamentos')
       .select('*, pacientes(nome, telefone), dentistas:user_profiles!dentista_id(nome)')
-    
+      .eq('clinica_id', clinicaId)
+
     if (filtroDentista) {
       query = query.eq('dentista_id', filtroDentista)
     }
-    
+
     const { data: agendsData, error: agendErr } = await query
 
     let finalAgends: any[] = []
 
     if (agendErr) {
+      // Fallback gracioso se o JOIN do PostgREST falhar — mantém filtro de clinica_id
       console.warn('Busca com JOIN falhou, executando fallback simples:', agendErr.message)
-      let fbQuery = supabase.from('agendamentos').select('*, pacientes(nome, telefone)')
+      let fbQuery = supabase
+        .from('agendamentos')
+        .select('*, pacientes(nome, telefone)')
+        .eq('clinica_id', clinicaId)
       if (filtroDentista) {
         fbQuery = fbQuery.eq('dentista_id', filtroDentista)
       }
@@ -93,9 +113,10 @@ export default function Agenda() {
     setCarregando(false)
   }
 
+  // Re-executa quando o perfil carregar (clinica_id disponível) ou o filtro mudar
   useEffect(() => {
     carregarDados()
-  }, [filtroDentista])
+  }, [profile?.clinica_id, filtroDentista])
 
   const statusColors: any = {
     agendado: '#3b82f6', // blue-500

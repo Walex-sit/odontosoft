@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { 
   Download, FileSpreadsheet, TrendingUp, Users, 
   Calendar, Activity, Printer, CalendarDays, ClipboardList 
@@ -11,11 +11,16 @@ import {
 } from 'recharts'
 import { fetchDashboardMetrics, fetchDashboardCharts } from '@/app/actions/dashboard'
 import { useAuth } from '@/app/components/RequireAuth'
+import { useClinica } from '@/app/contexts/ClinicaContext'
 import Link from 'next/link'
 
 export default function DashboardOverview() {
-  const { profile } = useAuth()
-  const isFinanceiroOrAdmin = profile?.role === 'admin' || profile?.role === 'financeiro'
+  const { profile, session } = useAuth()
+  const { clinica } = useClinica()
+  const isFinanceiroOrAdmin = profile?.role === 'admin' || profile?.role === 'admin_clinica' || profile?.role === 'financeiro'
+
+  const [mounted, setMounted] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   const agora = new Date()
   const mesAtualStr = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}`
@@ -25,6 +30,94 @@ export default function DashboardOverview() {
   const [charts, setCharts] = useState<any>(null)
   const [exportOpen, setExportOpen] = useState(false)
   const [carregando, setCarregando] = useState(true)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Saudação Dinâmica por Horário (Bom dia / Boa tarde / Boa noite)
+  const saudacao = useMemo(() => {
+    const hora = new Date().getHours()
+    if (hora >= 5 && hora < 12) return 'Bom dia'
+    if (hora >= 12 && hora < 18) return 'Boa tarde'
+    return 'Boa noite'
+  }, [])
+
+  // Formatação do Nome: precedido por Dr(a).
+  const doctorName = useMemo(() => {
+    const rawNome = profile?.nome || session?.user?.user_metadata?.nome || ''
+    if (!rawNome.trim()) return 'Dr(a). Profissional'
+    const trimmed = rawNome.trim()
+    if (/^dr\(a\)\.?\s+/i.test(trimmed) || /^dr\.?\s+/i.test(trimmed) || /^dra\.?\s+/i.test(trimmed)) {
+      return trimmed
+    }
+    return `Dr(a). ${trimmed}`
+  }, [profile?.nome, session?.user?.user_metadata])
+
+  // Foto de perfil do usuário (user_profiles ou Supabase Auth)
+  const avatarUrl = useMemo(() => {
+    return (
+      (profile as any)?.avatar_url ||
+      (profile as any)?.foto_url ||
+      session?.user?.user_metadata?.avatar_url ||
+      session?.user?.user_metadata?.picture ||
+      session?.user?.user_metadata?.foto_url ||
+      null
+    )
+  }, [profile, session?.user?.user_metadata])
+
+  // Iniciais elegantes de fallback
+  const initials = useMemo(() => {
+    const rawNome = profile?.nome || session?.user?.user_metadata?.nome || ''
+    if (!rawNome) return 'DR'
+    const clean = rawNome.replace(/^(dr|dra|dr\(a\))\.\s*/i, '').trim()
+    const parts = clean.split(/\s+/)
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+    }
+    return clean.substring(0, 2).toUpperCase() || 'DR'
+  }, [profile?.nome, session?.user?.user_metadata])
+
+  // Nome da clínica para exibição no cabeçalho de boas-vindas
+  const clinicaNome = clinica?.nome_exibido || clinica?.nome || 'Clínica Odontológica'
+
+  // Mapeamento visual profissional por perfil / role
+  const roleDisplayMap: Record<string, { label: string; color: string }> = {
+    admin: {
+      label: 'Administrador Geral',
+      color: 'bg-purple-50 text-purple-700 border-purple-200/80 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800',
+    },
+    admin_clinica: {
+      label: 'Administrador da Clínica',
+      color: 'bg-blue-50 text-blue-700 border-blue-200/80 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800',
+    },
+    dentista: {
+      label: 'Cirurgião-Dentista',
+      color: 'bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800',
+    },
+    financeiro: {
+      label: 'Gestor Financeiro',
+      color: 'bg-amber-50 text-amber-700 border-amber-200/80 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800',
+    },
+    recepcao: {
+      label: 'Recepção & Atendimento',
+      color: 'bg-cyan-50 text-cyan-700 border-cyan-200/80 dark:bg-cyan-950/40 dark:text-cyan-300 dark:border-cyan-800',
+    },
+  }
+  const roleInfo = roleDisplayMap[profile?.role || 'dentista'] || {
+    label: 'Profissional',
+    color: 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
+  }
+
+  // Data por extenso em Português
+  const dataExtenso = useMemo(() => {
+    return new Intl.DateTimeFormat('pt-BR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date())
+  }, [])
 
   async function loadData(valorMes: string) {
     setCarregando(true)
@@ -143,6 +236,104 @@ export default function DashboardOverview() {
           <h1 className="text-3xl font-extrabold text-slate-900">Relatório Gerencial - OdontoSaaS</h1>
           <p className="text-slate-600">Gerado em {new Date().toLocaleDateString('pt-BR')}</p>
         </div>
+
+        {/* ── Cartão de Boas-Vindas Dinâmico e Personalizado (Dr(a) + Avatar) ── */}
+        <section className="relative overflow-hidden rounded-[28px] border border-slate-200/90 dark:border-slate-800 bg-gradient-to-r from-white via-blue-50/40 to-indigo-50/30 dark:from-slate-950 dark:via-slate-900/90 dark:to-slate-950 p-6 sm:p-8 shadow-sm">
+          {/* Brilho decorativo sutil de fundo */}
+          <div
+            aria-hidden
+            className="absolute -top-16 -right-16 w-72 h-72 bg-gradient-to-br from-blue-400/10 via-cyan-400/10 to-indigo-500/10 rounded-full blur-3xl pointer-events-none"
+          />
+
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            {/* Bloco Esquerda: Avatar + Saudação + Subtítulo */}
+            <div className="flex items-start sm:items-center gap-4 sm:gap-5 min-w-0">
+              {/* Avatar do Usuário Autenticado com Fallback Elegante */}
+              <div className="relative shrink-0">
+                {avatarUrl && !imageError ? (
+                  <img
+                    src={avatarUrl}
+                    alt={doctorName}
+                    onError={() => setImageError(true)}
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover shadow-md border-2 border-white dark:border-slate-800 ring-2 ring-blue-500/20"
+                  />
+                ) : (
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-black text-xl sm:text-2xl shadow-md border-2 border-white dark:border-slate-800 ring-2 ring-blue-500/20 shrink-0 select-none">
+                    {initials}
+                  </div>
+                )}
+                {/* Status Indicator Live */}
+                <span
+                  title="Profissional conectado ao OdontoSoft"
+                  className="absolute -bottom-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white dark:bg-slate-950 ring-2 ring-white dark:ring-slate-950"
+                >
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </span>
+                </span>
+              </div>
+
+              {/* Textos de Boas-Vindas */}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
+                    {saudacao},{' '}
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-cyan-400">
+                      {doctorName}
+                    </span>
+                    !
+                  </h2>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${roleInfo.color}`}>
+                    {roleInfo.label}
+                  </span>
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 font-medium flex items-center gap-2 flex-wrap">
+                  <span className="capitalize">{dataExtenso}</span>
+                  {clinicaNome && (
+                    <>
+                      <span className="text-slate-300 dark:text-slate-700">•</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                        {clinicaNome}
+                      </span>
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* Bloco Direita: Micro-Cards Operacionais e Ação Rápida */}
+            <div className="flex items-center gap-3 shrink-0 flex-wrap">
+              {/* Chip de Consultas Hoje */}
+              <div className="flex items-center gap-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-slate-200/80 dark:border-slate-800 rounded-2xl px-4 py-2.5 shadow-2xs">
+                <div className="p-2 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                  <CalendarDays size={18} />
+                </div>
+                <div className="text-left">
+                  <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                    Consultas Hoje
+                  </div>
+                  <div className="text-base font-extrabold text-slate-800 dark:text-slate-100 leading-none mt-0.5">
+                    {carregando ? '...' : `${metrics?.consultasHoje || 0} agendadas`}
+                  </div>
+                </div>
+              </div>
+
+              {/* Atalho Rápido para Agenda */}
+              <Link
+                href="/agenda"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm shadow-sm shadow-blue-500/20 transition-all active:scale-95"
+              >
+                <span>Abrir Agenda</span>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.4}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </section>
 
         {!isFinanceiroOrAdmin && (
           <div className="flex gap-4">

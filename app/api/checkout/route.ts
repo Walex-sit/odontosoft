@@ -13,13 +13,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, PLANOS_SAAS } from '@/app/lib/stripe'
 import { createServerClient } from '@/app/lib/supabase/server'
+import { z } from 'zod'
+
+const checkoutSchema = z.object({
+  planoId: z.enum(['essencial', 'premium']).default('premium'),
+  intervalo: z.enum(['mensal', 'anual']).default('mensal'),
+  userEmail: z.string().email('E-mail inválido').optional().nullable(),
+})
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { planoId = 'premium', intervalo = 'mensal', userEmail } = body
+    const rawBody = await request.json().catch(() => ({}))
+    const parseResult = checkoutSchema.safeParse(rawBody)
 
-    const plano = PLANOS_SAAS[planoId as 'essencial' | 'premium'] || PLANOS_SAAS.premium
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: 'Dados de checkout inválidos', details: parseResult.error.flatten() },
+        { status: 400 }
+      )
+    }
+
+    const { planoId, intervalo, userEmail } = parseResult.data
+
+    const plano = PLANOS_SAAS[planoId] || PLANOS_SAAS.premium
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
     // Tenta recuperar a sessão do usuário autenticado se existir

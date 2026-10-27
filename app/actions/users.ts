@@ -51,7 +51,7 @@ export async function createUserAccount(data: {
       .eq('id', user.id)
       .single()
 
-    if (profileErr || !profile || profile.role !== 'admin') {
+    if (profileErr || !profile || (profile.role !== 'admin' && profile.role !== 'admin_clinica')) {
       return { success: false, error: 'Apenas administradores podem cadastrar novos membros.' }
     }
 
@@ -166,7 +166,7 @@ export async function deleteUserAccount(
       .eq('id', user.id)
       .single()
 
-    if (!currentProfile || currentProfile.role !== 'admin') {
+    if (!currentProfile || (currentProfile.role !== 'admin' && currentProfile.role !== 'admin_clinica')) {
       return { success: false, error: 'Apenas administradores podem excluir membros da equipe.' }
     }
 
@@ -246,7 +246,7 @@ export async function updateUserAccount(data: {
       .eq('id', user.id)
       .single()
 
-    if (!currentProfile || currentProfile.role !== 'admin') {
+    if (!currentProfile || (currentProfile.role !== 'admin' && currentProfile.role !== 'admin_clinica')) {
       return { success: false, error: 'Apenas administradores podem alterar membros da equipe.' }
     }
 

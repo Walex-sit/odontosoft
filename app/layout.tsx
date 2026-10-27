@@ -3,6 +3,8 @@ import { Poppins, Nunito } from "next/font/google";
 import "./globals.css";
 import { Toaster } from 'sonner';
 import { ThemeProvider } from "./components/ThemeProvider";
+import CookieConsentBanner from "./components/CookieConsentBanner";
+
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -33,9 +35,13 @@ export default function RootLayout({
       <body className="w-full min-h-screen flex flex-col font-sans bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <Toaster theme="system" position="bottom-right" richColors />
-          {children}
+          <div className="flex-1 flex flex-col">
+            {children}
+          </div>
+          <CookieConsentBanner />
         </ThemeProvider>
       </body>
     </html>
   );
 }
+

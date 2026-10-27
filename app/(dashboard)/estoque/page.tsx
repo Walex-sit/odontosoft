@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { Package, AlertTriangle, Plus, Search, TrendingDown, TrendingUp, ArrowDown, ArrowUp, X } from 'lucide-react'
+import { Package, AlertTriangle, Plus, Search, TrendingUp, ArrowDown, ArrowUp, X, Loader2 } from 'lucide-react'
+import { supabase } from '@/app/lib/supabaseClient'
+import { useAuth } from '@/app/components/RequireAuth'
 
 interface Item {
-  id: number
+  id: string
   nome: string
   categoria: string
   quantidade: number
@@ -18,30 +20,69 @@ interface Item {
 
 const CATEGORIAS = ['Todos', 'Resinas', 'Anestésicos', 'Instrumentos', 'Descartáveis', 'Radiologia', 'Outros']
 
-const ITENS_INICIAIS: Item[] = [
-  { id: 1, nome: 'Resina Composta A2', categoria: 'Resinas', quantidade: 3, minimo: 5, unidade: 'seringa', fornecedor: 'DentalX', ultimaCompra: '15/07/2026', custo: 89.90 },
-  { id: 2, nome: 'Anestésico Mepivacaína', categoria: 'Anestésicos', quantidade: 48, minimo: 20, unidade: 'tubete', fornecedor: 'Biodinâmica', ultimaCompra: '20/07/2026', custo: 4.50 },
-  { id: 3, nome: 'Luvas Nitrílicas P', categoria: 'Descartáveis', quantidade: 28, minimo: 50, unidade: 'caixa', fornecedor: 'MedPlus', ultimaCompra: '01/08/2026', custo: 32.00 },
-  { id: 4, nome: 'Filme Radiográfico', categoria: 'Radiologia', quantidade: 12, minimo: 10, unidade: 'pacote', fornecedor: 'DentalX', ultimaCompra: '10/07/2026', custo: 55.00 },
-  { id: 5, nome: 'Broca Carbide FG', categoria: 'Instrumentos', quantidade: 4, minimo: 10, unidade: 'un', fornecedor: 'SSWhite', ultimaCompra: '05/07/2026', custo: 12.00 },
-  { id: 6, nome: 'Ácido Fosfórico 37%', categoria: 'Resinas', quantidade: 15, minimo: 5, unidade: 'seringa', fornecedor: 'Angelus', ultimaCompra: '22/07/2026', custo: 18.50 },
-  { id: 7, nome: 'Máscara PFF2', categoria: 'Descartáveis', quantidade: 85, minimo: 30, unidade: 'un', fornecedor: 'MedPlus', ultimaCompra: '01/08/2026', custo: 5.20 },
-  { id: 8, nome: 'Fio Dental (rolo profissional)', categoria: 'Outros', quantidade: 2, minimo: 8, unidade: 'rolo', fornecedor: 'DentalX', ultimaCompra: '18/06/2026', custo: 45.00 },
-]
-
 type MovType = 'entrada' | 'saida'
 
 export default function EstoquePage() {
-  const [itens, setItens] = useState<Item[]>(ITENS_INICIAIS)
+  const { session } = useAuth()
+  const [itens, setItens] = useState<Item[]>([])
+  const [loading, setLoading] = useState(true)
   const [busca, setBusca] = useState('')
   const [categoria, setCategoria] = useState('Todos')
   const [movModal, setMovModal] = useState<{ item: Item; tipo: MovType } | null>(null)
   const [movQtd, setMovQtd] = useState(1)
   const [novoModal, setNovoModal] = useState(false)
-  const [novoItem, setNovoItem] = useState({ nome: '', categoria: 'Resinas', quantidade: 0, minimo: 5, unidade: '', fornecedor: '', custo: 0 })
+  const [novoItem, setNovoItem] = useState({
+    nome: '',
+    categoria: 'Resinas',
+    quantidade: 0,
+    minimo: 5,
+    unidade: 'un',
+    fornecedor: '',
+    custo: 0,
+  })
+
+  async function carregarEstoque() {
+    setLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('estoque')
+        .select('*')
+        .order('nome', { ascending: true })
+
+      if (error) {
+        console.error('[Estoque] Erro ao carregar itens:', error.message)
+      } else if (data) {
+        setItens(
+          data.map((row: any) => ({
+            id: row.id,
+            nome: row.nome || 'Item sem nome',
+            categoria: row.descricao?.split('|')[0] || 'Outros',
+            quantidade: Number(row.quantidade || 0),
+            minimo: Number(row.minimo || 0),
+            unidade: row.unidade || 'un',
+            fornecedor: row.descricao?.split('|')[1] || '—',
+            ultimaCompra: row.created_at
+              ? new Date(row.created_at).toLocaleDateString('pt-BR')
+              : '—',
+            custo: 0,
+          }))
+        )
+      }
+    } catch (err: any) {
+      console.error('[Estoque] Falha na requisição:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    carregarEstoque()
+  }, [session])
 
   const itensFiltrados = itens.filter(i => {
-    const matchBusca = i.nome.toLowerCase().includes(busca.toLowerCase()) || i.fornecedor.toLowerCase().includes(busca.toLowerCase())
+    const matchBusca =
+      i.nome.toLowerCase().includes(busca.toLowerCase()) ||
+      i.fornecedor.toLowerCase().includes(busca.toLowerCase())
     const matchCat = categoria === 'Todos' || i.categoria === categoria
     return matchBusca && matchCat
   })
@@ -50,24 +91,67 @@ export default function EstoquePage() {
   const total = itens.length
   const valorTotal = itens.reduce((acc, i) => acc + i.quantidade * i.custo, 0)
 
-  const executarMovimentacao = () => {
+  const executarMovimentacao = async () => {
     if (!movModal || movQtd < 1) return
-    setItens(prev => prev.map(i => {
-      if (i.id !== movModal.item.id) return i
-      const nova = movModal.tipo === 'entrada' ? i.quantidade + movQtd : Math.max(0, i.quantidade - movQtd)
-      return { ...i, quantidade: nova }
-    }))
-    toast.success(`${movModal.tipo === 'entrada' ? 'Entrada' : 'Saída'} de ${movQtd} ${movModal.item.unidade}(s) registrada!`)
+    const novaQtd =
+      movModal.tipo === 'entrada'
+        ? movModal.item.quantidade + movQtd
+        : Math.max(0, movModal.item.quantidade - movQtd)
+
+    const { error } = await supabase
+      .from('estoque')
+      .update({ quantidade: novaQtd })
+      .eq('id', movModal.item.id)
+
+    if (error) {
+      toast.error('Erro ao atualizar estoque: ' + error.message)
+    } else {
+      toast.success(
+        `${movModal.tipo === 'entrada' ? 'Entrada' : 'Saída'} de ${movQtd} ${movModal.item.unidade}(s) registrada!`
+      )
+      setItens(prev =>
+        prev.map(i => (i.id === movModal.item.id ? { ...i, quantidade: novaQtd } : i))
+      )
+    }
     setMovModal(null)
     setMovQtd(1)
   }
 
-  const adicionarItem = () => {
-    if (!novoItem.nome || !novoItem.unidade) { toast.error('Preencha nome e unidade.'); return }
-    setItens(prev => [...prev, { ...novoItem, id: Date.now(), ultimaCompra: new Date().toLocaleDateString('pt-BR') }])
-    toast.success(`${novoItem.nome} adicionado ao estoque!`)
-    setNovoModal(false)
-    setNovoItem({ nome: '', categoria: 'Resinas', quantidade: 0, minimo: 5, unidade: '', fornecedor: '', custo: 0 })
+  const adicionarItem = async () => {
+    if (!novoItem.nome || !novoItem.unidade) {
+      toast.error('Preencha nome e unidade.')
+      return
+    }
+
+    const { data, error } = await supabase
+      .from('estoque')
+      .insert([
+        {
+          nome: novoItem.nome,
+          descricao: `${novoItem.categoria}|${novoItem.fornecedor}`,
+          quantidade: novoItem.quantidade,
+          minimo: novoItem.minimo,
+          unidade: novoItem.unidade,
+        },
+      ])
+      .select()
+
+    if (error) {
+      toast.error('Erro ao salvar item: ' + error.message)
+    } else {
+      toast.success(`${novoItem.nome} adicionado ao estoque!`)
+      setNovoModal(false)
+      setNovoItem({
+        nome: '',
+        categoria: 'Resinas',
+        quantidade: 0,
+        minimo: 5,
+        unidade: 'un',
+        fornecedor: '',
+        custo: 0,
+      })
+      carregarEstoque()
+    }
   }
 
   const statusColor = (item: Item) => {
@@ -93,32 +177,49 @@ export default function EstoquePage() {
 
       <main className="flex-1 p-8 max-w-7xl mx-auto w-full space-y-6">
         {/* KPIs */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
             { label: 'Total de Itens', value: total, icon: Package, color: 'blue' },
             { label: 'Itens Críticos', value: criticos, icon: AlertTriangle, color: 'amber' },
-            { label: 'Itens OK', value: total - criticos, icon: TrendingUp, color: 'emerald' },
-            { label: 'Valor em Estoque', value: `R$ ${valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: TrendingDown, color: 'slate' },
-          ].map(({ label, value, icon: Icon, color }) => (
-            <div key={label} className={`bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm`}>
-              <div className={`p-2.5 bg-${color}-50 text-${color}-600 rounded-xl w-fit mb-3`}>
-                <Icon className="h-5 w-5" />
+            { label: 'Itens em Nível Normal', value: Math.max(0, total - criticos), icon: TrendingUp, color: 'emerald' },
+          ].map(k => (
+            <div key={k.label} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{k.label}</p>
+                <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">{loading ? '...' : k.value}</p>
               </div>
-              <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">{value}</p>
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">{label}</p>
+              <div className={`p-3 rounded-xl ${k.color === 'blue' ? 'bg-blue-50 text-blue-600' : k.color === 'amber' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                <k.icon className="h-6 w-6" />
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Filtros */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm flex flex-wrap gap-3 items-center">
-          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-xl px-3 py-2 flex-1 min-w-48">
-            <Search className="h-4 w-4 text-slate-400" />
-            <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar item ou fornecedor..." className="bg-transparent outline-none text-sm text-slate-700 dark:text-slate-200 w-full font-medium" />
+        {/* Filtros e Busca */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Buscar item ou fornecedor..."
+              value={busca}
+              onChange={e => setBusca(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            />
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1">
             {CATEGORIAS.map(cat => (
-              <button key={cat} onClick={() => setCategoria(cat)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${categoria === cat ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}`}>{cat}</button>
+              <button
+                key={cat}
+                onClick={() => setCategoria(cat)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${
+                  categoria === cat
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                }`}
+              >
+                {cat}
+              </button>
             ))}
           </div>
         </div>
@@ -129,13 +230,22 @@ export default function EstoquePage() {
             <table className="w-full text-sm">
               <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
                 <tr>
-                  {['Item', 'Categoria', 'Qtd Atual', 'Mín.', 'Unidade', 'Fornecedor', 'Custo Unit.', 'Status', 'Ações'].map(h => (
+                  {['Item', 'Categoria', 'Qtd Atual', 'Mín.', 'Unidade', 'Fornecedor', 'Data Cadastro', 'Status', 'Ações'].map(h => (
                     <th key={h} className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                {itensFiltrados.map(item => {
+                {loading ? (
+                  <tr>
+                    <td colSpan={9} className="px-5 py-12 text-center text-slate-400 font-semibold">
+                      <div className="flex items-center justify-center gap-2">
+                        <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                        Carregando estoque do banco de dados...
+                      </div>
+                    </td>
+                  </tr>
+                ) : itensFiltrados.map(item => {
                   const st = statusColor(item)
                   return (
                     <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
@@ -145,7 +255,7 @@ export default function EstoquePage() {
                       <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.minimo}</td>
                       <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.unidade}</td>
                       <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{item.fornecedor}</td>
-                      <td className="px-5 py-3.5 text-slate-700 dark:text-slate-200 font-semibold">R$ {item.custo.toFixed(2)}</td>
+                      <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.ultimaCompra}</td>
                       <td className="px-5 py-3.5">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${st.bg} ${st.text}`}>{st.label}</span>
                       </td>
@@ -162,8 +272,16 @@ export default function EstoquePage() {
                     </tr>
                   )
                 })}
-                {itensFiltrados.length === 0 && (
-                  <tr><td colSpan={9} className="px-5 py-10 text-center text-slate-400 font-semibold">Nenhum item encontrado.</td></tr>
+                {!loading && itensFiltrados.length === 0 && (
+                  <tr>
+                    <td colSpan={9} className="px-5 py-12 text-center text-slate-400 font-semibold">
+                      <div className="flex flex-col items-center justify-center">
+                        <Package className="h-10 w-10 text-slate-300 mb-2" />
+                        <p className="text-base font-bold text-slate-600 dark:text-slate-300">Nenhum item cadastrado no estoque</p>
+                        <p className="text-xs text-slate-400 mt-1">Cadastre novos materiais usando o botão acima.</p>
+                      </div>
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>
@@ -198,24 +316,68 @@ export default function EstoquePage() {
               <button onClick={() => setNovoModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full"><X className="h-5 w-5 text-slate-400" /></button>
             </div>
             <div className="space-y-4">
-              {[
-                { label: 'Nome do Item', key: 'nome', type: 'text' },
-                { label: 'Fornecedor', key: 'fornecedor', type: 'text' },
-                { label: 'Unidade (ex: caixa, seringa)', key: 'unidade', type: 'text' },
-                { label: 'Quantidade Inicial', key: 'quantidade', type: 'number' },
-                { label: 'Estoque Mínimo', key: 'minimo', type: 'number' },
-                { label: 'Custo Unitário (R$)', key: 'custo', type: 'number' },
-              ].map(f => (
-                <div key={f.key}>
-                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">{f.label}</label>
-                  <input type={f.type} value={(novoItem as any)[f.key]} onChange={e => setNovoItem(p => ({ ...p, [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value }))}
-                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
+              <div>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Nome do Item</label>
+                <input
+                  type="text"
+                  value={novoItem.nome}
+                  onChange={e => setNovoItem(p => ({ ...p, nome: e.target.value }))}
+                  placeholder="Ex: Resina Composta A2"
+                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Fornecedor</label>
+                <input
+                  type="text"
+                  value={novoItem.fornecedor}
+                  onChange={e => setNovoItem(p => ({ ...p, fornecedor: e.target.value }))}
+                  placeholder="Ex: DentalX"
+                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Unidade</label>
+                  <input
+                    type="text"
+                    value={novoItem.unidade}
+                    onChange={e => setNovoItem(p => ({ ...p, unidade: e.target.value }))}
+                    placeholder="Ex: un, caixa, seringa"
+                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
                 </div>
-              ))}
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Qtd Inicial</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={novoItem.quantidade}
+                    onChange={e => setNovoItem(p => ({ ...p, quantidade: Number(e.target.value) }))}
+                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Estoque Mínimo</label>
+                <input
+                  type="number"
+                  min={0}
+                  value={novoItem.minimo}
+                  onChange={e => setNovoItem(p => ({ ...p, minimo: Number(e.target.value) }))}
+                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
               <div>
                 <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Categoria</label>
-                <select value={novoItem.categoria} onChange={e => setNovoItem(p => ({ ...p, categoria: e.target.value }))} className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-                  {CATEGORIAS.filter(c => c !== 'Todos').map(c => <option key={c}>{c}</option>)}
+                <select
+                  value={novoItem.categoria}
+                  onChange={e => setNovoItem(p => ({ ...p, categoria: e.target.value }))}
+                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                >
+                  {CATEGORIAS.filter(c => c !== 'Todos').map(c => (
+                    <option key={c}>{c}</option>
+                  ))}
                 </select>
               </div>
             </div>

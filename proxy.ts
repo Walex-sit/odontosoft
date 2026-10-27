@@ -20,9 +20,13 @@ import { createServerClient } from '@supabase/ssr'
 
 // Rotas que NÃO exigem autenticação
 const PUBLIC_PATHS = [
+  '/',
   '/login',
+  '/register',
   '/acesso-negado',
   '/planos',
+  '/termos',
+  '/privacidade',
   '/termos-de-uso',
   '/politica-de-privacidade',
 ]

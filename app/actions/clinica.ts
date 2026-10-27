@@ -143,7 +143,7 @@ export async function updateClinicaSettings(payload: {
       .eq('id', user.id)
       .single()
 
-    if (!profile || profile.role !== 'admin') {
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'admin_clinica')) {
       return { success: false, error: 'Apenas administradores podem alterar as configurações da clínica.' }
     }
 
@@ -235,7 +235,7 @@ export async function uploadClinicaLogo(formData: FormData): Promise<{
       .eq('id', user.id)
       .single()
 
-    if (!profile || profile.role !== 'admin' || !profile.clinica_id) {
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'admin_clinica') || !profile.clinica_id) {
       return { success: false, error: 'Apenas administradores podem alterar o logotipo da clínica.' }
     }
 
@@ -317,7 +317,7 @@ export async function removeClinicaLogo(clinicaId?: string): Promise<{
       .eq('id', user.id)
       .single()
 
-    if (!profile || profile.role !== 'admin' || !profile.clinica_id) {
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'admin_clinica') || !profile.clinica_id) {
       return { success: false, error: 'Apenas administradores podem remover o logotipo da clínica.' }
     }
 

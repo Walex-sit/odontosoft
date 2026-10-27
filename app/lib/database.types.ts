@@ -5,7 +5,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-export type UserRole = 'admin' | 'dentista' | 'recepcao' | 'financeiro'
+export type UserRole = 'admin' | 'admin_clinica' | 'dentista' | 'recepcao' | 'financeiro'
 
 export type Json =
   | string

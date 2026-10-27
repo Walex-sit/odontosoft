@@ -355,7 +355,7 @@ export async function deletePatient(
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'admin') {
+  if (!profile || (profile.role !== 'admin' && profile.role !== 'admin_clinica')) {
     return { success: false, error: 'Apenas administradores podem excluir pacientes.' }
   }
 
@@ -639,7 +639,7 @@ export async function anonimizarPaciente(
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'admin') {
+  if (!profile || (profile.role !== 'admin' && profile.role !== 'admin_clinica')) {
     return {
       success: false,
       error: 'Apenas administradores da clínica ou o DPO têm permissão para anonimizar pacientes.',

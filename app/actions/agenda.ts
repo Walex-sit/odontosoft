@@ -35,10 +35,24 @@ export async function createAgendamento(
     return { success: false, error: 'Não autorizado: sessão inválida.' }
   }
 
-  // 1. Checagem de conflito de horário — sem fallback de schema
+  // Obtém o clinica_id do utilizador autenticado — isolamento de tenant obrigatório
+  const { data: profile, error: profileError } = await supabase
+    .from('user_profiles')
+    .select('clinica_id')
+    .eq('id', user.id)
+    .single()
+
+  if (profileError || !profile?.clinica_id) {
+    return { success: false, error: 'Perfil sem clínica associada. Contacte o suporte.' }
+  }
+
+  const clinicaId = profile.clinica_id
+
+  // 1. Checagem de conflito de horário — filtrada por clinica_id
   const { data: conflitosData, error: conflitoError } = await supabase
     .from('agendamentos')
     .select('id, hora_consulta, hora_fim')
+    .eq('clinica_id', clinicaId)
     .eq('dentista_id', payload.dentista_id)
     .eq('data_consulta', payload.data_consulta)
     .neq('status', 'cancelado')
@@ -66,10 +80,11 @@ export async function createAgendamento(
     }
   }
 
-  // 2. Insere o agendamento — clinica_id injetado pelo trigger no banco
+  // 2. Insere o agendamento com clinica_id explícito (não depende apenas do trigger)
   const { data, error } = await supabase
     .from('agendamentos')
     .insert([{
+      clinica_id: clinicaId,
       paciente_id: payload.paciente_id,
       dentista_id: payload.dentista_id,
       data_consulta: payload.data_consulta,
@@ -103,10 +118,22 @@ export async function updateAgendamentoStatus(
     return { success: false, error: 'Não autorizado.' }
   }
 
+  // Isola o update ao tenant do utilizador autenticado (previne IDOR cross-tenant)
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('clinica_id')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile?.clinica_id) {
+    return { success: false, error: 'Perfil sem clínica associada.' }
+  }
+
   const { error } = await supabase
     .from('agendamentos')
     .update({ status })
     .eq('id', id)
+    .eq('clinica_id', profile.clinica_id)
 
   if (error) {
     console.error('[agenda.updateAgendamentoStatus] Erro:', error.message)
@@ -129,6 +156,17 @@ export async function updateAgendamento(
     return { success: false, error: 'Não autorizado.' }
   }
 
+  // Isola o update ao tenant do utilizador autenticado (previne IDOR cross-tenant)
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('clinica_id')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile?.clinica_id) {
+    return { success: false, error: 'Perfil sem clínica associada.' }
+  }
+
   const { error } = await supabase
     .from('agendamentos')
     .update({
@@ -141,6 +179,7 @@ export async function updateAgendamento(
       status: payload.status,
     })
     .eq('id', id)
+    .eq('clinica_id', profile.clinica_id)
 
   if (error) {
     console.error('[agenda.updateAgendamento] Erro:', error.message)

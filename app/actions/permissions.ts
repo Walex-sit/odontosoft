@@ -48,10 +48,12 @@ export async function getRolePermissions(
 
     // Padrão default estrito caso não haja override no banco
     const defaultPermissions: Record<string, RolePermissions> = {
-      admin: { agenda: true, pacientes: true, financeiro: true, configuracoes: true },
-      dentista: { agenda: true, pacientes: true, financeiro: false, configuracoes: false },
-      recepcao: { agenda: true, pacientes: true, financeiro: false, configuracoes: false },
-      financeiro: { agenda: false, pacientes: false, financeiro: true, configuracoes: false },
+      admin:         { agenda: true,  pacientes: true,  financeiro: true,  configuracoes: true  },
+      // admin_clinica tem os mesmos direitos que admin — é o dono da clínica recém-criada
+      admin_clinica: { agenda: true,  pacientes: true,  financeiro: true,  configuracoes: true  },
+      dentista:      { agenda: true,  pacientes: true,  financeiro: false, configuracoes: false },
+      recepcao:      { agenda: true,  pacientes: true,  financeiro: false, configuracoes: false },
+      financeiro:    { agenda: false, pacientes: false, financeiro: true,  configuracoes: false },
     }
 
     return {
@@ -88,7 +90,7 @@ export async function updateRolePermissions(
       .eq('id', user.id)
       .single()
 
-    if (!profile || profile.role !== 'admin') {
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'admin_clinica')) {
       return { success: false, error: 'Apenas administradores podem atualizar permissões.' }
     }
 

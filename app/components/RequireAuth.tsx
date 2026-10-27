@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabaseClient'
 import { Session } from '@supabase/supabase-js'
 
-export type UserRole = 'admin' | 'dentista' | 'recepcao' | 'financeiro'
+export type UserRole = 'admin' | 'admin_clinica' | 'dentista' | 'recepcao' | 'financeiro'
 
 export interface UserProfile {
   id: string

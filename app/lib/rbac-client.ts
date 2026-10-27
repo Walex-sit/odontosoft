@@ -31,6 +31,31 @@ export const ROUTE_PERMISSIONS: Record<UserRole, string[]> = {
     '/regua-cobranca',
     '/planos-tratamento',
   ],
+  admin_clinica: [
+    '/overview',
+    '/agenda',
+    '/pacientes',
+    '/patients',
+    '/prontuarios',
+    '/financeiro',
+    '/despesas',
+    '/fluxo-caixa',
+    '/fornecedores',
+    '/compras',
+    '/notas-fiscais',
+    '/usuarios',
+    '/logs',
+    '/assinatura',
+    '/minha-conta',
+    '/messages',
+    '/controle-de-protese',
+    '/establishment',
+    '/configuracoes',
+    '/estoque',
+    '/comissoes',
+    '/regua-cobranca',
+    '/planos-tratamento',
+  ],
   dentista: [
     '/overview',
     '/agenda',
@@ -65,9 +90,16 @@ export const ROUTE_PERMISSIONS: Record<UserRole, string[]> = {
 /**
  * Retorna true se o role tem acesso à rota fornecida.
  * Compara por prefixo para cobrir sub-rotas (ex: /pacientes/123).
+ * Suporta também o prefixo /dashboard (ex: /dashboard/pacientes -> /pacientes).
  */
 export function canAccess(role: UserRole | undefined, pathname: string): boolean {
   if (!role) return false
   const allowed = ROUTE_PERMISSIONS[role] ?? []
-  return allowed.some((prefix) => pathname === prefix || pathname.startsWith(prefix + '/'))
+  const normalizedPath = pathname === '/dashboard'
+    ? '/overview'
+    : pathname.startsWith('/dashboard/')
+      ? pathname.replace(/^\/dashboard/, '')
+      : pathname
+
+  return allowed.some((prefix) => normalizedPath === prefix || normalizedPath.startsWith(prefix + '/'))
 }

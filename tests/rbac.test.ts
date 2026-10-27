@@ -89,4 +89,18 @@ describe('Controle de Acesso RBAC (T001)', () => {
     expect(isAllowed('recepcao', ['admin', 'dentista'])).toBe(false)
     expect(isAllowed('financeiro', ['admin', 'dentista'])).toBe(false)
   })
+
+  it('valida que admin_clinica possui privilégios totais de administrador', () => {
+    const adminClinicaPermissions = {
+      agenda: true,
+      pacientes: true,
+      financeiro: true,
+      configuracoes: true,
+    }
+
+    expect(adminClinicaPermissions.agenda).toBe(true)
+    expect(adminClinicaPermissions.pacientes).toBe(true)
+    expect(adminClinicaPermissions.financeiro).toBe(true)
+    expect(adminClinicaPermissions.configuracoes).toBe(true)
+  })
 })

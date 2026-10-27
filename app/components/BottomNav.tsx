@@ -9,7 +9,7 @@ import { useAuth } from "./RequireAuth";
 import { hasPermission } from "../lib/permissions";
 
 // 2. Definimos as roles (se não tiver exportado do RequireAuth)
-type UserRole = 'admin' | 'dentista' | 'recepcao' | 'financeiro';
+type UserRole = 'admin' | 'admin_clinica' | 'dentista' | 'recepcao' | 'financeiro';
 
 export function BottomNav() {
   const pathname = usePathname();

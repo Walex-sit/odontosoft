@@ -31,23 +31,24 @@ import { useClinica } from '../contexts/ClinicaContext'
 // para manter o JSX limpo e facilitar futuras alterações.
 
 /** Perfis que enxergam o botão "Ferramentas" na Topbar */
-const ROLES_WITH_TOOLS: UserRole[] = ['admin', 'dentista', 'recepcao', 'financeiro']
+const ROLES_WITH_TOOLS: UserRole[] = ['admin', 'admin_clinica', 'dentista', 'recepcao', 'financeiro']
 
 /** Perfis que enxergam a seção "Ferramentas Clínicas" */
-const ROLES_CLINICAL_TOOLS: UserRole[] = ['admin', 'dentista', 'recepcao']
+const ROLES_CLINICAL_TOOLS: UserRole[] = ['admin', 'admin_clinica', 'dentista', 'recepcao']
 
 /** Perfis que enxergam Receituário e Atestado (atos estritamente médicos) */
-const ROLES_MEDICAL_DOCS: UserRole[] = ['admin', 'dentista']
+const ROLES_MEDICAL_DOCS: UserRole[] = ['admin', 'admin_clinica', 'dentista']
 
 /** Perfis que enxergam Estoque e Planos de Tratamento */
-const ROLES_ADVANCED_MODULES: UserRole[] = ['admin', 'dentista', 'recepcao']
+const ROLES_ADVANCED_MODULES: UserRole[] = ['admin', 'admin_clinica', 'dentista', 'recepcao']
 
 /** Perfis que enxergam a seção "Módulos Financeiros" */
-const ROLES_FINANCIAL_MODULES: UserRole[] = ['admin', 'financeiro']
+const ROLES_FINANCIAL_MODULES: UserRole[] = ['admin', 'admin_clinica', 'financeiro']
 
 /** Mapeamento de tipos de notificações permitidas por cargo (RBAC) */
 const NOTIFICATION_ROLES_MAP: Record<UserRole, NotificationItem['type'][]> = {
   admin: ['financial', 'appointment', 'patient', 'lgpd', 'stock', 'system'],
+  admin_clinica: ['financial', 'appointment', 'patient', 'lgpd', 'stock', 'system'],
   financeiro: ['financial', 'system'],
   recepcao: ['appointment', 'patient', 'system'],
   dentista: ['appointment', 'patient', 'system'],
@@ -55,9 +56,9 @@ const NOTIFICATION_ROLES_MAP: Record<UserRole, NotificationItem['type'][]> = {
 
 // ─── Links de navegação ────────────────────────────────────────────────────────
 const navLinks: { name: string; path: string; allowedRoles: UserRole[] }[] = [
-  { name: 'Agenda',     path: '/agenda',     allowedRoles: ['admin', 'dentista', 'recepcao'] },
-  { name: 'Pacientes',  path: '/pacientes',  allowedRoles: ['admin', 'dentista', 'recepcao'] },
-  { name: 'Financeiro', path: '/financeiro', allowedRoles: ['admin', 'financeiro'] },
+  { name: 'Agenda',     path: '/agenda',     allowedRoles: ['admin', 'admin_clinica', 'dentista', 'recepcao'] },
+  { name: 'Pacientes',  path: '/pacientes',  allowedRoles: ['admin', 'admin_clinica', 'dentista', 'recepcao'] },
+  { name: 'Financeiro', path: '/financeiro', allowedRoles: ['admin', 'admin_clinica', 'financeiro'] },
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -120,7 +121,7 @@ export default function Topbar() {
         }
 
         // 2. Alertas Financeiros (apenas admin e financeiro)
-        if (role === 'admin' || role === 'financeiro') {
+        if (role === 'admin' || role === 'admin_clinica' || role === 'financeiro') {
           const { count: despesasPendentesCount } = await supabase
             .from('despesas')
             .select('*', { count: 'exact', head: true })
@@ -157,7 +158,7 @@ export default function Topbar() {
         }
 
         // 3. Alertas de Agenda e Pacientes (admin, dentista, recepcao)
-        if (role === 'admin' || role === 'dentista' || role === 'recepcao') {
+        if (role === 'admin' || role === 'admin_clinica' || role === 'dentista' || role === 'recepcao') {
           notifs.push({
             id: 'notif-agenda-hoje',
             type: 'appointment',
@@ -180,7 +181,7 @@ export default function Topbar() {
         }
 
         // 4. Alertas de Gestão, LGPD e Estoque (exclusivo admin)
-        if (role === 'admin') {
+        if (role === 'admin' || role === 'admin_clinica') {
           const { count: lgpdPendentesCount } = await supabase
             .from('pacientes')
             .select('id', { count: 'exact', head: true })
@@ -251,7 +252,7 @@ export default function Topbar() {
   const canSeeMedicalDocs    = hasPermission(role, ROLES_MEDICAL_DOCS)
   const canSeeAdvancedMods   = hasPermission(role, ROLES_ADVANCED_MODULES)
   const canSeeFinancialMods  = hasPermission(role, ROLES_FINANCIAL_MODULES)
-  const isAdmin              = hasPermission(role, ['admin'])
+  const isAdmin              = hasPermission(role, ['admin', 'admin_clinica'])
 
   // ─────────────────────────────────────────────────────────────────────────────
 
@@ -276,8 +277,8 @@ export default function Topbar() {
               </svg>
             </div>
           )}
-          <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate max-w-[200px]" title={clinica?.nome_exibido || clinica?.nome}>
-            {clinica?.nome_exibido || clinica?.nome}
+          <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate max-w-[200px]" title={clinica?.nome || clinica?.nome_exibido || 'OdontoSoft'}>
+            {clinica?.nome || clinica?.nome_exibido || 'OdontoSoft'}
           </h1>
         </Link>
 
@@ -290,7 +291,7 @@ export default function Topbar() {
                 key={link.name} 
                 href={link.path}
                 className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                  pathname.startsWith(link.path) 
+                  pathname.startsWith(link.path) || pathname.startsWith('/dashboard' + link.path)
                     ? 'bg-white text-slate-900 shadow-sm' 
                     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
                 }`}

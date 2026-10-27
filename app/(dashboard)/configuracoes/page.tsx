@@ -704,12 +704,12 @@ export default function ConfiguracoesPage() {
                             <td className="p-4 text-slate-600 dark:text-slate-300 text-sm">{member.email}</td>
                             <td className="p-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                                member.role === 'admin' ? 'bg-blue-100 text-blue-700' :
+                                (member.role === 'admin' || member.role === 'admin_clinica') ? 'bg-blue-100 text-blue-700' :
                                 member.role === 'dentista' ? 'bg-green-100 text-green-700' :
                                 member.role === 'recepcao' ? 'bg-amber-100 text-amber-700' :
                                 'bg-purple-100 text-purple-700'
                               }`}>
-                                {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                                {member.role === 'admin_clinica' ? 'Admin' : member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                               </span>
                             </td>
                             <td className="p-4">
