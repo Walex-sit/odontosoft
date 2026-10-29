@@ -257,11 +257,11 @@ export default function Topbar() {
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
-    <header className="h-16 w-full flex items-center justify-between px-6 z-50 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0 transition-colors duration-200">
+    <header className="h-16 w-full flex items-center justify-between px-6 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs shrink-0 transition-colors duration-200">
       
       {/* ── Lado esquerdo: Logo + Nav ── */}
       <div className="flex items-center gap-8">
-        <Link href="/overview" className="flex items-center gap-3">
+        <Link href="/overview" prefetch={true} className="flex items-center gap-3 active:scale-95 transition-transform">
           {clinica?.logo_url ? (
             <div className="h-8 w-8 rounded-lg overflow-hidden flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
               <img
@@ -290,10 +290,11 @@ export default function Topbar() {
               <Link 
                 key={link.name} 
                 href={link.path}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                prefetch={true}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 ${
                   pathname.startsWith(link.path) || pathname.startsWith('/dashboard' + link.path)
-                    ? 'bg-white text-slate-900 shadow-sm' 
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm border border-slate-200/50 dark:border-slate-700/50' 
+                    : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
                 {link.name}
@@ -311,7 +312,7 @@ export default function Topbar() {
             <div className="relative">
               <button
                 onClick={() => setIsToolsOpen(!isToolsOpen)}
-                className="flex items-center gap-2 text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 px-3 py-2 rounded-xl text-sm font-bold transition-colors border border-slate-200"
+                className="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 px-3 py-2 rounded-xl text-sm font-bold transition-colors border border-slate-200 dark:border-slate-700"
               >
                 <LayoutGrid className="h-4 w-4" /> Ferramentas
               </button>
@@ -365,6 +366,7 @@ export default function Topbar() {
                       </p>
                       <Link
                         href="/estoque"
+                        prefetch={true}
                         onClick={() => setIsToolsOpen(false)}
                         className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
                       >
@@ -372,6 +374,7 @@ export default function Topbar() {
                       </Link>
                       <Link
                         href="/planos-tratamento"
+                        prefetch={true}
                         onClick={() => setIsToolsOpen(false)}
                         className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
                       >
@@ -393,6 +396,7 @@ export default function Topbar() {
                       </p>
                       <Link
                         href="/comissoes"
+                        prefetch={true}
                         onClick={() => setIsToolsOpen(false)}
                         className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
                       >
@@ -400,6 +404,7 @@ export default function Topbar() {
                       </Link>
                       <Link
                         href="/regua-cobranca"
+                        prefetch={true}
                         onClick={() => setIsToolsOpen(false)}
                         className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
                       >
@@ -423,7 +428,7 @@ export default function Topbar() {
         {/* Busca global */}
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="flex items-center gap-3 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-slate-400 transition-colors hover:border-slate-300"
+          className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3.5 py-1.5 rounded-xl text-slate-500 dark:text-slate-400 transition-colors hover:border-slate-300 dark:hover:border-slate-600 text-sm font-medium"
         >
           <Search className="h-4 w-4" /> Buscar...
         </button>
@@ -463,7 +468,8 @@ export default function Topbar() {
           {isAdmin && (
             <Link
               href="/configuracoes"
-              className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-xl transition-colors"
+              prefetch={true}
+              className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-xl transition-colors active:scale-95"
               title="Configurações do Sistema"
             >
               <Settings className="h-5 w-5" />
@@ -490,6 +496,7 @@ export default function Topbar() {
               {isAdmin && (
                 <Link
                   href="/configuracoes"
+                  prefetch={true}
                   onClick={() => setIsUserMenuOpen(false)}
                   className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium transition-colors"
                 >

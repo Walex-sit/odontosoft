@@ -13,9 +13,10 @@ interface Props {
   dentistas: any[]
   initialDate?: string
   initialTime?: string
+  initialPatientId?: string
 }
 
-export default function NovoAgendamentoModal({ isOpen, onClose, onSuccess, pacientes, dentistas, initialDate, initialTime }: Props) {
+export default function NovoAgendamentoModal({ isOpen, onClose, onSuccess, pacientes, dentistas, initialDate, initialTime, initialPatientId }: Props) {
   const [form, setForm] = useState({
     paciente_id: '',
     dentista_id: '',
@@ -27,18 +28,19 @@ export default function NovoAgendamentoModal({ isOpen, onClose, onSuccess, pacie
   })
   const [loading, setLoading] = useState(false)
 
-  // Atualizar data/hora inicial quando o modal abre com base num clique no calendário
+  // Atualizar data/hora inicial quando o modal abre com base num clique no calendário ou ação direta
   useEffect(() => {
     if (isOpen) {
       setForm(prev => ({
         ...prev,
+        paciente_id: initialPatientId || prev.paciente_id || '',
         data: initialDate || '',
         horario: initialTime || '',
         // Por padrão, se tiver horário inicial, sugere 30 min depois para hora_fim
         hora_fim: initialTime ? calculateEndTime(initialTime) : ''
       }))
     }
-  }, [isOpen, initialDate, initialTime])
+  }, [isOpen, initialDate, initialTime, initialPatientId])
 
   function calculateEndTime(start: string) {
     if (!start) return ''
@@ -91,13 +93,13 @@ export default function NovoAgendamentoModal({ isOpen, onClose, onSuccess, pacie
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm" onClick={onClose}>
-        <div className="relative w-full max-w-lg bg-white dark:bg-slate-800 border-none rounded-[24px] p-6 sm:p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+        <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] p-6 sm:p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-heading font-extrabold text-slate-800 dark:text-slate-100">Novo Agendamento</h2>
+              <h2 className="text-xl font-heading font-extrabold text-slate-900 dark:text-slate-100">Novo Agendamento</h2>
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5">Preencha os detalhes da consulta</p>
             </div>
-            <button onClick={onClose} className="p-2 rounded-full text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+            <button onClick={onClose} className="p-2 rounded-full text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -106,10 +108,10 @@ export default function NovoAgendamentoModal({ isOpen, onClose, onSuccess, pacie
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-500 dark:text-slate-400">Paciente *</label>
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">Paciente *</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <select name="paciente_id" required value={form.paciente_id} onChange={handleChange} className="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-transparent rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 appearance-none">
+                  <select name="paciente_id" required value={form.paciente_id} onChange={handleChange} className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all appearance-none">
                     <option value="">Selecione o Paciente</option>
                     {pacientes.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
                   </select>
@@ -117,10 +119,10 @@ export default function NovoAgendamentoModal({ isOpen, onClose, onSuccess, pacie
               </div>
               
               <div>
-                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-500 dark:text-slate-400">Dentista *</label>
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">Dentista *</label>
                 <div className="relative">
                   <Stethoscope className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <select name="dentista_id" required value={form.dentista_id} onChange={handleChange} className="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-transparent rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 appearance-none">
+                  <select name="dentista_id" required value={form.dentista_id} onChange={handleChange} className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all appearance-none">
                     <option value="">Selecione o Dentista</option>
                     {dentistas.map(d => <option key={d.id} value={d.id}>{d.nome}</option>)}
                   </select>
@@ -129,47 +131,47 @@ export default function NovoAgendamentoModal({ isOpen, onClose, onSuccess, pacie
             </div>
 
             <div>
-              <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-500 dark:text-slate-400">Procedimento</label>
-              <input type="text" name="procedimento" value={form.procedimento} onChange={handleChange} placeholder="Ex: Limpeza, Avaliação, Canal..." className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-transparent rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none transition-all focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500" />
+              <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">Procedimento</label>
+              <input type="text" name="procedimento" value={form.procedimento} onChange={handleChange} placeholder="Ex: Limpeza, Avaliação, Canal..." className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white" />
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-500 dark:text-slate-400">Data *</label>
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">Data *</label>
                 <div className="relative">
                   <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <input type="date" name="data" required value={form.data} onChange={handleChange} className="w-full pl-9 pr-2 py-3 bg-slate-50 dark:bg-slate-950 border border-transparent rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 [color-scheme:light]" />
+                  <input type="date" name="data" required value={form.data} onChange={handleChange} className="w-full pl-9 pr-2 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white [color-scheme:light]" />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-500 dark:text-slate-400">Início *</label>
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">Início *</label>
                 <div className="relative">
                   <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <input type="time" name="horario" required value={form.horario} onChange={handleChange} className="w-full pl-9 pr-2 py-3 bg-slate-50 dark:bg-slate-950 border border-transparent rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 [color-scheme:light]" />
+                  <input type="time" name="horario" required value={form.horario} onChange={handleChange} className="w-full pl-9 pr-2 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white [color-scheme:light]" />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-500 dark:text-slate-400">Fim</label>
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">Fim</label>
                 <div className="relative">
                   <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <input type="time" name="hora_fim" value={form.hora_fim} onChange={handleChange} className="w-full pl-9 pr-2 py-3 bg-slate-50 dark:bg-slate-950 border border-transparent rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 [color-scheme:light]" />
+                  <input type="time" name="hora_fim" value={form.hora_fim} onChange={handleChange} className="w-full pl-9 pr-2 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white [color-scheme:light]" />
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-500 dark:text-slate-400">Observações</label>
+              <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">Observações</label>
               <div className="relative">
                 <FileText className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                <textarea name="observacao" value={form.observacao} onChange={handleChange} placeholder="Notas adicionais..." rows={2} className="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-transparent rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none resize-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 placeholder-slate-400" />
+                <textarea name="observacao" value={form.observacao} onChange={handleChange} placeholder="Notas adicionais..." rows={2} className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 font-medium text-sm outline-none resize-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white placeholder-slate-400" />
               </div>
             </div>
 
             <div className="flex gap-3 pt-2">
-              <button type="button" onClick={onClose} className="flex-1 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 transition-all active:scale-95">
+              <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 border border-slate-200 dark:border-slate-700 transition-all active:scale-95">
                 Cancelar
               </button>
-              <button type="submit" disabled={loading} className="flex-[2] py-3 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+              <button type="submit" disabled={loading} className="flex-[2] py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                 {loading ? 'Salvando...' : 'Salvar Agendamento'}
               </button>
             </div>

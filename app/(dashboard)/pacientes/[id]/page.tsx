@@ -20,11 +20,12 @@ import AnamneseDigitalModal from '@/app/components/AnamneseDigitalModal'
 import ModalNovoOrcamento from '@/app/components/ModalNovoOrcamento'
 import ModalNovaCobranca from '@/app/components/ModalNovaCobranca'
 import ModalConsentimentoLGPD from '@/app/components/ModalConsentimentoLGPD'
+import OdontogramaInterativo from '@/app/components/OdontogramaInterativo'
 import {
   ChevronLeft, Info, Calendar, DollarSign, FileText,
   Plus, ClipboardList, Loader2, Pencil, Trash2, CreditCard, HeartPulse,
   ShieldCheck, AlertTriangle, AlertOctagon, CheckCircle2, XCircle,
-  Smartphone, Mail, Camera, HeartHandshake, Microscope, RefreshCw, Lock
+  Smartphone, Mail, Camera, HeartHandshake, Microscope, RefreshCw, Lock, Scan
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -389,13 +390,14 @@ export default function DetalhePaciente() {
   // ── Tabs ──────────────────────────────────────────────────────────────────
 
   const tabs = [
-    { id: 'informacoes', name: 'Informações', icon: Info },
+    { id: 'informacoes',  name: 'Informações',       icon: Info },
     { id: 'privacidade',  name: 'Privacidade & LGPD', icon: ShieldCheck },
-    { id: 'historico',    name: 'Consultas',    icon: Calendar },
-    { id: 'proximo',      name: 'Tratamentos', icon: DollarSign },
-    { id: 'financeiro',   name: 'Financeiro',   icon: CreditCard },
-    { id: 'prontuario',   name: 'Prontuário',   icon: FileText },
-    { id: 'anamnese',     name: 'Anamnese',     icon: HeartPulse },
+    { id: 'historico',    name: 'Consultas',          icon: Calendar },
+    { id: 'proximo',      name: 'Tratamentos',        icon: DollarSign },
+    { id: 'financeiro',   name: 'Financeiro',         icon: CreditCard },
+    { id: 'prontuario',   name: 'Prontuário',         icon: FileText },
+    { id: 'odontograma',  name: 'Odontograma',        icon: Scan },
+    { id: 'anamnese',     name: 'Anamnese',           icon: HeartPulse },
   ]
 
   const isLgpdAtivo = consentimentoAtivo?.status === 'ativo'
@@ -589,6 +591,10 @@ export default function DetalhePaciente() {
                 </div>
               )}
             </div>
+          )}
+
+          {activeTab === 'odontograma' && (
+            <OdontogramaInterativo pacienteId={pacienteId} />
           )}
 
           {activeTab === 'anamnese' && (

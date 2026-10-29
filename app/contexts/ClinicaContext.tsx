@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../components/RequireAuth'
+import { getCached, setCached } from '../lib/cache'
 
 interface ClinicaData {
   id: string
@@ -28,8 +29,9 @@ export const useClinica = () => useContext(ClinicaContext)
 
 export function ClinicaProvider({ children }: { children: React.ReactNode }) {
   const { session } = useAuth()
-  const [clinica, setClinica] = useState<ClinicaData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const cachedClinica = getCached<ClinicaData>('clinica:info')
+  const [clinica, setClinica] = useState<ClinicaData | null>(cachedClinica)
+  const [loading, setLoading] = useState(cachedClinica === null)
 
   useEffect(() => {
     let mounted = true
@@ -64,13 +66,17 @@ export function ClinicaProvider({ children }: { children: React.ReactNode }) {
         }
         const { data: settingsData } = await settingsQuery.limit(1).maybeSingle()
 
+        const clinicInfo: ClinicaData = {
+          id: clinicaData?.id || '',
+          nome: clinicaData?.nome || '',
+          logo_url: settingsData?.logo_url || null,
+          nome_exibido: settingsData?.nome_exibido || null,
+        }
+
+        setCached('clinica:info', clinicInfo)
+
         if (mounted) {
-          setClinica({
-            id: clinicaData?.id || '',
-            nome: clinicaData?.nome || '',
-            logo_url: settingsData?.logo_url || null,
-            nome_exibido: settingsData?.nome_exibido || null,
-          })
+          setClinica(clinicInfo)
           setLoading(false)
         }
       } catch (error) {
@@ -160,12 +166,15 @@ export function ClinicaProvider({ children }: { children: React.ReactNode }) {
       }
       const { data: settingsData } = await settingsQuery.limit(1).maybeSingle()
 
-      setClinica({
+      const clinicInfo: ClinicaData = {
         id: clinicaData?.id || '',
         nome: clinicaData?.nome || '',
         logo_url: settingsData?.logo_url || null,
         nome_exibido: settingsData?.nome_exibido || null,
-      })
+      }
+
+      setCached('clinica:info', clinicInfo)
+      setClinica(clinicInfo)
     } catch (err) {
       console.error('Erro no refreshClinica:', err)
     }

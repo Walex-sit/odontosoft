@@ -38,9 +38,10 @@ export function BottomNav() {
             <Link
               key={item.name}
               href={item.href}
-              className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
+              prefetch={true}
+              className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-all active:scale-95 ${
                 isActive
-                  ? 'text-blue-600 dark:text-blue-400'
+                  ? 'text-blue-600 dark:text-blue-400 font-bold'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >

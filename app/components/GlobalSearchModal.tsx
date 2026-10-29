@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Command } from 'cmdk'
 import { Search, User, UserPlus, CalendarPlus, Loader2 } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient'
+import { getCached } from '../lib/cache'
 
 interface GlobalSearchModalProps {
   isOpen: boolean
@@ -24,12 +25,25 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
   const [results, setResults] = useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  // Debounce e Busca
+  // Debounce e Busca com resultados instantâneos do cache
   useEffect(() => {
     if (!query) {
       setResults([])
       setIsLoading(false)
       return
+    }
+
+    // Busca instantânea em memória se houver pacientes em cache
+    const cachedPatients = getCached<any[]>('pacientes:lista')
+    if (cachedPatients && query.trim()) {
+      const q = query.trim().toLowerCase()
+      const instant = cachedPatients
+        .filter((p: any) => p.nome && p.nome.toLowerCase().includes(q))
+        .slice(0, 5)
+        .map((p: any) => ({ id: p.id, nome: p.nome, type: 'paciente' as const }))
+      if (instant.length > 0) {
+        setResults(instant)
+      }
     }
 
     const timer = setTimeout(async () => {
