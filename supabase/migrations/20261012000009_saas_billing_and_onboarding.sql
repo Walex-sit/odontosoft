@@ -107,6 +107,7 @@ CREATE TRIGGER trg_billing_lock_agendamentos
 -- SEÇÃO 3 — RPC DE PROVISIONAMENTO ATÔMICO DE TENANT
 -- ============================================================
 
+DROP FUNCTION IF EXISTS public.provisionar_novo_tenant;
 CREATE OR REPLACE FUNCTION public.provisionar_novo_tenant(
     p_user_id                UUID,
     p_nome_clinica           TEXT,
