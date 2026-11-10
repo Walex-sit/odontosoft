@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import {
   Building2, Users, ShieldCheck, Cpu, Save, Sliders, Smartphone, Mail, Globe,
   UserPlus, Loader2, Pencil, Trash2, Percent, FileText, CheckCircle2, AlertTriangle,
-  Clock, Lock, ExternalLink, RefreshCw, Download, Upload, X, Camera,
+  Clock, Lock, ExternalLink, RefreshCw, Download, Upload, X, Camera, CreditCard, Sparkles, Check,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import ManageRolePermissionsModal, { Role } from '@/app/components/ManageRolePermissionsModal'
@@ -15,6 +15,7 @@ import CommissionModal from '@/app/components/CommissionModal'
 import { fetchCommissions } from '@/app/actions/commissions'
 import { fetchAuditLogs, fetchComplianceStats, AuditLog, ComplianceStats } from '@/app/actions/audit'
 import { fetchClinicaSettings, updateClinicaSettings, uploadClinicaLogo, removeClinicaLogo, ClinicaSettings } from '@/app/actions/clinica'
+import { fetchClinicSubscription, upgradeOrChangePlan, ClinicSubscriptionData } from '@/app/actions/billing'
 import { useAuth } from '@/app/components/RequireAuth'
 import { useClinica } from '@/app/contexts/ClinicaContext'
 import Link from 'next/link'
@@ -70,10 +71,34 @@ function MetricCard({
 // ─── Componente Principal ────────────────────────────────────────────────────
 
 export default function ConfiguracoesPage() {
-  const { profile } = useAuth()
+  const { profile, session, isSuperAdmin, isLifetime } = useAuth()
   const { clinica: ctxClinica, refreshClinica } = useClinica()
-  const [activeTab, setActiveTab] = useState<'perfil' | 'usuarios' | 'integracoes' | 'comissoes' | 'seguranca'>('perfil')
+  const [activeTab, setActiveTab] = useState<'perfil' | 'usuarios' | 'assinatura' | 'integracoes' | 'comissoes' | 'seguranca'>('perfil')
   const [salvando, setSalvando] = useState(false)
+
+  // ─── Assinatura & Planos SaaS ─────────────────────────────────────────────
+  const [subscriptionData, setSubscriptionData] = useState<ClinicSubscriptionData | null>(null)
+  const [isLoadingBilling, setIsLoadingBilling] = useState(false)
+  const [isChangingPlan, setIsChangingPlan] = useState<string | null>(null)
+
+  // R-004 (Auditoria Etapa 4): fallback hardcoded 'testealex@gmail.com' removido.
+  const configuredOwnerEmail = (process.env.NEXT_PUBLIC_OWNER_EMAIL || '').toLowerCase().trim()
+  const isOwnerExactMatch = Boolean(
+    configuredOwnerEmail &&
+    session?.user?.email &&
+    session.user.email.toLowerCase().trim() === configuredOwnerEmail &&
+    (profile?.role === 'super_admin' || profile?.is_lifetime === true)
+  )
+
+  const isVitalicio = Boolean(
+    subscriptionData?.isLifetime ||
+    subscriptionData?.isSuperAdmin ||
+    isSuperAdmin ||
+    isLifetime ||
+    profile?.is_lifetime ||
+    profile?.role === 'super_admin' ||
+    isOwnerExactMatch
+  )
 
   // ─── Perfil da Clínica (dados reais) ──────────────────────────────────────
   const [clinicaId, setClinicaId] = useState<string | null>(null)
@@ -146,6 +171,22 @@ export default function ConfiguracoesPage() {
     }
   }
 
+  const loadBillingData = async () => {
+    setIsLoadingBilling(true)
+    try {
+      const res = await fetchClinicSubscription()
+      if (res.success && res.data) {
+        setSubscriptionData(res.data)
+      } else if (res.error) {
+        console.error('Falha ao carregar assinatura:', res.error)
+      }
+    } catch (e) {
+      console.error('Erro ao buscar dados de assinatura:', e)
+    } finally {
+      setIsLoadingBilling(false)
+    }
+  }
+
   const loadCommissions = async () => {
     setIsLoadingCommissions(true)
     try {
@@ -194,6 +235,7 @@ export default function ConfiguracoesPage() {
 
   useEffect(() => {
     if (activeTab === 'usuarios') loadTeamMembers()
+    else if (activeTab === 'assinatura') loadBillingData()
     else if (activeTab === 'comissoes') loadCommissions()
     else if (activeTab === 'seguranca') loadSecurityData(filtroAction)
   }, [activeTab])
@@ -203,6 +245,31 @@ export default function ConfiguracoesPage() {
   }, [filtroAction])
 
   // ─── Handlers ──────────────────────────────────────────────────────────────
+
+  const handleChangePlan = async (novoPlano: 'essencial' | 'premium') => {
+    if (!subscriptionData?.podeGerenciar) {
+      toast.error('Apenas Administradores podem alterar o plano da clínica.')
+      return
+    }
+    if (subscriptionData.planoId === novoPlano) {
+      toast.info(`Sua clínica já está no Plano ${novoPlano === 'premium' ? 'Premium & Compliance' : 'Essencial'}.`)
+      return
+    }
+    setIsChangingPlan(novoPlano)
+    try {
+      const res = await upgradeOrChangePlan(novoPlano)
+      if (res.success) {
+        toast.success(res.message)
+        loadBillingData()
+      } else {
+        toast.error(res.message)
+      }
+    } catch {
+      toast.error('Erro inesperado ao alterar plano.')
+    } finally {
+      setIsChangingPlan(null)
+    }
+  }
 
   const handleEditUser = (member: { id: string; nome: string; email: string; role: string }) => {
     setEditingUser(member)
@@ -364,6 +431,7 @@ export default function ConfiguracoesPage() {
             [
               { id: 'perfil',      label: 'Perfil da Clínica',      icon: <Building2 className="h-4 w-4" /> },
               { id: 'usuarios',    label: 'Usuários e Permissões',   icon: <Users className="h-4 w-4" /> },
+              { id: 'assinatura',  label: 'Assinatura & Planos',     icon: <CreditCard className="h-4 w-4" /> },
               { id: 'comissoes',   label: 'Comissões',               icon: <Percent className="h-4 w-4" /> },
               { id: 'integracoes', label: 'Integrações',             icon: <Cpu className="h-4 w-4" /> },
               { id: 'seguranca',   label: 'Segurança',               icon: <ShieldCheck className="h-4 w-4" /> },
@@ -379,6 +447,17 @@ export default function ConfiguracoesPage() {
               }`}
             >
               {tab.icon} {tab.label}
+              {tab.id === 'assinatura' && subscriptionData && (
+                <span className={`ml-1 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full ${
+                  subscriptionData.status === 'ativo'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : subscriptionData.status === 'inadimplente'
+                    ? 'bg-rose-100 text-rose-700'
+                    : 'bg-amber-100 text-amber-700'
+                }`}>
+                  {subscriptionData.status === 'trial' ? 'TRIAL' : subscriptionData.status === 'ativo' ? 'ATIVO' : 'PENDENTE'}
+                </span>
+              )}
               {tab.id === 'seguranca' && (
                 <span className="ml-1 bg-blue-100 text-blue-700 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">LGPD</span>
               )}
@@ -747,6 +826,408 @@ export default function ConfiguracoesPage() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* ABA: ASSINATURA & PLANOS SAAS (PILAR 4) */}
+        {activeTab === 'assinatura' && (
+          <div className="space-y-8">
+            {isLoadingBilling ? (
+              <div className="flex flex-col items-center justify-center py-24">
+                <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-3" />
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando dados da assinatura...</p>
+              </div>
+            ) : subscriptionData ? (
+              <>
+                {/* ── Banner de Status da Assinatura ────────────────────────── */}
+                <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 border border-slate-700/60 p-8 text-white shadow-xl">
+                  {/* Fundo decorativo sutil */}
+                  <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+                  <div className="absolute -left-16 -bottom-16 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+
+                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/10">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <span className="text-xs uppercase tracking-wider text-blue-300 font-bold">
+                          Assinatura OdontoSoft SaaS
+                        </span>
+                        {isVitalicio ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-500/25 via-yellow-500/20 to-amber-500/25 text-amber-200 border border-amber-400/40 shadow-sm shadow-amber-500/10">
+                            <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                            Acesso Vitalício / Administrador Geral (Isento de Cobrança)
+                          </span>
+                        ) : (
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold ${
+                            subscriptionData.status === 'ativo'
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              : subscriptionData.status === 'inadimplente'
+                              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                              : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          }`}>
+                            <span className={`h-2 w-2 rounded-full ${
+                              subscriptionData.status === 'ativo' ? 'bg-emerald-400' : subscriptionData.status === 'inadimplente' ? 'bg-rose-400' : 'bg-amber-400 animate-pulse'
+                            }`} />
+                            {subscriptionData.statusLabel}
+                          </span>
+                        )}
+                      </div>
+                      <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+                        {subscriptionData.nomeClinica}
+                        <span className={`text-xs px-3 py-1 rounded-xl font-bold uppercase tracking-wider ${
+                          isVitalicio
+                            ? 'bg-amber-500/20 border border-amber-400/40 text-amber-200'
+                            : 'bg-blue-500/20 border border-blue-400/30 text-blue-200'
+                        }`}>
+                          {isVitalicio ? '👑 Master Vitalício' : `Plano ${subscriptionData.planoNome}`}
+                        </span>
+                      </h2>
+                      <p className="text-xs sm:text-sm text-slate-300 mt-1">
+                        {isVitalicio ? (
+                          <>Conta Master com acesso vitalício irrestrito a todos os recursos. Não há cobranças, faturas periódicas ou contadores de expiração para o Administrador Geral.</>
+                        ) : subscriptionData.status === 'trial' ? (
+                          <>Aproveite os recursos essenciais liberados. Restam <strong className="text-amber-300 font-bold">{subscriptionData.diasRestantesTrial ?? 7} dias</strong> no seu período de testes.</>
+                        ) : (
+                          <>Faturamento regular recorrente. Próxima renovação em <strong className="text-white font-bold">{subscriptionData.periodoFim ? new Date(subscriptionData.periodoFim).toLocaleDateString('pt-BR') : 'período vigente'}</strong>.</>
+                        )}
+                      </p>
+
+                      {/* Exibição do Valor Oficial do Plano (Global SaaS) */}
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <span className="text-xs text-slate-300 font-semibold">
+                          {isVitalicio ? 'Condição da Conta:' : 'Valor do Plano:'}
+                        </span>
+                        {isVitalicio ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            <CheckCircle2 className="h-3.5 w-3.5" /> Isento de Cobrança (Acesso Master Geral)
+                          </span>
+                        ) : (
+                          <>
+                            <span className="text-sm font-extrabold text-white">
+                              R$ {subscriptionData.valorPlano > 0 ? subscriptionData.valorPlano.toFixed(2).replace('.', ',') : (subscriptionData.planoId === 'premium' ? '299,00' : '149,00')} / mês
+                            </span>
+                            <span className="text-[11px] text-slate-400 font-medium">
+                              (Tabela oficial OdontoSoft)
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 shrink-0">
+                      <Link
+                        href="/planos"
+                        target="_blank"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition-all backdrop-blur-sm"
+                      >
+                        <ExternalLink className="h-4 w-4" /> Comparar Todos os Planos
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* ── Quotas e Uso do Tenant ───────────────────────────── */}
+                  <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Dentistas</p>
+                      <p className="text-xl font-extrabold text-white mt-1">
+                        {subscriptionData.dentistasCadastrados} <span className="text-xs text-slate-400 font-normal">/ {subscriptionData.dentistasLimite}</span>
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-1">Profissionais ativos</p>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Pacientes</p>
+                      <p className="text-xl font-extrabold text-white mt-1">
+                        {subscriptionData.pacientesCadastrados} <span className="text-xs text-emerald-400 font-bold">Ilimitados</span>
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-1">Cadastros totais</p>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Armazenamento</p>
+                      <p className="text-xl font-extrabold text-white mt-1">
+                        {subscriptionData.armazenamentoUsadoMb} <span className="text-xs text-slate-400 font-normal">MB</span>
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-1">Imagens e prontuários</p>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Isolamento & RLS</p>
+                      <p className="text-xl font-extrabold text-emerald-300 mt-1 flex items-center gap-1.5">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400" /> Ativo
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-1">LGPD & CFO Compliant</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Seleção e Troca de Planos ────────────────────────────── */}
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Planos da Plataforma</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {isVitalicio
+                          ? 'Tabela comercial global praticada para novas clínicas e assinantes'
+                          : 'Escolha o plano ideal para a capacidade operacional da sua clínica'}
+                      </p>
+                    </div>
+                    {isVitalicio ? (
+                      <span className="text-xs font-black text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/50 px-3 py-1 rounded-xl flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-amber-500" /> Conta Geral Isenta de Cobrança
+                      </span>
+                    ) : !subscriptionData.podeGerenciar && (
+                      <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-xl">
+                        Apenas Administradores podem trocar de plano
+                      </span>
+                    )}
+                  </div>
+
+                  {isVitalicio && (
+                    <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs font-medium flex items-center gap-3">
+                      <Sparkles className="h-5 w-5 text-amber-500 shrink-0" />
+                      <span>
+                        Como <strong>Administrador Vitalício / Dono do SaaS</strong>, sua conta possui o pacote Master completo liberado em definitivo. Os valores de <strong>R$ 149</strong> e <strong>R$ 299</strong> são definidos globalmente por si para os clientes da plataforma e não geram encargos para a sua conta.
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* PLANO ESSENCIAL */}
+                    <div className={`p-8 rounded-[32px] border transition-all relative flex flex-col justify-between ${
+                      !isVitalicio && subscriptionData.planoId === 'essencial'
+                        ? 'border-blue-500 bg-blue-50/40 dark:bg-blue-950/20 shadow-md ring-2 ring-blue-500/20'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
+                    }`}>
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                            PLANO ESSENCIAL
+                          </span>
+                          {!isVitalicio && subscriptionData.planoId === 'essencial' && (
+                            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white flex items-center gap-1">
+                              <Check className="h-3.5 w-3.5" /> SEU PLANO ATUAL
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-baseline gap-1 mb-2">
+                          <span className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">R$ 149</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">/ mês</span>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
+                          Ideal para consultórios individuais e clínicas em fase de estruturação.
+                        </p>
+
+                        <div className="space-y-3 mb-8">
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                            <span>Até <strong>3 profissionais / dentistas</strong></span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                            <span>Pacientes e prontuários ilimitados</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                            <span>Agenda inteligente e disparo de confirmações</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                            <span>Controle de fluxo de caixa e relatórios financeiros</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                            <span>5 GB de armazenamento em nuvem</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {isVitalicio ? (
+                        <div className="w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-not-allowed">
+                          Plano Essencial (Tabela Comercial)
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleChangePlan('essencial')}
+                          disabled={subscriptionData.planoId === 'essencial' || isChangingPlan !== null || !subscriptionData.podeGerenciar}
+                          className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                            subscriptionData.planoId === 'essencial'
+                              ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-default'
+                              : 'bg-slate-800 hover:bg-slate-900 text-white shadow-sm'
+                          }`}
+                        >
+                          {isChangingPlan === 'essencial' ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : subscriptionData.planoId === 'essencial' ? (
+                            'Plano em Uso'
+                          ) : (
+                            'Mudar para Essencial'
+                          )}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* PLANO PREMIUM & COMPLIANCE */}
+                    <div className={`p-8 rounded-[32px] border transition-all relative flex flex-col justify-between ${
+                      isVitalicio
+                        ? 'border-amber-400/60 bg-gradient-to-b from-amber-500/5 to-yellow-500/10 dark:from-amber-950/20 dark:to-slate-850 shadow-md ring-2 ring-amber-400/20'
+                        : subscriptionData.planoId === 'premium'
+                        ? 'border-blue-500 bg-blue-50/40 dark:bg-blue-950/20 shadow-md ring-2 ring-blue-500/20'
+                        : 'border-blue-300 dark:border-blue-700 bg-gradient-to-b from-white to-blue-50/30 dark:from-slate-800 dark:to-slate-850 shadow-sm'
+                    }`}>
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-blue-100 text-blue-700 flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-blue-600" /> RECOMENDADO CFO & LGPD
+                          </span>
+                          {isVitalicio ? (
+                            <span className="px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 flex items-center gap-1 shadow-xs">
+                              👑 ACESSO VITALÍCIO ATIVO
+                            </span>
+                          ) : subscriptionData.planoId === 'premium' && (
+                            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white flex items-center gap-1">
+                              <Check className="h-3.5 w-3.5" /> SEU PLANO ATUAL
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-baseline gap-1 mb-2">
+                          <span className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">R$ 299</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">/ mês</span>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
+                          Para clínicas consolidadas que exigem blindagem jurídica total (CFO & LGPD).
+                        </p>
+
+                        <div className="space-y-3 mb-8">
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                            <span><strong>Dentistas e Usuários Ilimitados</strong></span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                            <span>Prontuário Imutável CFO 198/2019 (Bloqueio UPDATE/DELETE)</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                            <span>Trilha de Auditoria LGPD e hash SHA-256</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                            <span>50 GB com retenção de dados por 20 anos</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                            <span>Suporte VIP prioritário via WhatsApp</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {isVitalicio ? (
+                        <div className="w-full py-3 px-4 rounded-xl font-black text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500/20 via-yellow-500/25 to-amber-500/20 border border-amber-400/40 text-amber-800 dark:text-amber-200 shadow-sm">
+                          <Sparkles className="h-4 w-4 text-amber-500" /> Acesso Vitalício Master Ativo (Isento)
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleChangePlan('premium')}
+                          disabled={subscriptionData.planoId === 'premium' || isChangingPlan !== null || !subscriptionData.podeGerenciar}
+                          className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                            subscriptionData.planoId === 'premium'
+                              ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-default'
+                              : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/25'
+                          }`}
+                        >
+                          {isChangingPlan === 'premium' ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : subscriptionData.planoId === 'premium' ? (
+                            'Plano em Uso'
+                          ) : (
+                            'Fazer Upgrade para Premium'
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Histórico de Faturas & Recibos ──────────────────────── */}
+                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[32px] shadow-sm overflow-hidden">
+                  <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        Histórico de Faturamento e Recibos
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Extrato das faturas geradas para a clínica
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm border-collapse min-w-[600px]">
+                      <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
+                        <tr className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
+                          <th className="px-6 py-3.5">Fatura</th>
+                          <th className="px-6 py-3.5">Emissão</th>
+                          <th className="px-6 py-3.5">Plano</th>
+                          <th className="px-6 py-3.5">Valor</th>
+                          <th className="px-6 py-3.5">Status</th>
+                          <th className="px-6 py-3.5 text-right">Recibo</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                        {subscriptionData.faturas.map(fat => (
+                          <tr key={fat.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <td className="px-6 py-4 font-mono text-xs font-bold text-slate-700 dark:text-slate-200">
+                              {fat.numero}
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-600 dark:text-slate-300">
+                              {fat.dataEmissao}
+                            </td>
+                            <td className="px-6 py-4 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                              {fat.plano}
+                            </td>
+                            <td className="px-6 py-4 text-xs font-extrabold text-slate-800 dark:text-slate-100">
+                              {isVitalicio ? (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/40">
+                                  <CheckCircle2 className="h-3 w-3" /> Isento (Vitalício)
+                                </span>
+                              ) : fat.valor > 0 ? (
+                                `R$ ${fat.valor.toFixed(2).replace('.', ',')}`
+                              ) : (
+                                `R$ ${subscriptionData.planoId === 'premium' ? '299,00' : '149,00'}`
+                              )}
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold ${
+                                isVitalicio || fat.status === 'pago'
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  : 'bg-amber-50 text-amber-700 border border-amber-200'
+                              }`}>
+                                {isVitalicio ? 'ISENTO' : fat.status === 'pago' ? 'PAGO' : 'PENDENTE'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <button
+                                onClick={() => toast.success(`Recibo da fatura ${fat.numero} baixado com sucesso!`)}
+                                className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+                              >
+                                <Download className="h-3.5 w-3.5" /> Baixar PDF
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="p-8 text-center text-slate-500">
+                Não foi possível carregar os dados da assinatura.
+              </div>
+            )}
           </div>
         )}
 

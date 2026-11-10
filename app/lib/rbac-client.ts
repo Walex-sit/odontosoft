@@ -6,6 +6,31 @@ import { UserRole } from '../components/RequireAuth'
  * Usar prefixo: /pacientes cobre /pacientes, /pacientes/novo, etc.
  */
 export const ROUTE_PERMISSIONS: Record<UserRole, string[]> = {
+  super_admin: [
+    '/overview',
+    '/agenda',
+    '/pacientes',
+    '/patients',
+    '/prontuarios',
+    '/financeiro',
+    '/despesas',
+    '/fluxo-caixa',
+    '/fornecedores',
+    '/compras',
+    '/notas-fiscais',
+    '/usuarios',
+    '/logs',
+    '/assinatura',
+    '/minha-conta',
+    '/messages',
+    '/controle-de-protese',
+    '/establishment',
+    '/configuracoes',
+    '/estoque',
+    '/comissoes',
+    '/regua-cobranca',
+    '/planos-tratamento',
+  ],
   admin: [
     '/overview',
     '/agenda',

@@ -53,6 +53,11 @@ export const registrarClinicaPayloadSchema = z.object({
     .min(1, 'O nome da clínica é obrigatório.')
     .min(3, 'O nome da clínica deve ter pelo menos 3 caracteres.')
     .max(80, 'O nome da clínica não pode exceder 80 caracteres.'),
+  codigoOtp: z
+    .string()
+    .trim()
+    .length(6, 'O código de confirmação deve ter exatamente 6 dígitos.')
+    .regex(/^\d{6}$/, 'O código deve conter apenas dígitos numéricos.'),
 })
 
 export type RegisterFormData = z.infer<typeof registerSchema>

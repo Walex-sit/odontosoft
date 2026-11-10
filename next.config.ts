@@ -1,5 +1,18 @@
 import type { NextConfig } from 'next';
 
+const cspHeader = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://*.supabase.co",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "img-src 'self' blob: data: https://*.supabase.co https://*.stripe.com https://images.unsplash.com",
+  "font-src 'self' https://fonts.gstatic.com data:",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com",
+  "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ');
+
 const securityHeaders = [
   {
     key: 'X-DNS-Prefetch-Control',
@@ -24,6 +37,14 @@ const securityHeaders = [
   {
     key: 'Referrer-Policy',
     value: 'origin-when-cross-origin',
+  },
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+  },
+  {
+    key: 'Content-Security-Policy-Report-Only',
+    value: cspHeader,
   },
 ];
 

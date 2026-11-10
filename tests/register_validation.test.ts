@@ -94,10 +94,42 @@ describe('Validações de Registo de Clínica e Administrador (Zod)', () => {
   })
 
   describe('registrarClinicaPayloadSchema', () => {
-    it('deve validar nome de clínica para server action', () => {
-      expect(registrarClinicaPayloadSchema.safeParse({ nomeClinica: 'Clínica Sorriso' }).success).toBe(true)
-      expect(registrarClinicaPayloadSchema.safeParse({ nomeClinica: '  ab  ' }).success).toBe(false)
-      expect(registrarClinicaPayloadSchema.safeParse({ nomeClinica: '' }).success).toBe(false)
+    it('deve validar nome de clínica e codigoOtp de 6 dígitos', () => {
+      expect(
+        registrarClinicaPayloadSchema.safeParse({
+          nomeClinica: 'Clínica Sorriso',
+          codigoOtp: '849201',
+        }).success
+      ).toBe(true)
+
+      // Rejeita nome muito curto
+      expect(
+        registrarClinicaPayloadSchema.safeParse({
+          nomeClinica: '  ab  ',
+          codigoOtp: '849201',
+        }).success
+      ).toBe(false)
+
+      // Rejeita ausência de OTP
+      expect(
+        registrarClinicaPayloadSchema.safeParse({
+          nomeClinica: 'Clínica Sorriso',
+        }).success
+      ).toBe(false)
+
+      // Rejeita OTP com letras ou tamanho diferente de 6
+      expect(
+        registrarClinicaPayloadSchema.safeParse({
+          nomeClinica: 'Clínica Sorriso',
+          codigoOtp: '12345A',
+        }).success
+      ).toBe(false)
+      expect(
+        registrarClinicaPayloadSchema.safeParse({
+          nomeClinica: 'Clínica Sorriso',
+          codigoOtp: '12345',
+        }).success
+      ).toBe(false)
     })
   })
 })

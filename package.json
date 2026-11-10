@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "test:integration": "node tests/integration/run_integration.mjs",
     "test:e2e": "playwright test",
     "seed": "tsx scripts/seed.ts"
   },
@@ -32,6 +33,7 @@
     "react-dom": "19.2.4",
     "react-hook-form": "^7.85.0",
     "recharts": "^3.10.1",
+    "resend": "^6.37.0",
     "sonner": "^2.0.7",
     "stripe": "^23.0.0",
     "tailwind-merge": "^3.6.0",

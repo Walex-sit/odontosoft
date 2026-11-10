@@ -1,13 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { useAuth } from '../../components/RequireAuth'
-import { Eye, EyeOff, CheckCircle2, AlertCircle, Shield, User, Mail, ShieldCheck, KeyRound } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle2, AlertCircle, Shield, User, Mail, ShieldCheck, KeyRound, Save, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 const ROLE_LABELS: Record<string, string> = {
   admin: 'Administrador',
-  dentista: 'Dentista',
+  admin_clinica: 'Admin da Clínica',
+  dentista: 'Cirurgião-Dentista',
   recepcao: 'Recepção',
   financeiro: 'Financeiro',
 }
@@ -21,7 +23,10 @@ function validarSenha(senha: string): string | null {
 }
 
 export default function MinhaConta() {
-  const { profile, session } = useAuth()
+  const { profile, session, refreshProfile } = useAuth()
+
+  const [nome, setNome]                       = useState(profile?.nome || '')
+  const [salvandoNome, setSalvandoNome]       = useState(false)
 
   const [novaSenha, setNovaSenha]             = useState('')
   const [confirmaSenha, setConfirmaSenha]     = useState('')
@@ -30,6 +35,38 @@ export default function MinhaConta() {
   const [salvando, setSalvando]               = useState(false)
   const [sucesso, setSucesso]                 = useState(false)
   const [erro, setErro]                       = useState<string | null>(null)
+
+  useEffect(() => {
+    if (profile?.nome) {
+      setNome(profile.nome)
+    }
+  }, [profile?.nome])
+
+  async function atualizarNome() {
+    if (!profile?.id) return
+    if (!nome.trim()) {
+      toast.error('O nome não pode ficar em branco.')
+      return
+    }
+    setSalvandoNome(true)
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ nome: nome.trim() })
+        .eq('id', profile.id)
+
+      if (error) {
+        toast.error('Erro ao atualizar nome: ' + error.message)
+      } else {
+        await refreshProfile()
+        toast.success('Nome de usuário atualizado com sucesso!')
+      }
+    } catch (err: any) {
+      toast.error('Erro inesperado: ' + err.message)
+    } finally {
+      setSalvandoNome(false)
+    }
+  }
 
   async function alterarSenha() {
     setErro(null)
@@ -92,13 +129,30 @@ export default function MinhaConta() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Nome Completo</label>
-              <input
-                type="text"
-                value={profile?.nome || ''}
-                disabled
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 opacity-80 cursor-not-allowed"
-              />
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Nome Completo</label>
+                {nome.trim() !== (profile?.nome || '') && (
+                  <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">Alterações pendentes</span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  placeholder="Seu nome completo"
+                  className="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={atualizarNome}
+                  disabled={salvandoNome || !nome.trim() || nome.trim() === (profile?.nome || '')}
+                  className="px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0"
+                >
+                  {salvandoNome ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  Salvar
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">E-mail de Acesso</label>
@@ -137,7 +191,7 @@ export default function MinhaConta() {
         </section>
 
         {/* Card 2: Segurança */}
-        <section className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm">
+        <section id="seguranca" className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm scroll-mt-6">
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4 mb-6">
             <div className="p-2.5 bg-amber-50 text-amber-600 rounded-xl">
               <KeyRound className="h-5 w-5" />

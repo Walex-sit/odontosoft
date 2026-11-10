@@ -1,5 +1,14 @@
-﻿import { createClient } from '@supabase/supabase-js';
-const sb = createClient('https://jabtmplfjwtrfzwlwjax.supabase.co', 'sb_secret_ex4cvgRR7xjMq6yPSeegeA_k318vRPw', { auth: { autoRefreshToken: false, persistSession: false } });
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !serviceRoleKey) {
+  console.error('[Segurança] ERRO: NEXT_PUBLIC_SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY não configuradas.');
+  process.exit(1);
+}
+
+const sb = createClient(supabaseUrl, serviceRoleKey, { auth: { autoRefreshToken: false, persistSession: false } });
 const CLINICA_ID = '78733a3f-708c-4f08-8af3-94d0929707e4';
 const DEMO_EMAIL = 'demo@odontosoft.com.br';
 async function main() {

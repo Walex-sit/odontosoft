@@ -178,7 +178,7 @@ export async function updateClinicaSettings(payload: {
       }
     }
 
-    // 2. Atualiza a tabela clinica_settings
+    // 2. Atualiza ou insere na tabela clinica_settings com isolamento estrito por clinica_id
     const updateSettingsPayload: {
       nome?: string
       cnpj?: string | null
@@ -195,14 +195,47 @@ export async function updateClinicaSettings(payload: {
       updated_at: new Date().toISOString(),
     }
 
-    const { error } = await supabase
-      .from('clinica_settings')
-      .update(updateSettingsPayload)
-      .eq('id', id)
+    if (targetClinicaId) {
+      const { data: existingSettings } = await supabase
+        .from('clinica_settings')
+        .select('id')
+        .eq('clinica_id', targetClinicaId)
+        .maybeSingle()
 
-    if (error) {
-      console.error('[clinica] updateClinicaSettings error:', error.message)
-      return { success: false, error: error.message }
+      if (existingSettings) {
+        const { error } = await supabase
+          .from('clinica_settings')
+          .update(updateSettingsPayload)
+          .eq('id', existingSettings.id)
+
+        if (error) {
+          console.error('[clinica] updateClinicaSettings error:', error.message)
+          return { success: false, error: error.message }
+        }
+      } else {
+        const { error } = await supabase
+          .from('clinica_settings')
+          .insert({
+            ...updateSettingsPayload,
+            clinica_id: targetClinicaId,
+            nome: fields.nome || 'Minha Clínica',
+          })
+
+        if (error) {
+          console.error('[clinica] insertClinicaSettings error:', error.message)
+          return { success: false, error: error.message }
+        }
+      }
+    } else {
+      const { error } = await supabase
+        .from('clinica_settings')
+        .update(updateSettingsPayload)
+        .eq('id', id)
+
+      if (error) {
+        console.error('[clinica] updateClinicaSettings error:', error.message)
+        return { success: false, error: error.message }
+      }
     }
 
     return { success: true }

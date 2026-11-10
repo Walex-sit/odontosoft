@@ -11,11 +11,12 @@
 import { createClient } from '@supabase/supabase-js'
 import * as crypto from 'crypto'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://jabtmplfjwtrfzwlwjax.supabase.co'
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'sb_secret_ex4cvgRR7xjMq6yPSeegeA_k318vRPw'
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!supabaseUrl || !serviceRoleKey) {
-  console.error('ERRO: NEXT_PUBLIC_SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY não configuradas.')
+  console.error('[Segurança] ERRO: NEXT_PUBLIC_SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY não configuradas no ambiente.')
+  console.error('[Segurança] Configure as variáveis de ambiente antes de executar o script.')
   process.exit(1)
 }
 

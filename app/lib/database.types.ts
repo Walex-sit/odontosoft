@@ -5,7 +5,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-export type UserRole = 'admin' | 'admin_clinica' | 'dentista' | 'recepcao' | 'financeiro'
+export type UserRole = 'admin' | 'admin_clinica' | 'dentista' | 'recepcao' | 'financeiro' | 'super_admin'
 
 export type Json =
   | string
@@ -36,6 +36,7 @@ export interface Database {
           cancelamento_em: string | null
           criado_em: string
           atualizado_em: string
+          trial_ends_at: string | null
         }
         Insert: {
           id?: string
@@ -54,6 +55,7 @@ export interface Database {
           cancelamento_em?: string | null
           criado_em?: string
           atualizado_em?: string
+          trial_ends_at?: string | null
         }
         Update: {
           id?: string
@@ -72,6 +74,7 @@ export interface Database {
           cancelamento_em?: string | null
           criado_em?: string
           atualizado_em?: string
+          trial_ends_at?: string | null
         }
         Relationships: []
       }
@@ -135,6 +138,7 @@ export interface Database {
           especialidade: string | null
           clinica_id: string | null
           created_at: string
+          is_lifetime: boolean
         }
         Insert: {
           id: string
@@ -144,6 +148,7 @@ export interface Database {
           especialidade?: string | null
           clinica_id?: string | null
           created_at?: string
+          is_lifetime?: boolean
         }
         Update: {
           id?: string
@@ -153,6 +158,7 @@ export interface Database {
           especialidade?: string | null
           clinica_id?: string | null
           created_at?: string
+          is_lifetime?: boolean
         }
         Relationships: []
       }
@@ -770,31 +776,28 @@ export interface Database {
         Row: {
           id: string
           clinica_id: string | null
-          nome: string
-          descricao: string | null
+          nome_item: string
           quantidade: number | null
+          quantidade_minima: number | null
           unidade: string | null
-          minimo: number | null
           created_at: string
         }
         Insert: {
           id?: string
           clinica_id?: string | null
-          nome: string
-          descricao?: string | null
+          nome_item: string
           quantidade?: number | null
+          quantidade_minima?: number | null
           unidade?: string | null
-          minimo?: number | null
           created_at?: string
         }
         Update: {
           id?: string
           clinica_id?: string | null
-          nome?: string
-          descricao?: string | null
+          nome_item?: string
           quantidade?: number | null
+          quantidade_minima?: number | null
           unidade?: string | null
-          minimo?: number | null
           created_at?: string
         }
         Relationships: []
@@ -1135,6 +1138,36 @@ export interface Database {
           ip?: string | null
           user_agent?: string | null
           created_at?: string
+        }
+        Relationships: []
+      }
+      user_verification_codes: {
+        Row: {
+          id: string
+          email: string
+          code: string
+          created_at: string
+          expires_at: string
+          used: boolean
+          attempts: number
+        }
+        Insert: {
+          id?: string
+          email: string
+          code: string
+          created_at?: string
+          expires_at?: string
+          used?: boolean
+          attempts?: number
+        }
+        Update: {
+          id?: string
+          email?: string
+          code?: string
+          created_at?: string
+          expires_at?: string
+          used?: boolean
+          attempts?: number
         }
         Relationships: []
       }

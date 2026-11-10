@@ -84,6 +84,15 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
     return () => clearTimeout(delayDebounceFn)
   }, [searchTerm, selectedPaciente])
 
+  function resetForm() {
+    setSearchTerm('')
+    setSelectedPaciente(null)
+    setTipoReceituario('comum')
+    setObservacoesGlobais('')
+    setItens([])
+    setNovoItem({ medicamento: '', concentracao: '', forma_farm: '', quantidade: '', posologia: '', instrucoes: '' })
+  }
+
   // Resetar quando fechar
   useEffect(() => {
     if (!isOpen) {
@@ -103,15 +112,6 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
   }, [])
 
   // ─── Handlers ───────────────────────────────────────────────────────────────
-
-  const resetForm = () => {
-    setSearchTerm('')
-    setSelectedPaciente(null)
-    setTipoReceituario('comum')
-    setObservacoesGlobais('')
-    setItens([])
-    setNovoItem({ medicamento: '', concentracao: '', forma_farm: '', quantidade: '', posologia: '', instrucoes: '' })
-  }
 
   const handleSelectPaciente = (paciente: Paciente) => {
     setSelectedPaciente(paciente)

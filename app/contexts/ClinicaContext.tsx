@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../components/RequireAuth'
-import { getCached, setCached } from '../lib/cache'
+import { getCached, setCached, invalidateCache } from '../lib/cache'
 
 interface ClinicaData {
   id: string
@@ -33,57 +33,60 @@ export function ClinicaProvider({ children }: { children: React.ReactNode }) {
   const [clinica, setClinica] = useState<ClinicaData | null>(cachedClinica)
   const [loading, setLoading] = useState(cachedClinica === null)
 
-  useEffect(() => {
-    let mounted = true
+  const fetchClinicaData = async () => {
+    if (!session?.user?.id) {
+      setLoading(false)
+      return
+    }
 
-    async function fetchClinicaData() {
-      if (!session) {
-        if (mounted) setLoading(false)
+    try {
+      // 1. Obter clinica_id do perfil do usuário autenticado (isolamento multi-tenant obrigatório)
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('clinica_id')
+        .eq('id', session.user.id)
+        .maybeSingle()
+
+      const targetClinicaId = profile?.clinica_id
+
+      if (!targetClinicaId) {
+        setClinica(null)
+        setLoading(false)
         return
       }
 
-      try {
-        // 1. Obter clinica_id do perfil do usuário autenticado
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('clinica_id')
-          .eq('id', session.user.id)
-          .maybeSingle()
+      // 2. Buscar em paralelo os dados da clínica e as configurações de visualização
+      const [clinicaRes, settingsRes] = await Promise.all([
+        supabase
+          .from('clinicas')
+          .select('id, nome')
+          .eq('id', targetClinicaId)
+          .maybeSingle(),
+        supabase
+          .from('clinica_settings')
+          .select('logo_url, nome_exibido')
+          .eq('clinica_id', targetClinicaId)
+          .maybeSingle(),
+      ])
 
-        const targetClinicaId = profile?.clinica_id
-
-        // 2. Buscar dados da clínica específica do usuário
-        let clinicaQuery = supabase.from('clinicas').select('id, nome')
-        if (targetClinicaId) {
-          clinicaQuery = clinicaQuery.eq('id', targetClinicaId)
-        }
-        const { data: clinicaData } = await clinicaQuery.limit(1).maybeSingle()
-
-        // 3. Buscar configurações da clínica do usuário
-        let settingsQuery = supabase.from('clinica_settings').select('logo_url, nome_exibido')
-        if (targetClinicaId) {
-          settingsQuery = settingsQuery.eq('clinica_id', targetClinicaId)
-        }
-        const { data: settingsData } = await settingsQuery.limit(1).maybeSingle()
-
-        const clinicInfo: ClinicaData = {
-          id: clinicaData?.id || '',
-          nome: clinicaData?.nome || '',
-          logo_url: settingsData?.logo_url || null,
-          nome_exibido: settingsData?.nome_exibido || null,
-        }
-
-        setCached('clinica:info', clinicInfo)
-
-        if (mounted) {
-          setClinica(clinicInfo)
-          setLoading(false)
-        }
-      } catch (error) {
-        console.error('Erro ao buscar dados da clínica:', error)
-        if (mounted) setLoading(false)
+      const clinicInfo: ClinicaData = {
+        id: clinicaRes.data?.id || targetClinicaId,
+        nome: clinicaRes.data?.nome || '',
+        logo_url: settingsRes.data?.logo_url || null,
+        nome_exibido: settingsRes.data?.nome_exibido || null,
       }
+
+      setCached('clinica:info', clinicInfo)
+      setClinica(clinicInfo)
+      setLoading(false)
+    } catch (error) {
+      console.error('Erro ao buscar dados da clínica:', error)
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
+    let mounted = true
 
     fetchClinicaData()
 
@@ -94,18 +97,20 @@ export function ClinicaProvider({ children }: { children: React.ReactNode }) {
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'clinicas' },
         (payload: any) => {
-          if (payload.new && payload.new.nome !== undefined) {
+          if (payload.new && mounted) {
             setClinica((prev) => {
-              // Só atualiza se for a mesma clínica do utilizador
+              // Só atualiza se for a mesma clínica do usuário
               if (prev?.id && payload.new.id && payload.new.id !== prev.id) {
                 return prev
               }
-              return {
+              const updated: ClinicaData = {
                 id: payload.new.id || prev?.id || '',
-                nome: payload.new.nome,
+                nome: payload.new.nome !== undefined ? payload.new.nome : (prev?.nome || ''),
                 logo_url: prev?.logo_url || null,
                 nome_exibido: prev?.nome_exibido || null,
               }
+              setCached('clinica:info', updated)
+              return updated
             })
           }
         }
@@ -119,17 +124,19 @@ export function ClinicaProvider({ children }: { children: React.ReactNode }) {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'clinica_settings' },
         (payload: any) => {
-          if (payload.new) {
+          if (payload.new && mounted) {
             setClinica((prev) => {
               if (prev?.id && payload.new.clinica_id && payload.new.clinica_id !== prev.id) {
                 return prev
               }
-              return {
-                id: prev?.id || '',
+              const updated: ClinicaData = {
+                id: prev?.id || payload.new.clinica_id || '',
                 nome: prev?.nome || '',
                 logo_url: payload.new.logo_url !== undefined ? payload.new.logo_url : (prev?.logo_url || null),
                 nome_exibido: payload.new.nome_exibido !== undefined ? payload.new.nome_exibido : (prev?.nome_exibido || null),
               }
+              setCached('clinica:info', updated)
+              return updated
             })
           }
         }
@@ -141,43 +148,11 @@ export function ClinicaProvider({ children }: { children: React.ReactNode }) {
       supabase.removeChannel(channelClinicas)
       supabase.removeChannel(channelSettings)
     }
-  }, [session])
+  }, [session?.user?.id])
 
   const refreshClinica = async () => {
-    if (!session) return
-    try {
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('clinica_id')
-        .eq('id', session.user.id)
-        .maybeSingle()
-
-      const targetClinicaId = profile?.clinica_id
-
-      let clinicaQuery = supabase.from('clinicas').select('id, nome')
-      if (targetClinicaId) {
-        clinicaQuery = clinicaQuery.eq('id', targetClinicaId)
-      }
-      const { data: clinicaData } = await clinicaQuery.limit(1).maybeSingle()
-
-      let settingsQuery = supabase.from('clinica_settings').select('logo_url, nome_exibido')
-      if (targetClinicaId) {
-        settingsQuery = settingsQuery.eq('clinica_id', targetClinicaId)
-      }
-      const { data: settingsData } = await settingsQuery.limit(1).maybeSingle()
-
-      const clinicInfo: ClinicaData = {
-        id: clinicaData?.id || '',
-        nome: clinicaData?.nome || '',
-        logo_url: settingsData?.logo_url || null,
-        nome_exibido: settingsData?.nome_exibido || null,
-      }
-
-      setCached('clinica:info', clinicInfo)
-      setClinica(clinicInfo)
-    } catch (err) {
-      console.error('Erro no refreshClinica:', err)
-    }
+    invalidateCache('clinica:info')
+    await fetchClinicaData()
   }
 
   return (

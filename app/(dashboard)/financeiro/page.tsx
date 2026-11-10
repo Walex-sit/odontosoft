@@ -26,6 +26,9 @@ import {
   type KpisFinanceiro,
   type ProfissionalSelectItem,
 } from '@/app/actions/financeiro'
+import { TableSkeleton } from '@/app/components/ui/Skeleton'
+import { EmptyState } from '@/app/components/ui/EmptyState'
+import { ErrorState } from '@/app/components/ui/ErrorState'
 
 // ─── Tipos ────────────────────────────────────────────────
 type TabId = 'painel' | 'fluxo' | 'boletos' | 'comissoes'
@@ -374,33 +377,33 @@ export default function FinanceiroPage() {
   ]
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-slate-900">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#F8FAFC] dark:bg-[#0B1120]">
 
       {/* ── PAGE HEADER ──────────────────────────────── */}
-      <div className="px-4 sm:px-8 pt-6 pb-0 shrink-0">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+      <div className="px-4 sm:px-8 pt-6 pb-2 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Financeiro</h1>
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5">Gestão financeira completa da sua clínica</p>
+            <h1 className="text-2xl font-black text-slate-900 dark:text-slate-50 tracking-tight">Financeiro</h1>
+            <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-0.5">Gestão de fluxo de caixa, boletos, conciliação e comissões</p>
           </div>
-          <div className="flex gap-2 self-start sm:self-auto">
+          <div className="flex gap-2.5 self-start sm:self-auto">
             <button
               onClick={() => setShowNewModal('receita')}
-              className="h-9 sm:h-10 px-3 sm:px-5 rounded-xl font-bold text-sm bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center gap-2"
+              className="h-10 px-4 sm:px-5 rounded-2xl font-bold text-xs sm:text-sm bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-sm shadow-blue-500/25 flex items-center gap-2 active:scale-95"
             >
               <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Nova </span>Receita
             </button>
             <button
               onClick={() => setShowNewModal('despesa')}
-              className="h-9 sm:h-10 px-3 sm:px-5 rounded-xl font-bold text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm flex items-center gap-2"
+              className="h-10 px-4 sm:px-5 rounded-2xl font-bold text-xs sm:text-sm bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-2xs flex items-center gap-2 active:scale-95"
             >
               <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Nova </span>Despesa
             </button>
           </div>
         </div>
 
-        {/* ── TABS ────────────────────────────────────── */}
-        <div className="flex gap-0.5 sm:gap-1 border-b border-slate-200 dark:border-slate-700 overflow-x-auto scrollbar-none">
+        {/* ── TABS (Estilo Bento Pills) ────────────────── */}
+        <div className="flex gap-1.5 p-1 bg-slate-200/60 dark:bg-slate-900/80 rounded-2xl w-fit border border-slate-200/70 dark:border-slate-800 overflow-x-auto scrollbar-none">
           {tabs.map(tab => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -408,13 +411,13 @@ export default function FinanceiroPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-3 text-xs sm:text-sm font-bold border-b-2 transition-all -mb-px whitespace-nowrap ${
+                className={`flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-extrabold rounded-xl transition-all whitespace-nowrap ${
                   isActive
-                    ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:bg-slate-800/50 rounded-t-lg'
-                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200 hover:border-slate-300 dark:border-slate-700'
+                    ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
-                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <Icon className="h-4 w-4" />
                 {tab.label}
               </button>
             )
@@ -427,56 +430,67 @@ export default function FinanceiroPage() {
 
         {/* ═══ ABA: PAINEL ═══════════════════════════ */}
         {activeTab === 'painel' && (
-          <div className="p-4 sm:p-8 space-y-8 animate-in fade-in duration-300">
+          <div className="p-4 sm:p-8 space-y-6 sm:space-y-8 animate-in fade-in duration-300 max-w-7xl mx-auto w-full">
 
-            {/* KPIs */}
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            {/* KPIs Bento Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5">
               {[
                 { label: 'Faturamento Total', value: fmt(kpisDinamicos.faturamentoTotal), change: 'Total', trend: 'up', icon: DollarSign, color: 'blue' },
                 { label: 'Total Recebido', value: fmt(kpisDinamicos.totalRecebido), change: 'Recebido', trend: 'up', icon: TrendingUp, color: 'green' },
                 { label: 'A Receber', value: fmt(kpisDinamicos.aReceber), change: 'Pendente', trend: 'neutral', icon: Clock, color: 'amber' },
                 { label: 'Inadimplência', value: fmt(kpisDinamicos.inadimplencia), change: '> 30 dias', trend: 'down', icon: AlertTriangle, color: 'red' },
-                { label: 'Despesas do Mês', value: fmt(kpisDinamicos.despesasPeriodo), change: 'Saídas', trend: 'down', icon: TrendingDown, color: 'purple' },
+                { label: 'Despesas do Mês', value: fmt(kpisDinamicos.despesasPeriodo), change: 'Saídas', trend: 'down', icon: TrendingDown, color: 'cyan' },
               ].map((kpi, i) => {
                 const Icon = kpi.icon
                 const colorMap: Record<string, string> = {
-                  blue: 'bg-blue-50 text-blue-600',
-                  green: 'bg-green-50 text-green-600',
-                  amber: 'bg-amber-50 text-amber-600',
-                  red: 'bg-red-50 text-red-600',
-                  purple: 'bg-purple-50 text-purple-600',
+                  blue: 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',
+                  green: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400',
+                  amber: 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400',
+                  red: 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400',
+                  cyan: 'bg-cyan-50 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-400',
                 }
+
                 return (
-                  <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow">
+                  <div key={i} className="bento-card bento-card-interactive p-6 rounded-3xl shadow-bento flex flex-col justify-between">
                     <div className="flex items-center justify-between mb-3">
-                      <div className={`p-2.5 rounded-xl ${colorMap[kpi.color]}`}>
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <span className={`text-xs font-bold px-2 py-1 rounded-lg ${
-                        kpi.trend === 'up' ? 'bg-green-50 text-green-600' :
-                        kpi.trend === 'down' ? 'bg-red-50 text-red-600' :
-                        'bg-slate-100 text-slate-500 dark:text-slate-400'
-                      }`}>
-                        {kpi.change}
+                      <span className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                        {kpi.label}
                       </span>
+                      <div className={`p-2 rounded-xl ${colorMap[kpi.color || 'green']}`}>
+                        <Icon className="h-4 w-4" />
+                      </div>
                     </div>
-                    <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">{kpi.value}</p>
-                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">{kpi.label}</p>
+                    <div className="mt-auto">
+                      <p className="text-2xl font-black text-slate-900 dark:text-slate-50 tracking-tight">{kpi.value}</p>
+                      <div className="flex items-center gap-1.5 mt-2">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                          kpi.trend === 'up' ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/50' :
+                          kpi.trend === 'down' ? 'bg-rose-50 text-rose-700 border-rose-200/60 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800/50' :
+                          'bg-amber-50 text-amber-700 border-amber-200/60 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/50'
+                        }`}>
+                          {kpi.change}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 )
               })}
             </div>
 
             {/* Gráfico de Fluxo de Caixa */}
-            <div className="bg-white dark:bg-slate-800 rounded-[24px] p-6 border border-slate-200 dark:border-slate-700 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)]">
-              <div className="flex items-center justify-between mb-6">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-bento">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                  <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100">Fluxo de Caixa</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Entradas vs. Saídas (últimos 6 meses)</p>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight">Fluxo de Caixa</h3>
+                  <p className="text-xs sm:text-sm font-semibold text-slate-400 dark:text-slate-500 mt-0.5">Entradas vs. Saídas (últimos 6 meses)</p>
                 </div>
-                <div className="flex items-center gap-4 text-xs font-bold">
-                  <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded-full bg-blue-500"></div> Entradas</div>
-                  <div className="flex items-center gap-1.5"><div className="h-3 w-3 rounded-full bg-red-400"></div> Saídas</div>
+                <div className="flex items-center gap-3 text-xs font-bold">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                    <span className="h-2 w-2 rounded-full bg-blue-500"></span> Entradas
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/60">
+                    <span className="h-2 w-2 rounded-full bg-rose-500"></span> Saídas
+                  </span>
                 </div>
               </div>
               {/* Gráfico derivado dos lançamentos reais (últimos 6 meses) */}
@@ -508,19 +522,19 @@ export default function FinanceiroPage() {
                   <div className="flex items-end gap-4 h-56">
                     {chartPoints.map((d, i) => (
                       <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                        <div className="w-full flex gap-1 items-end justify-center h-48">
+                        <div className="w-full flex gap-1.5 items-end justify-center h-48">
                           <div
-                            className="w-5 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg transition-all duration-500 hover:from-blue-600 hover:to-blue-500"
+                            className="w-5 bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-xl transition-all duration-500 hover:from-blue-700 hover:to-blue-500 shadow-xs"
                             style={{ height: `${(d.entradas / maxVal) * 100}%` }}
                             title={`Entradas: ${fmt(d.entradas)}`}
                           ></div>
                           <div
-                            className="w-5 bg-gradient-to-t from-red-400 to-red-300 rounded-t-lg transition-all duration-500 hover:from-red-500 hover:to-red-400"
+                            className="w-5 bg-gradient-to-t from-rose-500 to-rose-400 rounded-t-xl transition-all duration-500 hover:from-rose-600 hover:to-rose-500 shadow-xs"
                             style={{ height: `${(d.saidas / maxVal) * 100}%` }}
                             title={`Saídas: ${fmt(d.saidas)}`}
                           ></div>
                         </div>
-                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{d.mes}</span>
+                        <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{d.mes}</span>
                       </div>
                     ))}
                   </div>
@@ -529,14 +543,17 @@ export default function FinanceiroPage() {
             </div>
 
             {/* Últimos Lançamentos (resumo) */}
-            <div className="bg-white dark:bg-slate-800 rounded-[24px] p-6 border border-slate-200 dark:border-slate-700 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)]">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100">Últimos Lançamentos</h3>
-                <button onClick={() => setActiveTab('fluxo')} className="text-sm font-bold text-blue-600 hover:text-blue-700">
-                  Ver todos →
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-bento">
+              <div className="flex items-center justify-between mb-5">
+                <div>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight">Últimos Lançamentos</h3>
+                  <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-0.5">Transações registradas recentemente</p>
+                </div>
+                <button onClick={() => setActiveTab('fluxo')} className="text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-500 flex items-center gap-1 transition-colors">
+                  Ver todos <ArrowUpRight className="h-4 w-4" />
                 </button>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {lancamentosLoading ? (
                   <div className="flex items-center justify-center py-6 text-slate-400 text-sm gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" /> Carregando lançamentos...
@@ -545,17 +562,17 @@ export default function FinanceiroPage() {
                   <p className="text-sm text-slate-400 text-center py-6">Nenhum lançamento recente.</p>
                 ) : (
                   lancamentosList.slice(0, 4).map(l => (
-                    <div key={l.id} className="flex items-center justify-between gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <div key={l.id} className="flex items-center justify-between gap-3 p-3.5 bg-slate-50/80 dark:bg-slate-800/50 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:bg-slate-100/70 dark:hover:bg-slate-800 transition-colors">
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className={`p-2 rounded-lg shrink-0 ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                        <div className={`p-2.5 rounded-xl shrink-0 ${l.tipo === 'entrada' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' : 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400'}`}>
                           {l.tipo === 'entrada' ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{l.descricao}</p>
-                          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate">{fmtData(l.data)} · {l.categoria}</p>
+                          <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">{l.descricao}</p>
+                          <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 truncate">{fmtData(l.data)} · {l.categoria}</p>
                         </div>
                       </div>
-                      <span className={`text-sm font-extrabold shrink-0 ${l.tipo === 'entrada' ? 'text-green-600' : 'text-red-500'}`}>
+                      <span className={`text-sm font-black shrink-0 ${l.tipo === 'entrada' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                         {l.tipo === 'entrada' ? '+' : '-'} {fmt(l.valor)}
                       </span>
                     </div>
@@ -571,21 +588,21 @@ export default function FinanceiroPage() {
           <div className="p-4 sm:p-8 space-y-6 animate-in fade-in duration-300">
 
             {/* Filtros */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-wrap gap-3 items-center">
-              <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 flex-1 min-w-[200px] max-w-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-bento flex flex-wrap gap-3 items-center">
+              <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl px-3.5 py-2 flex-1 min-w-[200px] max-w-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
                 <Search className="h-4 w-4 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Buscar lançamento ou categoria..."
                   value={searchFilter}
                   onChange={e => setSearchFilter(e.target.value)}
-                  className="bg-transparent border-none outline-none text-sm w-full text-slate-800 dark:text-slate-100 placeholder-slate-500 font-medium"
+                  className="bg-transparent border-none outline-none text-xs sm:text-sm w-full text-slate-800 dark:text-slate-100 placeholder-slate-400 font-semibold"
                 />
               </div>
               <select
                 value={periodoFilter}
                 onChange={e => setPeriodoFilter(e.target.value as PeriodoFilter)}
-                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+                className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
               >
                 <option value="este_mes">Este Mês</option>
                 <option value="mes_passado">Mês Passado</option>
@@ -598,7 +615,7 @@ export default function FinanceiroPage() {
               <select
                 value={statusFilter}
                 onChange={e => setStatusFilter(e.target.value as StatusFilter)}
-                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+                className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
               >
                 <option value="todos">Todos os Status</option>
                 <option value="pago">Pago</option>
@@ -608,7 +625,7 @@ export default function FinanceiroPage() {
               <select
                 value={profissionalFilter}
                 onChange={e => setProfissionalFilter(e.target.value)}
-                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+                className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl px-3.5 py-2 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500"
               >
                 <option value="todos">Todos os Profissionais</option>
                 {profissionaisList.map(p => (
@@ -618,7 +635,7 @@ export default function FinanceiroPage() {
               <button
                 onClick={handleExportCSV}
                 disabled={lancamentosLoading || lancamentosList.length === 0}
-                className="ml-auto h-9 px-4 rounded-xl text-sm font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="ml-auto h-10 px-4 rounded-2xl text-xs sm:text-sm font-bold bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <Download className="h-4 w-4" /> Exportar
               </button>
@@ -626,7 +643,7 @@ export default function FinanceiroPage() {
 
             {/* Resumo KPIs Dinâmicos */}
             {!lancamentosLoading && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
                 {[
                   { label: 'Faturamento', value: kpisDinamicos.faturamentoTotal, color: 'blue', icon: DollarSign },
                   { label: 'Recebido', value: kpisDinamicos.totalRecebido, color: 'green', icon: TrendingUp },
@@ -636,44 +653,46 @@ export default function FinanceiroPage() {
                 ].map((k, i) => {
                   const Icon = k.icon
                   const colorMap: Record<string, string> = {
-                    blue: 'text-blue-600 bg-blue-50',
-                    green: 'text-green-600 bg-green-50',
-                    amber: 'text-amber-600 bg-amber-50',
-                    red: 'text-red-600 bg-red-50',
-                    purple: 'text-purple-600 bg-purple-50',
+                    blue: 'text-blue-600 bg-blue-50 dark:bg-blue-950/40 dark:text-blue-400',
+                    green: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-400',
+                    amber: 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400',
+                    red: 'text-rose-600 bg-rose-50 dark:bg-rose-950/40 dark:text-rose-400',
+                    purple: 'text-purple-600 bg-purple-50 dark:bg-purple-950/40 dark:text-purple-400',
                   }
                   return (
-                    <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                      <div className={`inline-flex p-1.5 rounded-lg mb-2 ${colorMap[k.color]}`}>
+                    <div key={i} className="bento-card p-4 rounded-2xl shadow-2xs">
+                      <div className={`inline-flex p-1.5 rounded-xl mb-2 ${colorMap[k.color]}`}>
                         <Icon className="h-3.5 w-3.5" />
                       </div>
-                      <p className="text-base font-extrabold text-slate-800 dark:text-slate-100 leading-tight">{fmt(k.value)}</p>
-                      <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">{k.label}</p>
+                      <p className="text-base font-black text-slate-900 dark:text-slate-100 leading-tight">{fmt(k.value)}</p>
+                      <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 mt-0.5">{k.label}</p>
                     </div>
                   )
                 })}
               </div>
             )}
 
-            {/* Lista de Lançamentos em Cards */}
+            {/* Lista de Lançamentos com Skeleton e EmptyState */}
             {lancamentosLoading ? (
-              <div className="flex flex-col items-center justify-center py-24 gap-3">
-                <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Buscando lançamentos no Supabase...</p>
+              <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                <TableSkeleton rows={4} cols={5} />
               </div>
             ) : lancamentosList.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-24 text-center">
-                <Wallet className="h-14 w-14 text-slate-300 dark:text-slate-600 mb-3" />
-                <p className="text-base font-bold text-slate-600 dark:text-slate-300">Nenhum lançamento encontrado</p>
-                <p className="text-sm font-medium text-slate-400 mt-1">Tente ajustar os filtros ou adicione uma nova receita ou despesa.</p>
-              </div>
+              <EmptyState
+                icon={<Wallet size={30} />}
+                title="Nenhum lançamento encontrado"
+                description="Tente ajustar os filtros selecionados ou registre uma nova receita ou despesa para alimentar o fluxo de caixa."
+                actionLabel="Nova Receita"
+                actionIcon={<Plus size={15} />}
+                onAction={() => setShowNewModal('receita')}
+              />
             ) : (
               <div className="space-y-3">
                 {lancamentosList.map(l => (
-                  <div key={l.id} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all">
+                  <div key={l.id} className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-bento hover:shadow-md transition-all">
                     {/* Linha superior: ícone + descrição + botão ações */}
                     <div className="flex items-start gap-3">
-                      <div className={`p-2.5 rounded-xl shrink-0 mt-0.5 ${l.tipo === 'entrada' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                      <div className={`p-2.5 rounded-2xl shrink-0 mt-0.5 ${l.tipo === 'entrada' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' : 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400'}`}>
                         {l.tipo === 'entrada' ? <ArrowUpRight className="h-5 w-5" /> : <ArrowDownRight className="h-5 w-5" />}
                       </div>
 

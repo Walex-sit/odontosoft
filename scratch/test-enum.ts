@@ -1,6 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 
-const sb = createClient('https://jabtmplfjwtrfzwlwjax.supabase.co', 'sb_secret_ex4cvgRR7xjMq6yPSeegeA_k318vRPw')
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!supabaseUrl || !serviceRoleKey) {
+  console.error('[Segurança] ERRO: Variáveis de ambiente não configuradas.')
+  process.exit(1)
+}
+
+const sb = createClient(supabaseUrl, serviceRoleKey)
 
 async function main() {
   const { data: users } = await sb.auth.admin.listUsers({ perPage: 10 })

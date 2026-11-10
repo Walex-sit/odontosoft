@@ -51,8 +51,13 @@ export async function createUserAccount(data: {
       .eq('id', user.id)
       .single()
 
-    if (profileErr || !profile || (profile.role !== 'admin' && profile.role !== 'admin_clinica')) {
+    const callerRole = profile?.role as string
+    if (profileErr || !profile || !['admin', 'admin_clinica', 'super_admin'].includes(callerRole)) {
       return { success: false, error: 'Apenas administradores podem cadastrar novos membros.' }
+    }
+
+    if (data.role === 'super_admin' && callerRole !== 'super_admin') {
+      return { success: false, error: 'Apenas Super Administradores podem cadastrar usuários com esta função.' }
     }
 
     const clinicaId = profile.clinica_id
@@ -108,6 +113,134 @@ export async function createUserAccount(data: {
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Erro desconhecido ao criar usuário.'
     console.error('[users.createUserAccount] Exceção:', msg)
+    return { success: false, error: msg }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Convida novo membro da equipe associando clinica_id e cargo (T001 Multi-tenant)
+// ---------------------------------------------------------------------------
+export async function inviteTeamMember(data: {
+  nome: string
+  email: string
+  role: string
+  especialidade?: string
+}): Promise<{ success: boolean; inviteLink?: string; error?: string }> {
+  try {
+    const supabase = await createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: 'Não autorizado: faça login como administrador.' }
+    }
+
+    const { data: profile, error: profileErr } = await supabase
+      .from('user_profiles')
+      .select('role, clinica_id, nome')
+      .eq('id', user.id)
+      .single()
+
+    const callerRole = profile?.role as string
+    if (profileErr || !profile || !['admin', 'admin_clinica', 'super_admin'].includes(callerRole)) {
+      return { success: false, error: 'Apenas administradores podem convidar novos membros.' }
+    }
+
+    if (data.role === 'super_admin' && callerRole !== 'super_admin') {
+      return { success: false, error: 'Apenas Super Administradores podem convidar membros com esta função.' }
+    }
+
+    const clinicaId = profile.clinica_id
+    if (!clinicaId) {
+      return { success: false, error: 'Clínica não identificada no perfil do administrador.' }
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const redirectUrl = `${baseUrl}/definir-senha`
+    const cleanEmail = data.email.trim().toLowerCase()
+
+    let invitedUserId: string | null = null
+    let generatedInviteLink: string | undefined = undefined
+
+    // 1. Gera link de convite oficial criptograficamente seguro via Supabase Auth Admin.
+    // Esse fluxo utiliza OTP controlado pelo Supabase, com expiração automática e uso único,
+    // eliminando COMPLETAMENTE qualquer senha na URL ou parâmetro 'temp'.
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'invite',
+      email: cleanEmail,
+      options: {
+        redirectTo: redirectUrl,
+        data: {
+          nome: data.nome.trim(),
+          role: data.role,
+          clinica_id: clinicaId,
+        },
+      },
+    })
+
+    if (linkError) {
+      console.warn('[users.inviteTeamMember] Supabase generateLink erro/aviso:', linkError.message)
+      if (
+        linkError.message.toLowerCase().includes('already') ||
+        linkError.message.toLowerCase().includes('registered')
+      ) {
+        return { success: false, error: 'Este e-mail já possui uma conta no sistema.' }
+      }
+
+      // Se falhar a geração de link, tenta envio oficial direto de convite por e-mail (sem senhas expostas)
+      const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
+        cleanEmail,
+        {
+          data: {
+            nome: data.nome.trim(),
+            role: data.role,
+            clinica_id: clinicaId,
+          },
+          redirectTo: redirectUrl,
+        }
+      )
+
+      if (inviteError) {
+        return { success: false, error: 'Erro ao gerar convite seguro: ' + (inviteError.message || linkError.message) }
+      }
+
+      invitedUserId = inviteData?.user?.id || null
+      generatedInviteLink = `${redirectUrl}?email=${encodeURIComponent(cleanEmail)}`
+    } else {
+      invitedUserId = linkData.user?.id || null
+      // Utiliza o link oficial seguro gerado pelo Supabase (action_link com token seguro de uso único)
+      generatedInviteLink = linkData.properties?.action_link || `${redirectUrl}?email=${encodeURIComponent(cleanEmail)}`
+    }
+
+    if (invitedUserId) {
+      // Garante que o registro em user_profiles receba o clinica_id e role correto
+      await supabaseAdmin.from('user_profiles').upsert({
+        id: invitedUserId,
+        nome: data.nome.trim(),
+        email: cleanEmail,
+        role: data.role as UserRole,
+        especialidade: data.especialidade || null,
+        clinica_id: clinicaId,
+      })
+    }
+
+    // Registra trilha de auditoria LGPD/Compliance SEM expor tokens ou credenciais
+    await logAction(
+      user.id,
+      'criacao',
+      'usuarios',
+      {
+        tipo: 'convite_membro_seguro',
+        convidado_email: cleanEmail,
+        convidado_nome: data.nome,
+        role: data.role,
+        clinica_id: clinicaId,
+      },
+      profile.nome
+    )
+
+    return { success: true, inviteLink: generatedInviteLink }
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Erro ao processar convite.'
+    console.error('[users.inviteTeamMember] Exceção:', msg)
     return { success: false, error: msg }
   }
 }
@@ -246,7 +379,8 @@ export async function updateUserAccount(data: {
       .eq('id', user.id)
       .single()
 
-    if (!currentProfile || (currentProfile.role !== 'admin' && currentProfile.role !== 'admin_clinica')) {
+    const callerRole = currentProfile?.role as string
+    if (!currentProfile || !['admin', 'admin_clinica', 'super_admin'].includes(callerRole)) {
       return { success: false, error: 'Apenas administradores podem alterar membros da equipe.' }
     }
 
@@ -263,6 +397,16 @@ export async function updateUserAccount(data: {
 
     if (currentProfile.clinica_id && targetProfile.clinica_id !== currentProfile.clinica_id) {
       return { success: false, error: 'Acesso negado: o usuário pertence a outra clínica.' }
+    }
+
+    // Proteção contra elevação indevida de privilégios para super_admin
+    if (data.role === 'super_admin' && callerRole !== 'super_admin') {
+      return { success: false, error: 'Apenas o Super Admin pode atribuir a função de Super Admin.' }
+    }
+
+    // Impedir auto-promoção de perfil
+    if (data.id === user.id && data.role !== currentProfile.role && callerRole !== 'super_admin') {
+      return { success: false, error: 'Auto-alteração de nível de permissão não permitida.' }
     }
 
     const { error } = await supabase

@@ -5,11 +5,12 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * Página de Registo de Novas Clínicas — OdontoSoft SaaS
  *
- * Melhorias de Segurança e UX:
- *  1. Validação Robusta com Zod (regras de senha, campos obrigatórios, erros inline).
- *  2. Validação Prévia e Server-Side de Unicidade do Nome da Clínica.
- *  3. Tratamento Elegante e Contextual para E-mail Já Cadastrado (com link direto para /login).
- *  4. Prevenção de contas órfãs no Auth caso a clínica seja duplicada.
+ * Melhorias de Segurança e Ciclo de Vida:
+ *  1. Período de Teste Restrito de 7 Dias: visual claro das limitações de teste.
+ *  2. Validação por Código OTP de 6 dígitos: o utilizador deve validar seu e-mail
+ *     antes de liberar o provisionamento da clínica.
+ *  3. Validação Robusta com Zod e Unicidade Server-Side do Nome da Clínica.
+ *  4. Prevenção de duplicidade de e-mail e criação de contas órfãs.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -21,6 +22,10 @@ import {
   registrarNovaClinica,
   verificarDisponibilidadeNomeClinica,
 } from '../actions/register'
+import {
+  enviarCodigoValidacao,
+  verificarCodigoValidacao,
+} from '../actions/validation-code'
 import {
   registerSchema,
   type RegisterFormData,
@@ -37,9 +42,13 @@ import {
   Loader2,
   AlertCircle,
   ShieldCheck,
+  KeyRound,
+  RotateCcw,
+  Sparkles,
+  Clock,
 } from 'lucide-react'
 
-type Step = 'form' | 'loading' | 'success'
+type Step = 'form' | 'verify-code' | 'loading' | 'success'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -57,6 +66,12 @@ export default function RegisterPage() {
   const [erroGeral, setErroGeral] = useState<string | null>(null)
   const [emailJaEmUso, setEmailJaEmUso] = useState(false)
   const [step, setStep] = useState<Step>('form')
+
+  // Estados da Validação por Código de Acesso
+  const [codigoInput, setCodigoInput] = useState('')
+  const [demoCode, setDemoCode] = useState<string | null>(null)
+  const [enviandoCodigo, setEnviandoCodigo] = useState(false)
+  const [reenviadoComSucesso, setReenviadoComSucesso] = useState(false)
 
   // Indicadores de segurança da senha
   const senhaValidaTamanho = formData.senha.length >= 8
@@ -84,13 +99,14 @@ export default function RegisterPage() {
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  // ETAPA 1: Enviar formulário e disparar código de validação
+  async function handleSubmitForm(e: React.FormEvent) {
     e.preventDefault()
     setErroGeral(null)
     setEmailJaEmUso(false)
     setErrors({})
 
-    // 1. Validação de Entrada Robusta com Zod
+    // 1. Validação de Entrada com Zod
     const validation = registerSchema.safeParse(formData)
 
     if (!validation.success) {
@@ -105,13 +121,11 @@ export default function RegisterPage() {
       return
     }
 
-    const { nomeClinica, email, senha } = validation.data
-
-    setStep('loading')
+    const { nomeClinica, email } = validation.data
+    setEnviandoCodigo(true)
 
     try {
-      // 2. Validação de Unicidade do Nome da Clínica (antes de tocar no Supabase Auth)
-      //    Evita criar utilizadores Auth órfãos caso o nome da clínica já exista.
+      // 2. Validação prévia de unicidade da clínica
       const checagemClinica = await verificarDisponibilidadeNomeClinica(nomeClinica)
       if (!checagemClinica.disponivel) {
         const msgErro =
@@ -119,20 +133,63 @@ export default function RegisterPage() {
           'Já existe uma clínica registada com este nome. Escolha outro nome ou contacte o suporte.'
         setErrors({ nomeClinica: msgErro })
         setErroGeral(msgErro)
-        setStep('form')
+        setEnviandoCodigo(false)
         return
       }
 
-      // 3. Criar utilizador no Supabase Auth
+      // 3. Disparar geração do código OTP de confirmação
+      const codigoRes = await enviarCodigoValidacao(email)
+      if (!codigoRes.success) {
+        setErroGeral(codigoRes.error || 'Erro ao gerar código de acesso.')
+        setEnviandoCodigo(false)
+        return
+      }
+
+      if (codigoRes.demoCode) {
+        setDemoCode(codigoRes.demoCode)
+      }
+
+      // Avança para a etapa de verificação de código
+      setStep('verify-code')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erro ao processar dados de registo.'
+      setErroGeral(msg)
+    } finally {
+      setEnviandoCodigo(false)
+    }
+  }
+
+  // ETAPA 2: Confirmar o código de 6 dígitos e provisionar a conta
+  async function handleConfirmCode(e: React.FormEvent) {
+    e.preventDefault()
+    setErroGeral(null)
+
+    if (!codigoInput.trim() || codigoInput.trim().length !== 6) {
+      setErroGeral('Por favor, introduza o código de 6 dígitos.')
+      return
+    }
+
+    setStep('loading')
+
+    try {
+      // 1. Valida o código digitado
+      const validacaoRes = await verificarCodigoValidacao(formData.email, codigoInput.trim())
+      if (!validacaoRes.success) {
+        setErroGeral(validacaoRes.error || 'Código inválido ou expirado.')
+        setStep('verify-code')
+        return
+      }
+
+      // 2. Cria utilizador no Supabase Auth
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: email.toLowerCase(),
-        password: senha,
+        email: formData.email.toLowerCase(),
+        password: formData.senha,
         options: {
-          data: { nome_clinica: nomeClinica },
+          data: { nome_clinica: formData.nomeClinica },
         },
       })
 
-      // 4. Tratamento Elegante de Email Duplicado
+      // Tratamento de e-mail duplicado
       const isDuplicateEmail =
         signUpError?.message?.toLowerCase().includes('already registered') ||
         signUpError?.message?.toLowerCase().includes('already in use') ||
@@ -154,36 +211,55 @@ export default function RegisterPage() {
 
       if (signUpError) {
         setErroGeral(signUpError.message)
-        setStep('form')
+        setStep('verify-code')
         return
       }
 
-      // 5. Provisionar nova clínica na Server Action (segunda linha de defesa e isolamento de tenant)
-      const result = await registrarNovaClinica({ nomeClinica })
+      // 3. Provisiona a nova clínica vinculada como TRIAL de 7 dias com validação OTP no servidor
+      const result = await registrarNovaClinica({
+        nomeClinica: formData.nomeClinica,
+        codigoOtp: codigoInput.trim(),
+      })
 
       if (!result.success) {
-        // Se a Server Action retornar duplicidade de nome
-        if (result.error?.includes('Já existe uma clínica registada com este nome')) {
-          setErrors({ nomeClinica: result.error })
-        }
         setErroGeral(result.error || 'Erro ao configurar a clínica. Tente novamente.')
-        setStep('form')
+        setStep('verify-code')
         return
       }
 
-      // 6. Sucesso — transição suave para o dashboard
+      // 4. Sucesso — redirecionamento para o dashboard
       setStep('success')
       setTimeout(() => {
         router.push('/overview')
       }, 1800)
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Erro inesperado. Tente novamente.'
+      const msg = e instanceof Error ? e.message : 'Erro inesperado na validação.'
       setErroGeral(msg)
-      setStep('form')
+      setStep('verify-code')
     }
   }
 
-  const isLoading = step === 'loading'
+  // Reenviar código
+  async function handleReenviarCodigo() {
+    setEnviandoCodigo(true)
+    setReenviadoComSucesso(false)
+    try {
+      const res = await enviarCodigoValidacao(formData.email)
+      if (res.success) {
+        if (res.demoCode) setDemoCode(res.demoCode)
+        setReenviadoComSucesso(true)
+        setTimeout(() => setReenviadoComSucesso(false), 5000)
+      } else {
+        setErroGeral(res.error || 'Erro ao reenviar código.')
+      }
+    } catch {
+      setErroGeral('Falha ao reenviar código.')
+    } finally {
+      setEnviandoCodigo(false)
+    }
+  }
+
+  const isLoading = step === 'loading' || enviandoCodigo
 
   return (
     <div className="min-h-screen w-full flex font-sans antialiased selection:bg-blue-500 selection:text-white">
@@ -222,21 +298,40 @@ export default function RegisterPage() {
             </svg>
           </div>
 
-          <h1 className="text-4xl font-extrabold text-white mb-4 tracking-tight leading-tight drop-shadow-xs">
-            Comece agora.<br />Gratuitamente.
+          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-cyan-200 text-xs font-semibold uppercase tracking-wider mb-4">
+            <Clock className="w-3.5 h-3.5 text-cyan-300" />
+            Período de Teste · 7 Dias Grátis
+          </span>
+
+          <h1 className="text-3xl font-extrabold text-white tracking-tight leading-tight">
+            Gestão Odontológica Segura e Previsível
           </h1>
-          <p className="text-blue-100/90 text-base leading-relaxed mb-10">
-            Configure a sua clínica com isolamento rigoroso de dados. Gestão clínica, financeira e agenda prontas no primeiro acesso.
+
+          <p className="mt-4 text-blue-100/80 text-sm leading-relaxed">
+            Inicie a avaliação gratuita de 7 dias com recursos essenciais.
+            Desbloqueie pacientes e odontograma ilimitados através do plano pago.
           </p>
 
-          {/* Destaques de Segurança e Conformidade */}
-          <div className="space-y-3.5 text-left bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-xs">
+          {/* Destaques do produto */}
+          <div className="mt-8 space-y-3 text-left">
             {[
-              { title: 'Isolamento Multi-Tenant Rigoroso', desc: 'Dados protegidos com Row-Level Security no Postgres' },
-              { title: 'Conformidade CFO & LGPD', desc: 'Prontuários e termos com integridade jurídica' },
-              { title: 'Disponibilidade Instantânea', desc: 'Sem necessidade de cartão de crédito para iniciar' },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-start gap-3">
+              {
+                title: 'Isolamento Absoluto de Dados',
+                desc: 'Arquitetura multi-tenant com segurança de nível hospitalar e RLS.',
+              },
+              {
+                title: 'Validação Rápida por Código',
+                desc: 'Ativação imediata de conta via token de acesso seguro.',
+              },
+              {
+                title: 'Conformidade LGPD & CFO',
+                desc: 'Auditoria contínua de prontuários com criptografia de ponta a ponta.',
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-3 bg-white/8 backdrop-blur-xs border border-white/10 rounded-2xl p-3.5"
+              >
                 <div className="w-5 h-5 rounded-full bg-emerald-400/20 border border-emerald-400/40 flex items-center justify-center shrink-0 mt-0.5">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
@@ -255,26 +350,140 @@ export default function RegisterPage() {
       {/* ── Painel Direito (formulário interativo) ────────────────────────── */}
       <div className="w-full lg:w-1/2 bg-[#f8fafc] flex items-center justify-center p-6 sm:p-10 relative overflow-y-auto">
         <div className="w-full max-w-sm relative my-auto py-6">
-          {step === 'success' ? (
-            /* ── Tela de Sucesso ── */
+
+          {/* ── CASO 1: Tela de Sucesso ── */}
+          {step === 'success' && (
             <div className="flex flex-col items-center text-center py-10 space-y-5 animate-fadeIn">
               <div className="w-20 h-20 rounded-full bg-emerald-100 border-2 border-emerald-300 flex items-center justify-center shadow-lg shadow-emerald-100 animate-pulse">
                 <CheckCircle2 className="w-10 h-10 text-emerald-600" />
               </div>
               <div>
                 <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
-                  Clínica registada com sucesso!
+                  Conta Validada com Sucesso!
                 </h2>
                 <p className="text-sm text-slate-500 mt-1">
-                  A configurar o seu ambiente com segurança…
+                  O seu período de avaliação de 7 dias foi ativado.
                 </p>
               </div>
               <div className="flex items-center gap-2 text-xs font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
                 <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                A carregar o seu Dashboard
+                A preparar o seu ambiente…
               </div>
             </div>
-          ) : (
+          )}
+
+          {/* ── CASO 2: Tela de Validação por Código de Acesso (OTP) ── */}
+          {step === 'verify-code' && (
+            <div className="space-y-5 animate-fadeIn">
+              <div className="flex flex-col items-center text-center mb-5">
+                <div className="w-14 h-14 rounded-2xl bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-600 mb-3 shadow-xs">
+                  <KeyRound className="w-7 h-7" />
+                </div>
+                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                  Confirme o seu Acesso
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                  Enviámos um código seguro de 6 dígitos para o e-mail:
+                  <br />
+                  <strong className="text-slate-800 font-semibold">{formData.email}</strong>
+                </p>
+              </div>
+
+              {/* Banner de código em ambiente demo/dev */}
+              {demoCode && (
+                <div className="p-3.5 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs flex items-center justify-between shadow-2xs">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-cyan-600 shrink-0" />
+                    <span>Código de Validação gerado: <strong className="font-mono text-sm tracking-wider">{demoCode}</strong></span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCodigoInput(demoCode)}
+                    className="px-2 py-1 rounded bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-[10px] uppercase transition-colors"
+                  >
+                    Usar
+                  </button>
+                </div>
+              )}
+
+              {/* Erro Geral */}
+              {erroGeral && (
+                <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2 shadow-2xs">
+                  <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                  <span>{erroGeral}</span>
+                </div>
+              )}
+
+              {reenviadoComSucesso && (
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Novo código enviado com sucesso!</span>
+                </div>
+              )}
+
+              <form onSubmit={handleConfirmCode} className="space-y-4">
+                <div>
+                  <label htmlFor="input-codigo-otp" className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Código de Confirmação (6 dígitos) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    id="input-codigo-otp"
+                    type="text"
+                    maxLength={6}
+                    autoFocus
+                    placeholder="000000"
+                    value={codigoInput}
+                    onChange={(e) => setCodigoInput(e.target.value.replace(/\D/g, ''))}
+                    className="w-full text-center tracking-[0.4em] font-mono text-2xl py-3 px-4 bg-white border border-slate-200 focus:border-blue-600 focus:ring-3 focus:ring-blue-600/15 rounded-xl font-bold text-slate-800 outline-none transition-all shadow-2xs"
+                  />
+                  <p className="mt-1.5 text-[11px] text-slate-400 text-center">
+                    Código válido por 15 minutos.
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading || codigoInput.length !== 6}
+                  className="w-full flex items-center justify-center gap-2 bg-[#1258b8] hover:bg-[#0e46a0] active:scale-[0.99] disabled:opacity-50 text-white py-3 rounded-xl font-bold text-sm shadow-md shadow-blue-200 transition-all cursor-pointer"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      A validar código…
+                    </>
+                  ) : (
+                    <>
+                      Validar e Acessar Sistema
+                      <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
+                <button
+                  type="button"
+                  onClick={handleReenviarCodigo}
+                  disabled={enviandoCodigo}
+                  className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 font-semibold disabled:opacity-50 transition-colors"
+                >
+                  <RotateCcw className={`w-3.5 h-3.5 ${enviandoCodigo ? 'animate-spin' : ''}`} />
+                  Reenviar código
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setStep('form')}
+                  className="text-slate-500 hover:text-slate-700 font-medium transition-colors"
+                >
+                  Corrigir e-mail
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── CASO 3: Formulário Inicial de Registo ── */}
+          {step === 'form' && (
             <>
               {/* Header do Formulário */}
               <div className="flex flex-col items-center mb-6 text-center">
@@ -288,11 +497,19 @@ export default function RegisterPage() {
                   Criar conta no OdontoSoft
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                  Registe a sua clínica e comece a gerir os seus pacientes
+                  Avaliação gratuita de 7 dias com recursos essenciais
                 </p>
               </div>
 
-              {/* ── ALERTA DE E-MAIL DUPLICADO (Tratamento Elegante e Proativo) ── */}
+              {/* Badge de aviso do Trial Restrito */}
+              <div className="mb-4 p-3 rounded-xl bg-amber-50/90 border border-amber-200/80 text-amber-900 text-xs flex items-center gap-2.5 shadow-2xs">
+                <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                <p className="leading-snug">
+                  <strong>Trial de 7 Dias:</strong> Acesso restrito a 50 pacientes e recursos essenciais. Desbloqueio completo após o prazo mediante plano pago.
+                </p>
+              </div>
+
+              {/* Alerta de e-mail duplicado */}
               {emailJaEmUso && (
                 <div className="mb-5 p-4 rounded-xl bg-amber-50/95 border border-amber-200/90 shadow-xs text-amber-900 transition-all">
                   <div className="flex items-start gap-3">
@@ -327,7 +544,7 @@ export default function RegisterPage() {
                 </div>
               )}
 
-              {/* Erro Geral (quando não for erro inline específico) */}
+              {/* Erro Geral */}
               {erroGeral && !emailJaEmUso && !errors.nomeClinica && (
                 <div className="mb-4 px-3.5 py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2 shadow-xs">
                   <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
@@ -336,7 +553,7 @@ export default function RegisterPage() {
               )}
 
               {/* Formulário */}
-              <form onSubmit={handleSubmit} noValidate className="space-y-4">
+              <form onSubmit={handleSubmitForm} noValidate className="space-y-4">
                 {/* 1. Nome da Clínica */}
                 <div>
                   <label
@@ -449,7 +666,6 @@ export default function RegisterPage() {
                     </button>
                   </div>
 
-                  {/* Checklist visual discreto de força da senha */}
                   {formData.senha.length > 0 && (
                     <div className="mt-2 p-2 bg-slate-50 border border-slate-200/60 rounded-lg flex items-center justify-between text-[11px] text-slate-500">
                       <span className={`flex items-center gap-1 ${senhaValidaTamanho ? 'text-emerald-600 font-medium' : 'text-slate-400'}`}>
@@ -521,7 +737,7 @@ export default function RegisterPage() {
                   )}
                 </div>
 
-                {/* Botão Criar Conta */}
+                {/* Botão Avançar para Validação */}
                 <button
                   type="submit"
                   id="register-submit"
@@ -532,11 +748,11 @@ export default function RegisterPage() {
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      A validar e criar a sua clínica…
+                      A gerar código de validação…
                     </>
                   ) : (
                     <>
-                      Criar conta gratuita
+                      Validar Conta (Trial 7 Dias)
                       <ArrowRight className="h-4 w-4" />
                     </>
                   )}

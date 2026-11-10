@@ -5,6 +5,9 @@ import { toast } from 'sonner'
 import { Package, AlertTriangle, Plus, Search, TrendingUp, ArrowDown, ArrowUp, X, Loader2 } from 'lucide-react'
 import { supabase } from '@/app/lib/supabaseClient'
 import { useAuth } from '@/app/components/RequireAuth'
+import { TableSkeleton } from '@/app/components/ui/Skeleton'
+import { EmptyState } from '@/app/components/ui/EmptyState'
+import { ErrorState } from '@/app/components/ui/ErrorState'
 
 interface Item {
   id: string
@@ -23,9 +26,10 @@ const CATEGORIAS = ['Todos', 'Resinas', 'Anestésicos', 'Instrumentos', 'Descart
 type MovType = 'entrada' | 'saida'
 
 export default function EstoquePage() {
-  const { session } = useAuth()
+  const { session, profile } = useAuth()
   const [itens, setItens] = useState<Item[]>([])
   const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState<string | null>(null)
   const [busca, setBusca] = useState('')
   const [categoria, setCategoria] = useState('Todos')
   const [movModal, setMovModal] = useState<{ item: Item; tipo: MovType } | null>(null)
@@ -43,24 +47,33 @@ export default function EstoquePage() {
 
   async function carregarEstoque() {
     setLoading(true)
+    setErro(null)
     try {
-      const { data, error } = await supabase
+      // Colunas reais da tabela `estoque` no Supabase:
+      // id | clinica_id | nome_item | quantidade | quantidade_minima | unidade | created_at
+      let query = supabase
         .from('estoque')
-        .select('*')
-        .order('nome', { ascending: true })
+        .select('id, clinica_id, nome_item, quantidade, quantidade_minima, unidade, created_at')
+
+      if (profile?.clinica_id) {
+        query = query.eq('clinica_id', profile.clinica_id)
+      }
+
+      const { data, error } = await query.order('nome_item', { ascending: true })
 
       if (error) {
         console.error('[Estoque] Erro ao carregar itens:', error.message)
+        setErro('Falha ao carregar itens do estoque. Verifique sua conexão.')
       } else if (data) {
         setItens(
           data.map((row: any) => ({
             id: row.id,
-            nome: row.nome || 'Item sem nome',
-            categoria: row.descricao?.split('|')[0] || 'Outros',
-            quantidade: Number(row.quantidade || 0),
-            minimo: Number(row.minimo || 0),
+            nome: row.nome_item || 'Item sem nome',
+            categoria: 'Outros',
+            quantidade: Number(row.quantidade ?? 0),
+            minimo: Number(row.quantidade_minima ?? 0),
             unidade: row.unidade || 'un',
-            fornecedor: row.descricao?.split('|')[1] || '—',
+            fornecedor: '—',
             ultimaCompra: row.created_at
               ? new Date(row.created_at).toLocaleDateString('pt-BR')
               : '—',
@@ -70,6 +83,7 @@ export default function EstoquePage() {
       }
     } catch (err: any) {
       console.error('[Estoque] Falha na requisição:', err)
+      setErro('Erro inesperado ao consultar o estoque da clínica.')
     } finally {
       setLoading(false)
     }
@@ -77,7 +91,7 @@ export default function EstoquePage() {
 
   useEffect(() => {
     carregarEstoque()
-  }, [session])
+  }, [session, profile?.clinica_id])
 
   const itensFiltrados = itens.filter(i => {
     const matchBusca =
@@ -98,10 +112,16 @@ export default function EstoquePage() {
         ? movModal.item.quantidade + movQtd
         : Math.max(0, movModal.item.quantidade - movQtd)
 
-    const { error } = await supabase
+    let updateQuery = supabase
       .from('estoque')
       .update({ quantidade: novaQtd })
       .eq('id', movModal.item.id)
+
+    if (profile?.clinica_id) {
+      updateQuery = updateQuery.eq('clinica_id', profile.clinica_id)
+    }
+
+    const { error } = await updateQuery
 
     if (error) {
       toast.error('Erro ao atualizar estoque: ' + error.message)
@@ -127,14 +147,14 @@ export default function EstoquePage() {
       .from('estoque')
       .insert([
         {
-          nome: novoItem.nome,
-          descricao: `${novoItem.categoria}|${novoItem.fornecedor}`,
+          ...(profile?.clinica_id ? { clinica_id: profile.clinica_id } : {}),
+          nome_item: novoItem.nome,
           quantidade: novoItem.quantidade,
-          minimo: novoItem.minimo,
+          quantidade_minima: novoItem.minimo,
           unidade: novoItem.unidade,
         },
       ])
-      .select()
+      .select('id, clinica_id, nome_item, quantidade, quantidade_minima, unidade, created_at')
 
     if (error) {
       toast.error('Erro ao salvar item: ' + error.message)
@@ -224,69 +244,81 @@ export default function EstoquePage() {
           </div>
         </div>
 
-        {/* Tabela */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-                <tr>
-                  {['Item', 'Categoria', 'Qtd Atual', 'Mín.', 'Unidade', 'Fornecedor', 'Data Cadastro', 'Status', 'Ações'].map(h => (
-                    <th key={h} className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                {loading ? (
-                  <tr>
-                    <td colSpan={9} className="px-5 py-12 text-center text-slate-400 font-semibold">
-                      <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-                        Carregando estoque do banco de dados...
-                      </div>
-                    </td>
-                  </tr>
-                ) : itensFiltrados.map(item => {
-                  const st = statusColor(item)
-                  return (
-                    <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                      <td className="px-5 py-3.5 font-bold text-slate-800 dark:text-slate-100">{item.nome}</td>
-                      <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{item.categoria}</td>
-                      <td className={`px-5 py-3.5 font-extrabold ${item.quantidade < item.minimo ? 'text-red-600' : 'text-slate-800 dark:text-slate-100'}`}>{item.quantidade}</td>
-                      <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.minimo}</td>
-                      <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.unidade}</td>
-                      <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{item.fornecedor}</td>
-                      <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.ultimaCompra}</td>
-                      <td className="px-5 py-3.5">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${st.bg} ${st.text}`}>{st.label}</span>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <div className="flex gap-2">
-                          <button onClick={() => { setMovModal({ item, tipo: 'entrada' }); setMovQtd(1) }} className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-colors">
-                            <ArrowDown className="h-3.5 w-3.5" /> Entrada
-                          </button>
-                          <button onClick={() => { setMovModal({ item, tipo: 'saida' }); setMovQtd(1) }} className="flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors">
-                            <ArrowUp className="h-3.5 w-3.5" /> Saída
-                          </button>
-                        </div>
-                      </td>
+        {/* Tabela ou Estados de Erro / Vazio */}
+        {erro ? (
+          <ErrorState
+            title="Falha ao sincronizar estoque"
+            message={erro}
+            onRetry={carregarEstoque}
+          />
+        ) : (
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              {loading ? (
+                <div className="p-4">
+                  <TableSkeleton rows={5} cols={8} />
+                </div>
+              ) : itensFiltrados.length === 0 ? (
+                <div className="p-8">
+                  <EmptyState
+                    icon={<Package size={30} />}
+                    title={busca ? 'Nenhum item encontrado na busca' : 'Nenhum item cadastrado no estoque'}
+                    description={
+                      busca
+                        ? 'Tente buscar por outro termo ou remova os filtros.'
+                        : 'Cadastre materiais, anestésicos e insumos clínicos para acompanhar níveis mínimos e reposição.'
+                    }
+                    actionLabel={busca ? 'Limpar busca' : 'Adicionar Novo Item'}
+                    actionIcon={<Plus size={15} />}
+                    onAction={() => {
+                      if (busca) setBusca('')
+                      else setNovoModal(true)
+                    }}
+                  />
+                </div>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+                    <tr>
+                      {['Item', 'Categoria', 'Qtd Atual', 'Mín.', 'Unidade', 'Fornecedor', 'Data Cadastro', 'Status', 'Ações'].map(h => (
+                        <th key={h} className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                      ))}
                     </tr>
-                  )
-                })}
-                {!loading && itensFiltrados.length === 0 && (
-                  <tr>
-                    <td colSpan={9} className="px-5 py-12 text-center text-slate-400 font-semibold">
-                      <div className="flex flex-col items-center justify-center">
-                        <Package className="h-10 w-10 text-slate-300 mb-2" />
-                        <p className="text-base font-bold text-slate-600 dark:text-slate-300">Nenhum item cadastrado no estoque</p>
-                        <p className="text-xs text-slate-400 mt-1">Cadastre novos materiais usando o botão acima.</p>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                    {itensFiltrados.map(item => {
+                      const st = statusColor(item)
+                      return (
+                        <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                          <td className="px-5 py-3.5 font-bold text-slate-800 dark:text-slate-100">{item.nome}</td>
+                          <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{item.categoria}</td>
+                          <td className={`px-5 py-3.5 font-extrabold ${item.quantidade < item.minimo ? 'text-red-600' : 'text-slate-800 dark:text-slate-100'}`}>{item.quantidade}</td>
+                          <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.minimo}</td>
+                          <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.unidade}</td>
+                          <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{item.fornecedor}</td>
+                          <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.ultimaCompra}</td>
+                          <td className="px-5 py-3.5">
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${st.bg} ${st.text}`}>{st.label}</span>
+                          </td>
+                          <td className="px-5 py-3.5">
+                            <div className="flex gap-2">
+                              <button onClick={() => { setMovModal({ item, tipo: 'entrada' }); setMovQtd(1) }} className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-colors">
+                                <ArrowDown className="h-3.5 w-3.5" /> Entrada
+                              </button>
+                              <button onClick={() => { setMovModal({ item, tipo: 'saida' }); setMovQtd(1) }} className="flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors">
+                                <ArrowUp className="h-3.5 w-3.5" /> Saída
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </main>
 
       {/* Modal Movimentação */}

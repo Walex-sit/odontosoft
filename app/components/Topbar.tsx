@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from './RequireAuth'
@@ -13,6 +13,17 @@ import {
   LayoutGrid, 
   HeadphonesIcon,
   LogOut,
+  User,
+  KeyRound,
+  ShieldCheck,
+  ChevronDown,
+  Calculator,
+  FileBadge,
+  FileText,
+  ClipboardList,
+  ClipboardPlus,
+  Percent,
+  Clock,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import NotificacoesDropdown, { NotificationItem } from './NotificacoesDropdown'
@@ -33,20 +44,21 @@ import { useClinica } from '../contexts/ClinicaContext'
 /** Perfis que enxergam o botão "Ferramentas" na Topbar */
 const ROLES_WITH_TOOLS: UserRole[] = ['admin', 'admin_clinica', 'dentista', 'recepcao', 'financeiro']
 
-/** Perfis que enxergam a seção "Ferramentas Clínicas" */
-const ROLES_CLINICAL_TOOLS: UserRole[] = ['admin', 'admin_clinica', 'dentista', 'recepcao']
-
 /** Perfis que enxergam Receituário e Atestado (atos estritamente médicos) */
 const ROLES_MEDICAL_DOCS: UserRole[] = ['admin', 'admin_clinica', 'dentista']
 
-/** Perfis que enxergam Estoque e Planos de Tratamento */
-const ROLES_ADVANCED_MODULES: UserRole[] = ['admin', 'admin_clinica', 'dentista', 'recepcao']
+/** Perfis que enxergam Planos de Tratamento */
+const ROLES_TREATMENT_PLANS: UserRole[] = ['super_admin', 'admin', 'admin_clinica', 'dentista', 'recepcao']
 
-/** Perfis que enxergam a seção "Módulos Financeiros" */
-const ROLES_FINANCIAL_MODULES: UserRole[] = ['admin', 'admin_clinica', 'financeiro']
+/** Perfis que enxergam Prontuários Eletrónicos */
+const ROLES_PRONTUARIOS: UserRole[] = ['super_admin', 'admin', 'admin_clinica', 'dentista']
+
+/** Perfis que enxergam Módulos Financeiros Avançados (Comissões e Régua de Cobrança) */
+const ROLES_FINANCIAL_MODULES: UserRole[] = ['super_admin', 'admin', 'admin_clinica', 'financeiro']
 
 /** Mapeamento de tipos de notificações permitidas por cargo (RBAC) */
 const NOTIFICATION_ROLES_MAP: Record<UserRole, NotificationItem['type'][]> = {
+  super_admin: ['financial', 'appointment', 'patient', 'lgpd', 'stock', 'system'],
   admin: ['financial', 'appointment', 'patient', 'lgpd', 'stock', 'system'],
   admin_clinica: ['financial', 'appointment', 'patient', 'lgpd', 'stock', 'system'],
   financeiro: ['financial', 'system'],
@@ -54,11 +66,29 @@ const NOTIFICATION_ROLES_MAP: Record<UserRole, NotificationItem['type'][]> = {
   dentista: ['appointment', 'patient', 'system'],
 }
 
-// ─── Links de navegação ────────────────────────────────────────────────────────
+// ─── Rótulos humanizados para os cargos ─────────────────────────────────────────
+const ROLE_LABELS: Record<UserRole, string> = {
+  super_admin: 'Super Admin',
+  admin: 'Administrador',
+  admin_clinica: 'Admin da Clínica',
+  dentista: 'Cirurgião-Dentista',
+  recepcao: 'Recepção',
+  financeiro: 'Financeiro',
+}
+
+function getInitials(name?: string | null): string {
+  if (!name || !name.trim()) return 'US'
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase()
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+}
+
+// ─── Links de navegação principal (Topo - Links Visíveis) ─────────────────────
 const navLinks: { name: string; path: string; allowedRoles: UserRole[] }[] = [
   { name: 'Agenda',     path: '/agenda',     allowedRoles: ['admin', 'admin_clinica', 'dentista', 'recepcao'] },
   { name: 'Pacientes',  path: '/pacientes',  allowedRoles: ['admin', 'admin_clinica', 'dentista', 'recepcao'] },
   { name: 'Financeiro', path: '/financeiro', allowedRoles: ['admin', 'admin_clinica', 'financeiro'] },
+  { name: 'Estoque',    path: '/estoque',    allowedRoles: ['admin', 'admin_clinica', 'dentista', 'recepcao'] },
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -78,6 +108,40 @@ export default function Topbar() {
   const [isAtestadoOpen,     setIsAtestadoOpen]     = useState(false)
   const [isSearchOpen,     setIsSearchOpen]     = useState(false)
   const [notifications,    setNotifications]    = useState<NotificationItem[]>([])
+
+  const userMenuRef = useRef<HTMLDivElement>(null)
+  const toolsMenuRef = useRef<HTMLDivElement>(null)
+
+  // Fechar menus ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node
+      if (userMenuRef.current && !userMenuRef.current.contains(target)) {
+        setIsUserMenuOpen(false)
+      }
+      if (toolsMenuRef.current && !toolsMenuRef.current.contains(target)) {
+        setIsToolsOpen(false)
+      }
+    }
+    if (isUserMenuOpen || isToolsOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isUserMenuOpen, isToolsOpen])
+
+  // Fechar menus ao pressionar Escape
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsUserMenuOpen(false)
+        setIsToolsOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // Atalho de teclado para busca global
   useEffect(() => {
@@ -248,22 +312,23 @@ export default function Topbar() {
 
   // ─── Flags de visibilidade derivadas do role ────────────────────────────────
   const canSeeTools          = hasPermission(role, ROLES_WITH_TOOLS)
-  const canSeeClinicalTools  = hasPermission(role, ROLES_CLINICAL_TOOLS)
   const canSeeMedicalDocs    = hasPermission(role, ROLES_MEDICAL_DOCS)
-  const canSeeAdvancedMods   = hasPermission(role, ROLES_ADVANCED_MODULES)
-  const canSeeFinancialMods  = hasPermission(role, ROLES_FINANCIAL_MODULES)
+  const canSeeTreatmentPlans = hasPermission(role, ROLES_TREATMENT_PLANS)
+  const canSeeProntuarios    = hasPermission(role, ROLES_PRONTUARIOS)
+  const canSeeClinicalGroup  = canSeeTreatmentPlans || canSeeProntuarios
+  const canSeeFinancialGroup = hasPermission(role, ROLES_FINANCIAL_MODULES)
   const isAdmin              = hasPermission(role, ['admin', 'admin_clinica'])
 
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
-    <header className="h-16 w-full flex items-center justify-between px-6 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs shrink-0 transition-colors duration-200">
+    <header className="h-16 w-full flex items-center justify-between px-4 sm:px-8 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] shrink-0 transition-colors duration-200">
       
       {/* ── Lado esquerdo: Logo + Nav ── */}
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-6 sm:gap-8">
         <Link href="/overview" prefetch={true} className="flex items-center gap-3 active:scale-95 transition-transform">
           {clinica?.logo_url ? (
-            <div className="h-8 w-8 rounded-lg overflow-hidden flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
+            <div className="h-9 w-9 rounded-2xl overflow-hidden flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs shrink-0">
               <img
                 src={clinica.logo_url}
                 alt="Logo da clínica"
@@ -271,19 +336,22 @@ export default function Topbar() {
               />
             </div>
           ) : (
-            <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm shrink-0">
+            <div className="h-9 w-9 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-sm shadow-blue-500/25 shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
           )}
-          <h1 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate max-w-[200px]" title={clinica?.nome || clinica?.nome_exibido || 'OdontoSoft'}>
-            {clinica?.nome || clinica?.nome_exibido || 'OdontoSoft'}
+          <h1 
+            className="text-xl font-black text-slate-900 dark:text-white tracking-tight truncate max-w-[160px] sm:max-w-[260px] md:max-w-[340px] lg:max-w-[440px]" 
+            title={clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft'}
+          >
+            {clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft'}
           </h1>
         </Link>
 
         {/* Nav principal — filtrada por role */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-1.5 bg-slate-100/70 dark:bg-slate-900/60 p-1 rounded-2xl border border-slate-200/60 dark:border-slate-800/60">
           {navLinks
             .filter(link => hasPermission(role, link.allowedRoles))
             .map(link => (
@@ -291,10 +359,10 @@ export default function Topbar() {
                 key={link.name} 
                 href={link.path}
                 prefetch={true}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 ${
+                className={`px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all active:scale-95 ${
                   pathname.startsWith(link.path) || pathname.startsWith('/dashboard' + link.path)
-                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm border border-slate-200/50 dark:border-slate-700/50' 
-                    : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-800 dark:hover:text-slate-200'
+                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-2xs border border-slate-200/80 dark:border-slate-700/80' 
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 {link.name}
@@ -303,151 +371,219 @@ export default function Topbar() {
         </nav>
       </div>
 
-      {/* ── Lado direito: Ferramentas + Suporte + Busca + Ações ── */}
-      <div className="flex items-center gap-3 shrink-0">
-        <div className="hidden lg:flex items-center gap-2 mr-2">
+      {/* ── Lado direito: Ferramentas Rápidas + Suporte + Busca + Ações + Perfil ── */}
+      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
 
-          {/* Botão Ferramentas — visível para todos os perfis com permissão */}
-          {canSeeTools && (
-            <div className="relative">
-              <button
-                onClick={() => setIsToolsOpen(!isToolsOpen)}
-                className="flex items-center gap-2 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 px-3 py-2 rounded-xl text-sm font-bold transition-colors border border-slate-200 dark:border-slate-700"
+        {/* ── Menu Dropdown: Utilitários Clínicos Rápidos ── */}
+        {canSeeTools && (
+          <div className="relative" ref={toolsMenuRef}>
+            <button
+              onClick={() => setIsToolsOpen(!isToolsOpen)}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border outline-none active:scale-[0.98] ${
+                isToolsOpen
+                  ? 'bg-slate-100/90 dark:bg-slate-800/90 border-slate-300 dark:border-slate-600 text-blue-600 dark:text-blue-400 shadow-2xs'
+                  : 'bg-slate-50/70 dark:bg-slate-900/60 border-slate-200/70 dark:border-slate-800/80 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:border-slate-300/80 dark:hover:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-2xs'
+              }`}
+              aria-expanded={isToolsOpen}
+              aria-haspopup="true"
+              aria-label="Abrir menu de utilitários rápidos"
+            >
+              <LayoutGrid className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+              <span className="hidden md:inline">Ferramentas</span>
+              <ChevronDown
+                className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 shrink-0 ${
+                  isToolsOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : ''
+                }`}
+              />
+            </button>
+
+            {isToolsOpen && (
+              <div 
+                className="absolute right-0 top-full mt-2 w-80 sm:w-84 max-h-[calc(100vh-5rem)] overflow-y-auto bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800 py-2 z-50 animate-in fade-in-50 zoom-in-95 duration-150 origin-top-right divide-y divide-slate-100 dark:divide-slate-800/80"
+                role="menu"
               >
-                <LayoutGrid className="h-4 w-4" /> Ferramentas
-              </button>
+                {/* ── GRUPO 1: UTILITÁRIOS RÁPIDOS ── */}
+                <div className="py-1 px-1.5 space-y-0.5">
+                  <div className="px-3 pt-2 pb-1">
+                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      Utilitários Rápidos
+                    </p>
+                  </div>
 
-              {isToolsOpen && (
-                <div className="absolute right-0 top-full mt-2 w-60 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-2 z-50">
+                  {/* Calculadora */}
+                  <button
+                    onClick={() => { setIsCalculadoraOpen(true); setIsToolsOpen(false) }}
+                    className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group text-left"
+                  >
+                    <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors shrink-0">
+                      <Calculator className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-slate-800 dark:text-slate-100">Calculadora</span>
+                      <span className="text-[10px] text-slate-400 font-normal">Cálculos e conversões imediatas</span>
+                    </div>
+                  </button>
 
-                  {/* ── Seção: Ferramentas Clínicas ── */}
-                  {/* Visível para: admin, dentista, recepcao */}
-                  {canSeeClinicalTools && (
+                  {/* Receituário Rápido & Atestado Médico (atos médicos) */}
+                  {canSeeMedicalDocs && (
                     <>
-                      <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                        Ferramentas Clínicas
-                      </p>
-
-                      {/* Calculadora — todos os perfis com acesso a ferramentas clínicas */}
                       <button
-                        onClick={() => { setIsCalculadoraOpen(true); setIsToolsOpen(false) }}
-                        className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
+                        onClick={() => { setIsReceituarioOpen(true); setIsToolsOpen(false) }}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group text-left"
                       >
-                        Calculadora
+                        <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/50 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors shrink-0">
+                          <FileText className="h-4 w-4" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-slate-800 dark:text-slate-100">Receituário Rápido</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Emissão ágil com posologia</span>
+                        </div>
                       </button>
 
-                      {/* Receituário e Atestado — somente admin e dentista (atos médicos) */}
-                      {canSeeMedicalDocs && (
-                        <>
-                          <button
-                            onClick={() => { setIsReceituarioOpen(true); setIsToolsOpen(false) }}
-                            className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
-                          >
-                            Receituário Rápido
-                          </button>
-                          <button
-                            onClick={() => { setIsAtestadoOpen(true); setIsToolsOpen(false) }}
-                            className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
-                          >
-                            Atestado Médico
-                          </button>
-                        </>
-                      )}
+                      <button
+                        onClick={() => { setIsAtestadoOpen(true); setIsToolsOpen(false) }}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group text-left"
+                      >
+                        <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors shrink-0">
+                          <FileBadge className="h-4 w-4" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-slate-800 dark:text-slate-100">Atestado Odontológico</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Declaração e afastamento legal</span>
+                        </div>
+                      </button>
                     </>
                   )}
+                </div>
 
-                  {/* ── Seção: Módulos Avançados ── */}
-                  {/* Visível para: admin, dentista, recepcao */}
-                  {canSeeAdvancedMods && (
-                    <>
-                      <div className="h-px bg-slate-100 dark:bg-slate-700 my-1" />
-                      <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                        Módulos Avançados
+                {/* ── GRUPO 2: MÓDULOS CLÍNICOS & GESTÃO ── */}
+                {canSeeClinicalGroup && (
+                  <div className="py-1 px-1.5 space-y-0.5">
+                    <div className="px-3 pt-2 pb-1">
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                        Módulos Clínicos & Gestão
                       </p>
-                      <Link
-                        href="/estoque"
-                        prefetch={true}
-                        onClick={() => setIsToolsOpen(false)}
-                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
-                      >
-                        Gestão de Estoque
-                      </Link>
+                    </div>
+
+                    {canSeeTreatmentPlans && (
                       <Link
                         href="/planos-tratamento"
                         prefetch={true}
                         onClick={() => setIsToolsOpen(false)}
-                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
+                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
                       >
-                        Planos de Tratamento
+                        <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-sky-50 dark:group-hover:bg-sky-950/50 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors shrink-0">
+                          <ClipboardList className="h-4 w-4" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-slate-800 dark:text-slate-100">Planos de Tratamento</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Orçamentos e fases de tratamento</span>
+                        </div>
                       </Link>
-                    </>
-                  )}
+                    )}
 
-                  {/* ── Seção: Módulos Financeiros ── */}
-                  {/* Visível para: admin, financeiro */}
-                  {canSeeFinancialMods && (
-                    <>
-                      {/* Separador só aparece quando há seções anteriores (admin enxerga tudo) */}
-                      {(canSeeClinicalTools || canSeeAdvancedMods) && (
-                        <div className="h-px bg-slate-100 dark:bg-slate-700 my-1" />
-                      )}
-                      <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                        Módulos Financeiros
+                    {canSeeProntuarios && (
+                      <Link
+                        href="/prontuarios"
+                        prefetch={true}
+                        onClick={() => setIsToolsOpen(false)}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                      >
+                        <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-violet-50 dark:group-hover:bg-violet-950/50 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors shrink-0">
+                          <ClipboardPlus className="h-4 w-4" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-slate-800 dark:text-slate-100">Prontuário Eletrónico</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Histórico clínico e evoluções</span>
+                        </div>
+                      </Link>
+                    )}
+                  </div>
+                )}
+
+                {/* ── GRUPO 3: MÓDULOS FINANCEIROS & AVANÇADOS ── */}
+                {canSeeFinancialGroup && (
+                  <div className="py-1 px-1.5 space-y-0.5">
+                    <div className="px-3 pt-2 pb-1">
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                        Módulos Financeiros & Avançados
                       </p>
-                      <Link
-                        href="/comissoes"
-                        prefetch={true}
-                        onClick={() => setIsToolsOpen(false)}
-                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
-                      >
-                        Controle de Comissões
-                      </Link>
-                      <Link
-                        href="/regua-cobranca"
-                        prefetch={true}
-                        onClick={() => setIsToolsOpen(false)}
-                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium"
-                      >
-                        Régua de Cobrança
-                      </Link>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+                    </div>
 
-          <button
-            onClick={() => window.open('https://wa.me/5511999999999', '_blank')}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm"
-          >
-            <HeadphonesIcon className="h-4 w-4" /> Suporte
-          </button>
-        </div>
+                    <Link
+                      href="/comissoes"
+                      prefetch={true}
+                      onClick={() => setIsToolsOpen(false)}
+                      className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                    >
+                      <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-amber-50 dark:group-hover:bg-amber-950/50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors shrink-0">
+                        <Percent className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-800 dark:text-slate-100">Controle de Comissões</span>
+                        <span className="text-[10px] text-slate-400 font-normal">Repasses e produção dos dentistas</span>
+                      </div>
+                    </Link>
 
-        {/* Busca global */}
+                    <Link
+                      href="/regua-cobranca"
+                      prefetch={true}
+                      onClick={() => setIsToolsOpen(false)}
+                      className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                    >
+                      <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-rose-50 dark:group-hover:bg-rose-950/50 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors shrink-0">
+                        <Clock className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-800 dark:text-slate-100">Régua de Cobrança</span>
+                        <span className="text-[10px] text-slate-400 font-normal">Automação de lembretes e cobrança</span>
+                      </div>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Botão Suporte WhatsApp ── */}
         <button
-          onClick={() => setIsSearchOpen(true)}
-          className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3.5 py-1.5 rounded-xl text-slate-500 dark:text-slate-400 transition-colors hover:border-slate-300 dark:hover:border-slate-600 text-sm font-medium"
+          onClick={() => window.open('https://wa.me/5511999999999', '_blank')}
+          className="hidden xl:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all shadow-sm shadow-blue-500/20 active:scale-[0.98]"
+          title="Falar com Suporte Técnico"
         >
-          <Search className="h-4 w-4" /> Buscar...
+          <HeadphonesIcon className="h-4 w-4" />
+          <span>Suporte</span>
         </button>
 
-        {/* Ícones de ação */}
-        <div className="flex items-center gap-1">
-          {/* Notificações — todos os perfis */}
+        {/* ── Busca global com atalho Kbd ── */}
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className="flex items-center gap-2.5 bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 px-3.5 py-2 rounded-2xl text-slate-500 dark:text-slate-400 transition-all hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:border-slate-300/80 dark:hover:border-slate-700/80 text-xs sm:text-sm font-medium shadow-2xs group active:scale-[0.98]"
+          title="Buscar no sistema (⌘K ou Ctrl+K)"
+        >
+          <Search className="h-4 w-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
+          <span className="hidden sm:inline">Buscar...</span>
+          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-lg bg-slate-200/60 dark:bg-slate-800 text-[10px] font-extrabold text-slate-400 dark:text-slate-400 border border-slate-300/60 dark:border-slate-700 select-none">
+            ⌘K
+          </kbd>
+        </button>
+
+        {/* ── Cluster: Notificações + Alternância de Tema ── */}
+        <div className="flex items-center bg-slate-50/80 dark:bg-slate-900/60 p-1 rounded-2xl border border-slate-200/80 dark:border-slate-800 gap-0.5 shadow-2xs">
+          {/* Notificações com badge */}
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className={`p-2 rounded-xl relative transition-colors ${
+              className={`p-2 rounded-xl relative transition-all ${
                 isDropdownOpen
-                  ? 'bg-blue-50 text-blue-600 dark:bg-slate-800 dark:text-blue-400'
-                  : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200'
+                  ? 'bg-blue-50 text-blue-600 dark:bg-slate-800 dark:text-blue-400 shadow-2xs'
+                  : 'text-slate-500 hover:bg-white dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
               title="Notificações da Clínica"
               aria-label="Abrir notificações"
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-4.5 w-4.5" />
               {unreadCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-extrabold text-white shadow-sm ring-2 ring-white dark:ring-slate-900 animate-in zoom-in-50">
                   {unreadCount > 9 ? '9+' : unreadCount}
@@ -464,53 +600,150 @@ export default function Topbar() {
             />
           </div>
 
-          {/* Engrenagem de Configurações — EXCLUSIVO para admin */}
-          {isAdmin && (
-            <Link
-              href="/configuracoes"
-              prefetch={true}
-              className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-xl transition-colors active:scale-95"
-              title="Configurações do Sistema"
-            >
-              <Settings className="h-5 w-5" />
-            </Link>
-          )}
-
+          {/* Alternância de tema claro/escuro */}
           <ThemeToggle />
         </div>
 
-        {/* Menu do usuário */}
-        <div className="relative ml-2">
+        {/* Divisor vertical sutil */}
+        <div className="h-6 w-px bg-slate-200/80 dark:bg-slate-800 mx-0.5 hidden sm:block" />
+
+        {/* ── Bloco de Perfil do Utilizador + Menu Dropdown Centralizado ── */}
+        <div className="relative ml-1 sm:ml-2" ref={userMenuRef}>
           <button
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            className="flex items-center gap-2 p-1 pl-2 pr-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full transition-colors hover:border-slate-300"
+            className={`flex items-center gap-2.5 p-1 sm:pr-3 rounded-2xl transition-all border outline-none active:scale-[0.98] ${
+              isUserMenuOpen
+                ? 'bg-slate-100/90 dark:bg-slate-800/90 border-slate-300 dark:border-slate-600 shadow-2xs'
+                : 'bg-slate-50/70 dark:bg-slate-900/60 border-slate-200/70 dark:border-slate-800/80 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:border-slate-300/80 dark:hover:border-slate-700/80'
+            }`}
+            aria-expanded={isUserMenuOpen}
+            aria-haspopup="true"
+            aria-label="Menu de perfil do utilizador"
           >
-            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-              {profile?.nome?.substring(0, 2).toUpperCase() || 'US'}
-            </span>
+            {/* Avatar elegante com gradiente, iniciais e status online */}
+            <div className="relative h-9 w-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm shadow-blue-500/20 shrink-0">
+              {getInitials(profile?.nome)}
+              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-950" />
+            </div>
+
+            {/* Informações do utilizador: Nome Completo + Cargo humanizado */}
+            <div className="hidden sm:flex flex-col text-left leading-tight pr-0.5">
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate max-w-[130px] md:max-w-[170px]" title={profile?.nome?.trim() || 'Meu Perfil'}>
+                {profile?.nome?.trim() || 'Meu Perfil'}
+              </span>
+              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                {ROLE_LABELS[role] || 'Membro da Equipe'}
+              </span>
+            </div>
+
+            {/* Chevron animado */}
+            <ChevronDown
+              className={`hidden sm:block h-3.5 w-3.5 text-slate-400 transition-transform duration-200 shrink-0 ${
+                isUserMenuOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : ''
+              }`}
+            />
           </button>
 
+          {/* Dropdown / Popover Centralizado */}
           {isUserMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-2 z-50">
-              {/* Configurações no menu do usuário — EXCLUSIVO para admin */}
-              {isAdmin && (
+            <div 
+              className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800 py-2.5 z-50 animate-in fade-in-50 zoom-in-95 duration-150 origin-top-right divide-y divide-slate-100 dark:divide-slate-800/80"
+              role="menu"
+            >
+              {/* Header do Menu com identificação completa */}
+              <div className="px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
+                    {getInitials(profile?.nome)}
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <p className="text-sm font-extrabold text-slate-900 dark:text-white truncate" title={profile?.nome?.trim() || 'Usuário'}>
+                      {profile?.nome?.trim() || 'Usuário'}
+                    </p>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate" title={session?.user?.email || ''}>
+                      {session?.user?.email || 'Acesso seguro'}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-2.5 flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                    <ShieldCheck className="h-3 w-3" />
+                    {ROLE_LABELS[role] || 'Membro da Equipe'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Seção 1: Configurações Pessoais (Perfil, Senha e Credenciais) */}
+              <div className="py-1.5 px-1.5 space-y-0.5">
+                <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Configurações Pessoais
+                </p>
                 <Link
-                  href="/configuracoes"
+                  href="/minha-conta"
                   prefetch={true}
                   onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium transition-colors"
+                  className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
                 >
-                  <Settings className="h-4 w-4" />
-                  Configurações
+                  <div className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="font-semibold">Meu Perfil</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Alterar dados pessoais e identificação</span>
+                  </div>
                 </Link>
+
+                <Link
+                  href="/minha-conta"
+                  prefetch={true}
+                  onClick={() => setIsUserMenuOpen(false)}
+                  className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                >
+                  <div className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-amber-50 dark:group-hover:bg-amber-950/50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                    <KeyRound className="h-4 w-4" />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="font-semibold">Segurança & Palavra-passe</span>
+                    <span className="text-[10px] text-slate-400 font-normal">Modificar senha e acessos</span>
+                  </div>
+                </Link>
+              </div>
+
+              {/* Seção 2: Administração da Clínica (Exclusivo para admin / admin_clinica) */}
+              {isAdmin && (
+                <div className="py-1.5 px-1.5 space-y-0.5">
+                  <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Administração da Clínica
+                  </p>
+                  <Link
+                    href="/configuracoes"
+                    prefetch={true}
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                  >
+                    <div className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      <Settings className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span className="font-semibold">Configurações do Sistema</span>
+                      <span className="text-[10px] text-slate-400 font-normal">Dados da clínica, logotipo e permissões</span>
+                    </div>
+                  </Link>
+                </div>
               )}
-              <button
-                onClick={logout}
-                className="flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-700 font-bold transition-colors"
-              >
-                <LogOut className="h-4 w-4" />
-                Sair
-              </button>
+
+              {/* Seção 3: Logout */}
+              <div className="py-1.5 px-1.5">
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs sm:text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl font-bold transition-colors group"
+                >
+                  <div className="p-1 rounded-lg bg-red-100/60 dark:bg-red-950/60 group-hover:bg-red-100 dark:group-hover:bg-red-900/60 transition-colors">
+                    <LogOut className="h-4 w-4" />
+                  </div>
+                  <span>Terminar Sessão</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

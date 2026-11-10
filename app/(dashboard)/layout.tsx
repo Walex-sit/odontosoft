@@ -1,4 +1,5 @@
 import Topbar from '../components/Topbar'
+import { TrialBanner } from '../components/TrialBanner'
 import RequireAuth from '../components/RequireAuth'
 import RouteGuard from '../components/RouteGuard'
 import { BottomNav } from './BottomNav'
@@ -18,9 +19,12 @@ export default function DashboardLayout({
         {/* Pré-carregador de rotas e dados de alta frequência em idle */}
         <RoutePrefetcher />
 
-        <div className="flex flex-col min-h-screen w-full bg-slate-50 dark:bg-slate-950 overflow-hidden">
+        <div className="flex flex-col min-h-screen w-full bg-[#F8FAFC] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 overflow-hidden">
           {/* Topbar 100% persistente e estática */}
           <Topbar />
+
+          {/* Banner de Aviso de Período de Avaliação (Trial 7 dias) */}
+          <TrialBanner />
 
           {/* Feedback tátil imediato em navegação */}
           <NavigationProgress />

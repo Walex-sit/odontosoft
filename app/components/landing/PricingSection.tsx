@@ -5,52 +5,53 @@ import Link from 'next/link'
 const plans = [
   {
     id: 'starter',
-    name: 'Starter',
-    badge: 'Demonstração',
-    description: 'Ideal para conhecer a experiência, testar o odontograma e navegar pelo dashboard clínico.',
+    name: 'Avaliação de 7 Dias',
+    badge: 'Trial Restrito',
+    description: 'Período de teste de 7 dias com limitações de recursos essenciais. Exige upgrade para desbloqueio completo após o prazo.',
     price: 'R$ 0',
-    period: '/mês',
+    period: '/ 7 dias',
     popular: false,
-    ctaText: 'Começar agora',
+    ctaText: 'Iniciar Teste de 7 Dias',
     ctaStyle:
       'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 hover:border-slate-300',
     features: [
-      'Acesso completo ao Dashboard',
-      '50 Pacientes fictícios para testes',
-      'Odontograma digital básico',
-      'Agenda e marcação de consultas',
-      'Exportação de dados em CSV',
-      'Suporte via documentação técnica',
+      '7 dias de teste gratuito',
+      'Até 50 pacientes cadastrados',
+      'Odontograma digital essencial',
+      'Agenda para 1 profissional',
+      'Recursos avançados e DRE bloqueados',
+      'Exige plano pago para continuidade',
     ],
   },
   {
     id: 'premium',
-    name: 'Premium',
-    badge: 'Portfólio Completo',
-    popularBadge: 'Mais Popular',
-    description: 'Para clínicas que exigem produtividade máxima, gestão financeira e múltiplos dentistas.',
+    name: 'Plano Profissional Completo',
+    badge: 'Desbloqueio Total',
+    popularBadge: 'Mais Escolhido',
+    description: 'Acesso irrestrito a todos os módulos clínicos, relatórios financeiros DRE, conformidade LGPD e múltiplos profissionais.',
     price: 'R$ 197',
     period: '/mês',
     popular: true,
-    ctaText: 'Começar agora',
+    ctaText: 'Desbloquear Acesso Completo',
     ctaStyle:
       'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35',
     features: [
-      'Pacientes ilimitados',
-      'Odontograma digital interativo completo (32 dentes)',
-      'Integração e controle financeiro completo',
-      'Split automático para dentistas associados',
-      'Isolamento multi-tenant avançado (PostgreSQL RLS)',
-      'Relatórios gerenciais completos e DRE clínico',
-      'Lembretes automáticos via WhatsApp',
-      'Suporte prioritário 24/7',
+      'Pacientes e prontuários ilimitados',
+      'Odontograma interativo completo (32 dentes)',
+      'Controle financeiro e DRE analítico liberados',
+      'Múltiplos dentistas e divisão de comissões',
+      'Automação de lembretes via WhatsApp',
+      'Auditoria de segurança e conformidade LGPD',
+      'Isolamento multi-tenant de banco de dados',
+      'Suporte prioritário e backups automáticos',
     ],
   },
 ]
 
 export default function PricingSection() {
   return (
-    <section className="py-24 px-6 bg-slate-50/60 border-t border-slate-100" id="preços">
+    <section className="relative py-24 px-6 bg-slate-50/60 border-t border-slate-100" id="preços">
+      <div id="precos" className="absolute -top-24" />
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">

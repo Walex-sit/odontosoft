@@ -10,7 +10,7 @@ import LandingFooter from './components/landing/LandingFooter'
 export const metadata: Metadata = {
   title: 'OdontoSoft — Gestão Odontológica Simples e Previsível',
   description:
-    'Agendamentos inteligentes, prontuário eletrônico completo e controle financeiro para clínicas odontológicas. Comece grátis por 14 dias, sem cartão de crédito.',
+    'Agendamentos inteligentes, prontuário eletrônico completo e controle financeiro para clínicas odontológicas. Avaliação gratuita de 7 dias com recursos essenciais, sem cartão de crédito.',
   keywords: [
     'software odontológico',
     'gestão clínica dental',

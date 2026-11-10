@@ -45,13 +45,17 @@ export default function LandingNav() {
 
         {/* Links centrais - apenas desktop */}
         <div className="hidden md:flex items-center gap-8">
-          {['Funcionalidades', 'Preços', 'Tecnologias'].map((item) => (
+          {[
+            { label: 'Funcionalidades', href: '#funcionalidades' },
+            { label: 'Preços', href: '#preços' },
+            { label: 'Segurança & LGPD', href: '#seguranca' },
+          ].map((item) => (
             <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
+              key={item.label}
+              href={item.href}
               className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors duration-200"
             >
-              {item}
+              {item.label}
             </a>
           ))}
         </div>

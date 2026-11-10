@@ -377,16 +377,16 @@ export default function Pacientes() {
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 p-4 sm:p-8">
+    <div className="flex-1 flex flex-col h-full overflow-y-auto bg-[#F8FAFC] dark:bg-[#0B1120] p-4 sm:p-8">
       <div className="max-w-7xl mx-auto w-full space-y-6">
 
         {/* ── 1. Cabeçalho Principal ────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-slate-50 tracking-tight">
               Pacientes
             </h1>
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mt-0.5">
+            <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
               Gestão clínica completa, conformidade LGPD e ações ágeis de recepção
             </p>
           </div>
@@ -394,7 +394,7 @@ export default function Pacientes() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => carregarPacientes(true)}
-              className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-xs active:scale-95"
+              className="p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-2xs active:scale-95"
               title="Recarregar pacientes"
             >
               <RefreshCw className={`h-4 w-4 ${carregando ? 'animate-spin text-blue-600' : ''}`} />
@@ -403,83 +403,83 @@ export default function Pacientes() {
         </div>
 
         {/* ── 2. Barra de KPIs Resumidos ─────────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           
           {/* KPI 1: Total de Pacientes */}
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-4 transition-all hover:border-slate-300 dark:hover:border-slate-700">
-            <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-600 border border-blue-200/80 flex items-center justify-center shrink-0 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900/60">
+          <div className="bento-card bento-card-interactive p-6 rounded-3xl shadow-bento flex items-center gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-blue-50 text-blue-600 border border-blue-200/70 flex items-center justify-center shrink-0 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900/60">
               <Users className="h-6 w-6" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Total
                 </span>
-                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800/40">
+                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/70 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800/40">
                   Base Ativa
                 </span>
               </div>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight mt-0.5">
+              <p className="text-3xl font-black text-slate-900 dark:text-slate-50 tracking-tight mt-1">
                 {carregando ? '—' : kpis.total}
               </p>
             </div>
           </div>
 
           {/* KPI 2: Novos este Mês */}
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-4 transition-all hover:border-slate-300 dark:hover:border-slate-700">
-            <div className="h-12 w-12 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200/80 flex items-center justify-center shrink-0 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-900/60">
+          <div className="bento-card bento-card-interactive p-6 rounded-3xl shadow-bento flex items-center gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200/70 flex items-center justify-center shrink-0 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-900/60">
               <Sparkles className="h-6 w-6" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Novos este Mês
                 </span>
-                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40">
+                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/70 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40">
                   Crescimento
                 </span>
               </div>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight mt-0.5">
+              <p className="text-3xl font-black text-slate-900 dark:text-slate-50 tracking-tight mt-1">
                 {carregando ? '—' : `+${kpis.novosMes}`}
               </p>
             </div>
           </div>
 
           {/* KPI 3: Conformidade LGPD */}
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-4 transition-all hover:border-slate-300 dark:hover:border-slate-700">
-            <div className="h-12 w-12 rounded-xl bg-teal-50 text-teal-600 border border-teal-200/80 flex items-center justify-center shrink-0 dark:bg-teal-950/50 dark:text-teal-400 dark:border-teal-900/60">
+          <div className="bento-card bento-card-interactive p-6 rounded-3xl shadow-bento flex items-center gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-200/70 flex items-center justify-center shrink-0 dark:bg-teal-950/50 dark:text-teal-400 dark:border-teal-900/60">
               <ShieldCheck className="h-6 w-6" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   LGPD Conforme
                 </span>
-                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200/60 dark:bg-teal-950/60 dark:text-teal-300 dark:border-teal-800/40">
+                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200/70 dark:bg-teal-950/60 dark:text-teal-300 dark:border-teal-800/40">
                   {kpis.taxaLgpd}%
                 </span>
               </div>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight mt-0.5">
+              <p className="text-3xl font-black text-slate-900 dark:text-slate-50 tracking-tight mt-1">
                 {carregando ? '—' : `${kpis.lgpdConformeCount}/${kpis.total}`}
               </p>
             </div>
           </div>
 
           {/* KPI 4: Contato Ativo (WhatsApp) */}
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-4 transition-all hover:border-slate-300 dark:hover:border-slate-700">
-            <div className="h-12 w-12 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-200/80 flex items-center justify-center shrink-0 dark:bg-indigo-950/50 dark:text-indigo-400 dark:border-indigo-900/60">
+          <div className="bento-card bento-card-interactive p-6 rounded-3xl shadow-bento flex items-center gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-200/70 flex items-center justify-center shrink-0 dark:bg-indigo-950/50 dark:text-indigo-400 dark:border-indigo-900/60">
               <Phone className="h-6 w-6" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Contato Cadastrado
                 </span>
-                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/60 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/40">
+                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/70 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800/40">
                   WhatsApp
                 </span>
               </div>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight mt-0.5">
+              <p className="text-3xl font-black text-slate-900 dark:text-slate-50 tracking-tight mt-1">
                 {carregando ? '—' : kpis.comTelefoneCount}
               </p>
             </div>
@@ -488,27 +488,27 @@ export default function Pacientes() {
         </div>
 
         {/* ── 3. Card de Cadastro Rápido ────────────────────────────────────── */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div className="bg-white dark:bg-slate-900 p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-[0_2px_12px_-4px_rgba(15,23,42,0.035)]">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-blue-50 text-blue-600 border border-blue-200/80 flex items-center justify-center dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-900/60">
+            <h2 className="text-base font-black text-slate-900 dark:text-slate-50 flex items-center gap-2.5 tracking-tight">
+              <div className="h-8 w-8 rounded-xl bg-blue-50 text-blue-600 border border-blue-200/70 flex items-center justify-center dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-900/60">
                 <UserPlus className="h-4 w-4" />
               </div>
               Cadastro Rápido de Paciente
             </h2>
-            <span className="text-xs text-slate-500 hidden sm:inline">
+            <span className="text-xs font-semibold text-slate-400 hidden sm:inline">
               O paciente será inserido de imediato na base com RGPD inicial pendente
             </span>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 items-end">
             <div className="flex-1 w-full">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
                 Nome completo do paciente *
               </label>
               <input
                 data-testid="input-quick-paciente-nome"
-                className="appearance-none block w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 text-sm transition-all shadow-xs"
+                className="appearance-none block w-full px-4 py-3 bg-slate-50/70 dark:bg-slate-950/60 border border-slate-200/90 dark:border-slate-700/80 rounded-2xl text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 text-sm font-semibold transition-all shadow-2xs"
                 placeholder="Ex: Dra. Mariana Vasconcelos ou Carlos Eduardo Silveira"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
@@ -520,7 +520,7 @@ export default function Pacientes() {
               onClick={adicionarPaciente}
               disabled={salvando || !nome.trim()}
               data-testid="btn-quick-adicionar-paciente"
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl transition-all font-bold text-sm h-[42px] shadow-sm flex items-center justify-center gap-2 shrink-0 active:scale-95 mb-0.5"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-2xl transition-all font-bold text-sm h-[46px] shadow-sm shadow-blue-500/25 flex items-center justify-center gap-2 shrink-0 active:scale-95 mb-0.5"
             >
               {salvando ? (
                 <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white inline-block" />
@@ -531,9 +531,8 @@ export default function Pacientes() {
             </button>
           </div>
         </div>
-
         {/* ── 4. Tabela de Pacientes com Ações Rápidas ──────────────────────── */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-[0_2px_14px_-4px_rgba(15,23,42,0.04)] overflow-hidden">
 
           {/* Barra Superior da Tabela: Título + Filtros + Busca */}
           <div className="p-4 sm:p-6 border-b border-slate-200/80 dark:border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-50/60 dark:bg-slate-950/40">

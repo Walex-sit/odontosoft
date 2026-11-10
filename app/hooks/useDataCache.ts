@@ -32,7 +32,9 @@ export function useDataCache<T>(
   const [error, setError] = useState<Error | null>(null)
 
   const fetcherRef = useRef(fetcher)
-  fetcherRef.current = fetcher
+  useEffect(() => {
+    fetcherRef.current = fetcher
+  })
 
   const loadData = useCallback(async (isBackground = false) => {
     if (!enabled) return

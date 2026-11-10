@@ -48,3 +48,7 @@ playwright-report/
 supabase/.temp/
 supabase/.branches/
 
+# scratch directory (local tests and scripts)
+scratch/
+
+

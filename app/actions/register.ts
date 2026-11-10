@@ -27,6 +27,7 @@ import {
   registrarClinicaPayloadSchema,
   normalizeClinicName,
 } from '@/app/lib/validations/register'
+import { validarEConsumirCodigoOtp } from '@/app/actions/validation-code'
 
 /**
  * Checa se já existe alguma clínica registada com o mesmo nome ou slug equivalente.
@@ -89,7 +90,7 @@ export async function verificarDisponibilidadeNomeClinica(
   nomeClinica: string
 ): Promise<{ disponivel: boolean; error?: string }> {
   try {
-    const parseResult = registrarClinicaPayloadSchema.safeParse({ nomeClinica })
+    const parseResult = registrarClinicaPayloadSchema.shape.nomeClinica.safeParse(nomeClinica)
     if (!parseResult.success) {
       return {
         disponivel: false,
@@ -97,7 +98,7 @@ export async function verificarDisponibilidadeNomeClinica(
       }
     }
 
-    const jaExiste = await checarNomeClinicaExiste(parseResult.data.nomeClinica)
+    const jaExiste = await checarNomeClinicaExiste(parseResult.data)
     if (jaExiste) {
       return {
         disponivel: false,
@@ -115,20 +116,23 @@ export async function verificarDisponibilidadeNomeClinica(
 
 /**
  * Provisiona a nova clínica vinculada ao usuário autenticado atual.
+ * Exige validação e consumo atômico do código OTP no servidor.
  */
 export async function registrarNovaClinica(payload: {
   nomeClinica: string
+  codigoOtp: string
 }): Promise<{ success: boolean; error?: string }> {
-  // 1. Validação de entrada com Zod
+  // 1. Validação de entrada com Zod (nome da clínica e código OTP de 6 dígitos)
   const validation = registrarClinicaPayloadSchema.safeParse(payload)
   if (!validation.success) {
     return {
       success: false,
-      error: validation.error.issues[0]?.message || 'O nome da clínica é inválido.',
+      error: validation.error.issues[0]?.message || 'Parâmetros de registo inválidos.',
     }
   }
 
   const cleanNomeClinica = validation.data.nomeClinica.trim()
+  const cleanCodigoOtp = validation.data.codigoOtp.trim()
 
   try {
     // 2. Valida a sessão do usuário (o cookie deve estar presente após o signUp)
@@ -145,7 +149,24 @@ export async function registrarNovaClinica(payload: {
       }
     }
 
-    // 3. Verifica se o perfil do usuário já possui clínica vinculada
+    // 3. Validação OTP OBRIGATÓRIA no servidor (Pilar de Segurança Etapa 6)
+    // O código deve pertencer ao e-mail autenticado, estar dentro da validade e não ter sido consumido
+    if (!user.email) {
+      return {
+        success: false,
+        error: 'E-mail do utilizador não identificado na sessão ativa.',
+      }
+    }
+
+    const otpValidation = await validarEConsumirCodigoOtp(user.email, cleanCodigoOtp)
+    if (!otpValidation.success) {
+      return {
+        success: false,
+        error: otpValidation.error || 'Código de validação OTP inválido, expirado ou já utilizado.',
+      }
+    }
+
+    // 4. Verifica se o perfil do usuário já possui clínica vinculada
     const { data: existingProfile } = await supabaseAdmin
       .from('user_profiles')
       .select('id, clinica_id, role')
@@ -178,12 +199,16 @@ export async function registrarNovaClinica(payload: {
     // 5. Gera um novo UUID exclusivo para o novo tenant (isolamento absoluto)
     const novoClinicaId = crypto.randomUUID()
 
+    // Calcula a data de expiração do trial (7 dias a partir de agora)
+    const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+
     // 6. Cria a clínica na tabela clinicas
     const { error: clinicaError } = await supabaseAdmin.from('clinicas').insert({
       id: novoClinicaId,
       nome: cleanNomeClinica,
       plano: 'profissional',
-      status_assinatura: 'ativo',
+      status_assinatura: 'trial',
+      trial_ends_at: trialEndsAt,
       ativo: true,
     })
 
