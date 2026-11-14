@@ -68,7 +68,7 @@ CREATE OR REPLACE FUNCTION private.fn_audit_trigger()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, private, extensions
+SET search_path = ''
 AS $$
 DECLARE
     v_clinica_id       UUID;
@@ -166,6 +166,9 @@ $$;
 COMMENT ON FUNCTION private.fn_audit_trigger() IS
     'Trigger de auditoria contínua LGPD. Registra INSERT, UPDATE e DELETE de pacientes e prontuários '
     'com diff estruturado de OLD/NEW em JSONB e identificação do usuário.';
+
+REVOKE ALL ON FUNCTION private.fn_audit_trigger() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION private.fn_audit_trigger() TO service_role;
 
 -- Triggers nas tabelas exigidas
 DROP TRIGGER IF EXISTS trg_audit_pacientes ON public.pacientes;

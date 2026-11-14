@@ -21,16 +21,10 @@ COMMENT ON COLUMN public.user_profiles.is_lifetime IS
 -- Adicionar 'super_admin' ao enum de roles de forma retrocompatível
 ALTER TYPE public.user_role ADD VALUE IF NOT EXISTS 'super_admin';
 
--- Registar o Super Admin de desenvolvimento como vitalício (via email seguro)
--- ATENÇÃO: Substitua 'testealex@gmail.com' pelo email real do proprietário em produção.
-UPDATE public.user_profiles
-SET
-  is_lifetime = true,
-  role        = 'admin'  -- garante role máxima
-WHERE email IN (
-  'testealex@gmail.com'
-  -- adicione outros emails de proprietários aqui
-);
+-- NOTA DE SEGURANÇA: Nenhum e-mail de proprietário é hardcoded em migrações.
+-- O provisionamento de Super Admin / Acesso Vitalício deve ser realizado
+-- exclusivamente pós-deploy via procedimento administrativo seguro autenticado
+-- (ex: console de administração ou script seguro com service_role).
 
 -- ── 3. Garantia: clínicas já existentes no banco não devem ser penalizadas ────
 --    Definir trial_ends_at como NULL (acesso irrestrito) para clínicas criadas
