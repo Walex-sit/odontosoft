@@ -14,6 +14,7 @@ import { fetchDashboardMetrics, fetchDashboardCharts } from '@/app/actions/dashb
 import { useAuth } from '@/app/components/RequireAuth'
 import { useClinica } from '@/app/contexts/ClinicaContext'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 function SparklineCurve({ color = '#10b981', trend = 'up' }: { color?: string; trend?: 'up' | 'down' }) {
   const gradId = `spark-${color.replace('#', '')}-${trend}`
@@ -42,11 +43,19 @@ function SparklineCurve({ color = '#10b981', trend = 'up' }: { color?: string; t
 
 export default function DashboardOverview() {
   const { profile, session } = useAuth()
-  const { clinica } = useClinica()
+  const { clinica, isSuperAdminContext, loading: clinicaLoading } = useClinica()
+  const router = useRouter()
   const isFinanceiroOrAdmin = profile?.role === 'admin' || profile?.role === 'admin_clinica' || profile?.role === 'financeiro'
 
   const [mounted, setMounted] = useState(false)
   const [imageError, setImageError] = useState(false)
+
+  // Super Admin em modo global deve ser direcionado ao Painel Global
+  useEffect(() => {
+    if (!clinicaLoading && profile?.role === 'super_admin' && !isSuperAdminContext) {
+      router.replace('/admin')
+    }
+  }, [clinicaLoading, profile?.role, isSuperAdminContext, router])
 
   const agora = new Date()
   const mesAtualStr = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}`

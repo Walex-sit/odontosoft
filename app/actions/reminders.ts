@@ -2,6 +2,7 @@
 
 import { createServerClient } from '@/app/lib/supabase/server'
 import { logAction } from '@/app/lib/logger'
+import { requireActiveClinic } from '@/app/lib/auth-guards'
 
 export type ReminderType = 'confirmacao' | 'lembrete_24h' | 'pre_operatorio' | 'retorno'
 
@@ -67,6 +68,7 @@ export async function registrarEnvioLembrete(params: {
   mensagem: string
 }): Promise<{ success: boolean; error?: string }> {
   try {
+    await requireActiveClinic()
     const supabase = await createServerClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -77,14 +79,13 @@ export async function registrarEnvioLembrete(params: {
         .eq('id', user.id)
         .single()
 
+      // Log de auditoria LGPD: apenas IDs e tipo de evento, sem expor nome ou telefone do paciente
       await logAction(
         user.id,
         'edicao',
         'lembretes_whatsapp',
         {
           agendamento_id: params.agendamentoId || null,
-          paciente_nome: params.pacienteNome,
-          telefone: params.telefone,
           tipo: params.tipo,
           clinica_id: profile?.clinica_id,
         },

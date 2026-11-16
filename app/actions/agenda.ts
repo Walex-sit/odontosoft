@@ -13,6 +13,7 @@
  */
 
 import { createServerClient } from '@/app/lib/supabase/server'
+import { requireActiveClinic } from '@/app/lib/auth-guards'
 
 export interface AgendamentoPayload {
   paciente_id: string
@@ -28,6 +29,12 @@ export interface AgendamentoPayload {
 export async function createAgendamento(
   payload: AgendamentoPayload
 ): Promise<{ success: boolean; id?: string; error?: string }> {
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
+  }
+
   const supabase = await createServerClient()
 
   const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -111,6 +118,12 @@ export async function updateAgendamentoStatus(
 ): Promise<{ success: boolean; error?: string }> {
   if (!id) return { success: false, error: 'ID de agendamento não informado.' }
 
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
+  }
+
   const supabase = await createServerClient()
 
   const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -148,6 +161,12 @@ export async function updateAgendamento(
   payload: AgendamentoPayload
 ): Promise<{ success: boolean; error?: string }> {
   if (!id) return { success: false, error: 'ID de agendamento não informado.' }
+
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
+  }
 
   const supabase = await createServerClient()
 

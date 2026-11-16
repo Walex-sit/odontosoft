@@ -6,7 +6,7 @@
  * Página de detalhes e prontuário do paciente (Painel da Clínica).
  *
  * Segurança (T001):
- *  ✅ Consulta alinhada ao schema LGPD (cpf_hash, cpf_encrypted).
+ *  ✅ Consulta alinhada ao schema LGPD (cpf_mascarado para minimização de dados).
  *  ✅ RLS no Supabase garante o isolamento multi-tenant da clínica.
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -40,9 +40,8 @@ interface Paciente {
   id: string
   nome: string
   telefone: string | null
-  /** CPF protegido por hash e criptografia (LGPD). */
-  cpf_hash: string | null
-  cpf_encrypted: string | null
+  /** CPF mascarado para exibição segura na UI (LGPD art. 46). */
+  cpf_mascarado: string | null
   email: string | null
   created_at: string
   lgpd_aceite: boolean | null
@@ -65,12 +64,6 @@ interface Cobranca {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-/** Exibe o CPF mascarado a partir do hash (não expõe o dado real). */
-function formatarCPF(cpfHash: string | null) {
-  if (!cpfHash) return null
-  return `***.***.*${cpfHash.substring(0, 3).toUpperCase()}-**`
-}
 
 function formatarTelefone(tel: string | null) {
   if (!tel) return null
@@ -209,7 +202,7 @@ export default function DetalhePaciente() {
 
     const { data } = await supabase
       .from('pacientes')
-      .select('id, nome, telefone, cpf_hash, cpf_encrypted, email, created_at, lgpd_aceite, lgpd_aceite_em')
+      .select('id, nome, telefone, cpf_mascarado, email, created_at, lgpd_aceite, lgpd_aceite_em')
       .eq('id', pacienteId)
       .single()
 
@@ -504,7 +497,7 @@ export default function DetalhePaciente() {
                 <InfoField label="Data de Cadastro" value={new Date(paciente.created_at).toLocaleDateString('pt-BR')} />
                 <InfoField label="Telefone" value={formatarTelefone(paciente.telefone)} />
                 <InfoField label="Email" value={paciente.email} />
-                <InfoField label="CPF" value={formatarCPF(paciente.cpf_hash)} />
+                <InfoField label="CPF" value={paciente.cpf_mascarado || '—'} />
               </div>
             </div>
           )}

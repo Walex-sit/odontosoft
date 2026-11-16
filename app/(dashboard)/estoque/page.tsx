@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { Package, AlertTriangle, Plus, Search, TrendingUp, ArrowDown, ArrowUp, X, Loader2 } from 'lucide-react'
+import { Package, AlertTriangle, Plus, Search, TrendingUp, ArrowDown, ArrowUp, X, Loader2, Trash2 } from 'lucide-react'
 import { supabase } from '@/app/lib/supabaseClient'
 import { useAuth } from '@/app/components/RequireAuth'
 import { TableSkeleton } from '@/app/components/ui/Skeleton'
@@ -50,16 +50,16 @@ export default function EstoquePage() {
     setErro(null)
     try {
       // Colunas reais da tabela `estoque` no Supabase:
-      // id | clinica_id | nome_item | quantidade | quantidade_minima | unidade | created_at
+      // id | clinica_id | nome | descricao | quantidade | minimo | unidade | created_at
       let query = supabase
         .from('estoque')
-        .select('id, clinica_id, nome_item, quantidade, quantidade_minima, unidade, created_at')
+        .select('id, clinica_id, nome, descricao, quantidade, minimo, unidade, created_at')
 
       if (profile?.clinica_id) {
         query = query.eq('clinica_id', profile.clinica_id)
       }
 
-      const { data, error } = await query.order('nome_item', { ascending: true })
+      const { data, error } = await query.order('nome', { ascending: true })
 
       if (error) {
         console.error('[Estoque] Erro ao carregar itens:', error.message)
@@ -68,12 +68,12 @@ export default function EstoquePage() {
         setItens(
           data.map((row: any) => ({
             id: row.id,
-            nome: row.nome_item || 'Item sem nome',
+            nome: row.nome || 'Item sem nome',
             categoria: 'Outros',
             quantidade: Number(row.quantidade ?? 0),
-            minimo: Number(row.quantidade_minima ?? 0),
+            minimo: Number(row.minimo ?? 0),
             unidade: row.unidade || 'un',
-            fornecedor: '—',
+            fornecedor: row.descricao || '—',
             ultimaCompra: row.created_at
               ? new Date(row.created_at).toLocaleDateString('pt-BR')
               : '—',
@@ -148,13 +148,14 @@ export default function EstoquePage() {
       .insert([
         {
           ...(profile?.clinica_id ? { clinica_id: profile.clinica_id } : {}),
-          nome_item: novoItem.nome,
+          nome: novoItem.nome,
+          descricao: novoItem.fornecedor || null,
           quantidade: novoItem.quantidade,
-          quantidade_minima: novoItem.minimo,
+          minimo: novoItem.minimo,
           unidade: novoItem.unidade,
         },
       ])
-      .select('id, clinica_id, nome_item, quantidade, quantidade_minima, unidade, created_at')
+      .select('id, clinica_id, nome, descricao, quantidade, minimo, unidade, created_at')
 
     if (error) {
       toast.error('Erro ao salvar item: ' + error.message)
@@ -171,6 +172,30 @@ export default function EstoquePage() {
         custo: 0,
       })
       carregarEstoque()
+    }
+  }
+
+  const excluirItem = async (item: Item) => {
+    if (!confirm(`Tem certeza que deseja excluir o item "${item.nome}" do estoque?`)) {
+      return
+    }
+
+    let deleteQuery = supabase
+      .from('estoque')
+      .delete()
+      .eq('id', item.id)
+
+    if (profile?.clinica_id) {
+      deleteQuery = deleteQuery.eq('clinica_id', profile.clinica_id)
+    }
+
+    const { error } = await deleteQuery
+
+    if (error) {
+      toast.error('Erro ao excluir item: ' + error.message)
+    } else {
+      toast.success(`Item "${item.nome}" removido do estoque.`)
+      setItens(prev => prev.filter(i => i.id !== item.id))
     }
   }
 
@@ -301,12 +326,15 @@ export default function EstoquePage() {
                             <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${st.bg} ${st.text}`}>{st.label}</span>
                           </td>
                           <td className="px-5 py-3.5">
-                            <div className="flex gap-2">
-                              <button onClick={() => { setMovModal({ item, tipo: 'entrada' }); setMovQtd(1) }} className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-colors">
+                            <div className="flex items-center gap-2">
+                              <button onClick={() => { setMovModal({ item, tipo: 'entrada' }); setMovQtd(1) }} className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-colors cursor-pointer" title="Registrar Entrada">
                                 <ArrowDown className="h-3.5 w-3.5" /> Entrada
                               </button>
-                              <button onClick={() => { setMovModal({ item, tipo: 'saida' }); setMovQtd(1) }} className="flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors">
+                              <button onClick={() => { setMovModal({ item, tipo: 'saida' }); setMovQtd(1) }} className="flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors cursor-pointer" title="Registrar Saída">
                                 <ArrowUp className="h-3.5 w-3.5" /> Saída
+                              </button>
+                              <button onClick={() => excluirItem(item)} className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer" title="Excluir item">
+                                <Trash2 className="h-3.5 w-3.5" />
                               </button>
                             </div>
                           </td>

@@ -10,8 +10,7 @@ export interface Patient {
   email?: string | null
   data_nascimento?: string | null
   observacoes?: string | null
-  cpf_hash?: string | null
-  cpf_encrypted?: string | null
+  cpf_mascarado?: string | null
   lgpd_aceite?: boolean | null
   lgpd_aceite_em?: string | null
   created_at?: string
@@ -28,7 +27,7 @@ export interface Patient {
 export async function getPatientById(id: string): Promise<Patient | null> {
   const { data, error } = await supabase
     .from('pacientes')
-    .select('id, clinica_id, nome, telefone, email, data_nascimento, observacoes, cpf_hash, cpf_encrypted, lgpd_aceite, lgpd_aceite_em, created_at, user_id, cep, rua, numero, bairro, cidade, genero, whatsapp')
+    .select('id, clinica_id, nome, telefone, email, data_nascimento, observacoes, cpf_mascarado, lgpd_aceite, lgpd_aceite_em, created_at, user_id, cep, rua, numero, bairro, cidade, genero, whatsapp')
     .eq('id', id)
     .maybeSingle()
 

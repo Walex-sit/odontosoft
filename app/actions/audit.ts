@@ -16,6 +16,7 @@
  */
 
 import { createServerClient } from '@/app/lib/supabase/server'
+import type { LogAction } from '@/app/lib/logger'
 
 export interface AuditLog {
   id: string
@@ -170,5 +171,57 @@ export async function fetchStrictAuditLogs(filters?: {
   }
 
   return { success: true, data: (data as StrictAuditLog[]) ?? [] }
+}
+
+/**
+ * Server Action segura para registro de eventos de autenticação originados no cliente.
+ * Obtém a identidade do usuário autenticado a partir do cookie/sessão do servidor,
+ * impedindo que clientes maliciosos forjem o userId no log.
+ */
+export async function logAuthAction(
+  action: 'login' | 'logout',
+  details?: Record<string, unknown>
+): Promise<void> {
+  try {
+    const supabase = await createServerClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user?.id) {
+      return
+    }
+
+    const { logAction } = await import('@/app/lib/logger')
+    await logAction(user.id, action, 'auth', details)
+  } catch (err) {
+    console.error('[audit.logAuthAction] Falha ao registrar log de autenticação:', err)
+  }
+}
+
+/**
+ * Server Action genérica para registro de ações originadas em componentes cliente.
+ * Resolve o usuário autenticado na sessão do servidor, garantindo isolamento multi-tenant.
+ */
+export async function logClientAction(
+  action: LogAction,
+  entity: string,
+  details?: Record<string, unknown>
+): Promise<void> {
+  try {
+    const supabase = await createServerClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user?.id) {
+      return
+    }
+
+    const { logAction } = await import('@/app/lib/logger')
+    await logAction(user.id, action, entity, details)
+  } catch (err) {
+    console.error('[audit.logClientAction] Falha ao registrar log do cliente:', err)
+  }
 }
 

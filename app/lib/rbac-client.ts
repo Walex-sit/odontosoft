@@ -7,6 +7,7 @@ import { UserRole } from '../components/RequireAuth'
  */
 export const ROUTE_PERMISSIONS: Record<UserRole, string[]> = {
   super_admin: [
+    '/admin',
     '/overview',
     '/agenda',
     '/pacientes',
@@ -120,11 +121,12 @@ export const ROUTE_PERMISSIONS: Record<UserRole, string[]> = {
 export function canAccess(role: UserRole | undefined, pathname: string): boolean {
   if (!role) return false
   const allowed = ROUTE_PERMISSIONS[role] ?? []
-  const normalizedPath = pathname === '/dashboard'
+  const pathWithoutQuery = (pathname || '').split('?')[0]
+  const normalizedPath = pathWithoutQuery === '/dashboard'
     ? '/overview'
-    : pathname.startsWith('/dashboard/')
-      ? pathname.replace(/^\/dashboard/, '')
-      : pathname
+    : pathWithoutQuery.startsWith('/dashboard/')
+      ? pathWithoutQuery.replace(/^\/dashboard/, '')
+      : pathWithoutQuery
 
   return allowed.some((prefix) => normalizedPath === prefix || normalizedPath.startsWith(prefix + '/'))
 }

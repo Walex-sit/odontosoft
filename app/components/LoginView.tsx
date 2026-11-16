@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { useRouter } from 'next/navigation'
-import { logAction } from '../lib/logger'
+import { logAuthAction } from '@/app/actions/audit'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 
 export default function LoginView() {
@@ -33,7 +33,7 @@ export default function LoginView() {
         alert(error.message)
       } else {
         if (data?.user?.id) {
-          await logAction(data.user.id, 'login', 'auth', { email })
+          await logAuthAction('login', { email })
         }
         router.push('/overview')
       }
@@ -52,12 +52,12 @@ export default function LoginView() {
     setEnviandoReset(true)
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/login`,
+        redirectTo: `${window.location.origin}/definir-senha`,
       })
       if (error) {
         alert(error.message)
       } else {
-        alert('Link de redefinição enviado para ' + email)
+        alert('Link de redefinição enviado para ' + email + '. Verifique sua caixa de entrada.')
       }
     } catch (e: any) {
       alert(e.message || 'Erro ao enviar e-mail')

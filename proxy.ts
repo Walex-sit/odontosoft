@@ -169,6 +169,12 @@ export async function proxy(request: NextRequest) {
       const isSuperAdmin = profile?.role === 'super_admin'
       const isLifetime = profile?.is_lifetime === true || isOwnerExactMatch
 
+      // ── REGRA ESTRITA: /admin é exclusivo para super_admin ──────────────────
+      if (pathname.startsWith('/admin') && !isSuperAdmin) {
+        const deniedUrl = new URL('/acesso-negado', request.nextUrl.origin)
+        return NextResponse.redirect(deniedUrl)
+      }
+
       if (isLifetime || isSuperAdmin) {
         // Acesso vitalício irrestrito permanente — nunca é bloqueado por trial
         return response

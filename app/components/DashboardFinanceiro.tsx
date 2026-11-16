@@ -149,25 +149,30 @@ export default function DashboardFinanceiro() {
     setCarregando(true)
     setErro(null)
 
-    const { data, error } = await supabase
-      .from('v_fluxo_caixa')
-      .select('*')
+    try {
+      const [recRes, despRes] = await Promise.all([
+        supabase.from('receitas').select('valor'),
+        supabase.from('despesas').select('valor'),
+      ])
 
-    if (error) {
-      // Falha real de conexão ou permissão — exibe erro
-      setErro(error.message)
-      setDados(null)
-    } else {
-      // View vazia é estado normal: assume zeros
-      const row = data && data.length > 0 ? data[0] : null
+      if (recRes.error) throw new Error(recRes.error.message)
+      if (despRes.error) throw new Error(despRes.error.message)
+
+      const totalReceitas = (recRes.data || []).reduce((acc, r: any) => acc + Number(r.valor || 0), 0)
+      const totalDespesas = (despRes.data || []).reduce((acc, d: any) => acc + Number(d.valor || 0), 0)
+      const saldoLiquido = totalReceitas - totalDespesas
+
       setDados({
-        total_receitas: Number(row?.total_receitas ?? 0),
-        total_despesas: Number(row?.total_despesas ?? 0),
-        saldo_liquido:  Number(row?.saldo_liquido  ?? 0),
+        total_receitas: totalReceitas,
+        total_despesas: totalDespesas,
+        saldo_liquido: saldoLiquido,
       })
+    } catch (err: any) {
+      setErro(err.message || 'Erro ao consultar fluxo de caixa.')
+      setDados(null)
+    } finally {
+      setCarregando(false)
     }
-
-    setCarregando(false)
   }
 
   useEffect(() => {

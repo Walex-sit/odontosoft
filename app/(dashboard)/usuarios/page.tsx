@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
-import { logAction } from '../../lib/logger'
+import { logClientAction } from '@/app/actions/audit'
 import { Search, Plus, Filter, Shield, Users, Eye, EyeOff, X } from 'lucide-react'
 import { useAuth } from '../../components/RequireAuth'
 
@@ -76,7 +76,7 @@ export default function Usuarios() {
         alert(`Erro ao alterar perfil: ${error.message}`)
       } else {
         if (session?.user?.id) {
-          await logAction(session.user.id, 'edicao', 'usuarios', { user_id_afetado: userId, nova_role: novaRole })
+          await logClientAction('edicao', 'usuarios', { user_id_afetado: userId, nova_role: novaRole })
         }
         if (userId === session?.user?.id) await refreshProfile()
       }
@@ -120,7 +120,7 @@ export default function Usuarios() {
       if (profileError) {
         setErro(`Usuário criado, erro no perfil: ${profileError.message}`)
       } else {
-        await logAction(session?.user?.id || userId, 'criacao', 'usuarios', { email: form.email.trim(), role: form.role })
+        await logClientAction('criacao', 'usuarios', { email: form.email.trim(), role: form.role })
         setForm({ nome: '', email: '', senha: '', role: 'recepcao' })
         carregarUsuarios()
       }

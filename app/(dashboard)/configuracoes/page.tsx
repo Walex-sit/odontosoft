@@ -146,12 +146,19 @@ export default function ConfiguracoesPage() {
   // ─── Loaders ──────────────────────────────────────────────────────────────
 
   const loadClinicaSettings = async () => {
+    const targetClinicaId = profile?.clinica_id || (isSuperAdmin ? ctxClinica?.id : null)
+    if (!targetClinicaId) {
+      setClinicaId(null)
+      setIsLoadingPerfil(false)
+      return
+    }
+
     setIsLoadingPerfil(true)
     try {
-      const res = await fetchClinicaSettings()
+      const res = await fetchClinicaSettings(targetClinicaId)
       if (res.success && res.data) {
         const d = res.data
-        setClinicaId(d.id)
+        setClinicaId(d.clinica_id || d.id)
         setClinica({
           nome: d.nome ?? '',
           cnpj: d.cnpj ?? '',
@@ -172,9 +179,19 @@ export default function ConfiguracoesPage() {
   }
 
   const loadBillingData = async () => {
+    const targetClinicaId = profile?.clinica_id || (isSuperAdmin ? ctxClinica?.id : null)
+
+    // Regra 4: Não executa consultas de assinatura se usuário não possuir clínica vinculada
+    // ou se Super Admin não tiver clínica selecionada no contexto
+    if (!targetClinicaId) {
+      setSubscriptionData(null)
+      setIsLoadingBilling(false)
+      return
+    }
+
     setIsLoadingBilling(true)
     try {
-      const res = await fetchClinicSubscription()
+      const res = await fetchClinicSubscription(targetClinicaId)
       if (res.success && res.data) {
         setSubscriptionData(res.data)
       } else if (res.error) {
@@ -230,15 +247,33 @@ export default function ConfiguracoesPage() {
     }
   }
 
-  // Carrega ao montar (aba perfil é a padrão)
-  useEffect(() => { loadClinicaSettings() }, [])
+  // Carrega configurações da clínica ao montar ou quando a clínica do contexto for resolvida
+  useEffect(() => {
+    const targetId = profile?.clinica_id || (isSuperAdmin ? ctxClinica?.id : null)
+    if (targetId) {
+      loadClinicaSettings()
+    } else {
+      setIsLoadingPerfil(false)
+    }
+  }, [profile?.clinica_id, isSuperAdmin, ctxClinica?.id])
 
   useEffect(() => {
-    if (activeTab === 'usuarios') loadTeamMembers()
-    else if (activeTab === 'assinatura') loadBillingData()
-    else if (activeTab === 'comissoes') loadCommissions()
-    else if (activeTab === 'seguranca') loadSecurityData(filtroAction)
-  }, [activeTab])
+    if (activeTab === 'usuarios') {
+      loadTeamMembers()
+    } else if (activeTab === 'assinatura') {
+      const targetId = profile?.clinica_id || (isSuperAdmin ? ctxClinica?.id : null)
+      if (targetId) {
+        loadBillingData()
+      } else {
+        setSubscriptionData(null)
+        setIsLoadingBilling(false)
+      }
+    } else if (activeTab === 'comissoes') {
+      loadCommissions()
+    } else if (activeTab === 'seguranca') {
+      loadSecurityData(filtroAction)
+    }
+  }, [activeTab, profile?.clinica_id, isSuperAdmin, ctxClinica?.id])
 
   useEffect(() => {
     if (activeTab === 'seguranca') loadSecurityData(filtroAction)
@@ -257,12 +292,13 @@ export default function ConfiguracoesPage() {
     }
     setIsChangingPlan(novoPlano)
     try {
-      const res = await upgradeOrChangePlan(novoPlano)
+      const targetId = profile?.clinica_id || (isSuperAdmin ? ctxClinica?.id : null)
+      const res = await upgradeOrChangePlan(novoPlano, targetId || undefined)
       if (res.success) {
         toast.success(res.message)
         loadBillingData()
       } else {
-        toast.error(res.message)
+        toast.info(res.message)
       }
     } catch {
       toast.error('Erro inesperado ao alterar plano.')
@@ -475,6 +511,36 @@ export default function ConfiguracoesPage() {
               <div className="flex flex-col items-center justify-center py-24">
                 <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-3" />
                 <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando dados da clínica...</p>
+              </div>
+            ) : isSuperAdmin && !ctxClinica?.id ? (
+              <div className="p-12 rounded-[32px] border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center shadow-xs">
+                <div className="mx-auto w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
+                  <Building2 className="h-6 w-6" />
+                </div>
+                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                  Nenhuma clínica selecionada no contexto
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6 leading-relaxed">
+                  Como Super Admin Global, seu usuário opera sem vínculo fixo a uma clínica (<code className="text-xs bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">clinica_id = NULL</code>). Para visualizar ou configurar os dados de uma unidade, selecione uma clínica no Painel Global.
+                </p>
+                <Link
+                  href="/admin/clinicas"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> Ir para Gestão de Clínicas
+                </Link>
+              </div>
+            ) : !profile?.clinica_id ? (
+              <div className="p-12 rounded-[32px] border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center shadow-xs">
+                <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4">
+                  <AlertTriangle className="h-6 w-6" />
+                </div>
+                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                  Clínica não vinculada
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                  Seu usuário não possui uma clínica vinculada no momento. Entre em contato com a administração da clínica ou com o suporte da plataforma para regularizar seu acesso.
+                </p>
               </div>
             ) : (
               <>
@@ -982,6 +1048,19 @@ export default function ConfiguracoesPage() {
                     )}
                   </div>
 
+                  {/* ── Aviso de Gateway Stripe Temporariamente Desativado ── */}
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-xs">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-amber-800 dark:text-amber-300">
+                        Cobrança Online e Alteração via Gateway Stripe Temporariamente Suspensas
+                      </p>
+                      <p className="mt-0.5 text-amber-700 dark:text-amber-400/90 leading-relaxed">
+                        O processamento automatizado via cartão de crédito encontra-se em auditoria técnica. Todas as operações da sua clínica continuam ativas normalmente.
+                      </p>
+                    </div>
+                  </div>
+
                   {isVitalicio && (
                     <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs font-medium flex items-center gap-3">
                       <Sparkles className="h-5 w-5 text-amber-500 shrink-0" />
@@ -1223,9 +1302,39 @@ export default function ConfiguracoesPage() {
                   </div>
                 </div>
               </>
+            ) : isSuperAdmin && !ctxClinica?.id ? (
+              <div className="p-12 rounded-[32px] border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center shadow-xs">
+                <div className="mx-auto w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
+                  <Building2 className="h-6 w-6" />
+                </div>
+                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                  Nenhuma clínica selecionada no contexto
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6 leading-relaxed">
+                  Como Super Admin Global, seu usuário opera sem vínculo fixo de clínica (<code className="text-xs bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">clinica_id = NULL</code>). Para visualizar ou auditar os dados de assinatura e planos de uma unidade, selecione uma clínica no Painel Global.
+                </p>
+                <Link
+                  href="/admin/clinicas"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> Ir para Gestão de Clínicas
+                </Link>
+              </div>
+            ) : !profile?.clinica_id ? (
+              <div className="p-12 rounded-[32px] border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center shadow-xs">
+                <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4">
+                  <AlertTriangle className="h-6 w-6" />
+                </div>
+                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                  Clínica não vinculada
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                  Seu usuário não possui uma clínica vinculada no momento. Entre em contato com a administração da clínica ou com o suporte para regularizar seu acesso.
+                </p>
+              </div>
             ) : (
-              <div className="p-8 text-center text-slate-500">
-                Não foi possível carregar os dados da assinatura.
+              <div className="p-12 rounded-[32px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center text-slate-500 text-sm">
+                Não foi possível carregar os dados da assinatura da clínica.
               </div>
             )}
           </div>

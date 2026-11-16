@@ -16,7 +16,9 @@
  */
 
 import { createServerClient } from '@/app/lib/supabase/server'
+import { supabaseAdmin } from '@/app/lib/supabase/admin'
 import { logAction, LogAction } from '@/app/lib/logger'
+import { requireActiveClinic } from '@/app/lib/auth-guards'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,10 +26,8 @@ export interface Paciente {
   id: string
   clinica_id: string | null
   nome: string
-  /** SHA-256 (hex) do CPF normalizado — usado para busca. Nunca expõe o CPF real. */
-  cpf_hash: string | null
-  /** CPF cifrado com AES-256. Decifrável apenas pelo banco via cpf_decrypt(). */
-  cpf_encrypted: string | null
+  /** CPF mascarado no formato ***.NNN.NNN-** para exibição segura na UI. */
+  cpf_mascarado: string | null
   /** Campo virtual de passagem para envio de CPF em texto puro no formulário */
   cpf_raw?: string | null
   rg: string | null
@@ -115,6 +115,12 @@ export async function createPatient(payload: {
     return { success: false, error: 'Nome do paciente é obrigatório.' }
   }
 
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
+  }
+
   const supabase = await createServerClient()
 
   // Verifica sessão — lança se não autenticado
@@ -138,13 +144,13 @@ export async function createPatient(payload: {
     return { success: false, error: error.message }
   }
 
-  // Log de auditoria — NUNCA logar o CPF real, apenas indicar se foi fornecido
+  // Log de auditoria — sem dados identificáveis (Tarefa 5): nem nome, nem e-mail, nem CPF
   const actorId = _userId ?? user.id
   await logAction(
     actorId,
     'criacao' as LogAction,
     'pacientes',
-    { nome: payload.nome, cpf_informado: !!payload.cpf_raw, lgpd_aceite: payload.lgpd_aceite, paciente_id: data.id },
+    { paciente_id: data.id, cpf_informado: !!payload.cpf_raw, lgpd_aceite: payload.lgpd_aceite },
     _userNome
   )
 
@@ -161,11 +167,11 @@ export async function fetchPatients(): Promise<ActionResult<Paciente[]>> {
     return { success: false, error: 'Não autorizado.' }
   }
 
-  // cpf_hash é retornado para permitir comparações (ex: verificar duplicatas)
-  // cpf_encrypted NÃO é retornado nas listagens — apenas em contextos autorizados
+  // cpf_mascarado é retornado para exibição na UI (formato ***.NNN.NNN-**)
+  // cpf_hash e cpf_encrypted NÃO são retornados nas listagens — apenas server-side quando necessário
   const { data, error } = await supabase
     .from('pacientes')
-    .select('id, clinica_id, nome, cpf_hash, rg, data_nascimento, genero, telefone, whatsapp, email, cep, rua, numero, bairro, cidade, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id')
+    .select('id, clinica_id, nome, cpf_mascarado, rg, data_nascimento, genero, telefone, whatsapp, email, cep, rua, numero, bairro, cidade, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id')
     .order('nome', { ascending: true })
 
   if (error) {
@@ -188,10 +194,11 @@ export async function getPatientById(id: string): Promise<ActionResult<Paciente>
     return { success: false, error: 'Não autorizado.' }
   }
 
-  // CORREÇÃO: Substituição de '*' pelas colunas explícitas para evitar erros de colunas antigas.
+  // CORREÇÃO T002: cpf_mascarado substituiu cpf_hash/cpf_encrypted na UI.
+  // cpf_hash e cpf_encrypted não descem para o cliente.
   const { data, error } = await supabase
     .from('pacientes')
-    .select('id, clinica_id, nome, cpf_hash, cpf_encrypted, rg, data_nascimento, genero, telefone, whatsapp, email, cep, rua, numero, bairro, cidade, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id')
+    .select('id, clinica_id, nome, cpf_mascarado, rg, data_nascimento, genero, telefone, whatsapp, email, cep, rua, numero, bairro, cidade, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id')
     .eq('id', id)
     .maybeSingle()
 
@@ -207,6 +214,46 @@ export async function getPatientById(id: string): Promise<ActionResult<Paciente>
   return { success: true, data: data as Paciente }
 }
 
+// ─── searchPatientByCpf ────────────────────────────────────────────────────
+
+/**
+ * Busca paciente por CPF utilizando o mecanismo HMAC seguro do banco (cpf_to_hash).
+ * O CPF real e o hash nunca são expostos ao cliente — retorna apenas Paciente com cpf_mascarado.
+ */
+export async function searchPatientByCpf(cpf: string): Promise<ActionResult<Paciente | null>> {
+  const cleanCpf = (cpf || '').replace(/\D/g, '')
+  if (cleanCpf.length !== 11) {
+    return { success: false, error: 'CPF inválido para busca (deve conter 11 dígitos).' }
+  }
+
+  const supabase = await createServerClient()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) {
+    return { success: false, error: 'Não autorizado: sessão inválida.' }
+  }
+
+  // Gera o hash HMAC via RPC administrativa interna (cpf_to_hash só é acessível por service_role)
+  const { data: hash, error: hashErr } = await (supabaseAdmin.rpc as any)('cpf_to_hash', { p_cpf: cleanCpf })
+  if (hashErr || !hash) {
+    console.error('[pacientes.searchPatientByCpf] Erro ao calcular HMAC:', hashErr?.message)
+    return { success: false, error: 'Erro ao processar consulta de CPF.' }
+  }
+
+  // Consulta no Supabase respeitando as policies RLS do usuário conectado
+  const { data, error } = await supabase
+    .from('pacientes')
+    .select('id, clinica_id, nome, cpf_mascarado, rg, data_nascimento, genero, telefone, whatsapp, email, cep, rua, numero, bairro, cidade, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id')
+    .eq('cpf_hash', hash)
+    .maybeSingle()
+
+  if (error) {
+    console.error('[pacientes.searchPatientByCpf] Erro na busca:', error.message)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true, data: (data as Paciente) || null }
+}
+
 // ─── updatePatient ────────────────────────────────────────────────────────
 
 export async function updatePatient(
@@ -218,6 +265,12 @@ export async function updatePatient(
   const nome = (formData.get('nome') as string | null) ?? ''
   if (!nome.trim()) {
     return { success: false, error: 'Nome é obrigatório.' }
+  }
+
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
   }
 
   const supabase = await createServerClient()
@@ -298,6 +351,12 @@ export async function regularizarLgpd(
 ): Promise<{ success: boolean; error?: string }> {
   if (!id) return { success: false, error: 'ID do paciente não informado.' }
 
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
+  }
+
   const supabase = await createServerClient()
 
   const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -340,6 +399,12 @@ export async function deletePatient(
   actorNome?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!id) return { success: false, error: 'ID do paciente não informado.' }
+
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
+  }
 
   const supabase = await createServerClient()
 
@@ -438,6 +503,12 @@ export async function registrarConsentimento(payload: {
 }): Promise<{ success: boolean; consentimento_id?: string; error?: string }> {
   if (!payload.paciente_id) {
     return { success: false, error: 'ID do paciente não informado.' }
+  }
+
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
   }
 
   const supabase = await createServerClient()
@@ -564,6 +635,12 @@ export async function revogarConsentimento(
     return { success: false, error: 'ID do consentimento não informado.' }
   }
 
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
+  }
+
   const supabase = await createServerClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) {
@@ -624,6 +701,12 @@ export async function anonimizarPaciente(
 ): Promise<{ success: boolean; data?: unknown; error?: string }> {
   if (!pacienteId) {
     return { success: false, error: 'ID do paciente não informado.' }
+  }
+
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
   }
 
   const supabase = await createServerClient()

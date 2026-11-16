@@ -24,7 +24,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/components/RequireAuth'
 import {
   UserPlus, Users, Search, AlertCircle, RefreshCw, X, Edit2,
-  CalendarPlus, MessageCircle, FileText, ShieldCheck, 
+  CalendarPlus, MessageCircle, FileText, ShieldCheck,
   Sparkles, CheckCircle2, Phone, ArrowUpRight
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -45,9 +45,9 @@ function iniciais(nome: string) {
     .join('')
 }
 
-function formatarCPF(cpfHash: string | null) {
-  if (!cpfHash) return '—'
-  return `***.${cpfHash.substring(0, 6)}`
+function formatarCPF(cpfMascarado: string | null) {
+  if (!cpfMascarado) return '—'
+  return cpfMascarado
 }
 
 function formatarTelefone(tel: string | null) {
@@ -210,7 +210,7 @@ export default function Pacientes() {
 
     const { data, error } = await supabase
       .from('pacientes')
-      .select('id, clinica_id, nome, telefone, cpf_hash, cpf_encrypted, rg, email, data_nascimento, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id, cep, rua, numero, bairro, cidade, genero, whatsapp')
+      .select('id, clinica_id, nome, telefone, cpf_mascarado, rg, email, data_nascimento, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id, cep, rua, numero, bairro, cidade, genero, whatsapp')
       .order('nome', { ascending: true })
 
     if (error) {
@@ -361,14 +361,18 @@ export default function Pacientes() {
   const pacientesFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase()
     return pacientes.filter((p) => {
-      const matchNome = !termo || p.nome.toLowerCase().includes(termo)
+      const matchTermo =
+        !termo ||
+        p.nome.toLowerCase().includes(termo) ||
+        (p.cpf_mascarado && p.cpf_mascarado.includes(termo)) ||
+        (p.telefone && p.telefone.includes(termo))
       const matchLgpd =
         filtroLgpd === 'todos'
           ? true
           : filtroLgpd === 'conforme'
-          ? Boolean(p.lgpd_aceite)
-          : !p.lgpd_aceite
-      return matchNome && matchLgpd
+            ? Boolean(p.lgpd_aceite)
+            : !p.lgpd_aceite
+      return matchTermo && matchLgpd
     })
   }, [pacientes, busca, filtroLgpd])
 
@@ -404,7 +408,7 @@ export default function Pacientes() {
 
         {/* ── 2. Barra de KPIs Resumidos ─────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          
+
           {/* KPI 1: Total de Pacientes */}
           <div className="bento-card bento-card-interactive p-6 rounded-3xl shadow-bento flex items-center gap-4">
             <div className="h-12 w-12 rounded-2xl bg-blue-50 text-blue-600 border border-blue-200/70 flex items-center justify-center shrink-0 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900/60">
@@ -551,31 +555,28 @@ export default function Pacientes() {
               <div className="flex items-center rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700 text-xs font-bold">
                 <button
                   onClick={() => setFiltroLgpd('todos')}
-                  className={`px-3 py-1.5 rounded-lg transition-all ${
-                    filtroLgpd === 'todos'
+                  className={`px-3 py-1.5 rounded-lg transition-all ${filtroLgpd === 'todos'
                       ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                  }`}
+                    }`}
                 >
                   Todos
                 </button>
                 <button
                   onClick={() => setFiltroLgpd('conforme')}
-                  className={`px-3 py-1.5 rounded-lg transition-all ${
-                    filtroLgpd === 'conforme'
+                  className={`px-3 py-1.5 rounded-lg transition-all ${filtroLgpd === 'conforme'
                       ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                  }`}
+                    }`}
                 >
                   Conformes
                 </button>
                 <button
                   onClick={() => setFiltroLgpd('pendente')}
-                  className={`px-3 py-1.5 rounded-lg transition-all ${
-                    filtroLgpd === 'pendente'
+                  className={`px-3 py-1.5 rounded-lg transition-all ${filtroLgpd === 'pendente'
                       ? 'bg-white dark:bg-slate-900 text-amber-700 dark:text-amber-400 shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                  }`}
+                    }`}
                 >
                   Pendentes
                 </button>
@@ -671,9 +672,9 @@ export default function Pacientes() {
                           {formatarTelefone(p.telefone)}
                         </td>
 
-                        {/* CPF com máscara de proteção LGPD */}
+                        {/* CPF mascarado (LGPD) */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300 font-medium tracking-wide">
-                          {formatarCPF(p.cpf_hash)}
+                          {formatarCPF(p.cpf_mascarado)}
                         </td>
 
                         {/* Status LGPD */}
@@ -702,7 +703,7 @@ export default function Pacientes() {
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className="flex items-center justify-end gap-1.5">
-                            
+
                             {/* 1. Botão WhatsApp Rápido */}
                             <button
                               onClick={(e) => handleEnviarWhatsapp(p, e)}
@@ -856,7 +857,7 @@ export default function Pacientes() {
       </div>
 
       {/* ── Modais de Edição e Agendamento ──────────────────────────────────── */}
-      <EditPatientModal 
+      <EditPatientModal
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false)

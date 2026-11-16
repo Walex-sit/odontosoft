@@ -161,9 +161,15 @@ export async function setupAuthenticatedSession(page: Page, user: MockUserConfig
   const base64Session = Buffer.from(sessionStr).toString('base64')
   const cookieValue = `base64-${base64Session}`
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+  const projectRef = supabaseUrl.includes('.supabase.co')
+    ? supabaseUrl.replace('https://', '').split('.')[0]
+    : 'auth'
+  const projectCookieName = `sb-${projectRef}-auth-token`
+
   await page.context().addCookies([
     {
-      name: 'sb-jabtmplfjwtrfzwlwjax-auth-token',
+      name: projectCookieName,
       value: cookieValue,
       domain: 'localhost',
       path: '/',
@@ -177,14 +183,14 @@ export async function setupAuthenticatedSession(page: Page, user: MockUserConfig
   ])
 
   // ── Injeta no localStorage e document.cookie antes do carregamento ────────
-  await page.addInitScript(({ sStr, cVal }) => {
+  await page.addInitScript(({ sStr, cVal, cName }) => {
     try {
-      localStorage.setItem('sb-jabtmplfjwtrfzwlwjax-auth-token', sStr)
+      localStorage.setItem(cName, sStr)
       localStorage.setItem('supabase.auth.token', sStr)
-      document.cookie = `sb-jabtmplfjwtrfzwlwjax-auth-token=${cVal}; path=/; max-age=3600`
+      document.cookie = `${cName}=${cVal}; path=/; max-age=3600`
       document.cookie = `sb-auth-token=${cVal}; path=/; max-age=3600`
     } catch {}
-  }, { sStr: sessionStr, cVal: cookieValue })
+  }, { sStr: sessionStr, cVal: cookieValue, cName: projectCookieName })
 
   // ── Bypass do middleware (proxy.ts) ───────────────────────────────────────
   // O middleware Next.js executa server-side — o Playwright não intercepta

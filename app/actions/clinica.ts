@@ -14,6 +14,7 @@
  */
 
 import { createServerClient } from '@/app/lib/supabase/server'
+import { requireActiveClinic, resolveAuthorizedClinicId } from '@/app/lib/auth-guards'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -36,7 +37,7 @@ export interface ClinicaSettings {
 // ---------------------------------------------------------------------------
 // fetchClinicaSettings — busca as configurações da clínica do usuário logado
 // ---------------------------------------------------------------------------
-export async function fetchClinicaSettings(): Promise<{
+export async function fetchClinicaSettings(targetClinicaId?: string): Promise<{
   success: boolean
   data: ClinicaSettings | null
   error?: string
@@ -48,21 +49,40 @@ export async function fetchClinicaSettings(): Promise<{
       return { success: false, data: null, error: 'Não autorizado.' }
     }
 
-    // Busca o perfil para identificar a clinica_id
+    // Busca o perfil para identificar a clinica_id e role
     const { data: profile } = await supabase
       .from('user_profiles')
-      .select('clinica_id')
+      .select('clinica_id, role')
       .eq('id', user.id)
       .single()
 
-    const clinicaId = profile?.clinica_id
-
-    // Busca settings
-    let query = supabase.from('clinica_settings').select('*')
-    if (clinicaId) {
-      query = query.eq('clinica_id', clinicaId)
+    if (!profile) {
+      return { success: false, data: null, error: 'Perfil não encontrado.' }
     }
-    const { data: settingsData, error: settingsError } = await query.limit(1).maybeSingle()
+
+    // Resolução segura de clínica com validação de autorização contra IDOR
+    const { clinicaId, error: authClinicError } = await resolveAuthorizedClinicId(
+      supabase,
+      user,
+      profile,
+      targetClinicaId
+    )
+
+    if (authClinicError) {
+      return { success: false, data: null, error: authClinicError }
+    }
+
+    if (!clinicaId) {
+      return { success: true, data: null }
+    }
+
+    // Busca settings estritamente escopado pelo clinica_id
+    const { data: settingsData, error: settingsError } = await supabase
+      .from('clinica_settings')
+      .select('*')
+      .eq('clinica_id', clinicaId)
+      .limit(1)
+      .maybeSingle()
 
     if (settingsError) {
       console.error('[clinica] fetchClinicaSettings error:', settingsError.message)
@@ -130,11 +150,9 @@ export async function updateClinicaSettings(payload: {
   target_clinica_id?: string
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createServerClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado.' }
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase, user } = ctx
 
     // RBAC: apenas admin pode alterar configurações da clínica
     const { data: profile } = await supabase
@@ -255,11 +273,9 @@ export async function uploadClinicaLogo(formData: FormData): Promise<{
   error?: string
 }> {
   try {
-    const supabase = await createServerClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado.' }
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase, user } = ctx
 
     // RBAC e Isolamento Multi-Tenant: valida a clínica real do usuário logado e permissão de admin
     const { data: profile } = await supabase
@@ -337,11 +353,9 @@ export async function removeClinicaLogo(clinicaId?: string): Promise<{
   error?: string
 }> {
   try {
-    const supabase = await createServerClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado.' }
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase, user } = ctx
 
     // RBAC e Isolamento Multi-Tenant: valida a clínica real do usuário logado e permissão de admin
     const { data: profile } = await supabase
@@ -419,7 +433,8 @@ export async function completarOnboarding(payload: {
           telefone: payload.telefone?.trim() || null,
           endereco: payload.endereco?.trim() || null,
           plano: 'profissional',
-          status_assinatura: 'ativo',
+          status_assinatura: 'trial',
+          trial_ends_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
           ativo: true,
         }])
         .select('id')

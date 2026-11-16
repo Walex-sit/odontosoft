@@ -61,7 +61,7 @@ export default function RoutePrefetcher() {
           try {
             const { data } = await supabase
               .from('pacientes')
-              .select('id, clinica_id, nome, telefone, cpf_hash, cpf_encrypted, rg, email, data_nascimento, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id, cep, rua, numero, bairro, cidade, genero, whatsapp')
+              .select('id, clinica_id, nome, telefone, cpf_mascarado, rg, email, data_nascimento, endereco, convenio, lgpd_aceite, lgpd_aceite_em, created_at, user_id, cep, rua, numero, bairro, cidade, genero, whatsapp')
               .order('nome', { ascending: true })
 
             if (data) {

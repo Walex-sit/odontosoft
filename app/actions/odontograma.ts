@@ -19,6 +19,7 @@
  */
 
 import { createServerClient } from '@/app/lib/supabase/server'
+import { requireActiveClinic } from '@/app/lib/auth-guards'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export type StatusDente =
@@ -89,13 +90,10 @@ export async function salvarOdontograma(payload: {
   observacao: string
 }): Promise<ActionResult<OdontogramaRegistro>> {
   try {
-    const supabase = await createServerClient()
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) return { success: false, error: 'Não autenticado.' }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const supabase = ctx.supabase
+    const user = ctx.user
 
     // clinica_id é preenchido automaticamente pelo trigger set_clinica_id
     // no INSERT. No upsert via conflito o UPDATE mantém o clinica_id existente.

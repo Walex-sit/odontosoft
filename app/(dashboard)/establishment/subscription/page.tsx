@@ -72,6 +72,19 @@ export default function SubscriptionPage() {
       {/* Container Centralizado */}
       <div className="max-w-6xl mx-auto w-full px-6 py-12">
         
+        {/* Banner Informativo de Auditoria e Desativação Segura do Gateway */}
+        <div className="mb-8 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-start gap-3">
+          <ShieldCheck className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+          <div className="text-sm">
+            <p className="font-bold text-amber-600 dark:text-amber-400">
+              Pagamentos Online Temporariamente Desabilitados para Auditoria Técnica
+            </p>
+            <p className="text-amber-700/80 dark:text-amber-400/80 mt-1">
+              O processamento automatizado via gateway Stripe encontra-se em fase de auditoria de prontidão e aguarda reconciliação no banco de dados remoto (Migration 20261115000009). Os fluxos da clínica operam normalmente em período de avaliação, sem cobranças fictícias ou simulações.
+            </p>
+          </div>
+        </div>
+
         {step === 1 && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header de Planos */}
@@ -172,7 +185,7 @@ export default function SubscriptionPage() {
         )}
 
         {step === 2 && (
-          <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-right-8 duration-500">
+          <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-right-8 duration-500">
             <button 
               onClick={() => setStep(1)}
               className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-100 font-bold text-sm mb-6 flex items-center gap-2 transition-colors"
@@ -180,139 +193,29 @@ export default function SubscriptionPage() {
               &larr; Voltar para os planos
             </button>
             
-            <div className="bg-white dark:bg-slate-800 rounded-[32px] p-8 md:p-12 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-200 dark:border-slate-700">
-              <div className="grid md:grid-cols-2 gap-12">
-                
-                {/* Formulário de Checkout */}
-                <div>
-                  <h2 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mb-6 tracking-tight">Dados de Pagamento</h2>
-                  
-                  <div className="space-y-5">
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Nome no Cartão</label>
-                      <input 
-                        type="text" 
-                        placeholder="Como impresso no cartão"
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Número do Cartão</label>
-                      <div className="relative">
-                        <input 
-                          type="text" 
-                          placeholder="0000 0000 0000 0000"
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl pl-4 pr-10 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
-                        />
-                        <CreditCard className="absolute right-3 top-3 h-5 w-5 text-slate-400" />
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">Validade</label>
-                        <input 
-                          type="text" 
-                          placeholder="MM/AA"
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">CVC</label>
-                        <input 
-                          type="text" 
-                          placeholder="123"
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1.5">CPF / CNPJ</label>
-                      <input 
-                        type="text" 
-                        placeholder="Para emissão da nota fiscal"
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
-                      />
-                    </div>
-                  </div>
-                  
-                  <button 
-                    onClick={() => setStep(3)}
-                    className="w-full bg-blue-600 text-white font-bold text-lg rounded-xl py-4 mt-8 hover:bg-blue-700 transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex justify-center items-center gap-2"
-                  >
-                    Confirmar Assinatura <ArrowRight className="h-5 w-5" />
-                  </button>
-                  <p className="text-center text-xs font-semibold text-slate-400 mt-4 flex items-center justify-center gap-1">
-                    <ShieldCheck className="h-4 w-4" /> Pagamento processado de forma segura.
-                  </p>
-                </div>
-
-                {/* Resumo da Compra */}
-                <div className="bg-slate-50 dark:bg-slate-950 p-6 md:p-8 rounded-[24px] border border-slate-200 dark:border-slate-700 h-fit">
-                  <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100 mb-6 border-b border-slate-200 dark:border-slate-700 pb-4">Resumo da Assinatura</h3>
-                  
-                  <div className="flex justify-between items-center mb-4">
-                    <div>
-                      <p className="font-bold text-slate-800 dark:text-slate-100 text-lg">Plano {selectedPlan.name}</p>
-                      <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Cobrança {billingCycle === 'monthly' ? 'Mensal' : 'Anual'}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-extrabold text-slate-800 dark:text-slate-100 text-xl">
-                        R$ {billingCycle === 'annual' ? (parseInt(selectedPlan.price) * 0.8 * 12).toFixed(2) : selectedPlan.price}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {billingCycle === 'annual' && (
-                    <div className="flex justify-between items-center mb-4 text-green-600 text-sm font-bold bg-green-50 p-2 rounded-lg">
-                      <span>Desconto Plano Anual (20%)</span>
-                      <span>- R$ {(parseInt(selectedPlan.price) * 0.2 * 12).toFixed(2)}</span>
-                    </div>
-                  )}
-                  
-                  <div className="border-t border-slate-200 dark:border-slate-700 my-6"></div>
-                  
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="font-bold text-slate-600 dark:text-slate-300">Total hoje</span>
-                    <span className="font-extrabold text-slate-900 dark:text-slate-100 text-2xl">
-                       R$ {billingCycle === 'annual' ? (parseInt(selectedPlan.price) * 0.8 * 12).toFixed(2) : selectedPlan.price}
-                    </span>
-                  </div>
-                  
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
-                      <Check className="h-4 w-4 text-green-500" /> Renovação automática
-                    </li>
-                    <li className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
-                      <Check className="h-4 w-4 text-green-500" /> Cancele a qualquer momento
-                    </li>
-                    <li className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
-                      <Check className="h-4 w-4 text-green-500" /> Garantia de 7 dias
-                    </li>
-                  </ul>
-                </div>
+            <div className="bg-white dark:bg-slate-800 rounded-[32px] p-8 md:p-12 shadow-sm border border-slate-200 dark:border-slate-700 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-6">
+                <CreditCard className="h-8 w-8" />
               </div>
+              <h2 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mb-3 tracking-tight">
+                Contratação Temporariamente Desativada
+              </h2>
+              <p className="text-slate-600 dark:text-slate-300 mb-6 max-w-lg mx-auto text-sm leading-relaxed">
+                O fluxo de checkout e faturamento via cartão de crédito para o plano <strong className="text-slate-800 dark:text-slate-100">{selectedPlan.name}</strong> está temporariamente suspenso para auditoria técnica e isolamento das dependências pendentes no banco remoto (Migration 20261115000009).
+              </p>
+              <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 mb-8 text-left text-xs text-slate-600 dark:text-slate-400 space-y-2">
+                <p className="font-semibold text-slate-700 dark:text-slate-300">Garantias durante o período de avaliação:</p>
+                <p>• O acesso de todos os colaboradores da sua clínica permanece 100% liberado.</p>
+                <p>• Prontuários, pacientes, agenda e módulo financeiro funcionam com integridade plena.</p>
+                <p>• Nenhuma cobrança real ou cobrança fictícia é gerada sem liquidação bancária.</p>
+              </div>
+              <button 
+                onClick={() => setStep(1)}
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl py-3.5 transition-colors shadow-md"
+              >
+                Retornar à Seleção de Planos
+              </button>
             </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="max-w-xl mx-auto text-center py-20 animate-in zoom-in-95 duration-500">
-            <div className="h-24 w-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Check className="h-12 w-12 text-green-600" />
-            </div>
-            <h1 className="text-4xl font-extrabold text-slate-800 dark:text-slate-100 mb-4 tracking-tight">Assinatura Confirmada!</h1>
-            <p className="text-lg font-medium text-slate-600 dark:text-slate-300 mb-8">
-              Sua clínica agora tem acesso ao Plano {selectedPlan.name}. Bem-vindo à nova era da gestão odontológica!
-            </p>
-            <button 
-              onClick={() => window.location.href = '/overview'}
-              className="px-8 py-4 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition-colors shadow-md"
-            >
-              Ir para o Dashboard Principal
-            </button>
           </div>
         )}
 

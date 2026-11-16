@@ -44,7 +44,6 @@ import {
   ShieldCheck,
   KeyRound,
   RotateCcw,
-  Sparkles,
   Clock,
 } from 'lucide-react'
 
@@ -69,7 +68,6 @@ export default function RegisterPage() {
 
   // Estados da Validação por Código de Acesso
   const [codigoInput, setCodigoInput] = useState('')
-  const [demoCode, setDemoCode] = useState<string | null>(null)
   const [enviandoCodigo, setEnviandoCodigo] = useState(false)
   const [reenviadoComSucesso, setReenviadoComSucesso] = useState(false)
 
@@ -143,10 +141,6 @@ export default function RegisterPage() {
         setErroGeral(codigoRes.error || 'Erro ao gerar código de acesso.')
         setEnviandoCodigo(false)
         return
-      }
-
-      if (codigoRes.demoCode) {
-        setDemoCode(codigoRes.demoCode)
       }
 
       // Avança para a etapa de verificação de código
@@ -246,7 +240,6 @@ export default function RegisterPage() {
     try {
       const res = await enviarCodigoValidacao(formData.email)
       if (res.success) {
-        if (res.demoCode) setDemoCode(res.demoCode)
         setReenviadoComSucesso(true)
         setTimeout(() => setReenviadoComSucesso(false), 5000)
       } else {
@@ -383,28 +376,11 @@ export default function RegisterPage() {
                   Confirme o seu Acesso
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                  Enviámos um código seguro de 6 dígitos para o e-mail:
+                  Enviamos um código de verificação para seu e-mail:
                   <br />
                   <strong className="text-slate-800 font-semibold">{formData.email}</strong>
                 </p>
               </div>
-
-              {/* Banner de código em ambiente demo/dev */}
-              {demoCode && (
-                <div className="p-3.5 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs flex items-center justify-between shadow-2xs">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-cyan-600 shrink-0" />
-                    <span>Código de Validação gerado: <strong className="font-mono text-sm tracking-wider">{demoCode}</strong></span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setCodigoInput(demoCode)}
-                    className="px-2 py-1 rounded bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-[10px] uppercase transition-colors"
-                  >
-                    Usar
-                  </button>
-                </div>
-              )}
 
               {/* Erro Geral */}
               {erroGeral && (

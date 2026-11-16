@@ -13,6 +13,7 @@
  */
 
 import { createServerClient } from '@/app/lib/supabase/server';
+import { requireActiveClinic } from '@/app/lib/auth-guards';
 import type { Database } from '@/app/lib/database.types';
 
 type ReceitaUpdate = Database['public']['Tables']['receitas']['Update'];
@@ -414,15 +415,9 @@ export async function createLancamentoFinanceiro(
   payload: NovoLancamentoData
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado.' };
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>;
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase, user } = { supabase: ctx.supabase, user: ctx.user };
 
     if (payload.tipo === 'receita') {
       const { error } = await supabase.from('receitas').insert({
@@ -468,15 +463,9 @@ export async function marcarLancamentoComoPago(
   origem: 'receita' | 'despesa' | 'procedimento'
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado.' };
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>;
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase } = ctx;
 
     if (origem === 'receita') {
       const { error } = await supabase
@@ -517,15 +506,9 @@ export async function deleteLancamentoFinanceiro(
   origem: 'receita' | 'despesa' | 'procedimento'
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado.' };
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>;
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase } = ctx;
 
     if (origem === 'receita') {
       const { error } = await supabase.from('receitas').delete().eq('id', id);
@@ -572,15 +555,9 @@ export async function updateLancamentoFinanceiro(
   payload: UpdateLancamentoData
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado.' };
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>;
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase } = ctx;
 
     if (payload.origem === 'receita') {
       const updateData: ReceitaUpdate = {

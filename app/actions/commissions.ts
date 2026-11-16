@@ -13,6 +13,7 @@
  */
 
 import { createServerClient } from '@/app/lib/supabase/server'
+import { requireActiveClinic } from '@/app/lib/auth-guards'
 
 interface Procedimento {
   id: string
@@ -102,12 +103,9 @@ export async function setCommission(data: {
   dentista_id: string
   porcentagem: number
 }): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createServerClient()
-
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) {
-    return { success: false, error: 'Não autorizado.' }
-  }
+  let ctx: Awaited<ReturnType<typeof requireActiveClinic>>
+  try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+  const supabase = ctx.supabase
 
   const { error } = await supabase
     .from('comissoes')

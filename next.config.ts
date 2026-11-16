@@ -48,9 +48,25 @@ const securityHeaders = [
   },
 ];
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 const nextConfig: NextConfig = {
   async rewrites() {
+    const devRewrites = isDev
+      ? [
+          {
+            // Correção exclusiva para Turbopack em desenvolvimento:
+            // O dev server do Turbopack gera chunks internos com sufixo `._.css`.
+            // Este rewrite impede que requisições de desenvolvimento retornem 404 text/plain.
+            // Isolado para não afetar arquivos CSS legítimos nem o build de produção.
+            source: '/_next/static/chunks/:file((?!.*\\._)[^/]+)\\.css',
+            destination: '/_next/static/chunks/:file._.css',
+          },
+        ]
+      : [];
+
     return [
+      ...devRewrites,
       {
         source: '/dashboard',
         destination: '/overview',

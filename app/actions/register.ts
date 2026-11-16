@@ -166,12 +166,19 @@ export async function registrarNovaClinica(payload: {
       }
     }
 
-    // 4. Verifica se o perfil do usuário já possui clínica vinculada
+    // 4. Verifica se o perfil do usuário já possui clínica vinculada ou role super_admin
     const { data: existingProfile } = await supabaseAdmin
       .from('user_profiles')
       .select('id, clinica_id, role')
       .eq('id', user.id)
       .maybeSingle()
+
+    if (existingProfile?.role === 'super_admin') {
+      return {
+        success: false,
+        error: 'Operação não permitida: contas com papel super_admin não podem vincular clínicas pelo fluxo padrão de registo.',
+      }
+    }
 
     if (existingProfile?.clinica_id) {
       // Se já tem clínica vinculada, garante SEMPRE a role 'admin_clinica'.
@@ -258,6 +265,9 @@ export async function registrarNovaClinica(payload: {
 
     if (profileError) {
       console.error('[registrarNovaClinica] Erro ao salvar user_profiles:', profileError.message)
+      // Rollback defensivo: remove clinica_settings e clínica para evitar registro órfão
+      await supabaseAdmin.from('clinica_settings').delete().eq('clinica_id', novoClinicaId)
+      await supabaseAdmin.from('clinicas').delete().eq('id', novoClinicaId)
       return {
         success: false,
         error: 'Erro ao associar perfil de administrador: ' + profileError.message,

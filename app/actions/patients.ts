@@ -27,6 +27,10 @@ export async function getPatientById(id: string) {
   return pacientesService.getPatientById(id)
 }
 
+export async function searchPatientByCpf(cpf: string) {
+  return pacientesService.searchPatientByCpf(cpf)
+}
+
 export async function updatePatient(id: string, formData: FormData) {
   return pacientesService.updatePatient(id, formData)
 }

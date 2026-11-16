@@ -16,6 +16,7 @@
 import { createServerClient } from '@/app/lib/supabase/server'
 import { PLANOS_SAAS } from '@/app/lib/stripe'
 import { revalidatePath } from 'next/cache'
+import { resolveAuthorizedClinicId } from '@/app/lib/auth-guards'
 
 export interface InvoiceItem {
   id: string
@@ -52,7 +53,7 @@ export interface ClinicSubscriptionData {
   podeGerenciar: boolean
 }
 
-export async function fetchClinicSubscription(): Promise<{
+export async function fetchClinicSubscription(targetClinicaId?: string): Promise<{
   success: boolean
   data: ClinicSubscriptionData | null
   error?: string
@@ -71,7 +72,25 @@ export async function fetchClinicSubscription(): Promise<{
       .eq('id', user.id)
       .single()
 
-    if (!profile?.clinica_id) {
+    if (!profile) {
+      return { success: false, data: null, error: 'Perfil não encontrado' }
+    }
+
+    const isSuperAdmin = profile.role === 'super_admin'
+
+    // Resolução segura de clínica com validação de autorização contra IDOR
+    const { clinicaId, error: authClinicError } = await resolveAuthorizedClinicId(
+      supabase,
+      user,
+      profile,
+      targetClinicaId
+    )
+
+    if (authClinicError) {
+      return { success: false, data: null, error: authClinicError }
+    }
+
+    if (!clinicaId) {
       return { success: false, data: null, error: 'Clínica não vinculada' }
     }
 
@@ -86,9 +105,7 @@ export async function fetchClinicSubscription(): Promise<{
       (profile.role === 'super_admin' || profile.is_lifetime === true)
     )
     const isLifetime = profile.is_lifetime === true || isOwnerExactMatch
-    const isSuperAdmin = profile.role === 'super_admin'
 
-    const clinicaId = profile.clinica_id
     const podeGerenciar = ['admin', 'admin_clinica', 'super_admin'].includes(profile.role || '')
 
     // Busca detalhes da clínica
@@ -233,7 +250,7 @@ export async function fetchClinicSubscription(): Promise<{
   }
 }
 
-export async function upgradeOrChangePlan(novoPlano: 'essencial' | 'premium'): Promise<{
+export async function upgradeOrChangePlan(novoPlano: 'essencial' | 'premium', targetClinicaId?: string): Promise<{
   success: boolean
   message: string
   checkoutUrl?: string
@@ -252,57 +269,37 @@ export async function upgradeOrChangePlan(novoPlano: 'essencial' | 'premium'): P
       .eq('id', user.id)
       .single()
 
-    if (!profile?.clinica_id) {
-      return { success: false, message: 'Clínica não encontrada.' }
+    if (!profile) {
+      return { success: false, message: 'Perfil não encontrado.' }
     }
 
-    if (!['admin', 'admin_clinica'].includes(profile.role || '')) {
+    if (!['admin', 'admin_clinica', 'super_admin'].includes(profile?.role || '')) {
       return { success: false, message: 'Apenas Administradores podem gerenciar o plano da clínica.' }
     }
 
-    const clinicaId = profile.clinica_id
+    // Resolução segura de clínica com validação de autorização contra IDOR
+    const { clinicaId, error: authClinicError } = await resolveAuthorizedClinicId(
+      supabase,
+      user,
+      profile,
+      targetClinicaId
+    )
 
-    // Mapeia para o enum do banco ('basico' | 'profissional' | 'enterprise')
-    const dbPlano = novoPlano === 'premium' ? 'profissional' : 'basico'
-
-    // Atualiza o plano na tabela clinicas
-    const { error: updateErr } = await supabase
-      .from('clinicas')
-      .update({
-        plano: dbPlano,
-        status_assinatura: 'ativo',
-        atualizado_em: new Date().toISOString(),
-      })
-      .eq('id', clinicaId)
-
-    if (updateErr) {
-      return { success: false, message: `Erro ao atualizar plano: ${updateErr.message}` }
+    if (authClinicError) {
+      return { success: false, message: authClinicError }
     }
 
-    // Registra auditoria LGPD
-    try {
-      await supabase.from('system_logs').insert({
-        clinica_id: clinicaId,
-        user_id: user.id,
-        user_nome: profile.nome || user.email || 'Administrador',
-        action: 'edicao',
-        entity: 'assinatura_plano',
-        details: {
-          acao: 'Mudança de Plano SaaS',
-          novo_plano: novoPlano,
-          timestamp: new Date().toISOString(),
-        },
-      })
-    } catch {
-      // Ignora erro de log não-bloqueante
+    if (!clinicaId) {
+      return { success: false, message: 'Clínica não encontrada.' }
     }
 
-    revalidatePath('/configuracoes')
-    revalidatePath('/overview')
-
+    // A contratação e alteração de planos via gateway Stripe está temporariamente desativada
+    // para fins de auditoria técnica (Migration 20261115000009 pendente no banco remoto).
+    // Não simular pagamentos reais nem promover assinaturas sem liquidação real.
     return {
-      success: true,
-      message: `Plano atualizado com sucesso para ${novoPlano === 'premium' ? 'Premium & Compliance' : 'Essencial'}!`,
+      success: false,
+      message:
+        'A alteração de plano online via cartão de crédito encontra-se temporariamente suspensa para auditoria e manutenção técnica. Sua clínica continua operando normalmente.',
     }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Falha na atualização do plano'

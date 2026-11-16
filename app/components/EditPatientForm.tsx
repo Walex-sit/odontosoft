@@ -23,9 +23,8 @@ export interface Patient {
   genero?: string;
   estrangeiro?: boolean;
   data_nascimento?: string;
-  /** cpf foi removido — CPF agora é armazenado como cpf_hash + cpf_encrypted */
-  cpf_hash?: string;
-  cpf_encrypted?: string;
+  /** cpf foi removido — CPF agora é armazenado como cpf_hash + cpf_encrypted + cpf_mascarado */
+  cpf_mascarado?: string | null;
   rg?: string;
   observacoes?: string;
   categoria?: string;
@@ -109,8 +108,8 @@ export default function EditPatientForm({ patient }: Props) {
   const cpfDigitado = form.cpf_raw.trim();
   const cpfDigitadoValido = cpfDigitado !== '' && validarCpf(cpfDigitado);
 
-  // O paciente já tem CPF criptografado no banco?
-  const cpfNobanco = Boolean(patient.cpf_hash || patient.cpf_encrypted);
+  // O paciente já tem CPF cadastrado no banco? (indica via cpf_mascarado)
+  const cpfNobanco = Boolean(patient.cpf_mascarado);
 
   // Permite aceite LGPD se: (a) CPF digitado agora é válido, ou (b) já existe CPF no banco
   const cpfHabilitaLgpd = cpfDigitadoValido || cpfNobanco;
@@ -377,7 +376,7 @@ export default function EditPatientForm({ patient }: Props) {
             {!cpfHabilitaLgpd ? (
               <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 block mt-1.5">
                 ⚠️ CPF válido é obrigatório para registrar o aceite LGPD.
-                {cpfNobanco && ' (O CPF atual está criptografado — para revalidar, insira o CPF no campo acima.)'}
+                {cpfNobanco && ' (O CPF atual está protegido — para atualizar, insira o novo CPF no campo acima.)'}
               </span>
             ) : form.lgpd_aceite && form.lgpd_aceite_em ? (
               <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 block mt-1.5">

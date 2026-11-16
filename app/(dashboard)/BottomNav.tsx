@@ -2,36 +2,59 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, CalendarDays, Users, CircleDollarSign } from 'lucide-react';
+import { Home, CalendarDays, Users, CircleDollarSign, Building2, CreditCard, ShieldCheck } from 'lucide-react';
 
 // ─── RBAC — mesma lógica do Topbar ────────────────────────────────────────────
 import { useAuth } from '../components/RequireAuth';
+import { useClinica } from '../contexts/ClinicaContext';
 import { hasPermission } from '../lib/permissions';
 import { UserRole } from '../components/RequireAuth';
 
 export function BottomNav() {
   const pathname = usePathname();
   const { profile } = useAuth();
+  const { isSuperAdminContext } = useClinica();
 
-  // Espelha exatamente os allowedRoles definidos no navLinks do Topbar.tsx
-  const navItems: { name: string; href: string; icon: any; allowedRoles?: UserRole[] }[] = [
-    { name: 'Início',    href: '/overview',   icon: Home },
-    { name: 'Agenda',    href: '/agenda',     icon: CalendarDays,      allowedRoles: ['admin', 'dentista', 'recepcao'] },
-    { name: 'Pacientes', href: '/pacientes',  icon: Users,             allowedRoles: ['admin', 'dentista', 'recepcao'] },
-    { name: 'Finanças',  href: '/financeiro', icon: CircleDollarSign,  allowedRoles: ['admin', 'financeiro'] },
-  ];
+  const isSuper = profile?.role === 'super_admin';
 
-  // Remove da lista quaisquer itens que o usuário não tem permissão de ver —
-  // evita que botões "Acesso Negado" apareçam no menu inferior mobile.
-  const visibleItems = navItems.filter(
-    (item) => !item.allowedRoles || hasPermission(profile?.role, item.allowedRoles)
-  );
+  let visibleItems: { name: string; href: string; icon: any }[] = [];
+
+  if (isSuper) {
+    if (!isSuperAdminContext) {
+      visibleItems = [
+        { name: 'Geral',       href: '/admin',             icon: ShieldCheck },
+        { name: 'Clínicas',    href: '/admin/clinicas',    icon: Building2 },
+        { name: 'Usuários',    href: '/admin/usuarios',    icon: Users },
+        { name: 'Assinaturas', href: '/admin/assinaturas', icon: CreditCard },
+      ];
+    } else {
+      visibleItems = [
+        { name: 'Agenda',    href: '/agenda',     icon: CalendarDays },
+        { name: 'Pacientes', href: '/pacientes',  icon: Users },
+        { name: 'Finanças',  href: '/financeiro', icon: CircleDollarSign },
+        { name: 'Global',    href: '/admin',      icon: ShieldCheck },
+      ];
+    }
+  } else {
+    const navItems: { name: string; href: string; icon: any; allowedRoles?: UserRole[] }[] = [
+      { name: 'Início',    href: '/overview',   icon: Home },
+      { name: 'Agenda',    href: '/agenda',     icon: CalendarDays,      allowedRoles: ['admin', 'dentista', 'recepcao'] },
+      { name: 'Pacientes', href: '/pacientes',  icon: Users,             allowedRoles: ['admin', 'dentista', 'recepcao'] },
+      { name: 'Finanças',  href: '/financeiro', icon: CircleDollarSign,  allowedRoles: ['admin', 'financeiro'] },
+    ];
+
+    visibleItems = navItems.filter(
+      (item) => !item.allowedRoles || hasPermission(profile?.role, item.allowedRoles)
+    );
+  }
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
       <div className="flex justify-around items-center h-16 px-2">
         {visibleItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const isActive = item.href === '/admin'
+            ? pathname === '/admin'
+            : pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
 
           return (

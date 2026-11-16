@@ -17,6 +17,7 @@
 
 import { createServerClient } from '@/app/lib/supabase/server'
 import { logAction, LogAction } from '@/app/lib/logger'
+import { requireActiveClinic } from '@/app/lib/auth-guards'
 
 export interface ProntuarioRegistro {
   id: string
@@ -66,6 +67,12 @@ export async function criarProntuario(payload: {
     return { success: false, error: 'A evolução ou descrição clínica é obrigatória.' }
   }
 
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
+  }
+
   const supabase = await createServerClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) {
@@ -101,7 +108,6 @@ export async function criarProntuario(payload: {
     {
       prontuario_id: data.id,
       paciente_id: payload.paciente_id,
-      tratamento: payload.tratamento,
       cfo_conformidade: 'Res_198_2019',
     },
     payload._userNome
@@ -131,6 +137,12 @@ export async function criarAdendoProntuario(payload: {
       success: false,
       error: 'A justificativa/descrição do adendo deve conter pelo menos 10 caracteres (CFO 198/2019).',
     }
+  }
+
+  try {
+    await requireActiveClinic()
+  } catch (guardErr: any) {
+    return { success: false, error: guardErr.message }
   }
 
   const supabase = await createServerClient()

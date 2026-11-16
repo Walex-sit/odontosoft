@@ -43,8 +43,7 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
 
   const hasCpf = Boolean(
     (formData.cpf_raw && formData.cpf_raw.trim() !== '') ||
-    patient.cpf_hash ||
-    patient.cpf_encrypted
+    patient.cpf_mascarado
   );
 
   const handleLgpdToggle = (checked: boolean) => {

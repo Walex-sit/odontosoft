@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
-import { logAction } from '../../lib/logger'
+import { logClientAction } from '@/app/actions/audit'
 import { Search } from 'lucide-react'
 import { useAuth } from '../../components/RequireAuth'
 
@@ -47,7 +47,7 @@ export default function Despesas() {
       ])
 
       if (session?.user?.id) {
-        await logAction(session.user.id, 'financeiro', 'despesas', { descricao, valor: Number(valor), categoria, acao: 'despesa_criada' })
+        await logClientAction('financeiro', 'despesas', { descricao, valor: Number(valor), categoria, acao: 'despesa_criada' })
       }
 
       setDescricao('')

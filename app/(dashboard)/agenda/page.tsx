@@ -357,7 +357,7 @@ export default function Agenda() {
       // Pacientes
       const { data: pacs, error: pacErr } = await supabase
         .from('pacientes')
-        .select('id, nome, telefone, cpf_hash')
+        .select('id, nome, telefone, cpf_mascarado')
         .eq('clinica_id', clinicaId)
       if (pacErr) throw pacErr
       setPacientes(pacs || [])

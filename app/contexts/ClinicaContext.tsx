@@ -16,13 +16,15 @@ interface ClinicaData {
 interface ClinicaContextType {
   clinica: ClinicaData | null
   loading: boolean
+  isSuperAdminContext: boolean
   refreshClinica: () => Promise<void>
 }
 
 const ClinicaContext = createContext<ClinicaContextType>({
   clinica: null,
   loading: true,
-  refreshClinica: async () => {},
+  isSuperAdminContext: false,
+  refreshClinica: async () => { },
 })
 
 export const useClinica = () => useContext(ClinicaContext)
@@ -31,6 +33,7 @@ export function ClinicaProvider({ children }: { children: React.ReactNode }) {
   const { session } = useAuth()
   const cachedClinica = getCached<ClinicaData>('clinica:info')
   const [clinica, setClinica] = useState<ClinicaData | null>(cachedClinica)
+  const [isSuperAdminContext, setIsSuperAdminContext] = useState(false)
   const [loading, setLoading] = useState(cachedClinica === null)
 
   const fetchClinicaData = async () => {
@@ -40,14 +43,31 @@ export function ClinicaProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // 1. Obter clinica_id do perfil do usuário autenticado (isolamento multi-tenant obrigatório)
+      // 1. Obter clinica_id e role do perfil do usuário autenticado (isolamento multi-tenant obrigatório)
       const { data: profile } = await supabase
         .from('user_profiles')
-        .select('clinica_id')
+        .select('clinica_id, role')
         .eq('id', session.user.id)
         .maybeSingle()
 
-      const targetClinicaId = profile?.clinica_id
+      let targetClinicaId = profile?.clinica_id
+      let isSuperAdminCtx = false
+
+      // Para super_admin sem clínica fixa: verificar se há contexto administrativo ativo
+      if (!targetClinicaId && profile?.role === 'super_admin') {
+        const { data: ctx } = await supabase
+          .from('super_admin_clinic_contexts')
+          .select('clinica_id')
+          .eq('user_id', session.user.id)
+          .maybeSingle()
+
+        if (ctx?.clinica_id) {
+          targetClinicaId = ctx.clinica_id
+          isSuperAdminCtx = true
+        }
+      }
+
+      setIsSuperAdminContext(isSuperAdminCtx)
 
       if (!targetClinicaId) {
         setClinica(null)
@@ -156,7 +176,7 @@ export function ClinicaProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <ClinicaContext.Provider value={{ clinica, loading, refreshClinica }}>
+    <ClinicaContext.Provider value={{ clinica, loading, isSuperAdminContext, refreshClinica }}>
       {children}
     </ClinicaContext.Provider>
   )

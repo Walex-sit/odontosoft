@@ -360,6 +360,35 @@ describe('ETAPA 6 — Hardening de Segurança e Bloqueadores de Produção', () 
       expect(resendContent).toContain('RESEND_API_KEY')
       expect(resendContent).toContain('resendClient.emails.send')
       expect(resendContent).toContain('import \'server-only\'')
+      // Não deve ter 'use server' para não conflitar com exports de constantes (resendClient, EMAIL_FROM)
+      expect(resendContent).not.toMatch(/^\s*['"]use server['"]/m)
+    })
+
+    it('arquivos com diretiva use server devem exportar exclusivamente funcoes assincronas', () => {
+      const actionsDir = path.join(__dirname, '../app/actions')
+      const actionFiles = fs.readdirSync(actionsDir).filter(f => f.endsWith('.ts'))
+
+      for (const file of actionFiles) {
+        const fullPath = path.join(actionsDir, file)
+        const content = fs.readFileSync(fullPath, 'utf8')
+        if (!content.includes("'use server'") && !content.includes('"use server"')) continue
+
+        const lines = content.split('\n')
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (
+            trimmed.startsWith('export ') &&
+            !trimmed.startsWith('export async function') &&
+            !trimmed.startsWith('export default async function') &&
+            !trimmed.startsWith('export type ') &&
+            !trimmed.startsWith('export interface ') &&
+            !trimmed.startsWith('export type{') &&
+            !trimmed.startsWith('export { type ')
+          ) {
+            throw new Error(`Export inválido no arquivo Server Action ${file}: ${trimmed}`)
+          }
+        }
+      }
     })
 
     it('migration 20261104000001 deve conter RPC-02 com validação de auth.users', () => {

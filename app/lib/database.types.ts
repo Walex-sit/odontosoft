@@ -37,6 +37,8 @@ export interface Database {
           criado_em: string
           atualizado_em: string
           trial_ends_at: string | null
+          stripe_last_event_at: string | null
+          stripe_subscription_created: string | null
         }
         Insert: {
           id?: string
@@ -56,6 +58,8 @@ export interface Database {
           criado_em?: string
           atualizado_em?: string
           trial_ends_at?: string | null
+          stripe_last_event_at?: string | null
+          stripe_subscription_created?: string | null
         }
         Update: {
           id?: string
@@ -75,6 +79,8 @@ export interface Database {
           criado_em?: string
           atualizado_em?: string
           trial_ends_at?: string | null
+          stripe_last_event_at?: string | null
+          stripe_subscription_created?: string | null
         }
         Relationships: []
       }
@@ -168,9 +174,10 @@ export interface Database {
           clinica_id: string | null
           user_id: string | null
           nome: string
-          cpf_hash: string
+          cpf_hash: string | null
           cpf_encrypted: string | null
           cpf_raw?: string | null
+          cpf_mascarado: string | null
           rg: string | null
           data_nascimento: string | null
           genero: string | null
@@ -222,9 +229,10 @@ export interface Database {
           clinica_id?: string | null
           user_id?: string | null
           nome: string
-          cpf_hash?: string
+          cpf_hash?: string | null
           cpf_encrypted?: string | null
           cpf_raw?: string | null
+          cpf_mascarado?: string | null
           rg?: string | null
           data_nascimento?: string | null
           genero?: string | null
@@ -275,9 +283,10 @@ export interface Database {
           clinica_id?: string | null
           user_id?: string | null
           nome?: string
-          cpf_hash?: string
+          cpf_hash?: string | null
           cpf_encrypted?: string | null
           cpf_raw?: string | null
+          cpf_mascarado?: string | null
           rg?: string | null
           data_nascimento?: string | null
           genero?: string | null
@@ -776,27 +785,30 @@ export interface Database {
         Row: {
           id: string
           clinica_id: string | null
-          nome_item: string
+          nome: string
+          descricao: string | null
           quantidade: number | null
-          quantidade_minima: number | null
+          minimo: number | null
           unidade: string | null
           created_at: string
         }
         Insert: {
           id?: string
           clinica_id?: string | null
-          nome_item: string
+          nome: string
+          descricao?: string | null
           quantidade?: number | null
-          quantidade_minima?: number | null
+          minimo?: number | null
           unidade?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           clinica_id?: string | null
-          nome_item?: string
+          nome?: string
+          descricao?: string | null
           quantidade?: number | null
-          quantidade_minima?: number | null
+          minimo?: number | null
           unidade?: string | null
           created_at?: string
         }
@@ -1171,6 +1183,27 @@ export interface Database {
         }
         Relationships: []
       }
+      super_admin_clinic_contexts: {
+        Row: {
+          user_id: string
+          clinica_id: string
+          selected_at: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          clinica_id: string
+          selected_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          clinica_id?: string
+          selected_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       v_fluxo_caixa: {
@@ -1265,6 +1298,8 @@ export interface Database {
           p_stripe_customer_id?: string | null
           p_stripe_subscription_id?: string | null
           p_plano_preco_id?: string | null
+          p_subscription_created?: string | null
+          p_event_created?: string | null
         }
         Returns: string
       }

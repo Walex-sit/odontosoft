@@ -15,6 +15,7 @@
  */
 
 import { createServerClient } from '@/app/lib/supabase/server'
+import { requireActiveClinic } from '@/app/lib/auth-guards'
 import { supabaseAdmin } from '@/app/lib/supabase/admin'
 import { logAction } from '@/app/lib/logger'
 import type { UserRole } from '@/app/lib/database.types'
@@ -39,11 +40,9 @@ export async function createUserAccount(data: {
   especialidade?: string
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createServerClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado: faça login como administrador.' }
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase, user } = ctx
 
     const { data: profile, error: profileErr } = await supabase
       .from('user_profiles')
@@ -127,11 +126,9 @@ export async function inviteTeamMember(data: {
   especialidade?: string
 }): Promise<{ success: boolean; inviteLink?: string; error?: string }> {
   try {
-    const supabase = await createServerClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado: faça login como administrador.' }
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase, user } = ctx
 
     const { data: profile, error: profileErr } = await supabase
       .from('user_profiles')
@@ -287,11 +284,9 @@ export async function deleteUserAccount(
   actorNome?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createServerClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado.' }
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase, user } = ctx
 
     const { data: currentProfile } = await supabase
       .from('user_profiles')
@@ -299,8 +294,13 @@ export async function deleteUserAccount(
       .eq('id', user.id)
       .single()
 
-    if (!currentProfile || (currentProfile.role !== 'admin' && currentProfile.role !== 'admin_clinica')) {
+    const callerRole = currentProfile?.role as string
+    if (!currentProfile || !['admin', 'admin_clinica', 'super_admin'].includes(callerRole)) {
       return { success: false, error: 'Apenas administradores podem excluir membros da equipe.' }
+    }
+
+    if (userId === user.id) {
+      return { success: false, error: 'Auto-exclusão de conta não é permitida.' }
     }
 
     const { data: targetProfile } = await supabase
@@ -313,8 +313,14 @@ export async function deleteUserAccount(
       return { success: false, error: 'Usuário não encontrado.' }
     }
 
-    if (currentProfile.clinica_id && targetProfile.clinica_id !== currentProfile.clinica_id) {
-      return { success: false, error: 'Acesso negado: usuário pertence a outra clínica.' }
+    if (targetProfile.role === 'super_admin' && callerRole !== 'super_admin') {
+      return { success: false, error: 'Apenas Super Administradores podem excluir contas de Super Administrador.' }
+    }
+
+    if (callerRole !== 'super_admin') {
+      if (!currentProfile.clinica_id || targetProfile.clinica_id !== currentProfile.clinica_id) {
+        return { success: false, error: 'Acesso negado: usuário pertence a outra clínica.' }
+      }
     }
 
     const { error: profileError } = await supabaseAdmin
@@ -367,11 +373,9 @@ export async function updateUserAccount(data: {
   especialidade?: string
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createServerClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return { success: false, error: 'Não autorizado.' }
-    }
+    let ctx: Awaited<ReturnType<typeof requireActiveClinic>>
+    try { ctx = await requireActiveClinic() } catch (guardErr: any) { return { success: false, error: guardErr.message } }
+    const { supabase, user } = ctx
 
     const { data: currentProfile } = await supabase
       .from('user_profiles')

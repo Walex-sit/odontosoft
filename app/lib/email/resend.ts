@@ -1,13 +1,11 @@
-'use server'
-
 /**
  * app/lib/email/resend.ts
  * ─────────────────────────────────────────────────────────────────────────────
  * Cliente singleton do Resend e serviço de e-mail transacional do OdontoSoft.
  *
  * Segurança (Etapa 6.2 - Pre-Go-Live Hardening):
- *  ✅ USO RESTRITO — Executado exclusivamente no servidor (Server Action / Route Handler).
- *  ✅ Guard 'use server' + import 'server-only' bloqueia qualquer importação client-side.
+ *  ✅ USO RESTRITO — Executado exclusivamente no servidor.
+ *  ✅ Guard import 'server-only' bloqueia qualquer importação client-side.
  *  ✅ Falha segura em produção se RESEND_API_KEY não estiver configurada.
  *  ✅ Tratamento defensivo de exceções e timeout.
  * ─────────────────────────────────────────────────────────────────────────────
@@ -62,7 +60,7 @@ export async function sendOtpEmail(
   // 2. Modo de desenvolvimento sem Resend configurado
   if (!resendClient) {
     console.warn(
-      `[Email/Resend DEV] RESEND_API_KEY não configurada. Código OTP para ${cleanEmail}: ${codigoOtp}`
+      `[Email/Resend DEV] RESEND_API_KEY não configurada. Simulação de envio para ${cleanEmail} (código OTP omitido do log por segurança).`
     )
     return { success: true }
   }

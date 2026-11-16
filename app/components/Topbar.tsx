@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from './RequireAuth'
 import { supabase } from '../lib/supabaseClient'
-import { logAction } from '../lib/logger'
+import { logAuthAction } from '@/app/actions/audit'
 import { 
   Search, 
   Bell, 
@@ -24,7 +24,10 @@ import {
   ClipboardPlus,
   Percent,
   Clock,
+  ArrowLeft,
+  Building2,
 } from 'lucide-react'
+import { exitClinicContextAction } from '@/app/actions/admin-global'
 import { toast } from 'sonner'
 import NotificacoesDropdown, { NotificationItem } from './NotificacoesDropdown'
 import TarefasSlideOver from './TarefasSlideOver'
@@ -97,7 +100,7 @@ export default function Topbar() {
   const pathname = usePathname()
   const router = useRouter()
   const { profile, session } = useAuth()
-  const { clinica } = useClinica()
+  const { clinica, isSuperAdminContext, refreshClinica } = useClinica()
   
   const [isDropdownOpen,   setIsDropdownOpen]   = useState(false)
   const [isUserMenuOpen,   setIsUserMenuOpen]   = useState(false)
@@ -305,19 +308,60 @@ export default function Topbar() {
   }
 
   async function logout() {
-    if (profile?.id) await logAction(profile.id, 'logout', 'auth')
+    try {
+      await exitClinicContextAction()
+    } catch {}
+    await logAuthAction('logout')
     await supabase.auth.signOut()
     router.push('/login')
   }
 
-  // ─── Flags de visibilidade derivadas do role ────────────────────────────────
-  const canSeeTools          = hasPermission(role, ROLES_WITH_TOOLS)
-  const canSeeMedicalDocs    = hasPermission(role, ROLES_MEDICAL_DOCS)
-  const canSeeTreatmentPlans = hasPermission(role, ROLES_TREATMENT_PLANS)
-  const canSeeProntuarios    = hasPermission(role, ROLES_PRONTUARIOS)
+  // ─── Flags de visibilidade derivadas do role e contexto ──────────────────────
+  const isSuper              = profile?.role === 'super_admin'
+  const canSeeTools          = (isSuper && isSuperAdminContext) || hasPermission(role, ROLES_WITH_TOOLS)
+  const canSeeMedicalDocs    = (isSuper && isSuperAdminContext) || hasPermission(role, ROLES_MEDICAL_DOCS)
+  const canSeeTreatmentPlans = (isSuper && isSuperAdminContext) || hasPermission(role, ROLES_TREATMENT_PLANS)
+  const canSeeProntuarios    = (isSuper && isSuperAdminContext) || hasPermission(role, ROLES_PRONTUARIOS)
   const canSeeClinicalGroup  = canSeeTreatmentPlans || canSeeProntuarios
-  const canSeeFinancialGroup = hasPermission(role, ROLES_FINANCIAL_MODULES)
-  const isAdmin              = hasPermission(role, ['admin', 'admin_clinica'])
+  const canSeeFinancialGroup = (isSuper && isSuperAdminContext) || hasPermission(role, ROLES_FINANCIAL_MODULES)
+  const isAdmin              = (isSuper && isSuperAdminContext) || hasPermission(role, ['admin', 'admin_clinica'])
+
+  const renderedNavLinks = useMemo(() => {
+    if (isSuper) {
+      if (isSuperAdminContext) {
+        return [
+          { name: 'Agenda', path: '/agenda' },
+          { name: 'Pacientes', path: '/pacientes' },
+          { name: 'Prontuários', path: '/prontuarios' },
+          { name: 'Financeiro', path: '/financeiro' },
+          { name: 'Estoque', path: '/estoque' },
+          { name: 'Configurações', path: '/configuracoes' },
+        ]
+      }
+      return [
+        { name: 'Painel Geral', path: '/admin' },
+        { name: 'Clínicas', path: '/admin/clinicas' },
+        { name: 'Usuários', path: '/admin/usuarios' },
+        { name: 'Assinaturas', path: '/admin/assinaturas' },
+      ]
+    }
+    return navLinks
+      .filter((link) => hasPermission(role, link.allowedRoles))
+      .map((link) => ({ name: link.name, path: link.path }))
+  }, [isSuper, isSuperAdminContext, role])
+
+  async function handleVoltarPainelGlobal() {
+    try {
+      const res = await exitClinicContextAction()
+      if (res.success) {
+        toast.success('Retornando ao Painel Administrativo Global.')
+        await refreshClinica()
+        router.push('/admin')
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao retornar ao painel global.')
+    }
+  }
 
   // ─────────────────────────────────────────────────────────────────────────────
 
@@ -325,8 +369,12 @@ export default function Topbar() {
     <header className="h-16 w-full flex items-center justify-between px-4 sm:px-8 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] shrink-0 transition-colors duration-200">
       
       {/* ── Lado esquerdo: Logo + Nav ── */}
-      <div className="flex items-center gap-6 sm:gap-8">
-        <Link href="/overview" prefetch={true} className="flex items-center gap-3 active:scale-95 transition-transform">
+      <div className="flex items-center gap-4 sm:gap-6">
+        <Link 
+          href={isSuper && !isSuperAdminContext ? '/admin' : '/overview'} 
+          prefetch={true} 
+          className="flex items-center gap-3 active:scale-95 transition-transform"
+        >
           {clinica?.logo_url ? (
             <div className="h-9 w-9 rounded-2xl overflow-hidden flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs shrink-0">
               <img
@@ -342,32 +390,47 @@ export default function Topbar() {
               </svg>
             </div>
           )}
-          <h1 
-            className="text-xl font-black text-slate-900 dark:text-white tracking-tight truncate max-w-[160px] sm:max-w-[260px] md:max-w-[340px] lg:max-w-[440px]" 
-            title={clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft'}
-          >
-            {clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft'}
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 
+              className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight truncate max-w-[140px] sm:max-w-[220px] md:max-w-[300px]" 
+              title={isSuper && !isSuperAdminContext ? 'OdontoSoft Global' : (clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft')}
+            >
+              {isSuper && !isSuperAdminContext ? 'OdontoSoft' : (clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft')}
+            </h1>
+            {isSuper && isSuperAdminContext && (
+              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                Contexto
+              </span>
+            )}
+            {isSuper && !isSuperAdminContext && (
+              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30">
+                Painel Global
+              </span>
+            )}
+          </div>
         </Link>
 
-        {/* Nav principal — filtrada por role */}
+        {/* Nav principal — filtrada por role e contexto */}
         <nav className="hidden md:flex items-center gap-1.5 bg-slate-100/70 dark:bg-slate-900/60 p-1 rounded-2xl border border-slate-200/60 dark:border-slate-800/60">
-          {navLinks
-            .filter(link => hasPermission(role, link.allowedRoles))
-            .map(link => (
+          {renderedNavLinks.map(link => {
+            const isBaseMatch = link.path === '/admin'
+              ? pathname === '/admin'
+              : pathname === link.path || pathname.startsWith(link.path + '/') || pathname.startsWith('/dashboard' + link.path)
+            return (
               <Link 
                 key={link.name} 
                 href={link.path}
                 prefetch={true}
-                className={`px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all active:scale-95 ${
-                  pathname.startsWith(link.path) || pathname.startsWith('/dashboard' + link.path)
+                className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all active:scale-95 ${
+                  isBaseMatch
                     ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-2xs border border-slate-200/80 dark:border-slate-700/80' 
                     : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 {link.name}
               </Link>
-            ))}
+            )
+          })}
         </nav>
       </div>
 
@@ -607,6 +670,18 @@ export default function Topbar() {
         {/* Divisor vertical sutil */}
         <div className="h-6 w-px bg-slate-200/80 dark:bg-slate-800 mx-0.5 hidden sm:block" />
 
+        {/* Botão Contextual: Voltar ao Painel Global para Super Admin em contexto */}
+        {isSuper && isSuperAdminContext && (
+          <button
+            onClick={handleVoltarPainelGlobal}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer shrink-0"
+            title="Voltar ao Painel Administrativo Global"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span className="hidden lg:inline">Painel Global</span>
+          </button>
+        )}
+
         {/* ── Bloco de Perfil do Utilizador + Menu Dropdown Centralizado ── */}
         <div className="relative ml-1 sm:ml-2" ref={userMenuRef}>
           <button
@@ -727,6 +802,29 @@ export default function Topbar() {
                     <div className="flex flex-col text-left">
                       <span className="font-semibold">Configurações do Sistema</span>
                       <span className="text-[10px] text-slate-400 font-normal">Dados da clínica, logotipo e permissões</span>
+                    </div>
+                  </Link>
+                </div>
+              )}
+
+              {/* Seção Super Admin: Painel Global da Plataforma */}
+              {isSuper && (
+                <div className="py-1.5 px-1.5 space-y-0.5">
+                  <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Administração Geral SaaS
+                  </p>
+                  <Link
+                    href="/admin"
+                    prefetch={true}
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-xl font-bold transition-colors group"
+                  >
+                    <div className="p-1 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 transition-colors">
+                      <ShieldCheck className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span className="font-semibold">Painel Global</span>
+                      <span className="text-[10px] text-slate-400 font-normal">Clínicas, usuários e indicadores</span>
                     </div>
                   </Link>
                 </div>

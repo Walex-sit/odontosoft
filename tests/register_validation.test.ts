@@ -132,4 +132,12 @@ describe('Validações de Registo de Clínica e Administrador (Zod)', () => {
       ).toBe(false)
     })
   })
+
+  describe('Integração de envio de e-mail e módulos do cadastro', () => {
+    it('sendOtpEmail em app/lib/email/resend.ts executa com fallback seguro em desenvolvimento', async () => {
+      const { sendOtpEmail } = await import('../app/lib/email/resend')
+      const result = await sendOtpEmail('dentista.teste@odontosoft.com.br', '654321')
+      expect(result.success).toBe(true)
+    })
+  })
 })

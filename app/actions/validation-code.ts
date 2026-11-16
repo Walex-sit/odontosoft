@@ -25,7 +25,6 @@ import crypto from 'crypto'
 export interface EnviarCodigoResult {
   success: boolean
   error?: string
-  demoCode?: string // Fornecido exclusivamente em desenvolvimento local sem Resend
 }
 
 export interface VerificarCodigoResult {
@@ -150,15 +149,10 @@ export async function enviarCodigoValidacao(email: string): Promise<EnviarCodigo
       }
     }
 
-    // 6. Controle de ambiente: em produção, NUNCA expõe o demoCode.
-    // Em desenvolvimento local sem Resend configurado, expõe demoCode para validação da UI.
-    const isProduction = process.env.NODE_ENV === 'production'
-    const hasResend = Boolean(process.env.RESEND_API_KEY)
-    const showDemoCode = !isProduction && !hasResend
-
+    // 6. Confirmação segura ao cliente: O código OTP NUNCA é retornado ao navegador
+    // sob nenhuma circunstância ou ambiente. O usuário deve obtê-lo exclusivamente em sua caixa de e-mail.
     return {
       success: true,
-      ...(showDemoCode ? { demoCode: codigo } : {}),
     }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Falha ao processar código de acesso'

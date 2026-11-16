@@ -51,4 +51,11 @@ supabase/.branches/
 # scratch directory (local tests and scripts)
 scratch/
 
+# internal audit and review reports (security & compliance)
+AUDITORIA_*.md
+RELATORIO_*.md
+CHECKLIST_*.md
+CORRECOES_*.md
+ETAPA*.md
+REMEDIACAO_*.md
 
