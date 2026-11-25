@@ -8,16 +8,16 @@ export const metadata = {
 
 export default function TermosDeUsoPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] font-sans selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
       {/* Header */}
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-20">
+      <header className="border-b border-[var(--border)] bg-[var(--bg-base)]  sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/planos" className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
+          <Link href="/planos" className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Voltar aos Planos
           </Link>
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-blue-500" />
+            <Activity className="w-5 h-5 text-[var(--primary)]" />
             <span className="font-extrabold text-white text-base">OdontoSoft SaaS</span>
           </div>
         </div>
@@ -26,20 +26,20 @@ export default function TermosDeUsoPage() {
       {/* Conteúdo Principal */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
         <div className="mb-10 text-center sm:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--primary-subtle)]/10 border border-[var(--primary)]/30 text-[var(--primary)] text-xs font-semibold uppercase tracking-wider mb-3">
             <Scale className="w-4 h-4" />
             Instrumento Jurídico B2B
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Termos de Uso e Condições Gerais de Contratação
           </h1>
-          <p className="text-sm text-slate-400 mt-2">
+          <p className="text-sm text-[var(--text-muted)] mt-2">
             Última atualização: 12 de Outubro de 2026 • Em vigor para todos os contratantes.
           </p>
         </div>
 
         {/* Alerta de Destaque Regulatório */}
-        <div className="p-5 mb-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs sm:text-sm leading-relaxed flex items-start gap-3.5 shadow-lg shadow-amber-500/5">
+        <div className="p-5 mb-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs sm:text-sm leading-relaxed flex items-start gap-3.5 shadow-sm">
           <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
           <div>
             <strong className="block text-amber-300 font-bold mb-1">
@@ -52,11 +52,11 @@ export default function TermosDeUsoPage() {
           </div>
         </div>
 
-        <div className="prose prose-invert max-w-none space-y-8 text-sm leading-relaxed text-slate-300">
+        <div className="prose prose-invert max-w-none space-y-8 text-sm leading-relaxed text-[var(--text-secondary)]">
           {/* Seção 1 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-500 font-mono text-base">01.</span>
+              <span className="text-[var(--primary)] font-mono text-base">01.</span>
               Definições e Partes Contratantes
             </h2>
             <p>
@@ -68,15 +68,15 @@ export default function TermosDeUsoPage() {
           </section>
 
           {/* Seção 2 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-500 font-mono text-base">02.</span>
+              <span className="text-[var(--primary)] font-mono text-base">02.</span>
               Papéis na Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018)
             </h2>
             <p className="mb-3">
               Para os fins do artigo 5º, incisos VI e VII da Lei nº 13.709/2018, as partes ajustam irrevogavelmente que:
             </p>
-            <ul className="list-disc pl-5 space-y-2 text-slate-300">
+            <ul className="list-disc pl-5 space-y-2 text-[var(--text-secondary)]">
               <li>
                 <strong className="text-white">A CLÍNICA CONTRATANTE é a CONTROLADORA exclusiva</strong> de todos os dados pessoais e dados pessoais sensíveis (prontuários odontológicos, radiografias, anamneses, tratamentos e dados de contato) de seus pacientes, sendo a única competente para definir as bases legais de tratamento e responder perante a ANPD e titulares.
               </li>
@@ -90,7 +90,7 @@ export default function TermosDeUsoPage() {
           </section>
 
           {/* Seção 3 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8 border-l-4 border-l-rose-500">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8 border-l-4 border-l-rose-500">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
               <span className="text-rose-500 font-mono text-base">03.</span>
               Cláusula Estrita de Isenção de Responsabilidade Civil Odontológica e Médica
@@ -98,7 +98,7 @@ export default function TermosDeUsoPage() {
             <p className="mb-3">
               O CONTRATANTE reconhece expressamente que o OdontoSoft constitui ferramenta meio de suporte administrativo e registro eletrônico. Em nenhuma hipótese o OdontoSoft, seus sócios, desenvolvedores ou prepostos responderão por:
             </p>
-            <ul className="list-disc pl-5 space-y-2 text-slate-300">
+            <ul className="list-disc pl-5 space-y-2 text-[var(--text-secondary)]">
               <li>
                 <strong className="text-white">Decisões Clínicas e Terapêuticas:</strong> Diagnósticos, planejamentos ortodônticos, intervenções cirúrgicas, dosagens de medicamentos, prescrições de substâncias controladas ou aplicação de anestésicos realizados pelo cirurgião-dentista;
               </li>
@@ -112,15 +112,15 @@ export default function TermosDeUsoPage() {
           </section>
 
           {/* Seção 4 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-500 font-mono text-base">04.</span>
+              <span className="text-[var(--primary)] font-mono text-base">04.</span>
               Prontuário Odontológico Eletrônico e Imutabilidade (CFO nº 198/2019)
             </h2>
             <p className="mb-3">
               A plataforma foi projetada segundo os preceitos da Resolução CFO nº 198/2019 e do Código de Ética Odontológica. Por imposição normativa:
             </p>
-            <ul className="list-disc pl-5 space-y-2 text-slate-300">
+            <ul className="list-disc pl-5 space-y-2 text-[var(--text-secondary)]">
               <li>
                 <strong className="text-white">Registros finalizados são IMUTÁVEIS:</strong> O sistema bloqueia a edição direta e a exclusão física de evoluções clínicas concluídas;
               </li>
@@ -134,15 +134,15 @@ export default function TermosDeUsoPage() {
           </section>
 
           {/* Seção 5 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-500 font-mono text-base">05.</span>
+              <span className="text-[var(--primary)] font-mono text-base">05.</span>
               Faturamento, Inadimplência e Suspensão de Escrita
             </h2>
             <p className="mb-3">
               Os planos são faturados de forma recorrente via cartão de crédito através do gateway parceiro (Stripe):
             </p>
-            <ul className="list-disc pl-5 space-y-2 text-slate-300">
+            <ul className="list-disc pl-5 space-y-2 text-[var(--text-secondary)]">
               <li>
                 <strong className="text-white">Bloqueio Operacional por Inadimplência:</strong> Em caso de não compensação de fatura (status &quot;inadimplente&quot;), o sistema aplicará bloqueio automatizado de inserção de novos registros (pacientes, agendamentos e prontuários), resguardando-se contudo o acesso de visualização aos dados pregressos para continuidade de tratamentos em curso.
               </li>
@@ -153,9 +153,9 @@ export default function TermosDeUsoPage() {
           </section>
 
           {/* Seção 6 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-500 font-mono text-base">06.</span>
+              <span className="text-[var(--primary)] font-mono text-base">06.</span>
               Foro e Legislação Aplicável
             </h2>
             <p>
@@ -165,10 +165,10 @@ export default function TermosDeUsoPage() {
         </div>
 
         {/* Rodapé Interno */}
-        <div className="mt-12 pt-8 border-t border-slate-800 text-center">
+        <div className="mt-12 pt-8 border-t border-[var(--border)] text-center">
           <Link
             href="/planos"
-            className="inline-flex items-center gap-2 text-sm font-bold text-blue-400 hover:text-blue-300"
+            className="inline-flex items-center gap-2 text-sm font-bold text-[var(--primary)] hover:text-[var(--primary)]"
           >
             Conhecer os Planos e Iniciar Contratação
             <ShieldCheck className="w-4 h-4" />

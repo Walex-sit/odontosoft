@@ -70,7 +70,7 @@ export default function ImprimirAtestado() {
   }, [id])
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen text-slate-500">Preparando documento...</div>
+    return <div className="flex items-center justify-center min-h-screen text-[var(--text-muted)]">Preparando documento...</div>
   }
 
   if (!atestado) {
@@ -85,10 +85,10 @@ export default function ImprimirAtestado() {
   const dataInicioFormatada = dia && mes && ano ? `${dia}/${mes}/${ano}` : atestado.data_inicio
 
   return (
-    <div className="bg-white min-h-screen w-full text-slate-900 print:bg-white p-8 max-w-[210mm] mx-auto print:p-0 print:m-0 flex flex-col">
+    <div className="bg-white min-h-screen w-full text-[var(--text-primary)] print:bg-white p-8 max-w-[210mm] mx-auto print:p-0 print:m-0 flex flex-col">
       
       {/* CABEÇALHO */}
-      <header className="flex flex-col items-center justify-center text-center border-b-2 border-slate-200 pb-6 mb-12 mt-4 print:mt-0">
+      <header className="flex flex-col items-center justify-center text-center border-b-2 border-[var(--border)] pb-6 mb-12 mt-4 print:mt-0">
         {clinica?.logo_url && (
           <img 
             src={clinica.logo_url} 
@@ -97,10 +97,10 @@ export default function ImprimirAtestado() {
             crossOrigin="anonymous" 
           />
         )}
-        <h1 className="text-2xl font-bold text-slate-800 uppercase tracking-wide">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] uppercase tracking-wide">
           {clinica?.nome_exibido || clinica?.nome || 'Clínica Odontológica'}
         </h1>
-        <div className="text-sm text-slate-500 mt-1 flex flex-col items-center gap-1">
+        <div className="text-sm text-[var(--text-muted)] mt-1 flex flex-col items-center gap-1">
           {clinica?.endereco && <span>{clinica.endereco}</span>}
           <div className="flex gap-4">
             {clinica?.telefone && <span>Tel: {clinica.telefone}</span>}
@@ -111,7 +111,7 @@ export default function ImprimirAtestado() {
 
       {/* TÍTULO */}
       <div className="text-center mb-16">
-        <h2 className="text-2xl font-bold text-slate-800 uppercase tracking-widest border-b-2 border-slate-800 inline-block pb-1">
+        <h2 className="text-2xl font-bold text-[var(--text-primary)] uppercase tracking-widest border-b-2 border-[var(--border)] inline-block pb-1">
           Atestado Odontológico
         </h2>
       </div>
@@ -134,15 +134,15 @@ export default function ImprimirAtestado() {
 
       {/* RODAPÉ */}
       <footer className="mt-auto pt-20 pb-8">
-        <div className="text-center text-slate-600 mb-16">
+        <div className="text-center text-[var(--text-secondary)] mb-16">
           Local e Data: ____________________________, {dataFormatada}
         </div>
         
         <div className="flex flex-col items-center justify-center">
-          <div className="w-80 border-t border-slate-800 mb-2"></div>
-          <div className="font-bold text-slate-800 text-lg">{atestado.profiles?.nome || 'Dr(a).'}</div>
+          <div className="w-80 border-t border-[var(--border)] mb-2"></div>
+          <div className="font-bold text-[var(--text-primary)] text-lg">{atestado.profiles?.nome || 'Dr(a).'}</div>
           {atestado.profiles?.especialidade && (
-            <div className="text-base text-slate-500">{atestado.profiles.especialidade}</div>
+            <div className="text-base text-[var(--text-muted)]">{atestado.profiles.especialidade}</div>
           )}
         </div>
       </footer>
@@ -151,7 +151,7 @@ export default function ImprimirAtestado() {
       <div className="fixed top-4 right-4 print:hidden">
         <button 
           onClick={() => window.print()} 
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-lg font-medium transition-colors"
+          className="bg-[var(--primary)] hover:bg-[var(--primary)] text-[var(--on-primary)] px-4 py-2 rounded-lg shadow-lg font-medium transition-colors"
         >
           Imprimir Novamente
         </button>

@@ -25,15 +25,15 @@ import Image from 'next/image'
 
 const ACTION_STYLES: Record<string, { bg: string; text: string; label: string }> = {
   criacao:    { bg: 'bg-emerald-50 border border-emerald-200', text: 'text-emerald-700', label: 'CRIAÇÃO' },
-  edicao:     { bg: 'bg-blue-50 border border-blue-200',       text: 'text-blue-700',    label: 'EDIÇÃO' },
+  edicao:     { bg: 'bg-[var(--primary-subtle)] border border-[var(--primary)]/40',       text: 'text-[var(--primary)]',    label: 'EDIÇÃO' },
   exclusao:   { bg: 'bg-red-50 border border-red-200',         text: 'text-red-700',     label: 'EXCLUSÃO' },
   financeiro: { bg: 'bg-amber-50 border border-amber-200',     text: 'text-amber-700',   label: 'FINANCEIRO' },
-  login:      { bg: 'bg-indigo-50 border border-indigo-200',   text: 'text-indigo-700',  label: 'LOGIN' },
-  logout:     { bg: 'bg-slate-100 border border-slate-200 dark:border-slate-700',    text: 'text-slate-600 dark:text-slate-300',   label: 'LOGOUT' },
+  login:      { bg: 'bg-[var(--primary)] border border-[var(--primary)]/40',   text: 'text-[var(--primary)]',  label: 'LOGIN' },
+  logout:     { bg: 'bg-[var(--bg-base)] border border-[var(--border)] ',    text: 'text-[var(--text-secondary)]',   label: 'LOGOUT' },
 }
 
 function ActionBadge({ action }: { action: string }) {
-  const style = ACTION_STYLES[action] ?? { bg: 'bg-slate-100 border border-slate-200 dark:border-slate-700', text: 'text-slate-600 dark:text-slate-300', label: action.toUpperCase() }
+  const style = ACTION_STYLES[action] ?? { bg: 'bg-[var(--bg-base)] border border-[var(--border)] ', text: 'text-[var(--text-secondary)]', label: action.toUpperCase() }
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold ${style.bg} ${style.text}`}>
       {style.label}
@@ -57,12 +57,12 @@ function MetricCard({
   color: string
 }) {
   return (
-    <div className={`p-5 rounded-2xl border bg-white dark:bg-slate-800 shadow-sm flex items-start gap-4 ${color}`}>
+    <div className={`p-5 rounded-2xl border bg-[var(--bg-surface)] shadow-sm flex items-start gap-4 ${color}`}>
       <div className="p-3 rounded-xl bg-current/10 shrink-0">{icon}</div>
       <div>
-        <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">{label}</p>
-        <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 leading-none">{value}</p>
-        {sub && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{sub}</p>}
+        <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">{label}</p>
+        <p className="text-2xl font-extrabold text-[var(--text-primary)] leading-none">{value}</p>
+        {sub && <p className="text-xs text-[var(--text-muted)] mt-1">{sub}</p>}
       </div>
     </div>
   )
@@ -443,18 +443,18 @@ export default function ConfiguracoesPage() {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col w-full h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 overflow-y-auto">
+    <div className="flex flex-col w-full h-full bg-[var(--bg-base)] dark:bg-[var(--bg-base)] text-[var(--text-primary)] overflow-y-auto">
       {/* Header */}
-      <header className="p-8 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
+      <header className="p-8 bg-[var(--bg-surface)] border-b border-[var(--border)]  shadow-sm shrink-0">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Configurações do Sistema</h1>
-            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">Gerencie os dados da sua clínica, permissões de usuários e integrações</p>
+            <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Configurações do Sistema</h1>
+            <p className="text-sm font-semibold text-[var(--text-muted)] mt-1">Gerencie os dados da sua clínica, permissões de usuários e integrações</p>
           </div>
           <button
             onClick={handleSalvar}
             disabled={salvando}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 self-start md:self-auto disabled:opacity-50"
+            className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-6 py-2.5 rounded-xl font-bold text-sm transition-all  flex items-center justify-center gap-2 self-start md:self-auto disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {salvando ? 'Salvando...' : 'Salvar Alterações'}
@@ -462,7 +462,7 @@ export default function ConfiguracoesPage() {
         </div>
 
         {/* Abas */}
-        <div className="max-w-6xl mx-auto flex items-center gap-2 mt-8 border-b border-slate-100 pb-0.5 overflow-x-auto">
+        <div className="max-w-6xl mx-auto flex items-center gap-2 mt-8 border-b border-[var(--border)] pb-0.5 overflow-x-auto">
           {(
             [
               { id: 'perfil',      label: 'Perfil da Clínica',      icon: <Building2 className="h-4 w-4" /> },
@@ -478,8 +478,8 @@ export default function ConfiguracoesPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all border-b-2 whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-slate-800'
-                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950'
+                  ? 'border-[var(--primary)]/40 text-[var(--primary)] bg-[var(--primary-subtle)]/50 dark:bg-[var(--bg-surface)]'
+                  : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)]'
               }`}
             >
               {tab.icon} {tab.label}
@@ -495,7 +495,7 @@ export default function ConfiguracoesPage() {
                 </span>
               )}
               {tab.id === 'seguranca' && (
-                <span className="ml-1 bg-blue-100 text-blue-700 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">LGPD</span>
+                <span className="ml-1 bg-[var(--primary-subtle)] text-[var(--primary)] text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">LGPD</span>
               )}
             </button>
           ))}
@@ -509,56 +509,56 @@ export default function ConfiguracoesPage() {
           <div className="space-y-6">
             {isLoadingPerfil ? (
               <div className="flex flex-col items-center justify-center py-24">
-                <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-3" />
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando dados da clínica...</p>
+                <Loader2 className="h-8 w-8 text-[var(--primary)] animate-spin mb-3" />
+                <p className="text-sm text-[var(--text-muted)] font-semibold">Carregando dados da clínica...</p>
               </div>
             ) : isSuperAdmin && !ctxClinica?.id ? (
-              <div className="p-12 rounded-[32px] border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center shadow-xs">
-                <div className="mx-auto w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
+              <div className="p-12 rounded-[32px] border border-dashed border-[var(--border)]  bg-[var(--bg-surface)] text-center shadow-xs">
+                <div className="mx-auto w-12 h-12 rounded-2xl bg-[var(--primary-subtle)] text-[var(--primary)] flex items-center justify-center mb-4">
                   <Building2 className="h-6 w-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                <h3 className="text-base font-bold text-[var(--text-primary)] mb-1">
                   Nenhuma clínica selecionada no contexto
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6 leading-relaxed">
-                  Como Super Admin Global, seu usuário opera sem vínculo fixo a uma clínica (<code className="text-xs bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">clinica_id = NULL</code>). Para visualizar ou configurar os dados de uma unidade, selecione uma clínica no Painel Global.
+                <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto mb-6 leading-relaxed">
+                  Como Super Admin Global, seu usuário opera sem vínculo fixo a uma clínica (<code className="text-xs bg-[var(--bg-base)] dark:bg-[var(--border)] px-1.5 py-0.5 rounded font-mono">clinica_id = NULL</code>). Para visualizar ou configurar os dados de uma unidade, selecione uma clínica no Painel Global.
                 </p>
                 <Link
                   href="/admin/clinicas"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-xs font-bold transition-all shadow-sm"
                 >
                   <ExternalLink className="h-3.5 w-3.5" /> Ir para Gestão de Clínicas
                 </Link>
               </div>
             ) : !profile?.clinica_id ? (
-              <div className="p-12 rounded-[32px] border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center shadow-xs">
+              <div className="p-12 rounded-[32px] border border-dashed border-[var(--border)]  bg-[var(--bg-surface)] text-center shadow-xs">
                 <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4">
                   <AlertTriangle className="h-6 w-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                <h3 className="text-base font-bold text-[var(--text-primary)] mb-1">
                   Clínica não vinculada
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto leading-relaxed">
                   Seu usuário não possui uma clínica vinculada no momento. Entre em contato com a administração da clínica ou com o suporte da plataforma para regularizar seu acesso.
                 </p>
               </div>
             ) : (
               <>
                 {/* ── Seção: Emblema / Logo ─────────────────────────────── */}
-                <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Emblema / Logo da Clínica</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">A logo é exibida na barra superior para todos os usuários da clínica.</p>
+                <div className="bg-[var(--bg-surface)] p-8 rounded-[32px] border border-[var(--border)]  shadow-sm">
+                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Emblema / Logo da Clínica</h3>
+                  <p className="text-sm text-[var(--text-muted)] mb-6">A logo é exibida na barra superior para todos os usuários da clínica.</p>
 
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                     {/* Preview */}
                     <div className="relative shrink-0">
-                      <div className="h-28 w-28 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 flex items-center justify-center overflow-hidden">
+                      <div className="h-28 w-28 rounded-2xl border-2 border-dashed border-[var(--border)]  bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] flex items-center justify-center overflow-hidden">
                         {logoPreview ? (
                           <img src={logoPreview} alt="Preview da logo" className="h-full w-full object-contain p-2" />
                         ) : logoUrl ? (
                           <img src={logoUrl} alt="Logo da clínica" className="h-full w-full object-contain p-2" />
                         ) : (
-                          <div className="flex flex-col items-center gap-1 text-slate-400">
+                          <div className="flex flex-col items-center gap-1 text-[var(--text-muted)]">
                             <Camera className="h-8 w-8" />
                             <span className="text-[10px] font-bold uppercase tracking-wider">Sem logo</span>
                           </div>
@@ -586,7 +586,7 @@ export default function ConfiguracoesPage() {
                         />
                         <button
                           onClick={() => logoInputRef.current?.click()}
-                          className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-bold transition-colors"
+                          className="flex items-center gap-2 px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--border)] hover:bg-[var(--border)] dark:hover:bg-[var(--border-medium)] text-[var(--text-secondary)] rounded-xl text-sm font-bold transition-colors"
                         >
                           <Upload className="h-4 w-4" />
                           {logoUrl || logoPreview ? 'Alterar Logo' : 'Selecionar Logo'}
@@ -597,7 +597,7 @@ export default function ConfiguracoesPage() {
                           <button
                             onClick={handleLogoUpload}
                             disabled={isUploadingLogo}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-sm font-bold transition-colors shadow-md shadow-blue-500/20"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-[var(--on-primary)] rounded-xl text-sm font-bold transition-colors "
                           >
                             {isUploadingLogo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                             {isUploadingLogo ? 'Enviando...' : 'Confirmar Upload'}
@@ -608,7 +608,7 @@ export default function ConfiguracoesPage() {
                         {logoPreview && (
                           <button
                             onClick={() => { setLogoPreview(null); setLogoFile(null) }}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-900/30 text-slate-500 hover:text-red-600 rounded-xl text-sm font-bold transition-colors"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--border)] hover:bg-red-50 dark:hover:bg-red-900/30 text-[var(--text-muted)] hover:text-red-600 rounded-xl text-sm font-bold transition-colors"
                           >
                             <X className="h-4 w-4" /> Cancelar
                           </button>
@@ -626,16 +626,16 @@ export default function ConfiguracoesPage() {
                           </button>
                         )}
                       </div>
-                      <p className="text-xs text-slate-400 font-medium">Formatos aceitos: PNG, JPG, WEBP, SVG · Tamanho máximo: 2 MB · Recomendado: 256×256 px ou maior</p>
+                      <p className="text-xs text-[var(--text-muted)] font-medium">Formatos aceitos: PNG, JPG, WEBP, SVG · Tamanho máximo: 2 MB · Recomendado: 256×256 px ou maior</p>
                     </div>
                   </div>
 
                   {/* ── Campo: Nome Exibido no Topo do Sistema ──────────── */}
-                  <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
-                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                  <div className="mt-6 pt-6 border-t border-[var(--border)]">
+                    <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
                       Nome Exibido no Topo do Sistema
                     </label>
-                    <p className="text-xs text-slate-400 font-medium mb-3">
+                    <p className="text-xs text-[var(--text-muted)] font-medium mb-3">
                       Substitui a Razão Social na barra superior para todos os usuários.
                       Deixe em branco para usar a Razão Social automaticamente.
                     </p>
@@ -647,14 +647,14 @@ export default function ConfiguracoesPage() {
                         onChange={e => setNomeExibido(e.target.value)}
                         placeholder={clinica.nome || 'Ex.: Clínica Sorrisos'}
                         maxLength={80}
-                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all pr-20"
+                        className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all pr-20"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-300 select-none">
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-[var(--text-secondary)] select-none">
                         {nomeExibido.length}/80
                       </span>
                     </div>
                     {nomeExibido.trim() && (
-                      <p className="mt-2 text-xs font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                      <p className="mt-2 text-xs font-semibold text-[var(--primary)] flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
@@ -665,78 +665,78 @@ export default function ConfiguracoesPage() {
                 </div>
 
                 {/* ── Seção: Dados Cadastrais ───────────────────────────── */}
-                <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
-                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">Informações Cadastrais</h3>
+                <div className="bg-[var(--bg-surface)] p-8 rounded-[32px] border border-[var(--border)]  shadow-sm space-y-6">
+                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4 border-b border-[var(--border)] pb-3">Informações Cadastrais</h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Razão Social / Nome da Clínica</label>
+                      <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Razão Social / Nome da Clínica</label>
                       <input
                         type="text"
                         value={clinica.nome}
                         onChange={e => setClinica(p => ({ ...p, nome: e.target.value }))}
-                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">CNPJ</label>
+                      <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">CNPJ</label>
                       <input
                         type="text"
                         value={clinica.cnpj}
                         onChange={e => setClinica(p => ({ ...p, cnpj: e.target.value }))}
-                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Telefone de Contato</label>
+                      <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Telefone de Contato</label>
                       <input
                         type="text"
                         value={clinica.telefone}
                         onChange={e => setClinica(p => ({ ...p, telefone: e.target.value }))}
-                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">E-mail Comercial</label>
+                      <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">E-mail Comercial</label>
                       <input
                         type="email"
                         value={clinica.email}
                         onChange={e => setClinica(p => ({ ...p, email: e.target.value }))}
-                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">CRO do Responsável Técnico</label>
+                      <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">CRO do Responsável Técnico</label>
                       <input
                         type="text"
                         value={clinica.croResponsavel}
                         onChange={e => setClinica(p => ({ ...p, croResponsavel: e.target.value }))}
-                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Website</label>
+                      <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Website</label>
                       <input
                         type="text"
                         value={clinica.site}
                         onChange={e => setClinica(p => ({ ...p, site: e.target.value }))}
-                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                       />
                     </div>
                   </div>
 
                   <div className="pt-4">
-                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Endereço Completo</label>
+                    <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Endereço Completo</label>
                     <input
                       type="text"
                       value={clinica.endereco}
                       onChange={e => setClinica(p => ({ ...p, endereco: e.target.value }))}
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                     />
                   </div>
                 </div>
@@ -747,78 +747,78 @@ export default function ConfiguracoesPage() {
 
         {/* ABA 2: USUÁRIOS E PERMISSÕES */}
         {activeTab === 'usuarios' && (
-          <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div className="bg-[var(--bg-surface)] p-8 rounded-[32px] border border-[var(--border)]  shadow-sm space-y-6">
+            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
               <div>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Perfis de Acesso (RBAC)</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Gerencie os papeis configurados no seu OdontoSoft</p>
+                <h3 className="text-lg font-bold text-[var(--text-primary)]">Perfis de Acesso (RBAC)</h3>
+                <p className="text-sm text-[var(--text-muted)] mt-0.5">Gerencie os papeis configurados no seu OdontoSoft</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div 
                 onClick={() => { setSelectedRole('admin'); setSelectedRoleName('Administrador'); setIsModalOpen(true); }}
-                className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-950 flex items-start gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 hover:shadow-md transition-all"
+                className="p-5 border border-[var(--border)]  rounded-2xl bg-[var(--bg-base)] dark:bg-[var(--bg-base)] flex items-start gap-4 cursor-pointer hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] hover:shadow-md transition-all"
               >
-                <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                <div className="p-3 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-xl">
                   <ShieldCheck className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800 dark:text-slate-100">Administrador</h4>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Acesso total a todos os módulos, prontuários, financeiro e configurações.</p>
+                  <h4 className="font-bold text-[var(--text-primary)]">Administrador</h4>
+                  <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">Acesso total a todos os módulos, prontuários, financeiro e configurações.</p>
                 </div>
               </div>
 
               <div 
                 onClick={() => { setSelectedRole('dentista'); setSelectedRoleName('Dentista / Odontólogo'); setIsModalOpen(true); }}
-                className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-950 flex items-start gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 hover:shadow-md transition-all"
+                className="p-5 border border-[var(--border)]  rounded-2xl bg-[var(--bg-base)] dark:bg-[var(--bg-base)] flex items-start gap-4 cursor-pointer hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] hover:shadow-md transition-all"
               >
                 <div className="p-3 bg-green-100 text-green-700 rounded-xl">
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800 dark:text-slate-100">Dentista / Odontólogo</h4>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Acesso à agenda, lista de pacientes, prontuários e evolução médica.</p>
+                  <h4 className="font-bold text-[var(--text-primary)]">Dentista / Odontólogo</h4>
+                  <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">Acesso à agenda, lista de pacientes, prontuários e evolução médica.</p>
                 </div>
               </div>
 
               <div 
                 onClick={() => { setSelectedRole('recepcao'); setSelectedRoleName('Recepção'); setIsModalOpen(true); }}
-                className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-950 flex items-start gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 hover:shadow-md transition-all"
+                className="p-5 border border-[var(--border)]  rounded-2xl bg-[var(--bg-base)] dark:bg-[var(--bg-base)] flex items-start gap-4 cursor-pointer hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] hover:shadow-md transition-all"
               >
                 <div className="p-3 bg-amber-100 text-amber-700 rounded-xl">
                   <Sliders className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800 dark:text-slate-100">Recepção</h4>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Agendamento de consultas, confirmações e cadastro inicial de pacientes.</p>
+                  <h4 className="font-bold text-[var(--text-primary)]">Recepção</h4>
+                  <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">Agendamento de consultas, confirmações e cadastro inicial de pacientes.</p>
                 </div>
               </div>
 
               <div 
                 onClick={() => { setSelectedRole('financeiro'); setSelectedRoleName('Financeiro'); setIsModalOpen(true); }}
-                className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-950 flex items-start gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 hover:shadow-md transition-all"
+                className="p-5 border border-[var(--border)]  rounded-2xl bg-[var(--bg-base)] dark:bg-[var(--bg-base)] flex items-start gap-4 cursor-pointer hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] hover:shadow-md transition-all"
               >
-                <div className="p-3 bg-purple-100 text-purple-700 rounded-xl">
+                <div className="p-3 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-xl">
                   <Building2 className="h-6 w-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-800 dark:text-slate-100">Financeiro</h4>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">Controle de entradas, saídas, emissão de boletos e relatórios orçamentários.</p>
+                  <h4 className="font-bold text-[var(--text-primary)]">Financeiro</h4>
+                  <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">Controle de entradas, saídas, emissão de boletos e relatórios orçamentários.</p>
                 </div>
               </div>
             </div>
 
             {/* Nova Seção: Membros da Equipe */}
             <div className="mt-12">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+              <div className="flex items-center justify-between border-b border-[var(--border)] pb-4 mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Membros da Equipe</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Gerencie os usuários cadastrados no sistema</p>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)]">Membros da Equipe</h3>
+                  <p className="text-sm text-[var(--text-muted)] mt-0.5">Gerencie os usuários cadastrados no sistema</p>
                 </div>
                 <button
                   onClick={() => setIsCreateUserModalOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md shadow-blue-500/20 flex items-center gap-2"
+                  className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm transition-all  flex items-center gap-2"
                 >
                   <UserPlus className="h-4 w-4" />
                   Novo Usuário
@@ -827,32 +827,32 @@ export default function ConfiguracoesPage() {
 
               {isLoadingMembers ? (
                 <div className="flex flex-col items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-4" />
-                  <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando membros...</p>
+                  <Loader2 className="h-8 w-8 text-[var(--primary)] animate-spin mb-4" />
+                  <p className="text-sm text-[var(--text-muted)] font-semibold">Carregando membros...</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+                <div className="overflow-x-auto rounded-2xl border border-[var(--border)] ">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
+                      <tr className="bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border-b border-[var(--border)]  text-xs uppercase tracking-wider text-[var(--text-muted)] font-bold">
                         <th className="p-4">Nome Completo</th>
                         <th className="p-4">E-mail</th>
                         <th className="p-4">Função</th>
                         <th className="p-4 text-right">Ações</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-[var(--border)]">
                       {teamMembers.length > 0 ? (
                         teamMembers.map(member => (
-                          <tr key={member.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950/50 transition-colors">
-                            <td className="p-4 font-semibold text-slate-800 dark:text-slate-100">{member.nome}</td>
-                            <td className="p-4 text-slate-600 dark:text-slate-300 text-sm">{member.email}</td>
+                          <tr key={member.id} className="hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)] transition-colors">
+                            <td className="p-4 font-semibold text-[var(--text-primary)]">{member.nome}</td>
+                            <td className="p-4 text-[var(--text-secondary)] text-sm">{member.email}</td>
                             <td className="p-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                                (member.role === 'admin' || member.role === 'admin_clinica') ? 'bg-blue-100 text-blue-700' :
+                                (member.role === 'admin' || member.role === 'admin_clinica') ? 'bg-[var(--primary-subtle)] text-[var(--primary)]' :
                                 member.role === 'dentista' ? 'bg-green-100 text-green-700' :
                                 member.role === 'recepcao' ? 'bg-amber-100 text-amber-700' :
-                                'bg-purple-100 text-purple-700'
+                                'bg-[var(--primary-subtle)] text-[var(--primary)]'
                               }`}>
                                 {member.role === 'admin_clinica' ? 'Admin' : member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                               </span>
@@ -861,14 +861,14 @@ export default function ConfiguracoesPage() {
                               <div className="flex items-center justify-end gap-1">
                                 <button
                                   onClick={() => handleEditUser(member)}
-                                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar"
+                                  className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-subtle)] rounded-lg transition-all" title="Editar"
                                 >
                                   <Pencil className="h-4 w-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteUser(member.id, member.nome)}
                                   disabled={deletingUserId === member.id}
-                                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50" title="Excluir"
+                                  className="p-2 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 rounded-lg transition-all disabled:opacity-50" title="Excluir"
                                 >
                                   {deletingUserId === member.id ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -882,7 +882,7 @@ export default function ConfiguracoesPage() {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={4} className="p-8 text-center text-slate-500 dark:text-slate-400 font-semibold">
+                          <td colSpan={4} className="p-8 text-center text-[var(--text-muted)] font-semibold">
                             Nenhum usuário encontrado.
                           </td>
                         </tr>
@@ -900,78 +900,74 @@ export default function ConfiguracoesPage() {
           <div className="space-y-8">
             {isLoadingBilling ? (
               <div className="flex flex-col items-center justify-center py-24">
-                <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-3" />
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando dados da assinatura...</p>
+                <Loader2 className="h-8 w-8 text-[var(--primary)] animate-spin mb-3" />
+                <p className="text-sm text-[var(--text-muted)] font-semibold">Carregando dados da assinatura...</p>
               </div>
             ) : subscriptionData ? (
               <>
                 {/* ── Banner de Status da Assinatura ────────────────────────── */}
-                <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 border border-slate-700/60 p-8 text-white shadow-xl">
-                  {/* Fundo decorativo sutil */}
-                  <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
-                  <div className="absolute -left-16 -bottom-16 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
-
-                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/10">
+                <div className="relative overflow-hidden rounded-[32px] bg-[var(--bg-surface)] border border-[var(--border)] p-8 text-[var(--text-primary)] shadow-sm dark:shadow-none">
+                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[var(--border)]">
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="text-xs uppercase tracking-wider text-blue-300 font-bold">
+                        <span className="text-xs uppercase tracking-wider text-[var(--primary)] font-bold">
                           Assinatura OdontoSoft SaaS
                         </span>
                         {isVitalicio ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-500/25 via-yellow-500/20 to-amber-500/25 text-amber-200 border border-amber-400/40 shadow-sm shadow-amber-500/10">
-                            <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-[var(--warning-bg)] text-[var(--warning)] border border-[var(--warning)]/40">
+                            <Sparkles className="h-3.5 w-3.5 text-[var(--warning)]" />
                             Acesso Vitalício / Administrador Geral (Isento de Cobrança)
                           </span>
                         ) : (
                           <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold ${
                             subscriptionData.status === 'ativo'
-                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              ? 'bg-[var(--success-bg)] text-[var(--success)] border border-[var(--success)]/30'
                               : subscriptionData.status === 'inadimplente'
-                              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                              : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                              ? 'bg-[var(--error-bg)] text-[var(--error)] border border-[var(--error)]/30'
+                              : 'bg-[var(--warning-bg)] text-[var(--warning)] border border-[var(--warning)]/30'
                           }`}>
                             <span className={`h-2 w-2 rounded-full ${
-                              subscriptionData.status === 'ativo' ? 'bg-emerald-400' : subscriptionData.status === 'inadimplente' ? 'bg-rose-400' : 'bg-amber-400 animate-pulse'
+                              subscriptionData.status === 'ativo' ? 'bg-[var(--success)]' : subscriptionData.status === 'inadimplente' ? 'bg-[var(--error)]' : 'bg-[var(--warning)]'
                             }`} />
                             {subscriptionData.statusLabel}
                           </span>
                         )}
                       </div>
-                      <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+                      <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-3">
                         {subscriptionData.nomeClinica}
                         <span className={`text-xs px-3 py-1 rounded-xl font-bold uppercase tracking-wider ${
                           isVitalicio
-                            ? 'bg-amber-500/20 border border-amber-400/40 text-amber-200'
-                            : 'bg-blue-500/20 border border-blue-400/30 text-blue-200'
+                            ? 'bg-[var(--warning-bg)] border border-[var(--warning)]/40 text-[var(--warning)]'
+                            : 'bg-[var(--primary-subtle)] border border-[var(--primary)]/30 text-[var(--primary)]'
                         }`}>
                           {isVitalicio ? '👑 Master Vitalício' : `Plano ${subscriptionData.planoNome}`}
                         </span>
                       </h2>
-                      <p className="text-xs sm:text-sm text-slate-300 mt-1">
+                      <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
                         {isVitalicio ? (
                           <>Conta Master com acesso vitalício irrestrito a todos os recursos. Não há cobranças, faturas periódicas ou contadores de expiração para o Administrador Geral.</>
                         ) : subscriptionData.status === 'trial' ? (
-                          <>Aproveite os recursos essenciais liberados. Restam <strong className="text-amber-300 font-bold">{subscriptionData.diasRestantesTrial ?? 7} dias</strong> no seu período de testes.</>
+                          <>Aproveite os recursos essenciais liberados. Restam <strong className="text-[var(--warning)] font-bold">{subscriptionData.diasRestantesTrial ?? 7} dias</strong> no seu período de testes.</>
                         ) : (
-                          <>Faturamento regular recorrente. Próxima renovação em <strong className="text-white font-bold">{subscriptionData.periodoFim ? new Date(subscriptionData.periodoFim).toLocaleDateString('pt-BR') : 'período vigente'}</strong>.</>
+                          <>Faturamento regular recorrente. Próxima renovação em <strong className="text-[var(--text-primary)] font-bold">{subscriptionData.periodoFim ? new Date(subscriptionData.periodoFim).toLocaleDateString('pt-BR') : 'período vigente'}</strong>.</>
                         )}
                       </p>
 
                       {/* Exibição do Valor Oficial do Plano (Global SaaS) */}
                       <div className="mt-3 flex flex-wrap items-center gap-2">
-                        <span className="text-xs text-slate-300 font-semibold">
+                        <span className="text-xs text-[var(--text-secondary)] font-semibold">
                           {isVitalicio ? 'Condição da Conta:' : 'Valor do Plano:'}
                         </span>
                         {isVitalicio ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[var(--success-bg)] text-[var(--success)] border border-[var(--success)]/30">
                             <CheckCircle2 className="h-3.5 w-3.5" /> Isento de Cobrança (Acesso Master Geral)
                           </span>
                         ) : (
                           <>
-                            <span className="text-sm font-extrabold text-white">
+                            <span className="text-sm font-extrabold text-[var(--text-primary)]">
                               R$ {subscriptionData.valorPlano > 0 ? subscriptionData.valorPlano.toFixed(2).replace('.', ',') : (subscriptionData.planoId === 'premium' ? '299,00' : '149,00')} / mês
                             </span>
-                            <span className="text-[11px] text-slate-400 font-medium">
+                            <span className="text-[11px] text-[var(--text-secondary)] font-medium">
                               (Tabela oficial OdontoSoft)
                             </span>
                           </>
@@ -983,7 +979,7 @@ export default function ConfiguracoesPage() {
                       <Link
                         href="/planos"
                         target="_blank"
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition-all backdrop-blur-sm"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--bg-base)] hover:bg-[var(--bg-hover)] border border-[var(--border)] text-xs font-bold text-[var(--text-primary)] transition-all"
                       >
                         <ExternalLink className="h-4 w-4" /> Comparar Todos os Planos
                       </Link>
@@ -992,36 +988,36 @@ export default function ConfiguracoesPage() {
 
                   {/* ── Quotas e Uso do Tenant ───────────────────────────── */}
                   <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Dentistas</p>
-                      <p className="text-xl font-extrabold text-white mt-1">
-                        {subscriptionData.dentistasCadastrados} <span className="text-xs text-slate-400 font-normal">/ {subscriptionData.dentistasLimite}</span>
+                    <div className="p-4 rounded-2xl bg-[var(--bg-base)] border border-[var(--border)]">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Dentistas</p>
+                      <p className="text-xl font-extrabold text-[var(--text-primary)] mt-1">
+                        {subscriptionData.dentistasCadastrados} <span className="text-xs text-[var(--text-secondary)] font-normal">/ {subscriptionData.dentistasLimite}</span>
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-1">Profissionais ativos</p>
+                      <p className="text-[10px] text-[var(--text-secondary)] mt-1">Profissionais ativos</p>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Pacientes</p>
-                      <p className="text-xl font-extrabold text-white mt-1">
-                        {subscriptionData.pacientesCadastrados} <span className="text-xs text-emerald-400 font-bold">Ilimitados</span>
+                    <div className="p-4 rounded-2xl bg-[var(--bg-base)] border border-[var(--border)]">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Pacientes</p>
+                      <p className="text-xl font-extrabold text-[var(--text-primary)] mt-1">
+                        {subscriptionData.pacientesCadastrados} <span className="text-xs text-[var(--success)] font-bold">Ilimitados</span>
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-1">Cadastros totais</p>
+                      <p className="text-[10px] text-[var(--text-secondary)] mt-1">Cadastros totais</p>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Armazenamento</p>
-                      <p className="text-xl font-extrabold text-white mt-1">
-                        {subscriptionData.armazenamentoUsadoMb} <span className="text-xs text-slate-400 font-normal">MB</span>
+                    <div className="p-4 rounded-2xl bg-[var(--bg-base)] border border-[var(--border)]">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Armazenamento</p>
+                      <p className="text-xl font-extrabold text-[var(--text-primary)] mt-1">
+                        {subscriptionData.armazenamentoUsadoMb} <span className="text-xs text-[var(--text-secondary)] font-normal">MB</span>
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-1">Imagens e prontuários</p>
+                      <p className="text-[10px] text-[var(--text-secondary)] mt-1">Imagens e prontuários</p>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Isolamento & RLS</p>
-                      <p className="text-xl font-extrabold text-emerald-300 mt-1 flex items-center gap-1.5">
-                        <CheckCircle2 className="h-5 w-5 text-emerald-400" /> Ativo
+                    <div className="p-4 rounded-2xl bg-[var(--bg-base)] border border-[var(--border)]">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Isolamento & RLS</p>
+                      <p className="text-xl font-extrabold text-[var(--success)] mt-1 flex items-center gap-1.5">
+                        <CheckCircle2 className="h-5 w-5 text-[var(--success)]" /> Ativo
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-1">LGPD & CFO Compliant</p>
+                      <p className="text-[10px] text-[var(--text-secondary)] mt-1">LGPD & CFO Compliant</p>
                     </div>
                   </div>
                 </div>
@@ -1030,8 +1026,8 @@ export default function ConfiguracoesPage() {
                 <div className="space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Planos da Plataforma</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                      <h3 className="text-lg font-bold text-[var(--text-primary)]">Planos da Plataforma</h3>
+                      <p className="text-xs text-[var(--text-muted)]">
                         {isVitalicio
                           ? 'Tabela comercial global praticada para novas clínicas e assinantes'
                           : 'Escolha o plano ideal para a capacidade operacional da sua clínica'}
@@ -1074,47 +1070,47 @@ export default function ConfiguracoesPage() {
                     {/* PLANO ESSENCIAL */}
                     <div className={`p-8 rounded-[32px] border transition-all relative flex flex-col justify-between ${
                       !isVitalicio && subscriptionData.planoId === 'essencial'
-                        ? 'border-blue-500 bg-blue-50/40 dark:bg-blue-950/20 shadow-md ring-2 ring-blue-500/20'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
+                        ? 'border-[var(--primary)]/40 bg-[var(--primary-subtle)] shadow-md ring-2 ring-[var(--primary)]/20'
+                        : 'border-[var(--border)]  bg-[var(--bg-surface)] hover:border-[var(--border-medium)] dark:hover:border-[var(--border)]'
                     }`}>
                       <div>
                         <div className="flex items-center justify-between mb-4">
-                          <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                          <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--bg-base)] dark:bg-[var(--border)] text-[var(--text-secondary)]">
                             PLANO ESSENCIAL
                           </span>
                           {!isVitalicio && subscriptionData.planoId === 'essencial' && (
-                            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white flex items-center gap-1">
+                            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--primary)] text-[var(--on-primary)] flex items-center gap-1">
                               <Check className="h-3.5 w-3.5" /> SEU PLANO ATUAL
                             </span>
                           )}
                         </div>
 
                         <div className="flex items-baseline gap-1 mb-2">
-                          <span className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">R$ 149</span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">/ mês</span>
+                          <span className="text-3xl font-extrabold text-[var(--text-primary)]">R$ 149</span>
+                          <span className="text-xs text-[var(--text-muted)] font-semibold">/ mês</span>
                         </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
+                        <p className="text-xs text-[var(--text-muted)] mb-6">
                           Ideal para consultórios individuais e clínicas em fase de estruturação.
                         </p>
 
                         <div className="space-y-3 mb-8">
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
                             <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                             <span>Até <strong>3 profissionais / dentistas</strong></span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
                             <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                             <span>Pacientes e prontuários ilimitados</span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
                             <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                             <span>Agenda inteligente e disparo de confirmações</span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
                             <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                             <span>Controle de fluxo de caixa e relatórios financeiros</span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
                             <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                             <span>5 GB de armazenamento em nuvem</span>
                           </div>
@@ -1122,7 +1118,7 @@ export default function ConfiguracoesPage() {
                       </div>
 
                       {isVitalicio ? (
-                        <div className="w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-700/50 text-slate-400 dark:text-slate-500 cursor-not-allowed">
+                        <div className="w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 bg-[var(--bg-base)] dark:bg-[var(--border)]/50 text-[var(--text-muted)] cursor-not-allowed">
                           Plano Essencial (Tabela Comercial)
                         </div>
                       ) : (
@@ -1131,8 +1127,8 @@ export default function ConfiguracoesPage() {
                           disabled={subscriptionData.planoId === 'essencial' || isChangingPlan !== null || !subscriptionData.podeGerenciar}
                           className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                             subscriptionData.planoId === 'essencial'
-                              ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-default'
-                              : 'bg-slate-800 hover:bg-slate-900 text-white shadow-sm'
+                              ? 'bg-[var(--border)] text-[var(--text-secondary)] cursor-default'
+                              : 'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)]'
                           }`}
                         >
                           {isChangingPlan === 'essencial' ? (
@@ -1149,62 +1145,62 @@ export default function ConfiguracoesPage() {
                     {/* PLANO PREMIUM & COMPLIANCE */}
                     <div className={`p-8 rounded-[32px] border transition-all relative flex flex-col justify-between ${
                       isVitalicio
-                        ? 'border-amber-400/60 bg-gradient-to-b from-amber-500/5 to-yellow-500/10 dark:from-amber-950/20 dark:to-slate-850 shadow-md ring-2 ring-amber-400/20'
+                        ? 'border-[var(--warning)]/60 bg-[var(--warning-bg)]'
                         : subscriptionData.planoId === 'premium'
-                        ? 'border-blue-500 bg-blue-50/40 dark:bg-blue-950/20 shadow-md ring-2 ring-blue-500/20'
-                        : 'border-blue-300 dark:border-blue-700 bg-gradient-to-b from-white to-blue-50/30 dark:from-slate-800 dark:to-slate-850 shadow-sm'
+                        ? 'border-[var(--primary)] bg-[var(--primary-subtle)]'
+                        : 'border-[var(--border)] bg-[var(--bg-surface)]'
                     }`}>
                       <div>
                         <div className="flex items-center justify-between mb-4">
-                          <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-blue-100 text-blue-700 flex items-center gap-1.5">
-                            <Sparkles className="h-3.5 w-3.5 text-blue-600" /> RECOMENDADO CFO & LGPD
+                          <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--primary-subtle)] text-[var(--primary)] flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-[var(--primary)]" /> RECOMENDADO CFO & LGPD
                           </span>
                           {isVitalicio ? (
-                            <span className="px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 flex items-center gap-1 shadow-xs">
+                            <span className="px-3 py-1 rounded-full text-xs font-black bg-[var(--super-bg)] text-[var(--super-text)] flex items-center gap-1">
                               👑 ACESSO VITALÍCIO ATIVO
                             </span>
                           ) : subscriptionData.planoId === 'premium' && (
-                            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white flex items-center gap-1">
+                            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--primary)] text-[var(--on-primary)] flex items-center gap-1">
                               <Check className="h-3.5 w-3.5" /> SEU PLANO ATUAL
                             </span>
                           )}
                         </div>
 
                         <div className="flex items-baseline gap-1 mb-2">
-                          <span className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">R$ 299</span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">/ mês</span>
+                          <span className="text-3xl font-extrabold text-[var(--text-primary)]">R$ 299</span>
+                          <span className="text-xs text-[var(--text-muted)] font-semibold">/ mês</span>
                         </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
+                        <p className="text-xs text-[var(--text-muted)] mb-6">
                           Para clínicas consolidadas que exigem blindagem jurídica total (CFO & LGPD).
                         </p>
 
                         <div className="space-y-3 mb-8">
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                            <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
+                            <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
                             <span><strong>Dentistas e Usuários Ilimitados</strong></span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                            <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
+                            <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
                             <span>Prontuário Imutável CFO 198/2019 (Bloqueio UPDATE/DELETE)</span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                            <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
+                            <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
                             <span>Trilha de Auditoria LGPD e hash SHA-256</span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                            <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
+                            <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
                             <span>50 GB com retenção de dados por 20 anos</span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                            <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
+                            <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
                             <span>Suporte VIP prioritário via WhatsApp</span>
                           </div>
                         </div>
                       </div>
 
                       {isVitalicio ? (
-                        <div className="w-full py-3 px-4 rounded-xl font-black text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500/20 via-yellow-500/25 to-amber-500/20 border border-amber-400/40 text-amber-800 dark:text-amber-200 shadow-sm">
-                          <Sparkles className="h-4 w-4 text-amber-500" /> Acesso Vitalício Master Ativo (Isento)
+                        <div className="w-full py-3 px-4 rounded-xl font-black text-xs flex items-center justify-center gap-2 bg-[var(--warning-bg)] border border-[var(--warning)]/40 text-[var(--warning)]">
+                          <Sparkles className="h-4 w-4 text-[var(--warning)]" /> Acesso Vitalício Master Ativo (Isento)
                         </div>
                       ) : (
                         <button
@@ -1212,8 +1208,8 @@ export default function ConfiguracoesPage() {
                           disabled={subscriptionData.planoId === 'premium' || isChangingPlan !== null || !subscriptionData.podeGerenciar}
                           className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                             subscriptionData.planoId === 'premium'
-                              ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-default'
-                              : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/25'
+                              ? 'bg-[var(--border)] text-[var(--text-secondary)] cursor-default'
+                              : 'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)]'
                           }`}
                         >
                           {isChangingPlan === 'premium' ? (
@@ -1230,14 +1226,14 @@ export default function ConfiguracoesPage() {
                 </div>
 
                 {/* ── Histórico de Faturas & Recibos ──────────────────────── */}
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[32px] shadow-sm overflow-hidden">
-                  <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="bg-[var(--bg-surface)] border border-[var(--border)]  rounded-[32px] shadow-sm overflow-hidden">
+                  <div className="p-6 border-b border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                      <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-[var(--text-muted)]" />
                         Histórico de Faturamento e Recibos
                       </h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5">
                         Extrato das faturas geradas para a clínica
                       </p>
                     </div>
@@ -1245,8 +1241,8 @@ export default function ConfiguracoesPage() {
 
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm border-collapse min-w-[600px]">
-                      <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
-                        <tr className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
+                      <thead className="bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border-b border-[var(--border)] ">
+                        <tr className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-bold">
                           <th className="px-6 py-3.5">Fatura</th>
                           <th className="px-6 py-3.5">Emissão</th>
                           <th className="px-6 py-3.5">Plano</th>
@@ -1255,19 +1251,19 @@ export default function ConfiguracoesPage() {
                           <th className="px-6 py-3.5 text-right">Recibo</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                      <tbody className="divide-y divide-[var(--border)] divide-[var(--border)]">
                         {subscriptionData.faturas.map(fat => (
-                          <tr key={fat.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                            <td className="px-6 py-4 font-mono text-xs font-bold text-slate-700 dark:text-slate-200">
+                          <tr key={fat.id} className="hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] transition-colors">
+                            <td className="px-6 py-4 font-mono text-xs font-bold text-[var(--text-secondary)]">
                               {fat.numero}
                             </td>
-                            <td className="px-6 py-4 text-xs text-slate-600 dark:text-slate-300">
+                            <td className="px-6 py-4 text-xs text-[var(--text-secondary)]">
                               {fat.dataEmissao}
                             </td>
-                            <td className="px-6 py-4 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                            <td className="px-6 py-4 text-xs font-semibold text-[var(--text-secondary)]">
                               {fat.plano}
                             </td>
-                            <td className="px-6 py-4 text-xs font-extrabold text-slate-800 dark:text-slate-100">
+                            <td className="px-6 py-4 text-xs font-extrabold text-[var(--text-primary)]">
                               {isVitalicio ? (
                                 <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/40">
                                   <CheckCircle2 className="h-3 w-3" /> Isento (Vitalício)
@@ -1290,7 +1286,7 @@ export default function ConfiguracoesPage() {
                             <td className="px-6 py-4 text-right">
                               <button
                                 onClick={() => toast.success(`Recibo da fatura ${fat.numero} baixado com sucesso!`)}
-                                className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+                                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--primary)] hover:text-[var(--primary)] hover:underline"
                               >
                                 <Download className="h-3.5 w-3.5" /> Baixar PDF
                               </button>
@@ -1303,37 +1299,37 @@ export default function ConfiguracoesPage() {
                 </div>
               </>
             ) : isSuperAdmin && !ctxClinica?.id ? (
-              <div className="p-12 rounded-[32px] border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center shadow-xs">
-                <div className="mx-auto w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
+              <div className="p-12 rounded-[32px] border border-dashed border-[var(--border)]  bg-[var(--bg-surface)] text-center shadow-xs">
+                <div className="mx-auto w-12 h-12 rounded-2xl bg-[var(--primary-subtle)] text-[var(--primary)] flex items-center justify-center mb-4">
                   <Building2 className="h-6 w-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                <h3 className="text-base font-bold text-[var(--text-primary)] mb-1">
                   Nenhuma clínica selecionada no contexto
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6 leading-relaxed">
-                  Como Super Admin Global, seu usuário opera sem vínculo fixo de clínica (<code className="text-xs bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">clinica_id = NULL</code>). Para visualizar ou auditar os dados de assinatura e planos de uma unidade, selecione uma clínica no Painel Global.
+                <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto mb-6 leading-relaxed">
+                  Como Super Admin Global, seu usuário opera sem vínculo fixo de clínica (<code className="text-xs bg-[var(--bg-base)] dark:bg-[var(--border)] px-1.5 py-0.5 rounded font-mono">clinica_id = NULL</code>). Para visualizar ou auditar os dados de assinatura e planos de uma unidade, selecione uma clínica no Painel Global.
                 </p>
                 <Link
                   href="/admin/clinicas"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-xs font-bold transition-all shadow-sm"
                 >
                   <ExternalLink className="h-3.5 w-3.5" /> Ir para Gestão de Clínicas
                 </Link>
               </div>
             ) : !profile?.clinica_id ? (
-              <div className="p-12 rounded-[32px] border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center shadow-xs">
+              <div className="p-12 rounded-[32px] border border-dashed border-[var(--border)]  bg-[var(--bg-surface)] text-center shadow-xs">
                 <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4">
                   <AlertTriangle className="h-6 w-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
+                <h3 className="text-base font-bold text-[var(--text-primary)] mb-1">
                   Clínica não vinculada
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto leading-relaxed">
                   Seu usuário não possui uma clínica vinculada no momento. Entre em contato com a administração da clínica ou com o suporte para regularizar seu acesso.
                 </p>
               </div>
             ) : (
-              <div className="p-12 rounded-[32px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-center text-slate-500 text-sm">
+              <div className="p-12 rounded-[32px] border border-[var(--border)]  bg-[var(--bg-surface)] text-center text-[var(--text-muted)] text-sm">
                 Não foi possível carregar os dados da assinatura da clínica.
               </div>
             )}
@@ -1342,61 +1338,61 @@ export default function ConfiguracoesPage() {
 
         {/* ABA 3: INTEGRAÇÕES */}
         {activeTab === 'integracoes' && (
-          <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-100 pb-3 mb-4">Serviços Conectados</h3>
+          <div className="bg-[var(--bg-surface)] p-8 rounded-[32px] border border-[var(--border)]  shadow-sm space-y-6">
+            <h3 className="text-lg font-bold text-[var(--text-primary)] border-b border-[var(--border)] pb-3 mb-4">Serviços Conectados</h3>
 
             <div className="space-y-4">
-              <div className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+              <div className="p-5 border border-[var(--border)]  rounded-2xl flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-green-50 text-green-600 rounded-xl">
                     <Smartphone className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-800 dark:text-slate-100">WhatsApp / Notificações Automáticas</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Envio automático de lembretes e confirmações de consulta</p>
+                    <h4 className="font-bold text-[var(--text-primary)]">WhatsApp / Notificações Automáticas</h4>
+                    <p className="text-xs text-[var(--text-muted)] font-semibold mt-0.5">Envio automático de lembretes e confirmações de consulta</p>
                   </div>
                 </div>
                 <input
                   type="checkbox"
                   checked={integracoes.whatsapp}
                   onChange={e => setIntegracoes(p => ({ ...p, whatsapp: e.target.checked }))}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-700 cursor-pointer"
+                  className="h-5 w-5 rounded text-[var(--primary)] focus:ring-[var(--primary)]/30 border-[var(--border-medium)]  cursor-pointer"
                 />
               </div>
 
-              <div className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+              <div className="p-5 border border-[var(--border)]  rounded-2xl flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                  <div className="p-3 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-xl">
                     <Mail className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-800 dark:text-slate-100">Google Calendar</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Sincronização bidirecional das agendas da clínica</p>
+                    <h4 className="font-bold text-[var(--text-primary)]">Google Calendar</h4>
+                    <p className="text-xs text-[var(--text-muted)] font-semibold mt-0.5">Sincronização bidirecional das agendas da clínica</p>
                   </div>
                 </div>
                 <input
                   type="checkbox"
                   checked={integracoes.googleCalendar}
                   onChange={e => setIntegracoes(p => ({ ...p, googleCalendar: e.target.checked }))}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-700 cursor-pointer"
+                  className="h-5 w-5 rounded text-[var(--primary)] focus:ring-[var(--primary)]/30 border-[var(--border-medium)]  cursor-pointer"
                 />
               </div>
 
-              <div className="p-5 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+              <div className="p-5 border border-[var(--border)]  rounded-2xl flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                  <div className="p-3 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-xl">
                     <Globe className="h-6 w-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-800 dark:text-slate-100">Recebimento via PIX &amp; Cartões (Gateway)</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Geração de QR Code PIX dinâmico e conciliação bancária</p>
+                    <h4 className="font-bold text-[var(--text-primary)]">Recebimento via PIX &amp; Cartões (Gateway)</h4>
+                    <p className="text-xs text-[var(--text-muted)] font-semibold mt-0.5">Geração de QR Code PIX dinâmico e conciliação bancária</p>
                   </div>
                 </div>
                 <input
                   type="checkbox"
                   checked={integracoes.pagamentosPix}
                   onChange={e => setIntegracoes(p => ({ ...p, pagamentosPix: e.target.checked }))}
-                  className="h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-700 cursor-pointer"
+                  className="h-5 w-5 rounded text-[var(--primary)] focus:ring-[var(--primary)]/30 border-[var(--border-medium)]  cursor-pointer"
                 />
               </div>
             </div>
@@ -1405,11 +1401,11 @@ export default function ConfiguracoesPage() {
 
         {/* ABA 4: COMISSÕES */}
         {activeTab === 'comissoes' && (
-          <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+          <div className="bg-[var(--bg-surface)] p-8 rounded-[32px] border border-[var(--border)]  shadow-sm space-y-6">
+            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4 mb-6">
               <div>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Tabela de Comissões</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Defina a porcentagem de comissão por procedimento e dentista</p>
+                <h3 className="text-lg font-bold text-[var(--text-primary)]">Tabela de Comissões</h3>
+                <p className="text-sm text-[var(--text-muted)] mt-0.5">Defina a porcentagem de comissão por procedimento e dentista</p>
               </div>
               <button
                 onClick={() => setIsCommissionModalOpen(true)}
@@ -1422,31 +1418,31 @@ export default function ConfiguracoesPage() {
 
             {isLoadingCommissions ? (
               <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-4" />
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando comissões...</p>
+                <Loader2 className="h-8 w-8 text-[var(--primary)] animate-spin mb-4" />
+                <p className="text-sm text-[var(--text-muted)] font-semibold">Carregando comissões...</p>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+              <div className="overflow-x-auto rounded-2xl border border-[var(--border)] ">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
+                    <tr className="bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border-b border-[var(--border)]  text-xs uppercase tracking-wider text-[var(--text-muted)] font-bold">
                       <th className="p-4">Dentista</th>
                       <th className="p-4">Procedimento</th>
                       <th className="p-4">Porcentagem</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-[var(--border)]">
                     {commissions.length > 0 ? (
                       commissions.map(c => (
-                        <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950/50 transition-colors">
-                          <td className="p-4 font-semibold text-slate-800 dark:text-slate-100">{c.dentista_nome}</td>
-                          <td className="p-4 text-slate-600 dark:text-slate-300 text-sm">{c.procedimento_nome}</td>
-                          <td className="p-4 text-slate-600 dark:text-slate-300 text-sm">{c.porcentagem}%</td>
+                        <tr key={c.id} className="hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)] transition-colors">
+                          <td className="p-4 font-semibold text-[var(--text-primary)]">{c.dentista_nome}</td>
+                          <td className="p-4 text-[var(--text-secondary)] text-sm">{c.procedimento_nome}</td>
+                          <td className="p-4 text-[var(--text-secondary)] text-sm">{c.porcentagem}%</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={3} className="p-8 text-center text-slate-500 dark:text-slate-400 font-semibold">
+                        <td colSpan={3} className="p-8 text-center text-[var(--text-muted)] font-semibold">
                           Nenhuma comissão configurada.
                         </td>
                       </tr>
@@ -1465,18 +1461,18 @@ export default function ConfiguracoesPage() {
             {/* Header da aba */}
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-xl font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                  <ShieldCheck className="h-5 w-5 text-blue-600" />
+                <h2 className="text-xl font-extrabold text-[var(--text-primary)] flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-[var(--primary)]" />
                   Painel de Conformidade LGPD
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                <p className="text-sm text-[var(--text-muted)] mt-1">
                   Transparência e rastreabilidade de todas as ações sensíveis realizadas no sistema.
                 </p>
               </div>
               <button
                 onClick={() => loadSecurityData(filtroAction)}
                 disabled={isLoadingSecurity}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:text-slate-100 hover:shadow-md transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-surface)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:shadow-md transition-all disabled:opacity-50"
               >
                 <RefreshCw className={`h-4 w-4 ${isLoadingSecurity ? 'animate-spin' : ''}`} />
                 Atualizar
@@ -1487,26 +1483,26 @@ export default function ConfiguracoesPage() {
             {isLoadingSecurity && !complianceStats ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 {[1,2,3,4].map(i => (
-                  <div key={i} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 animate-pulse h-28" />
+                  <div key={i} className="bg-[var(--bg-surface)] border border-[var(--border)]  rounded-2xl p-5 animate-pulse h-28" />
                 ))}
               </div>
             ) : complianceStats ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 {/* Card 1: Pacientes com aceite */}
-                <div className="bg-white dark:bg-slate-800 border border-emerald-200 rounded-2xl p-5 shadow-sm">
+                <div className="bg-[var(--bg-surface)] border border-emerald-200 rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-emerald-100 rounded-xl">
                       <CheckCircle2 className="h-5 w-5 text-emerald-600" />
                     </div>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Aceite LGPD</p>
+                    <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Aceite LGPD</p>
                   </div>
-                  <p className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">{complianceStats.pacientesComAceite}</p>
+                  <p className="text-3xl font-extrabold text-[var(--text-primary)]">{complianceStats.pacientesComAceite}</p>
                   <div className="mt-2">
-                    <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    <div className="flex justify-between text-xs text-[var(--text-muted)] mb-1">
                       <span>{lgpdPercent}% conformes</span>
                       <span>{complianceStats.totalPacientes} total</span>
                     </div>
-                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-[var(--bg-base)] rounded-full overflow-hidden">
                       <div
                         className="h-full bg-emerald-500 rounded-full transition-all duration-700"
                         style={{ width: `${lgpdPercent}%` }}
@@ -1516,15 +1512,15 @@ export default function ConfiguracoesPage() {
                 </div>
 
                 {/* Card 2: Pendentes */}
-                <div className={`bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border ${complianceStats.pacientesSemAceite > 0 ? 'border-red-200' : 'border-slate-200 dark:border-slate-700'}`}>
+                <div className={`bg-[var(--bg-surface)] rounded-2xl p-5 shadow-sm border ${complianceStats.pacientesSemAceite > 0 ? 'border-red-200' : 'border-[var(--border)] '}`}>
                   <div className="flex items-center gap-3 mb-3">
-                    <div className={`p-2 rounded-xl ${complianceStats.pacientesSemAceite > 0 ? 'bg-red-100' : 'bg-slate-100'}`}>
-                      <AlertTriangle className={`h-5 w-5 ${complianceStats.pacientesSemAceite > 0 ? 'text-red-500' : 'text-slate-400'}`} />
+                    <div className={`p-2 rounded-xl ${complianceStats.pacientesSemAceite > 0 ? 'bg-red-100' : 'bg-[var(--bg-base)]'}`}>
+                      <AlertTriangle className={`h-5 w-5 ${complianceStats.pacientesSemAceite > 0 ? 'text-red-500' : 'text-[var(--text-muted)]'}`} />
                     </div>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pendentes LGPD</p>
+                    <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Pendentes LGPD</p>
                   </div>
-                  <p className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">{complianceStats.pacientesSemAceite}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                  <p className="text-3xl font-extrabold text-[var(--text-primary)]">{complianceStats.pacientesSemAceite}</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-2">
                     {complianceStats.pacientesSemAceite > 0
                       ? 'Pacientes sem consentimento registrado'
                       : 'Todos os pacientes estão em conformidade ✓'}
@@ -1532,48 +1528,48 @@ export default function ConfiguracoesPage() {
                 </div>
 
                 {/* Card 3: Logs hoje */}
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
+                <div className="bg-[var(--bg-surface)] border border-[var(--border)]  rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-blue-100 rounded-xl">
-                      <FileText className="h-5 w-5 text-blue-600" />
+                    <div className="p-2 bg-[var(--primary-subtle)] rounded-xl">
+                      <FileText className="h-5 w-5 text-[var(--primary)]" />
                     </div>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Logs (24h)</p>
+                    <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Logs (24h)</p>
                   </div>
-                  <p className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">{complianceStats.totalLogsHoje}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Ações registradas nas últimas 24 horas</p>
+                  <p className="text-3xl font-extrabold text-[var(--text-primary)]">{complianceStats.totalLogsHoje}</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-2">Ações registradas nas últimas 24 horas</p>
                 </div>
 
                 {/* Card 4: Último evento */}
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
+                <div className="bg-[var(--bg-surface)] border border-[var(--border)]  rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-indigo-100 rounded-xl">
-                      <Clock className="h-5 w-5 text-indigo-600" />
+                    <div className="p-2 bg-[var(--primary)] rounded-xl">
+                      <Clock className="h-5 w-5 text-[var(--primary)]" />
                     </div>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Último Evento</p>
+                    <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Último Evento</p>
                   </div>
                   {complianceStats.ultimoEvento ? (
                     <>
-                      <p className="text-base font-extrabold text-slate-800 dark:text-slate-100 leading-tight">
+                      <p className="text-base font-extrabold text-[var(--text-primary)] leading-tight">
                         {formatDateTime(complianceStats.ultimoEvento)}
                       </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Data/hora do registro mais recente</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-2">Data/hora do registro mais recente</p>
                     </>
                   ) : (
-                    <p className="text-sm text-slate-400 mt-2">Nenhum evento nas últimas 24h</p>
+                    <p className="text-sm text-[var(--text-muted)] mt-2">Nenhum evento nas últimas 24h</p>
                   )}
                 </div>
               </div>
             ) : null}
 
             {/* Tabela de Logs de Auditoria */}
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[32px] shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="bg-[var(--bg-surface)] border border-[var(--border)]  rounded-[32px] shadow-sm overflow-hidden">
+              <div className="p-6 border-b border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                  <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-[var(--text-muted)]" />
                     Logs de Auditoria
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">
                     Últimas {auditLogs.length} ações sensíveis registradas no sistema
                   </p>
                 </div>
@@ -1582,7 +1578,7 @@ export default function ConfiguracoesPage() {
                   <select
                     value={filtroAction}
                     onChange={e => setFiltroAction(e.target.value)}
-                    className="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="px-3 py-2 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-xs font-semibold text-[var(--text-secondary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                   >
                     <option value="">Todas as ações</option>
                     <option value="criacao">Criação</option>
@@ -1595,14 +1591,14 @@ export default function ConfiguracoesPage() {
                   {/* Botão exportar (UI) */}
                   <button
                     onClick={() => toast.info('Exportação CSV em breve!')}
-                    className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:text-slate-100 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] transition-all"
                   >
                     <Download className="h-3.5 w-3.5" /> CSV
                   </button>
                   {/* Link para logs completos */}
                   <Link
                     href="/logs"
-                    className="flex items-center gap-1.5 px-3 py-2 bg-blue-50 border border-blue-200 rounded-xl text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-[var(--primary-subtle)] border border-[var(--primary)]/40 rounded-xl text-xs font-semibold text-[var(--primary)] hover:bg-[var(--primary-subtle)] transition-all"
                   >
                     <ExternalLink className="h-3.5 w-3.5" /> Ver todos
                   </Link>
@@ -1612,24 +1608,24 @@ export default function ConfiguracoesPage() {
               {/* Tabela */}
               {isLoadingSecurity ? (
                 <div className="flex flex-col items-center justify-center py-16">
-                  <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-3" />
-                  <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando logs...</p>
+                  <Loader2 className="h-8 w-8 text-[var(--primary)] animate-spin mb-3" />
+                  <p className="text-sm text-[var(--text-muted)] font-semibold">Carregando logs...</p>
                 </div>
               ) : auditLogs.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="p-4 bg-slate-100 rounded-2xl mb-4">
-                    <FileText className="h-8 w-8 text-slate-400" />
+                  <div className="p-4 bg-[var(--bg-base)] rounded-2xl mb-4">
+                    <FileText className="h-8 w-8 text-[var(--text-muted)]" />
                   </div>
-                  <p className="font-bold text-slate-600 dark:text-slate-300">Nenhum log encontrado</p>
-                  <p className="text-sm text-slate-400 mt-1">
+                  <p className="font-bold text-[var(--text-secondary)]">Nenhum log encontrado</p>
+                  <p className="text-sm text-[var(--text-muted)] mt-1">
                     {filtroAction ? `Sem registros do tipo "${filtroAction}"` : 'As ações sensíveis aparecerão aqui'}
                   </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm border-collapse min-w-[700px]">
-                    <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
-                      <tr className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
+                    <thead className="bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border-b border-[var(--border)] ">
+                      <tr className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-bold">
                         <th className="px-5 py-3.5">Data/Hora</th>
                         <th className="px-5 py-3.5">Ação</th>
                         <th className="px-5 py-3.5">Módulo</th>
@@ -1637,30 +1633,30 @@ export default function ConfiguracoesPage() {
                         <th className="px-5 py-3.5">Detalhes</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-[var(--border)]">
                       {auditLogs.map(log => (
-                        <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950/60 transition-colors">
-                          <td className="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500 dark:text-slate-400 font-mono">
+                        <tr key={log.id} className="hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)] transition-colors">
+                          <td className="px-5 py-3.5 whitespace-nowrap text-xs text-[var(--text-muted)] font-mono">
                             {formatDateTime(log.created_at)}
                           </td>
                           <td className="px-5 py-3.5 whitespace-nowrap">
                             <ActionBadge action={log.action} />
                           </td>
                           <td className="px-5 py-3.5 whitespace-nowrap">
-                            <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{entityLabel(log.entity)}</span>
+                            <span className="text-xs font-semibold text-[var(--text-secondary)]">{entityLabel(log.entity)}</span>
                           </td>
                           <td className="px-5 py-3.5 whitespace-nowrap">
                             {log.user_nome ? (
-                              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{log.user_nome}</span>
+                              <span className="text-xs font-semibold text-[var(--text-secondary)]">{log.user_nome}</span>
                             ) : log.user_id ? (
-                              <span className="text-xs text-slate-400 font-mono">{log.user_id.substring(0, 8)}…</span>
+                              <span className="text-xs text-[var(--text-muted)] font-mono">{log.user_id.substring(0, 8)}…</span>
                             ) : (
-                              <span className="text-xs text-slate-400">—</span>
+                              <span className="text-xs text-[var(--text-muted)]">—</span>
                             )}
                           </td>
                           <td className="px-5 py-3.5 max-w-[240px]">
                             {log.details ? (
-                              <span className="text-xs text-slate-500 dark:text-slate-400 truncate block" title={JSON.stringify(log.details)}>
+                              <span className="text-xs text-[var(--text-muted)] truncate block" title={JSON.stringify(log.details)}>
                                 {log.details.nome
                                   ? `Paciente: ${log.details.nome}`
                                   : log.details.deleted_user_nome
@@ -1668,7 +1664,7 @@ export default function ConfiguracoesPage() {
                                   : JSON.stringify(log.details).substring(0, 60)}
                               </span>
                             ) : (
-                              <span className="text-xs text-slate-400">—</span>
+                              <span className="text-xs text-[var(--text-muted)]">—</span>
                             )}
                           </td>
                         </tr>
@@ -1680,7 +1676,7 @@ export default function ConfiguracoesPage() {
             </div>
 
             {/* Nota de rodapé legal */}
-            <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-2xl text-xs text-blue-700">
+            <div className="flex items-start gap-3 p-4 bg-[var(--primary-subtle)] border border-[var(--primary)]/40 rounded-2xl text-xs text-[var(--primary)]">
               <ShieldCheck className="h-4 w-4 shrink-0 mt-0.5" />
               <p>
                 <strong>Conformidade LGPD:</strong> Este painel registra automaticamente todas as ações sensíveis realizadas no sistema, garantindo rastreabilidade e transparência conforme exigido pela{' '}

@@ -13,10 +13,10 @@ interface Props {
 }
 
 const statusColors: any = {
-  agendado: 'bg-blue-100 text-blue-700',
+  agendado: 'bg-[var(--primary-subtle)] text-[var(--primary)]',
   confirmado: 'bg-green-100 text-green-700',
   espera: 'bg-yellow-100 text-yellow-700',
-  atendido: 'bg-purple-100 text-purple-700',
+  atendido: 'bg-[var(--primary-subtle)] text-[var(--primary)]',
   cancelado: 'bg-red-100 text-red-700'
 }
 
@@ -52,77 +52,77 @@ export default function DetalhesAgendamentoModal({ isOpen, onClose, onSuccess, a
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="relative w-full max-w-lg bg-white dark:bg-slate-800 border-none rounded-[24px] p-6 sm:p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-[var(--bg-base)]" onClick={onClose}>
+      <div className="relative w-full max-w-lg bg-[var(--bg-surface)] border-none rounded-[24px] p-6 sm:p-8 shadow-md animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-heading font-extrabold text-slate-800 dark:text-slate-100">Detalhes do Agendamento</h2>
+            <h2 className="text-xl font-heading font-extrabold text-[var(--text-primary)]">Detalhes do Agendamento</h2>
             <div className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[agendamento.status || 'agendado']}`}>
               {agendamento.status || 'Agendado'}
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+          <button onClick={onClose} className="p-2 rounded-full text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="space-y-4 mb-8">
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><User size={18} /></div>
+            <div className="p-2 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-lg"><User size={18} /></div>
             <div>
-              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{pacienteNome}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Paciente</p>
+              <p className="text-sm font-bold text-[var(--text-primary)]">{pacienteNome}</p>
+              <p className="text-xs text-[var(--text-muted)]">Paciente</p>
             </div>
           </div>
           
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Stethoscope size={18} /></div>
+            <div className="p-2 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-lg"><Stethoscope size={18} /></div>
             <div>
-              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{agendamento.dentistas?.nome || 'Não atribuído'}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Dentista</p>
+              <p className="text-sm font-bold text-[var(--text-primary)]">{agendamento.dentistas?.nome || 'Não atribuído'}</p>
+              <p className="text-xs text-[var(--text-muted)]">Dentista</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Activity size={18} /></div>
+            <div className="p-2 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-lg"><Activity size={18} /></div>
             <div>
-              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{agendamento.procedimento || 'Consulta Padrão'}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Procedimento</p>
+              <p className="text-sm font-bold text-[var(--text-primary)]">{agendamento.procedimento || 'Consulta Padrão'}</p>
+              <p className="text-xs text-[var(--text-muted)]">Procedimento</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><CalendarDays size={18} /></div>
+            <div className="p-2 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-lg"><CalendarDays size={18} /></div>
             <div>
-              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
+              <p className="text-sm font-bold text-[var(--text-primary)]">
                 {new Date(agendamento.data_consulta).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Data</p>
+              <p className="text-xs text-[var(--text-muted)]">Data</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Clock size={18} /></div>
+            <div className="p-2 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-lg"><Clock size={18} /></div>
             <div>
-              <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
+              <p className="text-sm font-bold text-[var(--text-primary)]">
                 {agendamento.hora_consulta} {agendamento.hora_fim ? `- ${agendamento.hora_fim}` : ''}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Horário</p>
+              <p className="text-xs text-[var(--text-muted)]">Horário</p>
             </div>
           </div>
 
           {agendamento.observacoes && (
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-300 rounded-lg"><FileText size={18} /></div>
+              <div className="p-2 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] text-[var(--text-secondary)] rounded-lg"><FileText size={18} /></div>
               <div>
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{agendamento.observacoes}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Observações</p>
+                <p className="text-sm font-medium text-[var(--text-secondary)]">{agendamento.observacoes}</p>
+                <p className="text-xs text-[var(--text-muted)]">Observações</p>
               </div>
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
+        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[var(--border)]">
           <button 
             disabled={loading}
             onClick={() => handleStatusChange('confirmado')}
@@ -142,7 +142,7 @@ export default function DetalhesAgendamentoModal({ isOpen, onClose, onSuccess, a
           <button 
             disabled={loading}
             onClick={() => handleStatusChange('atendido')}
-            className="w-full py-2.5 rounded-xl text-sm font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition-colors"
+            className="w-full py-2.5 rounded-xl text-sm font-bold text-[var(--primary)] bg-[var(--primary-subtle)] hover:bg-[var(--primary-subtle)] border border-[var(--primary)]/30 transition-colors"
           >
             Finalizar Atendimento
           </button>
@@ -158,7 +158,7 @@ export default function DetalhesAgendamentoModal({ isOpen, onClose, onSuccess, a
 
         <button 
           onClick={handleWhatsApp}
-          className="w-full mt-3 py-3 rounded-xl text-sm font-bold text-white bg-[#25D366] hover:bg-[#1ebd5a] transition-all flex items-center justify-center gap-2 shadow-md shadow-[#25D366]/20"
+          className="w-full mt-3 py-3 rounded-xl text-sm font-bold text-white bg-[var(--success)] hover:opacity-90 transition-all flex items-center justify-center gap-2"
         >
           <Phone className="h-4 w-4" /> Enviar Lembrete via WhatsApp
         </button>

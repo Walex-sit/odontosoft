@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function TermosPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen bg-[var(--bg-surface)]">
       <main className="max-w-3xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
         {/* Navegação de retorno */}
         <div className="mb-8">
@@ -23,8 +23,8 @@ export default function TermosPage() {
         </div>
 
         {/* Cabeçalho */}
-        <header className="border-b border-gray-200 dark:border-slate-800 pb-8 mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 text-xs font-semibold mb-4">
+        <header className="border-b border-gray-200  pb-8 mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--primary-subtle)] text-[var(--primary)] text-xs font-semibold mb-4">
             <FileText className="w-3.5 h-3.5" />
             Ambiente Demonstrativo
           </div>

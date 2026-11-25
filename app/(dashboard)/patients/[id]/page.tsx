@@ -18,8 +18,8 @@ export default function LegacyPatientDetailPage() {
   }, [router, id])
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-950 h-full">
-      <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+    <div className="flex-1 flex items-center justify-center bg-[var(--bg-base)] dark:bg-[var(--bg-base)] h-full">
+      <Loader2 className="h-8 w-8 text-[var(--primary)] animate-spin" />
     </div>
   )
 }

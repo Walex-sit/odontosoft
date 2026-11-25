@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X, Calculator } from 'lucide-react'
 
 interface CalculadoraModalProps {
@@ -9,10 +10,28 @@ interface CalculadoraModalProps {
 }
 
 export default function CalculadoraModal({ isOpen, onClose }: CalculadoraModalProps) {
+  const [mounted, setMounted] = useState(false)
   const [display, setDisplay] = useState('0')
   const [equation, setEquation] = useState('')
 
-  if (!isOpen) return null
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, onClose])
+
+  if (!isOpen || !mounted) return null
 
   const handleBtnClick = (val: string) => {
     if (val === 'C') {
@@ -43,36 +62,42 @@ export default function CalculadoraModal({ isOpen, onClose }: CalculadoraModalPr
     setDisplay(prev => (prev === '0' ? val : prev + val))
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-in fade-in">
-      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 w-full max-w-xs overflow-hidden">
+  return createPortal(
+    <div 
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 overflow-y-auto animate-in fade-in"
+    >
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-xs max-h-[90dvh] overflow-y-auto my-auto bg-[var(--bg-surface)] rounded-3xl shadow-md border border-[var(--border)]"
+      >
         
         {/* Header */}
-        <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
+        <div className="bg-[var(--bg-surface)] text-[var(--text-primary)] border-b border-[var(--border)] p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Calculator className="h-5 w-5 text-blue-400" />
+            <Calculator className="h-5 w-5 text-[var(--primary)]" />
             <h3 className="font-bold text-sm">Calculadora</h3>
           </div>
           <button 
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Display */}
-        <div className="p-4 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700 text-right">
-          <div className="text-xs text-slate-400 font-mono h-4 overflow-hidden truncate">
+        <div className="p-4 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border-b border-[var(--border)]  text-right">
+          <div className="text-xs text-[var(--text-muted)] font-mono h-4 overflow-hidden truncate">
             {equation || ' '}
           </div>
-          <div className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 font-mono tracking-tight truncate mt-1">
+          <div className="text-3xl font-extrabold text-[var(--text-primary)] font-mono tracking-tight truncate mt-1">
             {display}
           </div>
         </div>
 
         {/* Teclado */}
-        <div className="p-4 grid grid-cols-4 gap-2 bg-white dark:bg-slate-800">
+        <div className="p-4 grid grid-cols-4 gap-2 bg-[var(--bg-surface)]">
           {['C', '(', ')', '÷', '7', '8', '9', '×', '4', '5', '6', '-', '1', '2', '3', '+', '0', '.', '='].map((btn) => {
             const isOp = ['÷', '×', '-', '+', '='].includes(btn)
             const isClear = btn === 'C'
@@ -83,12 +108,12 @@ export default function CalculadoraModal({ isOpen, onClose }: CalculadoraModalPr
                 onClick={() => handleBtnClick(btn)}
                 className={`py-3 rounded-2xl font-bold text-base transition-all active:scale-95 shadow-sm ${
                   btn === '='
-                    ? 'col-span-2 bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200'
+                    ? 'col-span-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] '
                     : isOp
-                    ? 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                    ? 'bg-[var(--primary-subtle)] text-[var(--primary)] hover:bg-[var(--primary-subtle)]'
                     : isClear
                     ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                    : 'bg-slate-100 text-slate-700 dark:text-slate-200 hover:bg-slate-200'
+                    : 'bg-[var(--bg-base)] text-[var(--text-secondary)] hover:bg-[var(--border)]'
                 }`}
               >
                 {btn}
@@ -98,6 +123,7 @@ export default function CalculadoraModal({ isOpen, onClose }: CalculadoraModalPr
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

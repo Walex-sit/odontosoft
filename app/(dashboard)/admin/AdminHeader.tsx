@@ -67,22 +67,24 @@ export function AdminHeader({
   ]
 
   return (
-    <div className="border-b border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-4 sm:px-8 py-6">
+    <div className="border-b border-[var(--border)] bg-[var(--bg-surface)] px-4 sm:px-8 py-6">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/25 shrink-0">
+          {/* Ícone com cor amber — contexto super admin */}
+          <div className="h-12 w-12 rounded-2xl bg-[var(--super-bg)] text-[var(--super-text)] border border-[var(--super-border)] flex items-center justify-center shrink-0">
             <ShieldCheck className="h-6 w-6" />
           </div>
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+              <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">
                 {title}
               </h1>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+              {/* Badge amber — identidade super admin */}
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-600/30">
                 Super Admin
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
               {subtitle}
             </p>
           </div>
@@ -93,9 +95,9 @@ export function AdminHeader({
             <button
               onClick={onRefresh}
               disabled={refreshing}
-              className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 rounded-xl transition-all shadow-2xs active:scale-95 cursor-pointer disabled:opacity-60"
+              className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--bg-base)] border border-[var(--border)] rounded-xl transition-all shadow-2xs active:scale-95 cursor-pointer disabled:opacity-60"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin text-blue-600' : ''}`} />
+              <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin text-[var(--primary)]' : ''}`} />
               <span>Atualizar</span>
             </button>
           </div>
@@ -103,7 +105,7 @@ export function AdminHeader({
       </div>
 
       {/* ── Abas de Navegação — Rotas Reais ── */}
-      <div className="max-w-7xl mx-auto mt-6 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
+      <div className="max-w-7xl mx-auto mt-6 flex items-center gap-2 border-b border-[var(--border)] overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon
           const isCurrent =
@@ -118,8 +120,8 @@ export function AdminHeader({
               prefetch={true}
               className={`flex items-center gap-2 px-4 py-3 border-b-2 text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                 isCurrent
-                  ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/20 rounded-t-xl'
-                  : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300'
+                  ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--primary)]/5 rounded-t-xl'
+                  : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]'
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -128,8 +130,8 @@ export function AdminHeader({
                 <span
                   className={`px-1.5 py-0.5 text-[10px] font-extrabold rounded-full ${
                     isCurrent
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                      ? 'bg-[var(--primary)] text-[var(--on-primary)]'
+                      : 'bg-[var(--border)] text-[var(--text-secondary)]'
                   }`}
                 >
                   {tab.badge}
@@ -142,4 +144,3 @@ export function AdminHeader({
     </div>
   )
 }
-

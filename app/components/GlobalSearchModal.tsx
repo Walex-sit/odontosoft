@@ -106,28 +106,28 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
     >
       {/* Overlay Escuro */}
       <div 
-        className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" 
+        className="fixed inset-0 bg-[var(--bg-surface)] transition-opacity" 
         onClick={onClose}
       />
       
       {/* Container do Command */}
-      <div className="relative z-[101] w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200 mx-4 sm:mx-0">
+      <div className="relative z-[101] w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-md dark:bg-[var(--bg-surface)] border border-[var(--border)] animate-in fade-in zoom-in-95 duration-200 mx-4 sm:mx-0">
         
         {/* Input */}
-        <div className="flex items-center border-b border-slate-100 dark:border-slate-800 px-4">
-          <Search className="h-5 w-5 text-slate-400 shrink-0" />
+        <div className="flex items-center border-b border-[var(--border)] px-4">
+          <Search className="h-5 w-5 text-[var(--text-muted)] shrink-0" />
           <Command.Input 
             value={query}
             onValueChange={setQuery}
             placeholder="Buscar pacientes, profissionais ou acionar ações..." 
-            className="flex-1 h-14 bg-transparent border-0 px-4 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:text-sm"
+            className="flex-1 h-14 bg-transparent border-0 px-4 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-0 sm:text-sm"
           />
-          {isLoading && <Loader2 className="h-5 w-5 text-slate-400 animate-spin shrink-0" />}
+          {isLoading && <Loader2 className="h-5 w-5 text-[var(--text-muted)] animate-spin shrink-0" />}
         </div>
 
         {/* Lista de Resultados */}
         <Command.List className="max-h-[60vh] overflow-y-auto p-2 scroll-smooth">
-          <Command.Empty className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">
+          <Command.Empty className="p-6 text-center text-sm text-[var(--text-muted)]">
             {isLoading ? 'Buscando...' : 'Nenhum resultado encontrado.'}
           </Command.Empty>
 
@@ -135,21 +135,21 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
           {results.filter(r => r.type === 'paciente').length > 0 && (
             <Command.Group 
               heading="Pacientes" 
-              className="px-2 py-1 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-slate-500"
+              className="px-2 py-1 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[var(--text-muted)]"
             >
               {results.filter(r => r.type === 'paciente').map(paciente => (
                 <Command.Item 
                   key={`pac-${paciente.id}`}
                   onSelect={() => handleSelect(paciente)}
                   value={`paciente ${paciente.nome}`}
-                  className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl cursor-pointer text-sm text-slate-700 dark:text-slate-300 aria-selected:bg-slate-100 dark:aria-selected:bg-slate-800 aria-selected:text-blue-600 dark:aria-selected:text-blue-400 transition-colors"
+                  className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl cursor-pointer text-sm text-[var(--text-secondary)] aria-selected:bg-[var(--bg-base)] dark:aria-selected:bg-[var(--bg-surface)] aria-selected:text-[var(--primary)] dark:aria-selected:text-[var(--primary)] transition-colors"
                 >
-                  <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center shrink-0">
-                    <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <div className="h-8 w-8 rounded-full bg-[var(--primary-subtle)]  flex items-center justify-center shrink-0">
+                    <User className="h-4 w-4 text-[var(--primary)]" />
                   </div>
                   <div className="flex flex-col">
                     <span className="font-medium">{paciente.nome}</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">Paciente</span>
+                    <span className="text-xs text-[var(--text-muted)]">Paciente</span>
                   </div>
                 </Command.Item>
               ))}
@@ -160,21 +160,21 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
           {results.filter(r => r.type === 'profissional').length > 0 && (
             <Command.Group 
               heading="Profissionais" 
-              className="px-2 py-1 mt-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-slate-500"
+              className="px-2 py-1 mt-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[var(--text-muted)]"
             >
               {results.filter(r => r.type === 'profissional').map(profissional => (
                 <Command.Item 
                   key={`prof-${profissional.id}`}
                   onSelect={() => handleSelect(profissional)}
                   value={`profissional ${profissional.nome}`}
-                  className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl cursor-pointer text-sm text-slate-700 dark:text-slate-300 aria-selected:bg-slate-100 dark:aria-selected:bg-slate-800 aria-selected:text-purple-600 dark:aria-selected:text-purple-400 transition-colors"
+                  className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl cursor-pointer text-sm text-[var(--text-secondary)] aria-selected:bg-[var(--bg-base)] dark:aria-selected:bg-[var(--bg-surface)] aria-selected:text-[var(--primary)] dark:aria-selected:text-[var(--primary)] transition-colors"
                 >
-                  <div className="h-8 w-8 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center shrink-0">
-                    <User className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                  <div className="h-8 w-8 rounded-full bg-[var(--primary-subtle)] dark:bg-[var(--primary-subtle)] flex items-center justify-center shrink-0">
+                    <User className="h-4 w-4 text-[var(--primary)] dark:text-[var(--primary)]" />
                   </div>
                   <div className="flex flex-col">
                     <span className="font-medium">{profissional.nome}</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400 capitalize">{profissional.role || 'Profissional'}</span>
+                    <span className="text-xs text-[var(--text-muted)] capitalize">{profissional.role || 'Profissional'}</span>
                   </div>
                 </Command.Item>
               ))}
@@ -185,15 +185,15 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
           {!query && (
             <Command.Group 
               heading="Ações Rápidas" 
-              className="px-2 py-1 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-slate-500"
+              className="px-2 py-1 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[var(--text-muted)]"
             >
               <Command.Item 
                 onSelect={() => handleAction('novo-paciente')}
                 value="novo paciente"
-                className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl cursor-pointer text-sm text-slate-700 dark:text-slate-300 aria-selected:bg-slate-100 dark:aria-selected:bg-slate-800 aria-selected:text-slate-900 dark:aria-selected:text-slate-100 transition-colors"
+                className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl cursor-pointer text-sm text-[var(--text-secondary)] aria-selected:bg-[var(--bg-base)] dark:aria-selected:bg-[var(--bg-surface)] aria-selected:text-[var(--text-primary)] dark:aria-selected:text-[var(--text-primary)] transition-colors"
               >
-                <div className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                  <UserPlus className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                <div className="h-8 w-8 rounded-lg bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] flex items-center justify-center shrink-0">
+                  <UserPlus className="h-4 w-4 text-[var(--text-secondary)] dark:text-[var(--text-muted)]" />
                 </div>
                 Cadastrar Novo Paciente
               </Command.Item>
@@ -201,10 +201,10 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
               <Command.Item 
                 onSelect={() => handleAction('novo-agendamento')}
                 value="novo agendamento"
-                className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl cursor-pointer text-sm text-slate-700 dark:text-slate-300 aria-selected:bg-slate-100 dark:aria-selected:bg-slate-800 aria-selected:text-slate-900 dark:aria-selected:text-slate-100 transition-colors"
+                className="flex items-center gap-3 px-3 py-3 mt-1 rounded-xl cursor-pointer text-sm text-[var(--text-secondary)] aria-selected:bg-[var(--bg-base)] dark:aria-selected:bg-[var(--bg-surface)] aria-selected:text-[var(--text-primary)] dark:aria-selected:text-[var(--text-primary)] transition-colors"
               >
-                <div className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                  <CalendarPlus className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                <div className="h-8 w-8 rounded-lg bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] flex items-center justify-center shrink-0">
+                  <CalendarPlus className="h-4 w-4 text-[var(--text-secondary)] dark:text-[var(--text-muted)]" />
                 </div>
                 Novo Agendamento
               </Command.Item>
@@ -213,12 +213,12 @@ export default function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModal
 
         </Command.List>
 
-        <div className="border-t border-slate-100 dark:border-slate-800 px-4 py-3 flex items-center justify-between text-xs text-slate-400 bg-slate-50 dark:bg-slate-900/50">
+        <div className="border-t border-[var(--border)] px-4 py-3 flex items-center justify-between text-xs text-[var(--text-muted)] bg-[var(--bg-base)] dark:bg-[var(--bg-surface)]">
           <div className="flex items-center gap-2">
-            <span>Navegue com <kbd className="font-sans border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800">↑</kbd> <kbd className="font-sans border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800">↓</kbd></span>
-            <span>Abra com <kbd className="font-sans border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800">Enter</kbd></span>
+            <span>Navegue com <kbd className="font-sans border border-[var(--border)]  rounded px-1.5 py-0.5 bg-[var(--bg-surface)]">↑</kbd> <kbd className="font-sans border border-[var(--border)]  rounded px-1.5 py-0.5 bg-[var(--bg-surface)]">↓</kbd></span>
+            <span>Abra com <kbd className="font-sans border border-[var(--border)]  rounded px-1.5 py-0.5 bg-[var(--bg-surface)]">Enter</kbd></span>
           </div>
-          <span>Fechar com <kbd className="font-sans border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800">Esc</kbd></span>
+          <span>Fechar com <kbd className="font-sans border border-[var(--border)]  rounded px-1.5 py-0.5 bg-[var(--bg-surface)]">Esc</kbd></span>
         </div>
       </div>
     </Command.Dialog>

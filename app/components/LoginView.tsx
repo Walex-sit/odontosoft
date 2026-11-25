@@ -70,38 +70,34 @@ export default function LoginView() {
     <div className="min-h-screen w-full flex font-sans antialiased">
       
       {/* Lado Esquerdo - Ilustração (Oculto em telas pequenas) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#1258b8] flex-col items-center justify-center relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#0F6E7A] flex-col items-center justify-center relative overflow-hidden">
         
-        {/* Círculos de fundo */}
-        <div className="absolute w-[500px] h-[500px] bg-[#1a66cc] rounded-full mix-blend-multiply opacity-50 blur-2xl"></div>
-        <div className="absolute w-[400px] h-[400px] bg-[#0c4a9e] rounded-full mix-blend-multiply opacity-50 blur-3xl bottom-0 translate-y-1/2"></div>
-        
-        {/* Ilustração e Bolhas (Representação) */}
+        {/* Ilustração e Bolhas (Representação chapada sem glow/blur) */}
         <div className="relative z-10 w-full max-w-md aspect-square flex items-center justify-center">
           {/* Círculo Principal atrás do médico */}
-          <div className="absolute w-[350px] h-[350px] bg-[#1964d4] rounded-full shadow-2xl"></div>
+          <div className="absolute w-[350px] h-[350px] bg-white/10 rounded-full"></div>
           
           {/* Bolhas flutuantes com gráficos */}
-          <div className="absolute top-1/4 right-10 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg transform -translate-y-4">
-             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <div className="absolute top-1/4 right-10 w-12 h-12 bg-[#FAFBFB] rounded-full flex items-center justify-center border border-[#DDE1E5] transform -translate-y-4">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C0392B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
           </div>
-          <div className="absolute top-1/2 right-4 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg">
-             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f1c40f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="18" y="3" width="4" height="18"></rect><rect x="10" y="8" width="4" height="13"></rect><rect x="2" y="13" width="4" height="8"></rect></svg>
+          <div className="absolute top-1/2 right-4 w-14 h-14 bg-[#FAFBFB] rounded-full flex items-center justify-center border border-[#DDE1E5]">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#875D00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="18" y="3" width="4" height="18"></rect><rect x="10" y="8" width="4" height="13"></rect><rect x="2" y="13" width="4" height="8"></rect></svg>
           </div>
-          <div className="absolute bottom-1/4 right-10 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg transform translate-y-4">
-             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <div className="absolute bottom-1/4 right-10 w-12 h-12 bg-[#FAFBFB] rounded-full flex items-center justify-center border border-[#DDE1E5] transform translate-y-4">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#266D44" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
           </div>
 
           {/* Bolha flutuante da esquerda (App) */}
-          <div className="absolute top-1/4 left-0 w-24 h-32 bg-white rounded-lg shadow-xl flex flex-col p-2 space-y-2 transform -rotate-3">
-            <div className="w-full h-3 bg-slate-200 rounded"></div>
+          <div className="absolute top-1/4 left-0 w-24 h-32 bg-[#FAFBFB] rounded-lg border border-[#DDE1E5] flex flex-col p-2 space-y-2 transform -rotate-3">
+            <div className="w-full h-3 bg-[#DDE1E5] rounded"></div>
             <div className="flex gap-2 items-center">
-              <div className="w-4 h-4 bg-slate-200 rounded-full"></div>
-              <div className="w-12 h-2 bg-slate-200 rounded"></div>
+              <div className="w-4 h-4 bg-[#DDE1E5] rounded-full"></div>
+              <div className="w-12 h-2 bg-[#DDE1E5] rounded"></div>
             </div>
             <div className="flex gap-2 items-center">
-              <div className="w-4 h-4 bg-slate-200 rounded-full"></div>
-              <div className="w-10 h-2 bg-slate-200 rounded"></div>
+              <div className="w-4 h-4 bg-[#DDE1E5] rounded-full"></div>
+              <div className="w-10 h-2 bg-[#DDE1E5] rounded"></div>
             </div>
           </div>
 
@@ -114,45 +110,42 @@ export default function LoginView() {
         {/* Textos inferiores */}
         <div className="relative z-10 mt-12 text-center">
           <h1 className="text-4xl font-bold text-white mb-2 tracking-wide">Odontosoft</h1>
-          <p className="text-blue-200 text-lg">Bem-vindo novamente</p>
+          <p className="text-white/90 text-lg">Bem-vindo novamente</p>
         </div>
       </div>
 
       {/* Lado Direito - Formulário */}
-      <div className="w-full lg:w-1/2 bg-[#f4f7fa] flex items-center justify-center p-6 relative">
-        
-        {/* Brilho decorativo fundo */}
-        <div className="absolute bottom-10 right-10 w-32 h-32 bg-white rounded-full mix-blend-overlay opacity-30 blur-xl"></div>
+      <div className="w-full lg:w-1/2 bg-[var(--bg-base)] flex items-center justify-center p-6 relative">
         
         <div className="w-full max-w-sm flex flex-col items-center">
           
           {/* Logo Customizado */}
           <div className="mb-4">
             <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 10 H50 C 75 10, 90 30, 90 50 C 90 70, 75 90, 50 90 H20 Z" stroke="#1258b8" strokeWidth="8" fill="transparent"/>
+              <path d="M20 10 H50 C 75 10, 90 30, 90 50 C 90 70, 75 90, 50 90 H20 Z" stroke="var(--primary)" strokeWidth="8" fill="transparent"/>
               {/* Estetoscópio simulado */}
-              <circle cx="50" cy="40" r="15" stroke="#1258b8" strokeWidth="6" fill="transparent"/>
-              <path d="M50 55 V75" stroke="#1258b8" strokeWidth="6"/>
-              <circle cx="65" cy="75" r="8" fill="#1258b8"/>
-              <path d="M30 40 V50 C30 60, 40 70, 50 70" stroke="#1258b8" strokeWidth="4" fill="transparent"/>
+              <circle cx="50" cy="40" r="15" stroke="var(--primary)" strokeWidth="6" fill="transparent"/>
+              <path d="M50 55 V75" stroke="var(--primary)" strokeWidth="6"/>
+              <circle cx="65" cy="75" r="8" fill="var(--primary)"/>
+              <path d="M30 40 V50 C30 60, 40 70, 50 70" stroke="var(--primary)" strokeWidth="4" fill="transparent"/>
             </svg>
           </div>
           
-          <h2 className="text-3xl font-extrabold text-[#113a77] mb-10 tracking-tight">Odontosoft</h2>
+          <h2 className="text-3xl font-extrabold text-[var(--text-primary)] mb-10 tracking-tight">Odontosoft</h2>
 
           <form onSubmit={login} className="w-full space-y-4">
             
             {/* Campo E-mail */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400" />
+                <Mail className="h-5 w-5 text-[var(--text-secondary)]" />
               </div>
               <input
                 type="email"
                 required
                 data-testid="input-login-email"
                 disabled={carregando}
-                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:outline-none focus:border-[#1258b8] focus:ring-1 focus:ring-[#1258b8] transition-all shadow-sm"
+                className="w-full pl-10 pr-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all"
                 placeholder="E-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -162,14 +155,14 @@ export default function LoginView() {
             {/* Campo Senha */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+                <Lock className="h-5 w-5 text-[var(--text-secondary)]" />
               </div>
               <input
                 type={mostrarSenha ? 'text' : 'password'}
                 required
                 data-testid="input-login-password"
                 disabled={carregando}
-                className="w-full pl-10 pr-10 py-3 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:outline-none focus:border-[#1258b8] focus:ring-1 focus:ring-[#1258b8] transition-all shadow-sm"
+                className="w-full pl-10 pr-10 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all"
                 placeholder="Senha"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
@@ -177,7 +170,7 @@ export default function LoginView() {
               <button
                 type="button"
                 onClick={() => setMostrarSenha(!mostrarSenha)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 title={mostrarSenha ? 'Ocultar senha' : 'Visualizar senha'}
               >
                 {mostrarSenha ? (
@@ -190,10 +183,10 @@ export default function LoginView() {
 
             {/* Lembrar e Esqueci Senha */}
             <div className="flex items-center justify-between text-sm py-2">
-              <label className="flex items-center text-gray-600 cursor-pointer hover:text-gray-800 transition-colors">
+              <label className="flex items-center text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] transition-colors">
                 <input 
                   type="checkbox" 
-                  className="mr-2 rounded border-gray-300 text-[#1258b8] focus:ring-[#1258b8]"
+                  className="mr-2 rounded border-[var(--border-medium)] text-[var(--primary)] focus:ring-[var(--primary)]"
                   checked={lembrar}
                   onChange={(e) => setLembrar(e.target.checked)}
                 />
@@ -203,7 +196,7 @@ export default function LoginView() {
                 type="button"
                 onClick={esqueceuSenha}
                 disabled={enviandoReset || carregando}
-                className="text-[#1258b8] font-medium hover:underline disabled:opacity-50 transition-all"
+                className="text-[var(--primary)] font-medium hover:underline disabled:opacity-50 transition-all"
               >
                 {enviandoReset ? 'Enviando...' : 'Esqueci a senha?'}
               </button>
@@ -214,7 +207,7 @@ export default function LoginView() {
               type="submit"
               data-testid="btn-login-submit"
               disabled={carregando}
-              className="w-full bg-[#1e88e5] hover:bg-[#1565c0] active:scale-[0.99] disabled:bg-[#90caf9] text-white py-3 rounded-lg font-semibold text-base shadow-md transition-all mt-4"
+              className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-[0.99] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] py-3 rounded-lg font-semibold text-base transition-all mt-4"
             >
               {carregando ? 'Entrando...' : 'Entrar'}
             </button>

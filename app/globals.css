@@ -1,57 +1,88 @@
 @import "tailwindcss";
-@custom-variant dark (&:is(.dark *));/* ─── Design tokens ──────────────────────────────────────── */
+@custom-variant dark (&:is(.dark *));
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — OdontoSoft Identity System
+   PALETA ESTRITA: sem azul-marinho, índigo, violeta/roxo, gradientes, glows,
+   glassmorphism ou sombras luminosas. Apenas cores chapadas dos tokens abaixo.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 :root {
-  /* Backgrounds */
-  --bg-base:        #f8fafc;   /* slate-50 - fundo geral suave e elegante */
-  --bg-surface:     #ffffff;   /* branco puro para cartões, tabelas e modais */
-  --bg-card:        #ffffff;   /* branco puro para cartões */
-  --bg-card-inner:  #f8fafc;   /* slate-50 */
-  --bg-hover:       rgba(0, 0, 0, 0.03);
+  /* ── Backgrounds ─────────────────────────────────────────────────────── */
+  --bg-base:        #EFF1F3;
+  --bg-surface:     #FAFBFB;
+  --bg-hover:       rgba(0, 0, 0, 0.04);
 
-  /* Borders - refinadas e nítidas para eliminar monotonia */
-  --border-soft:    #e2e8f0;   /* slate-200 */
-  --border-medium:  #cbd5e1;   /* slate-300 */
+  /* ── Borders ──────────────────────────────────────────────────────────── */
+  --border:         #DDE1E5;
+  --border-medium:  #C8CDD3;
 
-  /* Text - alto contraste e legibilidade impecável */
-  --text-primary:   #0f172a;   /* slate-900 */
-  --text-secondary: #334155;   /* slate-700 */
-  --text-muted:     #64748b;   /* slate-500 */
+  /* ── Text (mínimo WCAG AA >= 4.5:1) ──────────────────────────────────── */
+  --text-primary:   #1A2127;
+  --text-secondary: #596470;
+  --text-muted:     #596470;   /* Ajustado de #7A8694 (3.27:1) para #596470 (5.33:1 AA) */
 
-  /* Blue accent (Clean SaaS) */
-  --blue-primary:   #2563eb;   /* blue-600 */
-  --blue-hover:     #1d4ed8;   /* blue-700 */
-  --blue-subtle:    rgba(37, 99, 235, 0.08);
+  /* ── Brand / Accent (petróleo) ────────────────────────────────────────── */
+  --primary:        #0F6E7A;
+  --primary-hover:  #0C5B65;
+  --primary-subtle: rgba(15, 110, 122, 0.08);
+  --on-primary:     #ffffff;
 
-  /* Shadows - sombras suaves e difusas com profundidade natural */
-  --shadow-card:    0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  --shadow-elevated:0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  /* ── Semânticas de estado (nunca decorativas — WCAG AA >= 4.5:1) ────── */
+  --success:        #266D44;   /* Ajustado de #2D7D4F (4.46:1) para #266D44 (5.43:1 AA) */
+  --success-bg:     rgba(38, 109, 68, 0.09);
+  --warning:        #875D00;   /* Ajustado de #9A6B00 (4.14:1) para #875D00 (5.08:1 AA) */
+  --warning-bg:     rgba(135, 93, 0, 0.09);
+  --error:          #C0392B;
+  --error-bg:       rgba(192, 57, 43, 0.09);
 
-  /* Tailwind compat */
+  /* ── Super Admin / contexto âmbar ───────────────────────────────────── */
+  --super-bg:       #92400E;      /* âmbar/ocre fosco — fundo da faixa       */
+  --super-surface:  #B45309;      /* destaque médio para elementos internos  */
+  --super-text:     #FEF3C7;      /* texto sobre fundo âmbar                 */
+  --super-border:   rgba(180, 83, 9, 0.5);
+
+  /* ── Tailwind compat ──────────────────────────────────────────────────── */
   --background: var(--bg-base);
   --foreground: var(--text-primary);
 }
 
 .dark {
-  /* Backgrounds */
-  --bg-base:        #0f172a;   /* slate-900 */
-  --bg-surface:     #1e293b;   /* slate-800 */
-  --bg-card:        #1e293b;   /* slate-800 */
-  --bg-card-inner:  #0f172a;   /* slate-900 */
-  --bg-hover:       rgba(255,255,255,0.05);
+  /* ── Backgrounds ─────────────────────────────────────────────────────── */
+  --bg-base:        #141719;
+  --bg-surface:     #1D2124;
+  --bg-hover:       rgba(255, 255, 255, 0.05);
 
-  /* Borders */
-  --border-soft:    rgba(255, 255, 255, 0.1);
-  --border-medium:  rgba(255, 255, 255, 0.15);
+  /* ── Borders (sem sombra: separar com borda 1px) ─────────────────────── */
+  --border:         #2B3035;
+  --border-medium:  #3A4149;
 
-  /* Text */
-  --text-primary:   #e2e8f0;   /* slate-200 */
-  --text-secondary: #cbd5e1;   /* slate-300 */
-  --text-muted:     #94a3b8;   /* slate-400 */
+  /* ── Text (mínimo WCAG AA >= 4.5:1) ──────────────────────────────────── */
+  --text-primary:   #E4E7EA;
+  --text-secondary: #A0A8AF;
+  --text-muted:     #A0A8AF;   /* Ajustado de #6B7580 (3.84:1) para #A0A8AF (6.73:1 AA) */
 
-  /* Shadows - softer in dark mode */
-  --shadow-card:    0 10px 40px -10px rgba(0,0,0,0.5);
-  --shadow-elevated:0 20px 60px -15px rgba(0,0,0,0.6);
+  /* ── Brand / Accent (petróleo claro no escuro) ────────────────────────── */
+  --primary:        #4FB3BF;
+  --primary-hover:  #3D9BAA;
+  --primary-subtle: rgba(79, 179, 191, 0.12);
+  --on-primary:     #0F1417;
 
+  /* ── Semânticas de estado (WCAG AA >= 4.5:1) ────────────────────────── */
+  --success:        #4CAF82;
+  --success-bg:     rgba(76, 175, 130, 0.12);
+  --warning:        #D4A017;
+  --warning-bg:     rgba(212, 160, 23, 0.12);
+  --error:          #E05F52;
+  --error-bg:       rgba(224, 95, 82, 0.12);
+
+  /* ── Super Admin / contexto âmbar ───────────────────────────────────── */
+  --super-bg:       #78350F;
+  --super-surface:  #92400E;
+  --super-text:     #FEF3C7;
+  --super-border:   rgba(180, 83, 9, 0.5);
+
+  /* ── Tailwind compat ──────────────────────────────────────────────────── */
   --background: var(--bg-base);
   --foreground: var(--text-primary);
 }
@@ -61,10 +92,24 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --color-slate-800: #1e293b;
+
+  /* Tokens mapeados para uso direto via Tailwind */
+  --color-bg-base:        var(--bg-base);
+  --color-bg-surface:     var(--bg-surface);
+  --color-border:         var(--border);
+  --color-border-medium:  var(--border-medium);
+  --color-text-primary:   var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted:     var(--text-muted);
+  --color-primary:        var(--primary);
+  --color-primary-hover:  var(--primary-hover);
+  --color-on-primary:     var(--on-primary);
+  --color-success:        var(--success);
+  --color-warning:        var(--warning);
+  --color-error:          var(--error);
 }
 
-/* ─── Base ───────────────────────────────────────────────── */
+/* ─── Base ─────────────────────────────────────────────────────────────── */
 body {
   background: var(--bg-base);
   color: var(--text-primary);
@@ -76,82 +121,187 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
-/* ─── Premium Bento card utilities ───────────────────────── */
+::placeholder {
+  color: var(--text-secondary);
+  opacity: 1;
+}
+
+/* ─── Utilitários semânticos ─────────────────────────────────────────── */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
 .card-premium,
 .bento-card {
-  background: var(--bg-card);
-  border: 1px solid rgba(226, 232, 240, 0.85);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 1.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 4px 14px -2px rgba(15, 23, 42, 0.035);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.15s ease;
 }
 
 .dark .card-premium,
 .dark .bento-card {
-  background: rgba(15, 23, 42, 0.9);
-  border-color: rgba(30, 41, 59, 0.8);
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
 }
 
 .bento-card-interactive {
-  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease;
+  transition: border-color 0.15s ease;
 }
 
 .bento-card-interactive:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.06);
-  border-color: rgba(203, 213, 225, 0.9);
-}
-
-.dark .bento-card-interactive:hover {
-  box-shadow: 0 8px 28px -4px rgba(0, 0, 0, 0.65);
-  border-color: rgba(51, 65, 85, 0.9);
-}
-
-/* ─── Signature Dark Bento Card (Medora / Finnova Contrast Style) ─── */
-.bento-card-dark {
-  background: linear-gradient(145deg, #090d16 0%, #0f172a 50%, #1e1b4b 100%);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 1.5rem;
-  color: #ffffff;
-  box-shadow: 0 14px 40px -10px rgba(15, 23, 42, 0.35), 0 0 20px -5px rgba(99, 102, 241, 0.15);
-  position: relative;
-  overflow: hidden;
+  border-color: var(--border-medium);
 }
 
 .shadow-bento {
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.05);
 }
 
-/* ─── Main content area ──────────────────────────────────── */
+.dark .shadow-bento {
+  box-shadow: none;
+}
+
+/* Garantir zero sombras em qualquer utilitário shadow no modo escuro */
+.dark [class*="shadow"] {
+  box-shadow: none !important;
+}
+
+.bento-card-dark {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  color: var(--text-primary);
+}
+
+/* ─── Topbar ─────────────────────────────────────────────────────────── */
+.topbar {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.dark .topbar {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: none;
+}
+
+/* ─── Botões ─────────────────────────────────────────────────────────── */
+.btn-primary {
+  background: var(--primary);
+  color: var(--on-primary);
+  border: 1px solid var(--primary);
+  border-radius: 0.75rem;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.btn-primary:disabled {
+  background: var(--border-medium);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--border-medium);
+  background: var(--bg-hover);
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.btn-secondary:disabled {
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  border-color: var(--border);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* ─── Faixa Super Admin ──────────────────────────────────────────────── */
+.super-admin-banner {
+  background: var(--super-bg);
+  border-bottom: 1px solid var(--super-border);
+  color: var(--super-text);
+}
+
+/* ─── Focus ring acessível ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ─── Main content ───────────────────────────────────────────────────── */
 main {
   background: var(--bg-base);
 }
 
-/* ─── FullCalendar Clinical Light Theme ───────────────────── */
+/* ─── Scrollbars ─────────────────────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ─── FullCalendar — Tema Claro (OdontoSoft) ────────────────────────── */
 .clinical-calendar .fc {
-  --fc-border-color:              rgba(0,0,0,0.05);
-  --fc-button-bg-color:           #ffffff;
-  --fc-button-border-color:       rgba(0,0,0,0.08);
-  --fc-button-hover-bg-color:     #f8fafc;
-  --fc-button-hover-border-color: rgba(0,0,0,0.12);
-  --fc-button-active-bg-color:    #f1f5f9;
-  --fc-button-active-border-color:#2563eb;
-  --fc-today-bg-color:            rgba(37,99,235,0.04);
-  --fc-neutral-bg-color:          #f8fafc;
+  --fc-border-color:              var(--border);
+  --fc-button-bg-color:           var(--bg-surface);
+  --fc-button-border-color:       var(--border);
+  --fc-button-hover-bg-color:     var(--bg-base);
+  --fc-button-hover-border-color: var(--border-medium);
+  --fc-button-active-bg-color:    var(--primary-subtle);
+  --fc-button-active-border-color:var(--primary);
+  --fc-today-bg-color:            var(--primary-subtle);
+  --fc-neutral-bg-color:          var(--bg-base);
   --fc-page-bg-color:             transparent;
-  --fc-event-bg-color:            #2563eb;
-  --fc-event-border-color:        #2563eb;
+  --fc-event-bg-color:            var(--primary);
+  --fc-event-border-color:        var(--primary);
+  --fc-event-text-color:          var(--on-primary);
 }
 
 .clinical-calendar .fc .fc-col-header-cell {
-  background-color: #ffffff;
-  border-color: rgba(0,0,0,0.04);
+  background-color: var(--bg-surface);
+  border-color: var(--border);
   padding: 0.5rem 0;
 }
 
 .clinical-calendar .fc .fc-col-header-cell-cushion {
-  color: #64748b;
+  color: var(--text-secondary);
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 0.75rem;
@@ -160,58 +310,60 @@ main {
 }
 
 .clinical-calendar .fc .fc-daygrid-day-number {
-  color: #475569;
+  color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.85rem;
   padding: 0.5rem;
 }
 
 .clinical-calendar .fc .fc-daygrid-day.fc-day-today {
-  background-color: rgba(37,99,235,0.03);
+  background-color: var(--primary-subtle);
 }
 
 .clinical-calendar .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-  color: #2563eb;
+  color: var(--primary);
   font-weight: 700;
 }
 
 .clinical-calendar .fc .fc-toolbar-title {
-  color: #1e293b;
+  color: var(--text-primary);
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 1.25rem;
 }
 
 .clinical-calendar .fc .fc-button {
-  color: #475569;
+  color: var(--text-secondary);
   font-family: var(--font-sans);
   font-weight: 500;
   border-radius: 24px;
   font-size: 0.875rem;
   padding: 0.4rem 1rem;
   text-transform: capitalize;
-  box-shadow: 0 4px 12px -4px rgba(0,0,0,0.05);
-  transition: all 0.2s ease;
+  box-shadow: none;
+  transition: all 0.15s ease;
 }
 
 .clinical-calendar .fc .fc-button:focus {
-  box-shadow: 0 0 0 2px rgba(37,99,235,0.25);
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 .clinical-calendar .fc .fc-button-primary:not(:disabled).fc-button-active,
 .clinical-calendar .fc .fc-button-primary:not(:disabled):active {
-  color: #2563eb;
-  background-color: #f1f5f9;
+  color: var(--primary);
+  background-color: var(--primary-subtle);
 }
 
 .clinical-calendar .fc .fc-scrollgrid {
-  border-color: rgba(0,0,0,0.05);
+  border-color: var(--border);
   border-radius: 24px;
   overflow: hidden;
 }
 
 .clinical-calendar .fc .fc-daygrid-day {
-  border-color: rgba(0,0,0,0.04);
+  border-color: var(--border);
 }
 
 .clinical-calendar .fc .fc-event {
@@ -220,49 +372,35 @@ main {
   font-size: 0.75rem;
   font-weight: 500;
   padding: 4px 8px;
-  box-shadow: 0 2px 4px rgba(37,99,235,0.15);
+  box-shadow: none;
   border: none;
 }
 
-/* ─── Scrollbars ─────────────────────────────────────────── */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.1);
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.15);
-}
-
-/* ─── FullCalendar Premium Dark Theme ───────────────────── */
+/* ─── FullCalendar — Tema Escuro (OdontoSoft) ───────────────────────── */
 .dark-calendar .fc {
-  --fc-border-color:              rgba(255,255,255,0.05);
-  --fc-button-bg-color:           #18212C;
-  --fc-button-border-color:       rgba(255,255,255,0.08);
-  --fc-button-hover-bg-color:     #0F151C;
-  --fc-button-hover-border-color: rgba(255,255,255,0.12);
-  --fc-button-active-bg-color:    #0F151C;
-  --fc-button-active-border-color:#34d399;
-  --fc-today-bg-color:            rgba(16,185,129,0.05);
-  --fc-neutral-bg-color:          #0F151C;
+  --fc-border-color:              var(--border);
+  --fc-button-bg-color:           var(--bg-surface);
+  --fc-button-border-color:       var(--border);
+  --fc-button-hover-bg-color:     var(--bg-base);
+  --fc-button-hover-border-color: var(--border-medium);
+  --fc-button-active-bg-color:    var(--primary-subtle);
+  --fc-button-active-border-color:var(--primary);
+  --fc-today-bg-color:            var(--primary-subtle);
+  --fc-neutral-bg-color:          var(--bg-base);
   --fc-page-bg-color:             transparent;
-  --fc-event-bg-color:            rgba(16,185,129,0.1);
-  --fc-event-border-color:        rgba(16,185,129,0.2);
-  --fc-event-text-color:          #34d399;
+  --fc-event-bg-color:            var(--primary-subtle);
+  --fc-event-border-color:        var(--primary);
+  --fc-event-text-color:          var(--primary);
 }
 
 .dark-calendar .fc .fc-col-header-cell {
-  background-color: #18212C;
-  border-color: rgba(255,255,255,0.05);
+  background-color: var(--bg-surface);
+  border-color: var(--border);
   padding: 0.5rem 0;
 }
 
 .dark-calendar .fc .fc-col-header-cell-cushion {
-  color: #64748b;
+  color: var(--text-secondary);
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 0.75rem;
@@ -271,61 +409,63 @@ main {
 }
 
 .dark-calendar .fc .fc-daygrid-day-number {
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.85rem;
   padding: 0.5rem;
 }
 
 .dark-calendar .fc .fc-daygrid-day.fc-day-today {
-  background-color: rgba(16,185,129,0.05);
+  background-color: var(--primary-subtle);
 }
 
 .dark-calendar .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-  color: #34d399;
+  color: var(--primary);
   font-weight: 700;
 }
 
 .dark-calendar .fc .fc-toolbar-title {
-  color: #f1f5f9;
+  color: var(--text-primary);
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 1.25rem;
 }
 
 .dark-calendar .fc .fc-button {
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-family: var(--font-sans);
   font-weight: 500;
   border-radius: 24px;
   font-size: 0.875rem;
   padding: 0.4rem 1rem;
   text-transform: capitalize;
-  box-shadow: 0 4px 12px -4px rgba(0,0,0,0.3);
-  transition: all 0.2s ease;
-  background-color: #18212C;
-  border-color: rgba(255,255,255,0.08);
+  box-shadow: none;
+  transition: all 0.15s ease;
+  background-color: var(--bg-surface);
+  border-color: var(--border);
 }
 
 .dark-calendar .fc .fc-button:focus {
-  box-shadow: 0 0 0 2px rgba(52,211,153,0.25);
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 .dark-calendar .fc .fc-button-primary:not(:disabled).fc-button-active,
 .dark-calendar .fc .fc-button-primary:not(:disabled):active {
-  color: #0F151C;
-  background-color: #34d399;
-  border-color: #34d399;
+  color: var(--on-primary);
+  background-color: var(--primary);
+  border-color: var(--primary);
 }
 
 .dark-calendar .fc .fc-scrollgrid {
-  border-color: rgba(255,255,255,0.05);
+  border-color: var(--border);
   border-radius: 24px;
   overflow: hidden;
 }
 
 .dark-calendar .fc .fc-daygrid-day {
-  border-color: rgba(255,255,255,0.05);
+  border-color: var(--border);
 }
 
 .dark-calendar .fc .fc-event {
@@ -334,13 +474,13 @@ main {
   font-size: 0.75rem;
   font-weight: 700;
   padding: 4px 8px;
-  background-color: rgba(16,185,129,0.15);
-  border: 1px solid rgba(16,185,129,0.3);
-  color: #34d399;
-  box-shadow: 0 2px 8px rgba(16,185,129,0.1);
+  background-color: var(--primary-subtle);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  box-shadow: none;
 }
 
-/* ─── Ultra-Smooth View Transitions & Route Animations ─────────────────── */
+/* ─── View Transitions ──────────────────────────────────────────────── */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 160ms;
@@ -361,4 +501,3 @@ main {
 .animate-route-fade {
   animation: routeFadeIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-

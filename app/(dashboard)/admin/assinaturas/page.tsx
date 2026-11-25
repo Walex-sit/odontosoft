@@ -73,7 +73,7 @@ export default function SuperAdminAssinaturasPage() {
   const totalInadimplentes = clinicas.filter((c) => c.status_assinatura === 'inadimplente').length
 
   return (
-    <div className="flex-1 w-full bg-[#F8FAFC] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 overflow-y-auto min-h-screen">
+    <div className="flex-1 w-full bg-[var(--bg-base)] text-[var(--text-primary)] overflow-y-auto min-h-screen">
       <AdminHeader
         title="Assinaturas & Planos SaaS"
         subtitle="Acompanhamento de clientes no Stripe, planos vigentes e ciclos de faturamento."
@@ -84,45 +84,45 @@ export default function SuperAdminAssinaturasPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 space-y-6">
         {/* Cards Resumo de Assinaturas */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+          <div className="bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border)] shadow-2xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Assinaturas Ativas</span>
+              <span className="text-xs font-bold text-[var(--text-secondary)]">Assinaturas Ativas</span>
               <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="h-4 w-4" />
               </div>
             </div>
             <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+              <span className="text-2xl sm:text-3xl font-black text-[var(--text-primary)]">
                 {totalAtivas}
               </span>
               <span className="text-xs text-emerald-600 font-bold">pagantes</span>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+          <div className="bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border)] shadow-2xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Período de Trial</span>
-              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
+              <span className="text-xs font-bold text-[var(--text-secondary)]">Período de Trial</span>
+              <div className="p-2 rounded-xl bg-[var(--primary-subtle)]/10 text-[var(--primary)]">
                 <Clock className="h-4 w-4" />
               </div>
             </div>
             <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+              <span className="text-2xl sm:text-3xl font-black text-[var(--text-primary)]">
                 {totalTrial}
               </span>
-              <span className="text-xs text-blue-600 font-bold">em avaliação</span>
+              <span className="text-xs text-[var(--primary)] font-bold">em avaliação</span>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+          <div className="bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border)] shadow-2xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Inadimplentes / Atraso</span>
+              <span className="text-xs font-bold text-[var(--text-secondary)]">Inadimplentes / Atraso</span>
               <div className="p-2 rounded-xl bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400">
                 <AlertTriangle className="h-4 w-4" />
               </div>
             </div>
             <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+              <span className="text-2xl sm:text-3xl font-black text-[var(--text-primary)]">
                 {totalInadimplentes}
               </span>
               <span className="text-xs text-red-600 font-bold">pendências</span>
@@ -131,24 +131,24 @@ export default function SuperAdminAssinaturasPage() {
         </div>
 
         {/* Tabela de Assinaturas e Dados do Stripe */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">
+        <div className="bg-[var(--bg-surface)] p-6 rounded-2xl border border-[var(--border)] shadow-2xs">
+          <h3 className="text-sm font-bold text-[var(--text-primary)] mb-2">
             Visão Geral de Faturamento & Gateway Stripe
           </h3>
-          <p className="text-xs text-slate-500 mb-6">
+          <p className="text-xs text-[var(--text-secondary)] mb-6">
             Acompanhamento de clientes no Stripe, assinaturas ativas e vencimento de períodos de avaliação (trial 7 dias).
           </p>
 
           {loading && !refreshing ? (
             <div className="py-20 flex flex-col items-center justify-center text-center space-y-3">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
-              <p className="text-xs text-slate-500 font-medium">Carregando dados de assinaturas...</p>
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--primary)]" />
+              <p className="text-xs text-[var(--text-secondary)] font-medium">Carregando dados de assinaturas...</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs sm:text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 text-[11px] font-extrabold uppercase text-slate-500 tracking-wider">
+                  <tr className="border-b border-[var(--border)] bg-[var(--bg-base)] text-[11px] font-extrabold uppercase text-[var(--text-secondary)] tracking-wider">
                     <th className="px-5 py-3">Clínica</th>
                     <th className="px-5 py-3">Plano</th>
                     <th className="px-5 py-3">Status Assinatura</th>
@@ -157,20 +157,20 @@ export default function SuperAdminAssinaturasPage() {
                     <th className="px-5 py-3 text-right">Subscription Stripe</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-[var(--border)]">
                   {clinicas.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
+                      <td colSpan={6} className="px-6 py-12 text-center text-[var(--text-secondary)]">
                         Nenhuma clínica ou assinatura registrada.
                       </td>
                     </tr>
                   ) : (
                     clinicas.map((c) => (
-                      <tr key={c.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
-                        <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-white">
+                      <tr key={c.id} className="hover:bg-[var(--bg-base)]">
+                        <td className="px-5 py-3.5 font-bold text-[var(--text-primary)]">
                           {c.nome}
                         </td>
-                        <td className="px-5 py-3.5 font-semibold text-slate-600 dark:text-slate-300">
+                        <td className="px-5 py-3.5 font-semibold text-[var(--text-secondary)]">
                           {c.plano}
                         </td>
                         <td className="px-5 py-3.5">
@@ -179,20 +179,20 @@ export default function SuperAdminAssinaturasPage() {
                               c.status_assinatura === 'ativo'
                                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
                                 : c.status_assinatura === 'trial'
-                                ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                                ? 'bg-[var(--primary-subtle)]/5 text-[var(--primary)]'
                                 : 'bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300'
                             }`}
                           >
                             {c.status_assinatura}
                           </span>
                         </td>
-                        <td className="px-5 py-3.5 text-slate-500 text-xs">
+                        <td className="px-5 py-3.5 text-[var(--text-secondary)] text-xs">
                           {c.trial_ends_at ? formatDate(c.trial_ends_at) : '—'}
                         </td>
-                        <td className="px-5 py-3.5 font-mono text-[11px] text-slate-500">
+                        <td className="px-5 py-3.5 font-mono text-[11px] text-[var(--text-secondary)]">
                           {c.stripe_customer_id || '—'}
                         </td>
-                        <td className="px-5 py-3.5 text-right font-mono text-[11px] text-slate-500">
+                        <td className="px-5 py-3.5 text-right font-mono text-[11px] text-[var(--text-secondary)]">
                           {c.stripe_subscription_id || '—'}
                         </td>
                       </tr>
@@ -207,4 +207,3 @@ export default function SuperAdminAssinaturasPage() {
     </div>
   )
 }
-

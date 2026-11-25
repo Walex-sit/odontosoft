@@ -28,19 +28,19 @@ export default function RelatorioModal({ isOpen, onClose }: RelatorioModalProps)
   return (
     <>
       <div 
-        className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm transition-opacity flex items-center justify-center p-4"
+        className="fixed inset-0 z-[60] bg-[var(--bg-base)] transition-opacity flex items-center justify-center p-4"
         onClick={onClose}
       >
         <div 
-          className="bg-slate-700 w-full max-w-[400px] rounded-xl shadow-2xl z-[70] flex flex-col border border-slate-600"
+          className="bg-[var(--bg-surface)] w-full max-w-[400px] rounded-xl shadow-md z-[70] flex flex-col border border-[var(--border)]"
           onClick={e => e.stopPropagation()}
         >
           
-          <div className="flex items-center justify-between p-5 border-b border-slate-600">
-            <h2 className="text-slate-100 font-bold text-lg">Gerar Relatório</h2>
+          <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
+            <h2 className="text-[var(--text-primary)] font-bold text-lg">Gerar Relatório</h2>
             <button 
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-100 transition-colors bg-slate-800 p-1.5 rounded-md hover:bg-slate-600 border border-slate-600"
+              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors bg-[var(--bg-surface)] p-1.5 rounded-md hover:bg-[var(--border-medium)] border border-[var(--border)]"
             >
               <X size={18} />
             </button>
@@ -50,10 +50,10 @@ export default function RelatorioModal({ isOpen, onClose }: RelatorioModalProps)
             <form id="relatorio-form" onSubmit={handleExportar} className="space-y-5">
               
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Tipo de Relatório</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Tipo de Relatório</label>
                 <select 
                   required
-                  className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                 >
                   <option value="">Selecione...</option>
                   <option value="financeiro">Financeiro (Receitas e Despesas)</option>
@@ -64,19 +64,19 @@ export default function RelatorioModal({ isOpen, onClose }: RelatorioModalProps)
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Data Inicial</label>
+                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Data Inicial</label>
                   <input 
                     type="date" 
                     required
-                    className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                    className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Data Final</label>
+                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Data Final</label>
                   <input 
                     type="date" 
                     required
-                    className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                    className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                   />
                 </div>
               </div>
@@ -84,11 +84,11 @@ export default function RelatorioModal({ isOpen, onClose }: RelatorioModalProps)
             </form>
           </div>
 
-          <div className="border-t border-slate-600 bg-slate-700/50 p-5 flex justify-end gap-3 rounded-b-xl">
+          <div className="border-t border-[var(--border)] bg-[var(--bg-surface)] p-5 flex justify-end gap-3 rounded-b-xl">
             <button 
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-transparent text-slate-300 hover:text-white hover:bg-slate-600 border border-slate-600 rounded-md text-sm font-semibold transition-colors"
+              className="px-4 py-2 bg-transparent text-[var(--text-secondary)] hover:text-white hover:bg-[var(--border-medium)] border border-[var(--border)] rounded-md text-sm font-semibold transition-colors"
             >
               Cancelar
             </button>
@@ -96,7 +96,7 @@ export default function RelatorioModal({ isOpen, onClose }: RelatorioModalProps)
               type="submit"
               form="relatorio-form"
               disabled={loading}
-              className="px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[120px]"
+              className="px-6 py-2 bg-[var(--primary-subtle)] hover:bg-[var(--primary-subtle)] text-white rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[120px]"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Exportar'}
             </button>

@@ -45,17 +45,17 @@ export default function NotasFiscais() {
   const filteredNotas = notas.filter(n => n.numero_nota.toLowerCase().includes(searchTerm.toLowerCase()))
 
   return (
-    <div className="flex w-full h-full overflow-hidden text-slate-100">
+    <div className="flex w-full h-full overflow-hidden text-[var(--text-primary)]">
       {/* Column 2 (Context/Filters) */}
-      <aside className="w-72 border-r border-slate-600 bg-slate-700 flex flex-col h-full shrink-0">
-        <div className="h-14 border-b border-slate-600 flex items-center px-6 shrink-0">
-          <h2 className="text-sm font-bold text-slate-100">Nova Nota Fiscal</h2>
+      <aside className="w-72 border-r border-[var(--border)] bg-[var(--bg-surface)] flex flex-col h-full shrink-0">
+        <div className="h-14 border-b border-[var(--border)] flex items-center px-6 shrink-0">
+          <h2 className="text-sm font-bold text-[var(--text-primary)]">Nova Nota Fiscal</h2>
         </div>
         <div className="p-4 flex-1 overflow-y-auto space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1">Receita Vinculada</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Receita Vinculada</label>
             <select 
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-md text-sm focus:outline-none focus:border-blue-500" 
+              className="w-full px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)] rounded-md text-sm focus:outline-none focus:border-[var(--primary)]/40" 
               value={receitaId} 
               onChange={(e) => setReceitaId(e.target.value)}
             >
@@ -64,18 +64,18 @@ export default function NotasFiscais() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1">Nº da Nota</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Nº da Nota</label>
             <input 
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-md text-sm focus:outline-none focus:border-blue-500" 
+              className="w-full px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)] rounded-md text-sm focus:outline-none focus:border-[var(--primary)]/40" 
               placeholder="Ex: NF-001" 
               value={numeroNota} 
               onChange={(e) => setNumeroNota(e.target.value)} 
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1">Valor (R$)</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Valor (R$)</label>
             <input 
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-md text-sm focus:outline-none focus:border-blue-500" 
+              className="w-full px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)] rounded-md text-sm focus:outline-none focus:border-[var(--primary)]/40" 
               type="number" 
               step="0.01" 
               min="0" 
@@ -85,10 +85,10 @@ export default function NotasFiscais() {
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1">Data de Emissão</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Data de Emissão</label>
             <input 
               type="date" 
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-md text-sm focus:outline-none focus:border-blue-500" 
+              className="w-full px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)] rounded-md text-sm focus:outline-none focus:border-[var(--primary)]/40" 
               value={dataEmissao} 
               onChange={(e) => setDataEmissao(e.target.value)} 
             />
@@ -96,7 +96,7 @@ export default function NotasFiscais() {
           <button 
             onClick={salvarNota} 
             disabled={!numeroNota.trim() || !valor || !dataEmissao}
-            className="w-full bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors disabled:opacity-50 mt-2"
+            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-4 py-2 rounded-md text-sm font-semibold transition-colors disabled:opacity-50 mt-2"
           >
             Registrar NF
           </button>
@@ -104,13 +104,13 @@ export default function NotasFiscais() {
       </aside>
 
       {/* Column 3 (Main Workspace) */}
-      <main className="flex-1 flex flex-col h-full bg-slate-800 relative">
-        <div className="h-14 border-b border-slate-600 flex items-center px-6 shrink-0">
-          <div className="flex items-center gap-2 text-slate-400 w-1/3">
+      <main className="flex-1 flex flex-col h-full bg-[var(--bg-surface)] relative">
+        <div className="h-14 border-b border-[var(--border)] flex items-center px-6 shrink-0">
+          <div className="flex items-center gap-2 text-[var(--text-muted)] w-1/3">
             <Search className="h-4 w-4" />
             <input 
               placeholder="Buscar notas fiscais..." 
-              className="w-full text-sm outline-none placeholder-slate-400 text-slate-100 bg-transparent"
+              className="w-full text-sm outline-none placeholder-[var(--text-secondary)] text-[var(--text-primary)] bg-transparent"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
@@ -118,32 +118,32 @@ export default function NotasFiscais() {
         </div>
         
         <div className="flex-1 overflow-y-auto p-6">
-          <h2 className="text-lg font-bold text-slate-100 mb-4">Notas Emitidas</h2>
-          <table className="w-full border-collapse border border-slate-600 text-sm">
+          <h2 className="text-lg font-bold text-[var(--text-primary)] mb-4">Notas Emitidas</h2>
+          <table className="w-full border-collapse border border-[var(--border)] text-sm">
             <thead>
-              <tr className="bg-slate-700/50 border-b border-slate-600">
-                <th className="text-left py-2 px-3 font-semibold text-slate-100 border-r border-slate-600">Nº da Nota</th>
-                <th className="text-left py-2 px-3 font-semibold text-slate-100 border-r border-slate-600">Receita Vinculada</th>
-                <th className="text-left py-2 px-3 font-semibold text-slate-100 border-r border-slate-600">Data Emissão</th>
-                <th className="text-right py-2 px-3 font-semibold text-slate-100">Valor</th>
+              <tr className="bg-[var(--bg-surface)] border-b border-[var(--border)]">
+                <th className="text-left py-2 px-3 font-semibold text-[var(--text-primary)] border-r border-[var(--border)]">Nº da Nota</th>
+                <th className="text-left py-2 px-3 font-semibold text-[var(--text-primary)] border-r border-[var(--border)]">Receita Vinculada</th>
+                <th className="text-left py-2 px-3 font-semibold text-[var(--text-primary)] border-r border-[var(--border)]">Data Emissão</th>
+                <th className="text-right py-2 px-3 font-semibold text-[var(--text-primary)]">Valor</th>
               </tr>
             </thead>
             <tbody>
               {carregando ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-8 text-slate-400 border-b border-slate-600">Carregando...</td>
+                  <td colSpan={4} className="text-center py-8 text-[var(--text-muted)] border-b border-[var(--border)]">Carregando...</td>
                 </tr>
               ) : filteredNotas.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-8 text-slate-400 border-b border-slate-600">Nenhuma nota fiscal registrada.</td>
+                  <td colSpan={4} className="text-center py-8 text-[var(--text-muted)] border-b border-[var(--border)]">Nenhuma nota fiscal registrada.</td>
                 </tr>
               ) : (
                 filteredNotas.map((n) => (
-                  <tr key={n.id} className="border-b border-slate-600 hover:bg-slate-700/50">
-                    <td className="py-2 px-3 border-r border-slate-600 text-slate-100 font-medium">{n.numero_nota}</td>
-                    <td className="py-2 px-3 border-r border-slate-600 text-slate-300">{n.receitas?.descricao || '—'}</td>
-                    <td className="py-2 px-3 border-r border-slate-600 text-slate-300">{n.data_emissao ? new Date(n.data_emissao + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
-                    <td className="py-2 px-3 text-right font-medium text-slate-100">
+                  <tr key={n.id} className="border-b border-[var(--border)] hover:bg-[var(--bg-surface)]">
+                    <td className="py-2 px-3 border-r border-[var(--border)] text-[var(--text-primary)] font-medium">{n.numero_nota}</td>
+                    <td className="py-2 px-3 border-r border-[var(--border)] text-[var(--text-secondary)]">{n.receitas?.descricao || '—'}</td>
+                    <td className="py-2 px-3 border-r border-[var(--border)] text-[var(--text-secondary)]">{n.data_emissao ? new Date(n.data_emissao + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+                    <td className="py-2 px-3 text-right font-medium text-[var(--text-primary)]">
                       {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n.valor))}
                     </td>
                   </tr>

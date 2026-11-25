@@ -7,8 +7,8 @@ interface FormSectionProps {
 
 export default function FormSection({ title, children }: FormSectionProps) {
   return (
-    <section className="bg-white border border-slate-200 rounded-[24px] p-6 mb-8">
-      <h2 className="text-lg font-semibold text-slate-800 mb-4">{title}</h2>
+    <section className="bg-white border border-[var(--border)] rounded-[24px] p-6 mb-8">
+      <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">{title}</h2>
       {children}
     </section>
   );

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function PrivacidadePage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen bg-[var(--bg-surface)]">
       <main className="max-w-3xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
         {/* Navegação de retorno */}
         <div className="mb-8">
@@ -23,7 +23,7 @@ export default function PrivacidadePage() {
         </div>
 
         {/* Cabeçalho */}
-        <header className="border-b border-gray-200 dark:border-slate-800 pb-8 mb-8">
+        <header className="border-b border-gray-200  pb-8 mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 text-xs font-semibold mb-4">
             <ShieldCheck className="w-3.5 h-3.5" />
             Conformidade & Privacidade

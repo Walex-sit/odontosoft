@@ -105,22 +105,22 @@ export default function ManageRolePermissionsModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-[24px] shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--bg-surface)]">
+      <div className="bg-[var(--bg-surface)] rounded-[24px] shadow-md w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50 dark:bg-slate-950 shrink-0">
+        <div className="p-6 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-base)] dark:bg-[var(--bg-base)] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 text-blue-600 rounded-xl">
+            <div className="p-2 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-xl">
               <Shield className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Editar Permissões</h2>
-              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{roleName}</p>
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">Editar Permissões</h2>
+              <p className="text-sm font-semibold text-[var(--text-muted)]">{roleName}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-200/50 rounded-full transition-colors"
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--border)]/50 rounded-full transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -130,30 +130,30 @@ export default function ManageRolePermissionsModal({
         <div className="p-6 overflow-y-auto space-y-4">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-10">
-              <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-4" />
-              <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando permissões...</p>
+              <Loader2 className="h-8 w-8 text-[var(--primary)] animate-spin mb-4" />
+              <p className="text-sm text-[var(--text-muted)] font-semibold">Carregando permissões...</p>
             </div>
           ) : (
             permissions.map((perm) => (
-              <div key={perm.id} className="flex items-start justify-between gap-4 p-4 rounded-xl border border-slate-100 bg-white dark:bg-slate-800">
+              <div key={perm.id} className="flex items-start justify-between gap-4 p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
                 <div>
-                  <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">{perm.label}</p>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">{perm.description}</p>
+                  <p className="font-bold text-[var(--text-primary)] text-sm">{perm.label}</p>
+                  <p className="text-xs font-semibold text-[var(--text-muted)] mt-0.5">{perm.description}</p>
                 </div>
                 
                 {/* Toggle Switch */}
                 <button
                   type="button"
                   onClick={() => handleToggle(perm.id)}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${
-                    perm.enabled ? 'bg-blue-600' : 'bg-slate-200'
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 focus:ring-offset-2 ${
+                    perm.enabled ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'
                   } ${role === 'admin' ? 'opacity-50 cursor-not-allowed' : ''}`}
                   role="switch"
                   aria-checked={perm.enabled}
                 >
                   <span
                     aria-hidden="true"
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-slate-800 shadow ring-0 transition duration-200 ease-in-out ${
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[var(--bg-surface)] shadow ring-0 transition duration-200 ease-in-out ${
                       perm.enabled ? 'translate-x-5' : 'translate-x-0'
                     }`}
                   />
@@ -164,21 +164,21 @@ export default function ManageRolePermissionsModal({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 bg-slate-50 dark:bg-slate-950 shrink-0 flex justify-end gap-3">
+        <div className="p-6 border-t border-[var(--border)] bg-[var(--bg-base)] dark:bg-[var(--bg-base)] shrink-0 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:text-slate-100 hover:bg-slate-200/50 rounded-xl transition-colors"
+            className="px-5 py-2.5 text-sm font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border)]/50 rounded-xl transition-colors"
           >
             Cancelar
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving || role === 'admin'}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md shadow-blue-500/20"
+            className="flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm transition-all "
           >
             {isSaving ? (
               <span className="flex items-center gap-2">
-                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="h-4 w-4 border-2 border-[var(--bg-surface)] border-t-transparent rounded-full animate-spin" />
                 Salvando...
               </span>
             ) : (

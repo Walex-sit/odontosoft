@@ -160,11 +160,11 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
             value={form.nome || ''}
             onChange={handleChange}
             placeholder="Nome completo"
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm"
+            className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm"
             required
           />
           <div className="flex gap-2">
-            <select name="ddd" value={form.ddd || ''} onChange={handleChange} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm w-24">
+            <select name="ddd" value={form.ddd || ''} onChange={handleChange} className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm w-24">
               <option value="">DDI</option>
               <option value="+55">+55</option>
               <option value="+1">+1</option>
@@ -174,33 +174,33 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
               value={form.celular || ''}
               onChange={handleChange}
               placeholder="Celular"
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm flex-1"
+              className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm flex-1"
             />
           </div>
-          <select name="lembretes" value={form.lembretes || ''} onChange={handleChange} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm">
+          <select name="lembretes" value={form.lembretes || ''} onChange={handleChange} className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm">
             <option value="">Lembretes automáticos</option>
             <option value="email">Email</option>
             <option value="sms">SMS</option>
           </select>
-          <input name="email" type="email" value={form.email || ''} onChange={handleChange} placeholder="E-mail" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="telefone_fixo" value={form.telefone_fixo || ''} onChange={handleChange} placeholder="Telefone fixo" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="como_conheceu" value={form.como_conheceu || ''} onChange={handleChange} placeholder="Como conheceu a clínica" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="profissao" value={form.profissao || ''} onChange={handleChange} placeholder="Profissão" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <select name="genero" value={form.genero || ''} onChange={handleChange} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm">
+          <input name="email" type="email" value={form.email || ''} onChange={handleChange} placeholder="E-mail" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="telefone_fixo" value={form.telefone_fixo || ''} onChange={handleChange} placeholder="Telefone fixo" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="como_conheceu" value={form.como_conheceu || ''} onChange={handleChange} placeholder="Como conheceu a clínica" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="profissao" value={form.profissao || ''} onChange={handleChange} placeholder="Profissão" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <select name="genero" value={form.genero || ''} onChange={handleChange} className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm">
             <option value="">Gênero</option>
             <option value="masculino">Masculino</option>
             <option value="feminino">Feminino</option>
             <option value="outro">Outro</option>
           </select>
-          <label className="flex items-center space-x-2 text-sm text-slate-700 dark:text-slate-300">
+          <label className="flex items-center space-x-2 text-sm text-[var(--text-secondary)]">
             <input type="checkbox" name="estrangeiro" checked={form.estrangeiro} onChange={handleChange} className="rounded" />
             <span>Paciente estrangeiro</span>
           </label>
-          <input type="date" name="data_nascimento" value={form.data_nascimento?.substring(0,10) || ''} onChange={handleChange} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="cpf_raw" value={form.cpf_raw || ''} onChange={handleChange} placeholder={patient.cpf_hash ? `***.${patient.cpf_hash.substring(0, 6)}` : 'CPF'} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="rg" value={form.rg || ''} onChange={handleChange} placeholder="RG" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="foto_url" value={form.foto_url || ''} onChange={handleChange} placeholder="URL da foto" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <textarea name="observacoes" value={form.observacoes || ''} onChange={handleChange} placeholder="Observações" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm md:col-span-2" rows={3} />
+          <input type="date" name="data_nascimento" value={form.data_nascimento?.substring(0,10) || ''} onChange={handleChange} className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="cpf_raw" value={form.cpf_raw || ''} onChange={handleChange} placeholder={patient.cpf_hash ? `***.${patient.cpf_hash.substring(0, 6)}` : 'CPF'} className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="rg" value={form.rg || ''} onChange={handleChange} placeholder="RG" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="foto_url" value={form.foto_url || ''} onChange={handleChange} placeholder="URL da foto" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <textarea name="observacoes" value={form.observacoes || ''} onChange={handleChange} placeholder="Observações" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm md:col-span-2" rows={3} />
         </div>
       </FormSection>
 
@@ -220,17 +220,17 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
               )}
             </div>
             <div className="flex-1">
-              <label className="flex items-center gap-2.5 cursor-pointer font-bold text-sm text-slate-800 dark:text-slate-100">
+              <label className="flex items-center gap-2.5 cursor-pointer font-bold text-sm text-[var(--text-primary)]">
                 <input
                   type="checkbox"
                   name="lgpd_aceite"
                   checked={form.lgpd_aceite}
                   onChange={(e) => handleLgpdToggle(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 rounded border-[var(--border-medium)] text-[var(--primary)] focus:ring-[var(--primary)]/30"
                 />
                 <span>Aceite LGPD (Consentimento de Uso de Dados)</span>
               </label>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 O paciente autoriza o tratamento de seus dados pessoais e sensíveis para fins de atendimento odontológico e prontuário clínico, conforme a Lei Geral de Proteção de Dados (LGPD — Lei Federal nº 13.709/2018).
               </p>
               {form.lgpd_aceite && form.lgpd_aceite_em && (
@@ -250,7 +250,7 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
 
       {/* Categorias */}
       <FormSection title="Categorias">
-        <select name="categoria_id" value={form.categoria_id || ''} onChange={handleChange} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm w-full">
+        <select name="categoria_id" value={form.categoria_id || ''} onChange={handleChange} className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm w-full">
           <option value="">Selecione a categoria</option>
         </select>
       </FormSection>
@@ -258,40 +258,40 @@ export default function EditPatientForm({ patient }: { patient: Patient }) {
       {/* Contato de Emergência */}
       <FormSection title="Contato de Emergência">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input name="contato_emerg_nome" value={form.contato_emerg_nome || ''} onChange={handleChange} placeholder="Nome" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="contato_emerg_telefone" value={form.contato_emerg_telefone || ''} onChange={handleChange} placeholder="Telefone" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
+          <input name="contato_emerg_nome" value={form.contato_emerg_nome || ''} onChange={handleChange} placeholder="Nome" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="contato_emerg_telefone" value={form.contato_emerg_telefone || ''} onChange={handleChange} placeholder="Telefone" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
         </div>
       </FormSection>
 
       {/* Endereço */}
       <FormSection title="Endereço">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input name="cep" value={form.cep || ''} onChange={handleChange} placeholder="CEP" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="endereco" value={form.endereco || ''} onChange={handleChange} placeholder="Endereço" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="numero" value={form.numero || ''} onChange={handleChange} placeholder="Número" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="complemento" value={form.complemento || ''} onChange={handleChange} placeholder="Complemento" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="bairro" value={form.bairro || ''} onChange={handleChange} placeholder="Bairro" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="cidade" value={form.cidade || ''} onChange={handleChange} placeholder="Cidade" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="estado" value={form.estado || ''} onChange={handleChange} placeholder="Estado" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
+          <input name="cep" value={form.cep || ''} onChange={handleChange} placeholder="CEP" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="endereco" value={form.endereco || ''} onChange={handleChange} placeholder="Endereço" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="numero" value={form.numero || ''} onChange={handleChange} placeholder="Número" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="complemento" value={form.complemento || ''} onChange={handleChange} placeholder="Complemento" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="bairro" value={form.bairro || ''} onChange={handleChange} placeholder="Bairro" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="cidade" value={form.cidade || ''} onChange={handleChange} placeholder="Cidade" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="estado" value={form.estado || ''} onChange={handleChange} placeholder="Estado" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
         </div>
       </FormSection>
 
       {/* Responsável */}
       <FormSection title="Responsável (se menor/dependente)">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input name="responsavel_nome" value={form.responsavel_nome || ''} onChange={handleChange} placeholder="Nome do responsável" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="responsavel_cpf" value={form.responsavel_cpf || ''} onChange={handleChange} placeholder="CPF" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input type="date" name="responsavel_nascimento" value={form.responsavel_nascimento?.substring(0,10) || ''} onChange={handleChange} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
+          <input name="responsavel_nome" value={form.responsavel_nome || ''} onChange={handleChange} placeholder="Nome do responsável" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="responsavel_cpf" value={form.responsavel_cpf || ''} onChange={handleChange} placeholder="CPF" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input type="date" name="responsavel_nascimento" value={form.responsavel_nascimento?.substring(0,10) || ''} onChange={handleChange} className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
         </div>
       </FormSection>
 
       {/* Dados do Convênio */}
       <FormSection title="Dados do Convênio">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input name="convenio" value={form.convenio || ''} onChange={handleChange} placeholder="Convênio" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="titular_convenio" value={form.titular_convenio || ''} onChange={handleChange} placeholder="Titular do convênio" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="numero_carteirinha" value={form.numero_carteirinha || ''} onChange={handleChange} placeholder="Número da carteirinha" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
-          <input name="cpf_responsavel_convenio" value={form.cpf_responsavel_convenio || ''} onChange={handleChange} placeholder="CPF do Responsável" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-[12px] p-2.5 text-sm" />
+          <input name="convenio" value={form.convenio || ''} onChange={handleChange} placeholder="Convênio" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="titular_convenio" value={form.titular_convenio || ''} onChange={handleChange} placeholder="Titular do convênio" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="numero_carteirinha" value={form.numero_carteirinha || ''} onChange={handleChange} placeholder="Número da carteirinha" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
+          <input name="cpf_responsavel_convenio" value={form.cpf_responsavel_convenio || ''} onChange={handleChange} placeholder="CPF do Responsável" className="bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-primary)] rounded-[12px] p-2.5 text-sm" />
         </div>
       </FormSection>
 

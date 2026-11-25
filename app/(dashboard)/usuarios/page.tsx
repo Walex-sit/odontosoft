@@ -30,10 +30,10 @@ function validarSenha(senha: string): string | null {
 }
 
 const ROLE_LABELS: Record<Role, { label: string; color: string }> = {
-  admin: { label: 'Administrador', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+  admin: { label: 'Administrador', color: 'bg-[var(--primary-subtle)] text-[var(--primary)] border-[var(--primary)]/40' },
   dentista: { label: 'Dentista', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
   recepcao: { label: 'Recepção', color: 'bg-amber-100 text-amber-700 border-amber-200' },
-  financeiro: { label: 'Financeiro', color: 'bg-violet-100 text-violet-700 border-violet-200' },
+  financeiro: { label: 'Financeiro', color: 'bg-[var(--primary-subtle)] text-[var(--primary)] border-[var(--primary)]/40' },
 }
 
 export default function Usuarios() {
@@ -134,17 +134,17 @@ export default function Usuarios() {
   useEffect(() => { carregarUsuarios() }, [])
 
   return (
-    <div className="flex w-full h-full overflow-hidden text-slate-100 font-sans text-sm">
+    <div className="flex w-full h-full overflow-hidden text-[var(--text-primary)] font-sans text-sm">
       {/* Column 2: Filters / Context */}
-      <aside className="w-72 border-r border-slate-600 bg-slate-700/50 flex flex-col h-full shrink-0 overflow-y-auto">
-        <div className="p-5 border-b border-slate-600 bg-slate-700">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Equipe</h2>
-          <p className="text-xs text-slate-400 mt-1">Controle de acessos</p>
+      <aside className="w-72 border-r border-[var(--border)] bg-[var(--bg-surface)] flex flex-col h-full shrink-0 overflow-y-auto">
+        <div className="p-5 border-b border-[var(--border)] bg-[var(--bg-surface)]">
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">Equipe</h2>
+          <p className="text-xs text-[var(--text-muted)] mt-1">Controle de acessos</p>
         </div>
 
         {/* Formulário Criar Usuário */}
-        <div className="p-5 border-b border-slate-600 bg-slate-700">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Adicionar Usuário</h3>
+        <div className="p-5 border-b border-[var(--border)] bg-[var(--bg-surface)]">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-4">Adicionar Usuário</h3>
           {erro && (
             <div className="mb-3 p-2 bg-red-50 text-red-600 text-xs border border-red-200 rounded">
               {erro}
@@ -152,47 +152,47 @@ export default function Usuarios() {
           )}
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Nome</label>
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Nome</label>
               <input
                 type="text"
                 value={form.nome}
                 onChange={e => setFieldValue('nome', e.target.value)}
-                className="w-full px-3 py-1.5 border border-slate-600 rounded text-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-1.5 border border-[var(--border)] rounded text-sm focus:outline-none focus:border-[var(--primary)]/40"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Email</label>
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Email</label>
               <input
                 type="email"
                 value={form.email}
                 onChange={e => setFieldValue('email', e.target.value)}
-                className="w-full px-3 py-1.5 border border-slate-600 rounded text-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-1.5 border border-[var(--border)] rounded text-sm focus:outline-none focus:border-[var(--primary)]/40"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Senha</label>
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Senha</label>
               <div className="relative">
                 <input
                   type={mostrarSenha ? 'text' : 'password'}
                   value={form.senha}
                   onChange={e => setFieldValue('senha', e.target.value)}
-                  className="w-full px-3 py-1.5 pr-8 border border-slate-600 rounded text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-1.5 pr-8 border border-[var(--border)] rounded text-sm focus:outline-none focus:border-[var(--primary)]/40"
                 />
                 <button
                   type="button"
                   onClick={() => setMostrarSenha(!mostrarSenha)}
-                  className="absolute inset-y-0 right-2 flex items-center text-slate-400"
+                  className="absolute inset-y-0 right-2 flex items-center text-[var(--text-muted)]"
                 >
                   {mostrarSenha ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Perfil</label>
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Perfil</label>
               <select
                 value={form.role}
                 onChange={e => setFieldValue('role', e.target.value as Role)}
-                className="w-full px-3 py-1.5 border border-slate-600 rounded text-sm bg-slate-700 focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-1.5 border border-[var(--border)] rounded text-sm bg-[var(--bg-surface)] focus:outline-none focus:border-[var(--primary)]/40"
               >
                 <option value="admin">Administrador</option>
                 <option value="dentista">Dentista</option>
@@ -203,7 +203,7 @@ export default function Usuarios() {
             <button
               onClick={salvarUsuario}
               disabled={salvando}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-semibold text-xs transition-colors mt-2 disabled:opacity-50"
+              className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-4 py-2 rounded font-semibold text-xs transition-colors mt-2 disabled:opacity-50"
             >
               {salvando ? 'Salvando...' : 'Adicionar Usuário'}
             </button>
@@ -212,83 +212,83 @@ export default function Usuarios() {
 
         {/* Filtros */}
         <div className="p-5">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-4">
             <Filter size={14} /> Perfis
           </div>
           <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
-              <input type="checkbox" defaultChecked className="rounded border-slate-600" /> Administradores
+            <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer">
+              <input type="checkbox" defaultChecked className="rounded border-[var(--border)]" /> Administradores
             </label>
-            <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
-              <input type="checkbox" defaultChecked className="rounded border-slate-600" /> Dentistas
+            <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer">
+              <input type="checkbox" defaultChecked className="rounded border-[var(--border)]" /> Dentistas
             </label>
-            <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
-              <input type="checkbox" defaultChecked className="rounded border-slate-600" /> Recepção
+            <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer">
+              <input type="checkbox" defaultChecked className="rounded border-[var(--border)]" /> Recepção
             </label>
-            <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
-              <input type="checkbox" defaultChecked className="rounded border-slate-600" /> Financeiro
+            <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer">
+              <input type="checkbox" defaultChecked className="rounded border-[var(--border)]" /> Financeiro
             </label>
           </div>
         </div>
       </aside>
 
       {/* Column 3: Main Workspace */}
-      <main className="flex-1 flex flex-col h-full bg-slate-800 relative min-w-0">
-        <header className="h-14 border-b border-slate-600 flex items-center justify-between px-6 shrink-0 bg-slate-700/80">
-          <div className="flex items-center gap-2 text-slate-400 w-96">
+      <main className="flex-1 flex flex-col h-full bg-[var(--bg-surface)] relative min-w-0">
+        <header className="h-14 border-b border-[var(--border)] flex items-center justify-between px-6 shrink-0 bg-[var(--bg-surface)]">
+          <div className="flex items-center gap-2 text-[var(--text-muted)] w-96">
             <Search size={16} />
             <input
               type="text"
               placeholder="Buscar usuário..."
-              className="bg-transparent border-none focus:outline-none text-sm w-full text-slate-100 placeholder-slate-400"
+              className="bg-transparent border-none focus:outline-none text-sm w-full text-[var(--text-primary)] placeholder-[var(--text-secondary)]"
             />
           </div>
-          <button className="flex items-center gap-1 bg-blue-600 hover:bg-blue-500 text-white rounded px-4 py-1.5 text-xs font-semibold">
+          <button className="flex items-center gap-1 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded px-4 py-1.5 text-xs font-semibold">
             <Plus size={14} /> Convidar
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-700/50">
-          <h1 className="text-lg font-bold text-slate-100 mb-6 flex items-center gap-2">
-            <Users size={20} className="text-blue-600" /> Usuários do Sistema ({usuarios.length})
+        <div className="flex-1 overflow-y-auto p-6 bg-[var(--bg-surface)]">
+          <h1 className="text-lg font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+            <Users size={20} className="text-[var(--primary)]" /> Usuários do Sistema ({usuarios.length})
           </h1>
 
-          <div className="bg-slate-700 border border-slate-600 rounded shadow-sm overflow-hidden">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded shadow-sm overflow-hidden">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-slate-700 border-b border-slate-600 text-xs font-bold text-slate-300">
+              <thead className="bg-[var(--bg-surface)] border-b border-[var(--border)] text-xs font-bold text-[var(--text-secondary)]">
                 <tr>
-                  <th className="p-3 w-10 text-center border-r border-slate-600">
-                    <input type="checkbox" className="rounded border-slate-600" />
+                  <th className="p-3 w-10 text-center border-r border-[var(--border)]">
+                    <input type="checkbox" className="rounded border-[var(--border)]" />
                   </th>
-                  <th className="p-3 border-r border-slate-600">Nome do Usuário</th>
-                  <th className="p-3 border-r border-slate-600 w-48">ID do Sistema</th>
+                  <th className="p-3 border-r border-[var(--border)]">Nome do Usuário</th>
+                  <th className="p-3 border-r border-[var(--border)] w-48">ID do Sistema</th>
                   <th className="p-3 w-48">Perfil de Acesso</th>
                 </tr>
               </thead>
-              <tbody className="text-sm text-slate-100">
+              <tbody className="text-sm text-[var(--text-primary)]">
                 {carregando ? (
                   <tr>
-                    <td colSpan={4} className="p-6 text-center text-slate-400">Carregando...</td>
+                    <td colSpan={4} className="p-6 text-center text-[var(--text-muted)]">Carregando...</td>
                   </tr>
                 ) : usuarios.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="p-6 text-center text-slate-400">Nenhum usuário encontrado.</td>
+                    <td colSpan={4} className="p-6 text-center text-[var(--text-muted)]">Nenhum usuário encontrado.</td>
                   </tr>
                 ) : (
                   usuarios.map(u => {
                     const info = ROLE_LABELS[u.role] || ROLE_LABELS['recepcao']
                     return (
-                      <tr key={u.id} className="border-b border-slate-600 hover:bg-slate-700/50 transition-colors">
-                        <td className="p-3 text-center border-r border-slate-600">
-                          <input type="checkbox" className="rounded border-slate-600" />
+                      <tr key={u.id} className="border-b border-[var(--border)] hover:bg-[var(--bg-surface)] transition-colors">
+                        <td className="p-3 text-center border-r border-[var(--border)]">
+                          <input type="checkbox" className="rounded border-[var(--border)]" />
                         </td>
-                        <td className="p-3 border-r border-slate-600 font-semibold flex items-center gap-3">
-                          <div className="w-8 h-8 rounded bg-slate-200 text-slate-300 font-bold flex items-center justify-center text-xs">
+                        <td className="p-3 border-r border-[var(--border)] font-semibold flex items-center gap-3">
+                          <div className="w-8 h-8 rounded bg-[var(--border)] text-[var(--text-secondary)] font-bold flex items-center justify-center text-xs">
                             {(u.nome || 'U').charAt(0).toUpperCase()}
                           </div>
                           {u.nome || 'Sem Nome'}
                         </td>
-                        <td className="p-3 border-r border-slate-600 text-xs text-slate-400 font-mono">
+                        <td className="p-3 border-r border-[var(--border)] text-xs text-[var(--text-muted)] font-mono">
                           {u.id}
                         </td>
                         <td className="p-3">

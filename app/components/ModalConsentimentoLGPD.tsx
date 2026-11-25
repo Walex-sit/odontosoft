@@ -19,7 +19,6 @@ import {
 } from 'lucide-react'
 import { jsPDF } from 'jspdf'
 import { toast } from 'sonner'
-import { supabase } from '@/app/lib/supabaseClient'
 import {
   registrarConsentimento,
   getTermosPrivacidade,
@@ -79,6 +78,18 @@ const FINALIDADES_PADRAO: FinalidadeConfig[] = [
   },
 ]
 
+/**
+ * Estado inicial das finalidades: todas sem autorização presumida (LGPD Art. 8º §4º).
+ * O paciente deve manifestar sua escolha expressamente para cada finalidade.
+ */
+const FINALIDADES_ESTADO_INICIAL: Record<string, boolean> = {
+  whatsapp: false,
+  email_marketing: false,
+  imagens_redes_sociais: false,
+  compartilhamento_plano_saude: false,
+  pesquisa_clinica: false,
+}
+
 export default function ModalConsentimentoLGPD({
   isOpen,
   onClose,
@@ -103,14 +114,13 @@ export default function ModalConsentimentoLGPD({
     'eletronico_interno' | 'whatsapp_confirmado' | 'email_confirmado' | 'upload_legado'
   >('eletronico_interno')
 
-  // Estado das finalidades granulares
+  // Estado das finalidades granulares — sem autorização presumida (LGPD Art. 8º §4º)
   const [finalidades, setFinalidades] = useState<Record<string, boolean>>({
-    whatsapp: true,
-    email_marketing: true,
-    imagens_redes_sociais: false,
-    compartilhamento_plano_saude: true,
-    pesquisa_clinica: false,
+    ...FINALIDADES_ESTADO_INICIAL,
   })
+
+  // Flag para indicar ausência de termos
+  const [semTermosDisponiveis, setSemTermosDisponiveis] = useState(false)
 
   // Carregar termos de privacidade disponíveis
   useEffect(() => {
@@ -118,21 +128,15 @@ export default function ModalConsentimentoLGPD({
 
     async function carregarTermos() {
       setLoadingTermos(true)
+      setSemTermosDisponiveis(false)
       const res = await getTermosPrivacidade()
       if (res.success && res.data.length > 0) {
         setTermos(res.data)
         setTermoSelecionadoId(res.data[0].id)
       } else {
-        const { data } = await supabase
-          .from('termos_privacidade')
-          .select('*')
-          .eq('ativo', true)
-          .order('publicado_em', { ascending: false })
-
-        if (data && data.length > 0) {
-          setTermos(data as TermoPrivacidade[])
-          setTermoSelecionadoId(data[0].id)
-        }
+        setTermos([])
+        setTermoSelecionadoId('')
+        setSemTermosDisponiveis(true)
       }
       setLoadingTermos(false)
     }
@@ -159,17 +163,11 @@ export default function ModalConsentimentoLGPD({
         }))
       }
     } else {
-      // Resetar para defaults
+      // Resetar para defaults — sem autorização presumida (LGPD Art. 8º §4º)
       setResponsavelTipo('proprio_paciente')
       setResponsavelNome('')
       setMeio('eletronico_interno')
-      setFinalidades({
-        whatsapp: true,
-        email_marketing: true,
-        imagens_redes_sociais: false,
-        compartilhamento_plano_saude: true,
-        pesquisa_clinica: false,
-      })
+      setFinalidades({ ...FINALIDADES_ESTADO_INICIAL })
     }
   }, [consentimentoAtual, isOpen])
 
@@ -429,6 +427,11 @@ export default function ModalConsentimentoLGPD({
   }
 
   async function handleSalvar() {
+    if (termos.length === 0 || !termoSelecionadoId) {
+      toast.error('Nenhum termo de privacidade ativo encontrado para a clínica. Cadastre ou ative um termo antes de registrar consentimentos.')
+      return
+    }
+
     if (responsavelTipo !== 'proprio_paciente' && !responsavelNome.trim()) {
       toast.error('Informe o nome completo do responsável legal.')
       return
@@ -463,21 +466,21 @@ export default function ModalConsentimentoLGPD({
   }
 
   return (
-    <div data-testid="modal-consentimento-lgpd" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
+    <div data-testid="modal-consentimento-lgpd" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--bg-base)] animate-in fade-in duration-200">
+      <div className="relative w-full max-w-2xl max-h-[90vh] bg-[var(--bg-surface)] rounded-3xl shadow-md border border-[var(--border)] flex flex-col overflow-hidden">
         
         {/* Header */}
-        <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
+        <div className="px-6 py-5 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-base)] dark:bg-[var(--bg-surface)]">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">
                 Registro de Consentimento LGPD & TCLE
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                Paciente: <span className="font-bold text-slate-700 dark:text-slate-200">{pacienteNome}</span>
+              <p className="text-xs text-[var(--text-muted)] font-medium">
+                Paciente: <span className="font-bold text-[var(--text-secondary)]">{pacienteNome}</span>
               </p>
             </div>
           </div>
@@ -485,30 +488,30 @@ export default function ModalConsentimentoLGPD({
             onClick={onClose}
             disabled={salvando}
             data-testid="btn-fechar-modal-lgpd"
-            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors disabled:opacity-50"
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]  hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] rounded-xl transition-colors disabled:opacity-50"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Body rolável */}
-        <div className="p-6 overflow-y-auto space-y-6 text-sm text-slate-600 dark:text-slate-300">
+        <div className="p-6 overflow-y-auto space-y-6 text-sm text-[var(--text-secondary)]">
           
           {/* Card Informativo Base Legal */}
-          <div className="bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/80 dark:border-blue-900/40 rounded-2xl p-4 flex gap-3 text-xs leading-relaxed">
-            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-            <div className="text-blue-900 dark:text-blue-200">
+          <div className="bg-[var(--primary-subtle)] border border-[var(--primary)]/30 rounded-2xl p-4 flex gap-3 text-xs leading-relaxed">
+            <Info className="h-4 w-4 text-[var(--primary)] shrink-0 mt-0.5" />
+            <div className="text-[var(--primary)] ">
               <span className="font-bold">Base Legal (LGPD Lei 13.709/18 & Resolução CFO 198/2019):</span> Cada manifestação é registrada de forma auditável e com versionamento do termo. O titular tem o direito de escolher as finalidades específicas autorizadas e revogá-las a qualquer momento.
             </div>
           </div>
 
           {/* Seleção do Termo de Privacidade */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2">
               Termo de Referência
             </label>
             {loadingTermos ? (
-              <div className="h-11 bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse" />
+              <div className="h-11 bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] rounded-xl animate-pulse" />
             ) : termos.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {termos.map(t => (
@@ -519,28 +522,39 @@ export default function ModalConsentimentoLGPD({
                     onClick={() => setTermoSelecionadoId(t.id)}
                     className={`p-3 rounded-xl border text-left flex items-start justify-between transition-all ${
                       termoSelecionadoId === t.id
-                        ? 'bg-blue-50/70 dark:bg-blue-950/40 border-blue-500 text-blue-900 dark:text-blue-200 ring-1 ring-blue-500'
-                        : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300'
+                        ? 'bg-[var(--primary-subtle)] border-[var(--primary)]/40 text-[var(--primary)]  ring-1 ring-[var(--primary)]'
+                        : 'bg-[var(--bg-base)] border-[var(--border)]  text-[var(--text-secondary)] hover:border-[var(--border-medium)]'
                     }`}
                   >
                     <div>
                       <div className="flex items-center gap-2 font-bold text-xs">
-                        <FileText className="h-3.5 w-3.5 text-blue-500" />
+                        <FileText className="h-3.5 w-3.5 text-[var(--primary)]" />
                         Termo {t.tipo} (v{t.versao})
                       </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                      <p className="text-[11px] text-[var(--text-muted)] mt-1">
                         Publicado em {new Date(t.publicado_em).toLocaleDateString('pt-BR')}
                       </p>
                     </div>
                     {termoSelecionadoId === t.id && (
-                      <CheckCircle2 className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
                     )}
                   </button>
                 ))}
               </div>
             ) : (
-              <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 rounded-xl text-xs text-amber-800 dark:text-amber-300">
-                Termo padrão da clínica será associado automaticamente (v2024.1).
+              <div
+                data-testid="aviso-sem-termos"
+                className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 rounded-2xl text-xs text-amber-900 dark:text-amber-200 flex items-start gap-3"
+              >
+                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-bold text-amber-950 dark:text-amber-100">
+                    Nenhum termo de privacidade ativo encontrado para a clínica.
+                  </p>
+                  <p className="leading-relaxed text-amber-800 dark:text-amber-300">
+                    Para registrar o consentimento em conformidade com a LGPD e CFO, o administrador deve primeiro cadastrar e ativar um termo de privacidade no sistema.
+                  </p>
+                </div>
               </div>
             )}
           </div>
@@ -548,14 +562,14 @@ export default function ModalConsentimentoLGPD({
           {/* Titular / Responsável */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2">
                 Manifestado Por
               </label>
               <select
                 data-testid="select-responsavel-tipo"
                 value={responsavelTipo}
                 onChange={e => setResponsavelTipo(e.target.value as any)}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)]/30 outline-none"
               >
                 <option value="proprio_paciente">O Próprio Paciente (Titular)</option>
                 <option value="pai_mae">Pai ou Mãe (Menor de idade)</option>
@@ -565,14 +579,14 @@ export default function ModalConsentimentoLGPD({
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2">
                 Meio de Coleta
               </label>
               <select
                 data-testid="select-meio-coleta"
                 value={meio}
                 onChange={e => setMeio(e.target.value as any)}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)]/30 outline-none"
               >
                 <option value="eletronico_interno">Eletrônico Interno (Consultório / Tablet)</option>
                 <option value="whatsapp_confirmado">WhatsApp Confirmado</option>
@@ -594,7 +608,7 @@ export default function ModalConsentimentoLGPD({
                 value={responsavelNome}
                 onChange={e => setResponsavelNome(e.target.value)}
                 placeholder="Ex: Maria dos Santos Silva"
-                className="w-full bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-xl px-3.5 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-amber-500 outline-none"
+                className="w-full bg-[var(--bg-surface)] border border-amber-300 dark:border-amber-700 rounded-xl px-3.5 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:ring-2 focus:ring-amber-500 outline-none"
               />
               <p className="text-[11px] text-amber-700 dark:text-amber-300/80 mt-1">
                 Obrigatório para menores de 18 anos ou titulares legalmente representados.
@@ -605,10 +619,10 @@ export default function ModalConsentimentoLGPD({
           {/* Finalidades Granulares (Consentimento Específico) */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
                 Finalidades Específicas Autorizadas
               </label>
-              <span className="text-[11px] font-medium text-slate-400">
+              <span className="text-[11px] font-medium text-[var(--text-muted)]">
                 Controle granular (Art. 8º §4º LGPD)
               </span>
             </div>
@@ -626,14 +640,14 @@ export default function ModalConsentimentoLGPD({
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3.5 select-none ${
                       isChecked
                         ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/70'
-                        : 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                        : 'bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border-[var(--border)] hover:border-[var(--border-medium)] '
                     }`}
                   >
                     <div
                       className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
                         isChecked
                           ? 'bg-emerald-500 text-white shadow-sm'
-                          : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+                          : 'bg-[var(--border)] dark:bg-[var(--border)] text-[var(--text-muted)]'
                       }`}
                     >
                       <IconComponent className="h-4 w-4" />
@@ -644,8 +658,8 @@ export default function ModalConsentimentoLGPD({
                         <span
                           className={`text-sm font-bold ${
                             isChecked
-                              ? 'text-slate-800 dark:text-slate-100'
-                              : 'text-slate-500 dark:text-slate-400 line-through'
+                              ? 'text-[var(--text-primary)]'
+                              : 'text-[var(--text-muted)] line-through'
                           }`}
                         >
                           {fin.label}
@@ -654,13 +668,13 @@ export default function ModalConsentimentoLGPD({
                           className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                             isChecked
                               ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300'
-                              : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                              : 'bg-[var(--border)] text-[var(--text-secondary)] dark:bg-[var(--border)] dark:text-[var(--text-muted)]'
                           }`}
                         >
                           {isChecked ? 'Autorizado' : 'Negado'}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5 leading-snug">
                         {fin.descricao}
                       </p>
                     </div>
@@ -673,10 +687,10 @@ export default function ModalConsentimentoLGPD({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col gap-3">
+        <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] flex flex-col gap-3">
           {/* Linha superior: dica + botão de impressão */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-[var(--text-muted)]">
               Ao salvar, um registro auditável de conformidade será anexado à ficha do paciente.
             </p>
             <button
@@ -684,8 +698,8 @@ export default function ModalConsentimentoLGPD({
               data-testid="btn-imprimir-termo-fisico"
               onClick={handleImprimirTermoFisico}
               disabled={gerandoImpressao || salvando}
-              className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl border border-blue-400 dark:border-blue-600
-                text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/30
+              className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--primary)]/40 
+                text-[var(--primary)] hover:bg-[var(--primary-subtle)] hover:bg-[var(--primary-subtle)]
                 text-xs font-bold transition-all active:scale-95
                 disabled:opacity-40 disabled:cursor-not-allowed
                 w-full sm:w-auto justify-center"
@@ -705,16 +719,16 @@ export default function ModalConsentimentoLGPD({
               onClick={onClose}
               disabled={salvando}
               data-testid="btn-cancelar-consentimento"
-              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition-all disabled:opacity-50 active:scale-95"
+              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-[var(--border-medium)]  text-[var(--text-secondary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] text-xs font-bold transition-all disabled:opacity-50 active:scale-95"
             >
               Cancelar
             </button>
             <button
               type="button"
               onClick={handleSalvar}
-              disabled={salvando}
+              disabled={salvando || loadingTermos || termos.length === 0 || !termoSelecionadoId}
               data-testid="btn-salvar-consentimento"
-              className="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/20 transition-all active:scale-95 disabled:opacity-50"
+              className="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {salvando ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

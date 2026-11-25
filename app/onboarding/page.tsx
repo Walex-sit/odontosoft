@@ -92,26 +92,23 @@ function OnboardingForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 sm:p-6 font-sans">
-      <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
-        {/* Glow de fundo */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex flex-col items-center justify-center p-4 sm:p-6 font-sans">
+      <div className="w-full max-w-2xl bg-[var(--bg-surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-10 shadow-md dark:shadow-none relative overflow-hidden">
         {/* Header de Boas-Vindas */}
         <div className="text-center mb-8 relative z-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-4 shadow-lg shadow-emerald-500/10">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[var(--success-bg)] border border-[var(--success)]/30 text-[var(--success)] mb-4">
             <CheckCircle2 className="w-8 h-8" />
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--primary-subtle)] border border-[var(--primary)]/30 text-[var(--primary)] text-xs font-semibold mb-3">
             <Sparkles className="w-3.5 h-3.5" />
             Assinatura Ativada {isMock && '(Modo Desenvolvimento)'}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
             Bem-vindo ao OdontoSoft!
           </h1>
-          <p className="text-sm text-slate-400 mt-2 max-w-md mx-auto leading-relaxed">
+          <p className="text-sm text-[var(--text-muted)] mt-2 max-w-md mx-auto leading-relaxed">
             Seu pagamento foi confirmado com sucesso. Vamos configurar os dados iniciais
             da sua clínica para personalizar prontuários, receituários e impressos.
           </p>
@@ -129,19 +126,19 @@ function OnboardingForm() {
               <CheckCircle2 className="w-7 h-7" />
             </div>
             <h2 className="text-xl font-bold text-white">Clínica configurada com sucesso!</h2>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[var(--text-muted)]">
               Redirecionando para o seu painel de controle...
             </p>
             <div className="flex justify-center pt-2">
-              <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+              <Loader2 className="w-6 h-6 animate-spin text-[var(--primary)]" />
             </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
             {/* Nome Fantasia */}
             <div>
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <Building2 className="w-4 h-4 text-blue-400" />
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                <Building2 className="w-4 h-4 text-[var(--primary)]" />
                 Nome Fantasia da Clínica *
               </label>
               <input
@@ -150,15 +147,15 @@ function OnboardingForm() {
                 placeholder="Ex: Odonto Arte & Saúde"
                 value={nomeClinica}
                 onChange={(e) => setNomeClinica(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-500"
+                className="w-full px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all placeholder-[var(--text-secondary)]"
               />
             </div>
 
             {/* Grid: CNPJ/CPF + Telefone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-blue-400" />
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-[var(--primary)]" />
                   CNPJ ou CPF do Responsável
                 </label>
                 <input
@@ -166,13 +163,13 @@ function OnboardingForm() {
                   placeholder="00.000.000/0001-00"
                   value={cnpjOuCpf}
                   onChange={(e) => setCnpjOuCpf(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-500"
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all placeholder-[var(--text-secondary)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <Phone className="w-4 h-4 text-blue-400" />
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <Phone className="w-4 h-4 text-[var(--primary)]" />
                   Telefone / WhatsApp Comercial
                 </label>
                 <input
@@ -180,7 +177,7 @@ function OnboardingForm() {
                   placeholder="(11) 99999-9999"
                   value={telefone}
                   onChange={(e) => setTelefone(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-500"
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all placeholder-[var(--text-secondary)]"
                 />
               </div>
             </div>
@@ -188,8 +185,8 @@ function OnboardingForm() {
             {/* Grid: Responsável Técnico + CRO */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <UserCheck className="w-4 h-4 text-blue-400" />
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <UserCheck className="w-4 h-4 text-[var(--primary)]" />
                   Responsável Técnico
                 </label>
                 <input
@@ -197,13 +194,13 @@ function OnboardingForm() {
                   placeholder="Dr(a). Nome Sobrenome"
                   value={nomeResponsavel}
                   onChange={(e) => setNomeResponsavel(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-500"
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all placeholder-[var(--text-secondary)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-blue-400" />
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-[var(--primary)]" />
                   CRO / UF
                 </label>
                 <input
@@ -211,15 +208,15 @@ function OnboardingForm() {
                   placeholder="Ex: CRO-SP 123456"
                   value={croResponsavel}
                   onChange={(e) => setCroResponsavel(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-500"
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all placeholder-[var(--text-secondary)]"
                 />
               </div>
             </div>
 
             {/* Endereço */}
             <div>
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-blue-400" />
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                <MapPin className="w-4 h-4 text-[var(--primary)]" />
                 Endereço Completo
               </label>
               <input
@@ -227,7 +224,7 @@ function OnboardingForm() {
                 placeholder="Av. Paulista, 1000, Sala 52 - Bela Vista, São Paulo/SP"
                 value={endereco}
                 onChange={(e) => setEndereco(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-500"
+                className="w-full px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all placeholder-[var(--text-secondary)]"
               />
             </div>
 
@@ -236,7 +233,7 @@ function OnboardingForm() {
               <button
                 type="submit"
                 disabled={salvando}
-                className="w-full py-4 px-6 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-98 disabled:opacity-50 text-white font-bold text-base transition-all flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30"
+                className="w-full py-4 px-6 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-98 disabled:opacity-50 text-[var(--on-primary)] font-bold text-base transition-all flex items-center justify-center gap-2 shadow-xl "
               >
                 {salvando ? (
                   <>
@@ -262,9 +259,9 @@ export default function OnboardingPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
-          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-sm text-slate-400 font-medium">Carregando dados da sua clínica...</p>
+        <div className="min-h-screen bg-[var(--bg-base)] flex flex-col items-center justify-center p-4">
+          <div className="w-10 h-10 border-2 border-[var(--primary)]/40 border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-sm text-[var(--text-muted)] font-medium">Carregando dados da sua clínica...</p>
         </div>
       }
     >

@@ -90,19 +90,19 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div 
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200"
+        className="bg-[var(--bg-surface)] border border-[var(--border)] w-full max-w-2xl rounded-2xl shadow-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/80 dark:bg-slate-950/40">
+        <div className="p-6 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-base)] dark:bg-[var(--bg-base)]">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Editar Paciente</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Atualize os dados e a conformidade legal do paciente</p>
+            <h2 className="text-xl font-bold text-[var(--text-primary)]">Editar Paciente</h2>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">Atualize os dados e a conformidade legal do paciente</p>
           </div>
           <button 
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+            className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]  transition-colors p-2 hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] rounded-lg"
           >
             <X className="h-5 w-5" />
           </button>
@@ -111,7 +111,7 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
         <div className="p-6 overflow-y-auto max-h-[70vh]">
           <form id="edit-patient-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="md:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                 Nome Completo *
               </label>
               <input
@@ -119,12 +119,12 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
                 name="nome"
                 value={formData.nome || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border-medium)]  rounded-xl text-[var(--text-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all text-sm"
               />
             </div>
             
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                 CPF
               </label>
               <input
@@ -132,24 +132,24 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
                 placeholder="Deixe em branco para manter o atual"
                 value={formData.cpf_raw || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm placeholder-slate-400"
+                className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border-medium)]  rounded-xl text-[var(--text-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all text-sm placeholder-[var(--text-secondary)]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                 Telefone
               </label>
               <input
                 name="telefone"
                 value={formData.telefone || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border-medium)]  rounded-xl text-[var(--text-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                 E-mail
               </label>
               <input
@@ -157,12 +157,12 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
                 type="email"
                 value={formData.email || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border-medium)]  rounded-xl text-[var(--text-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                 Data de Nascimento
               </label>
               <input
@@ -170,31 +170,31 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
                 type="date"
                 value={formData.data_nascimento || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm [color-scheme:light]"
+                className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border-medium)]  rounded-xl text-[var(--text-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all text-sm [color-scheme:light]"
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                 Endereço
               </label>
               <input
                 name="endereco"
                 value={formData.endereco || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border-medium)]  rounded-xl text-[var(--text-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all text-sm"
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
                 Convênio Odontológico
               </label>
               <input
                 name="convenio"
                 value={formData.convenio || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border-medium)]  rounded-xl text-[var(--text-primary)] focus:bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all text-sm"
               />
             </div>
 
@@ -213,7 +213,7 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
                   )}
                 </div>
                 <div className="flex-1">
-                  <label htmlFor="modal_lgpd_aceite" className={`flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-slate-100 ${!hasCpf ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
+                  <label htmlFor="modal_lgpd_aceite" className={`flex items-center gap-2 font-bold text-sm text-[var(--text-primary)] ${!hasCpf ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
                     <input
                       type="checkbox"
                       id="modal_lgpd_aceite"
@@ -221,11 +221,11 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
                       disabled={!hasCpf}
                       checked={Boolean(formData.lgpd_aceite)}
                       onChange={(e) => handleLgpdToggle(e.target.checked)}
-                      className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
+                      className="h-4 w-4 rounded border-[var(--border-medium)]  text-[var(--primary)] focus:ring-[var(--primary)]/30 disabled:opacity-50"
                     />
                     <span>Aceite LGPD (Consentimento de Uso de Dados)</span>
                   </label>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                  <p className="text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)] mt-1">
                     Autorização para tratamento e armazenamento de dados pessoais e de saúde para fins de prontuário clínico e atendimento odontológico (Lei Federal nº 13.709/2018).
                   </p>
                   {!hasCpf ? (
@@ -247,11 +247,11 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
           </form>
         </div>
 
-        <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/50 flex justify-end gap-3">
+        <div className="p-6 border-t border-[var(--border)] bg-[var(--bg-base)] dark:bg-[var(--bg-base)] flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl font-bold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 border border-slate-200 dark:border-slate-700 transition-colors"
+            className="px-5 py-2.5 rounded-xl font-bold text-[var(--text-secondary)] bg-[var(--bg-base)] hover:bg-[var(--border)] border border-[var(--border)]  transition-colors"
           >
             Cancelar
           </button>
@@ -259,7 +259,7 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
             type="submit"
             form="edit-patient-form"
             disabled={salvando}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-sm transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-6 py-2.5 rounded-xl font-bold shadow-sm transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {salvando ? (
               <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white inline-block" />

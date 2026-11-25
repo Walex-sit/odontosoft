@@ -188,8 +188,8 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-slate-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="h-screen w-full flex items-center justify-center bg-[var(--bg-base)]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary)]/40"></div>
       </div>
     )
   }
@@ -197,21 +197,21 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
   // Aviso claro se o perfil não for encontrado
   if (!profile) {
     return (
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-950 text-white p-6 text-center">
-        <div className="bg-slate-900 p-8 rounded-lg border border-slate-800 max-w-md shadow-xl">
-          <div className="text-amber-500 mb-4">
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] p-6 text-center">
+        <div className="bg-[var(--bg-surface)] p-8 rounded-lg border border-[var(--border)] max-w-md shadow-md dark:shadow-none">
+          <div className="text-[var(--warning)] mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
           <h1 className="text-xl font-bold mb-2">Acesso Restrito</h1>
-          <p className="text-slate-400 mb-6">
+          <p className="text-[var(--text-secondary)] mb-6">
             Seu usuário está autenticado, mas não encontramos um perfil ativo associado em nosso sistema (user_profiles).
             Por favor, entre em contato com o administrador da sua clínica para habilitar seu acesso.
           </p>
           <button
             onClick={() => supabase.auth.signOut()}
-            className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition-colors"
+            className="w-full py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded font-medium transition-colors"
           >
             Sair e tentar novamente
           </button>

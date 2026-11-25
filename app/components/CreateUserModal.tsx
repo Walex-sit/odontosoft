@@ -93,20 +93,20 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-white dark:bg-slate-900 rounded-[28px] shadow-2xl w-full max-w-md overflow-hidden flex flex-col border border-slate-200/80 dark:border-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--bg-surface)] animate-in fade-in duration-150">
+      <div className="bg-[var(--bg-surface)] rounded-[28px] shadow-md w-full max-w-md overflow-hidden flex flex-col border border-[var(--border)]/80 ">
         
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-950/70 shrink-0">
+        <div className="p-6 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-base)] dark:bg-[var(--bg-base)] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 rounded-2xl border border-blue-100 dark:border-blue-900/50 shadow-2xs">
+            <div className="p-2.5 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-2xl border border-[var(--primary)]/40  shadow-2xs">
               <UserPlus className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-heading font-extrabold text-slate-800 dark:text-slate-100">
+              <h2 className="text-lg font-heading font-extrabold text-[var(--text-primary)]">
                 Novo Membro da Equipe
               </h2>
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-semibold text-[var(--text-muted)]">
                 Convide dentistas, recepcionistas ou administradores
               </p>
             </div>
@@ -114,7 +114,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-800 rounded-full transition-colors"
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--border)]/50 dark:hover:bg-[var(--bg-surface)] rounded-full transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -127,16 +127,16 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
               <Sparkles className="h-7 w-7" />
             </div>
             <div>
-              <h3 className="text-lg font-heading font-extrabold text-slate-900 dark:text-white">
+              <h3 className="text-lg font-heading font-extrabold text-[var(--text-primary)]">
                 Convite Gerado com Sucesso!
               </h3>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                O colaborador <strong className="text-slate-800 dark:text-slate-200">{formData.nome}</strong> foi registrado na clínica com o cargo <strong className="text-blue-600">{formData.role}</strong>.
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
+                O colaborador <strong className="text-[var(--text-primary)]">{formData.nome}</strong> foi registrado na clínica com o cargo <strong className="text-[var(--primary)]">{formData.role}</strong>.
               </p>
             </div>
 
-            <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-left">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+            <div className="p-3.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] rounded-2xl border border-[var(--border)] text-left">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
                 Link de Primeiro Acesso (Definir Senha)
               </p>
               <div className="flex items-center gap-2">
@@ -144,12 +144,12 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                   type="text"
                   readOnly
                   value={inviteSuccessLink}
-                  className="flex-1 bg-transparent text-xs text-slate-600 dark:text-slate-300 truncate outline-none select-all font-mono"
+                  className="flex-1 bg-transparent text-xs text-[var(--text-secondary)] truncate outline-none select-all font-mono"
                 />
                 <button
                   type="button"
                   onClick={handleCopyLink}
-                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shrink-0"
+                  className="px-3 py-1.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shrink-0"
                 >
                   {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                   {copied ? 'Copiado' : 'Copiar'}
@@ -160,7 +160,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
             <button
               type="button"
               onClick={handleFinishInvite}
-              className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-sm py-3 rounded-2xl transition-all shadow-sm"
+              className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] font-bold text-sm py-3 rounded-2xl transition-all"
             >
               Concluir
             </button>
@@ -170,14 +170,14 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
             <div className="p-6 space-y-4">
               
               {/* Seletor de Modo: Convite vs Senha Manual */}
-              <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100/80 dark:bg-slate-950 rounded-2xl border border-slate-200/60 dark:border-slate-800/80">
+              <div className="grid grid-cols-2 gap-2 p-1 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] rounded-2xl border border-[var(--border)]/60 ">
                 <button
                   type="button"
                   onClick={() => setMode('invite')}
                   className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
                     mode === 'invite'
-                      ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-2xs border border-slate-200/80 dark:border-slate-700'
-                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                      ? 'bg-[var(--bg-surface)] text-[var(--primary)] shadow-2xs border border-[var(--border)]/80 '
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] '
                   }`}
                 >
                   <Send className="h-3.5 w-3.5" />
@@ -188,8 +188,8 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                   onClick={() => setMode('manual')}
                   className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
                     mode === 'manual'
-                      ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-2xs border border-slate-200/80 dark:border-slate-700'
-                      : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                      ? 'bg-[var(--bg-surface)] text-[var(--primary)] shadow-2xs border border-[var(--border)]/80 '
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] '
                   }`}
                 >
                   <Key className="h-3.5 w-3.5" />
@@ -198,7 +198,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
                   Nome Completo
                 </label>
                 <input
@@ -206,13 +206,13 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                   required
                   value={formData.nome}
                   onChange={(e) => setFormData((p) => ({ ...p, nome: e.target.value }))}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                   placeholder="Ex: Dra. Mariana Costa"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
                   E-mail Profissional
                 </label>
                 <input
@@ -220,14 +220,14 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                   required
                   value={formData.email}
                   onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                   placeholder="Ex: mariana@odontosoft.com"
                 />
               </div>
 
               {mode === 'manual' && (
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
                     Senha Provisória
                   </label>
                   <div className="relative">
@@ -237,13 +237,13 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                       minLength={6}
                       value={formData.password}
                       onChange={(e) => setFormData((p) => ({ ...p, password: e.target.value }))}
-                      className="w-full px-4 py-2.5 pr-10 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                      className="w-full px-4 py-2.5 pr-10 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                       placeholder="Mínimo de 6 caracteres"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-300"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -252,14 +252,14 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
               )}
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
                   Cargo / Função (Permissões RBAC)
                 </label>
                 <select
                   required
                   value={formData.role}
                   onChange={(e) => setFormData((p) => ({ ...p, role: e.target.value }))}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer"
+                  className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all cursor-pointer"
                 >
                   <option value="dentista">Dentista (Atendimento &amp; Prontuário)</option>
                   <option value="recepcao">Recepção (Agenda &amp; Pacientes)</option>
@@ -270,14 +270,14 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
 
               {formData.role === 'dentista' && (
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
                     Especialidade
                   </label>
                   <input
                     type="text"
                     value={formData.especialidade || ''}
                     onChange={(e) => setFormData((p) => ({ ...p, especialidade: e.target.value }))}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                     placeholder="Ex: Ortodontia, Implantodontia..."
                   />
                 </div>
@@ -285,22 +285,22 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/70 mt-auto flex justify-end gap-3">
+            <div className="p-6 border-t border-[var(--border)] bg-[var(--bg-base)] dark:bg-[var(--bg-base)] mt-auto flex justify-end gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:text-slate-100 hover:bg-slate-200/50 rounded-xl transition-colors"
+                className="px-5 py-2.5 text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border)]/50 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl font-bold text-xs transition-all shadow-md shadow-blue-500/20 active:scale-95"
+                className="flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-xs transition-all  active:scale-95"
               >
                 {isSaving ? (
                   <span className="flex items-center gap-2">
-                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="h-4 w-4 border-2 border-[var(--bg-surface)] border-t-transparent rounded-full animate-spin" />
                     Processando...
                   </span>
                 ) : mode === 'invite' ? (

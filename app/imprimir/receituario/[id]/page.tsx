@@ -94,18 +94,18 @@ export default function ImprimirReceituario() {
   }, [id])
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen text-slate-500">Preparando documento...</div>
+    return <div className="flex items-center justify-center min-h-screen text-[var(--text-muted)]">Preparando documento...</div>
   }
 
   if (!receita) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen text-red-500 gap-2">
         <p className="font-bold text-lg">Receita não encontrada.</p>
-        <p className="text-sm text-slate-400">ID consultado: {id}</p>
-        <p className="text-xs text-slate-300">Se o erro persistir, aguarde alguns segundos e recarregue a página.</p>
+        <p className="text-sm text-[var(--text-muted)]">ID consultado: {id}</p>
+        <p className="text-xs text-[var(--text-secondary)]">Se o erro persistir, aguarde alguns segundos e recarregue a página.</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+          className="mt-4 px-4 py-2 bg-[var(--primary)] text-[var(--on-primary)] rounded-lg text-sm font-medium hover:bg-[var(--primary-hover)]"
         >
           Tentar novamente
         </button>
@@ -117,10 +117,10 @@ export default function ImprimirReceituario() {
   const dataFormatada = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(dataReceita)
 
   return (
-    <div className="bg-white min-h-screen w-full text-slate-900 print:bg-white p-8 max-w-[210mm] mx-auto print:p-0 print:m-0">
+    <div className="bg-white min-h-screen w-full text-[var(--text-primary)] print:bg-white p-8 max-w-[210mm] mx-auto print:p-0 print:m-0">
       
       {/* CABEÇALHO */}
-      <header className="flex flex-col items-center justify-center text-center border-b-2 border-slate-200 pb-6 mb-8 mt-4 print:mt-0">
+      <header className="flex flex-col items-center justify-center text-center border-b-2 border-[var(--border)] pb-6 mb-8 mt-4 print:mt-0">
         {clinica?.logo_url && (
           <img 
             src={clinica.logo_url} 
@@ -129,10 +129,10 @@ export default function ImprimirReceituario() {
             crossOrigin="anonymous" 
           />
         )}
-        <h1 className="text-2xl font-bold text-slate-800 uppercase tracking-wide">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] uppercase tracking-wide">
           {clinica?.nome_exibido || clinica?.nome || 'Clínica Odontológica'}
         </h1>
-        <div className="text-sm text-slate-500 mt-1 flex flex-col items-center gap-1">
+        <div className="text-sm text-[var(--text-muted)] mt-1 flex flex-col items-center gap-1">
           {clinica?.endereco && <span>{clinica.endereco}</span>}
           <div className="flex gap-4">
             {clinica?.telefone && <span>Tel: {clinica.telefone}</span>}
@@ -143,16 +143,16 @@ export default function ImprimirReceituario() {
 
       {/* IDENTIFICAÇÃO DO PACIENTE */}
       <section className="mb-8">
-        <h2 className="text-lg font-bold border-b border-slate-200 pb-2 mb-4 text-slate-700">IDENTIFICAÇÃO DO PACIENTE</h2>
+        <h2 className="text-lg font-bold border-b border-[var(--border)] pb-2 mb-4 text-[var(--text-secondary)]">IDENTIFICAÇÃO DO PACIENTE</h2>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="font-semibold text-slate-500">Nome: </span>
-            <span className="font-medium text-slate-800">{receita.pacientes?.nome}</span>
+            <span className="font-semibold text-[var(--text-muted)]">Nome: </span>
+            <span className="font-medium text-[var(--text-primary)]">{receita.pacientes?.nome}</span>
           </div>
           {receita.pacientes?.cpf_mascarado && (
             <div>
-              <span className="font-semibold text-slate-500">CPF: </span>
-              <span className="font-medium text-slate-800">{receita.pacientes.cpf_mascarado}</span>
+              <span className="font-semibold text-[var(--text-muted)]">CPF: </span>
+              <span className="font-medium text-[var(--text-primary)]">{receita.pacientes.cpf_mascarado}</span>
             </div>
           )}
         </div>
@@ -160,26 +160,26 @@ export default function ImprimirReceituario() {
 
       {/* PRESCRIÇÃO (CORPO) */}
       <section className="mb-12 flex-1">
-        <h2 className="text-lg font-bold border-b border-slate-200 pb-2 mb-6 text-slate-700 text-center uppercase">Receituário {receita.tipo_receituario === 'especial_azul' || receita.tipo_receituario === 'especial_branco' ? 'Controle Especial' : ''}</h2>
+        <h2 className="text-lg font-bold border-b border-[var(--border)] pb-2 mb-6 text-[var(--text-secondary)] text-center uppercase">Receituário {receita.tipo_receituario === 'especial_azul' || receita.tipo_receituario === 'especial_branco' ? 'Controle Especial' : ''}</h2>
         
         <div className="space-y-6">
           {itens.map((item, index) => (
             <div key={item.id} className="text-sm">
               <div className="flex justify-between items-baseline mb-1">
-                <div className="font-bold text-base text-slate-800">
+                <div className="font-bold text-base text-[var(--text-primary)]">
                   {index + 1}. {item.medicamento} {item.concentracao && `- ${item.concentracao}`}
                 </div>
-                <div className="font-bold text-slate-800">
+                <div className="font-bold text-[var(--text-primary)]">
                   ------------------------- {item.quantidade} {item.forma_farm}
                 </div>
               </div>
               
-              <div className="pl-6 text-slate-700 mt-2">
+              <div className="pl-6 text-[var(--text-secondary)] mt-2">
                 <span className="font-semibold block mb-1">Posologia:</span>
                 <p>{item.posologia}</p>
                 
                 {item.instrucoes && (
-                  <p className="mt-2 text-slate-500 italic">Obs: {item.instrucoes}</p>
+                  <p className="mt-2 text-[var(--text-muted)] italic">Obs: {item.instrucoes}</p>
                 )}
               </div>
             </div>
@@ -187,24 +187,24 @@ export default function ImprimirReceituario() {
         </div>
 
         {receita.observacoes && (
-          <div className="mt-8 p-4 bg-slate-50 border border-slate-100 rounded-lg text-sm print:bg-transparent print:border-none print:p-0">
-            <span className="font-bold text-slate-700 mb-1 block">Observações:</span>
-            <p className="text-slate-600">{receita.observacoes}</p>
+          <div className="mt-8 p-4 bg-[var(--bg-base)] border border-[var(--border)] rounded-lg text-sm print:bg-transparent print:border-none print:p-0">
+            <span className="font-bold text-[var(--text-secondary)] mb-1 block">Observações:</span>
+            <p className="text-[var(--text-secondary)]">{receita.observacoes}</p>
           </div>
         )}
       </section>
 
       {/* RODAPÉ */}
       <footer className="mt-auto pt-20">
-        <div className="text-center text-slate-600 text-sm mb-12">
+        <div className="text-center text-[var(--text-secondary)] text-sm mb-12">
           Local e Data: ____________________________, {dataFormatada}
         </div>
         
         <div className="flex flex-col items-center justify-center">
-          <div className="w-64 border-t border-slate-800 mb-2"></div>
-          <div className="font-bold text-slate-800 text-base">{receita.profiles?.nome || 'Dr(a).'}</div>
+          <div className="w-64 border-t border-[var(--border)] mb-2"></div>
+          <div className="font-bold text-[var(--text-primary)] text-base">{receita.profiles?.nome || 'Dr(a).'}</div>
           {clinica?.cro_responsavel && (
-            <div className="text-sm text-slate-500">CRO: {clinica.cro_responsavel}</div>
+            <div className="text-sm text-[var(--text-muted)]">CRO: {clinica.cro_responsavel}</div>
           )}
         </div>
       </footer>
@@ -213,7 +213,7 @@ export default function ImprimirReceituario() {
       <div className="fixed top-4 right-4 print:hidden">
         <button 
           onClick={() => window.print()} 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg font-medium transition-colors"
+          className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-4 py-2 rounded-lg shadow-lg font-medium transition-colors"
         >
           Imprimir Novamente
         </button>

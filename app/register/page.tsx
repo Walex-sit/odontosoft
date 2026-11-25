@@ -255,13 +255,9 @@ export default function RegisterPage() {
   const isLoading = step === 'loading' || enviandoCodigo
 
   return (
-    <div className="min-h-screen w-full flex font-sans antialiased selection:bg-blue-500 selection:text-white">
+    <div className="min-h-screen w-full flex font-sans antialiased selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
       {/* ── Painel Esquerdo (visual de autoridade odontológica e SaaS) ─────── */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0b3366] via-[#1258b8] to-[#0d84bf] flex-col items-center justify-center relative overflow-hidden select-none">
-        {/* Efeitos de luz e profundidade */}
-        <div className="absolute w-[620px] h-[620px] bg-white/5 rounded-full -top-28 -right-28 blur-3xl pointer-events-none" />
-        <div className="absolute w-[440px] h-[440px] bg-cyan-400/10 rounded-full bottom-0 -left-20 blur-3xl pointer-events-none" />
-
+      <div className="hidden lg:flex lg:w-1/2 bg-[#0F6E7A] flex-col items-center justify-center relative overflow-hidden select-none">
         {/* Grid pontilhado suave */}
         <div
           aria-hidden
@@ -275,7 +271,7 @@ export default function RegisterPage() {
 
         <div className="relative z-10 px-12 text-center max-w-lg">
           {/* Símbolo do SaaS */}
-          <div className="w-20 h-20 rounded-3xl bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-blue-950/40">
+          <div className="w-20 h-20 rounded-3xl bg-white/10 border border-white/20 flex items-center justify-center mx-auto mb-8">
             <svg
               width="42"
               height="42"
@@ -291,8 +287,8 @@ export default function RegisterPage() {
             </svg>
           </div>
 
-          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-cyan-200 text-xs font-semibold uppercase tracking-wider mb-4">
-            <Clock className="w-3.5 h-3.5 text-cyan-300" />
+          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold uppercase tracking-wider mb-4">
+            <Clock className="w-3.5 h-3.5 text-white" />
             Período de Teste · 7 Dias Grátis
           </span>
 
@@ -300,7 +296,7 @@ export default function RegisterPage() {
             Gestão Odontológica Segura e Previsível
           </h1>
 
-          <p className="mt-4 text-blue-100/80 text-sm leading-relaxed">
+          <p className="mt-4 text-white/90 text-sm leading-relaxed">
             Inicie a avaliação gratuita de 7 dias com recursos essenciais.
             Desbloqueie pacientes e odontograma ilimitados através do plano pago.
           </p>
@@ -323,16 +319,16 @@ export default function RegisterPage() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="flex items-start gap-3 bg-white/8 backdrop-blur-xs border border-white/10 rounded-2xl p-3.5"
+                className="flex items-start gap-3 bg-white/10 border border-white/15 rounded-2xl p-3.5"
               >
-                <div className="w-5 h-5 rounded-full bg-emerald-400/20 border border-emerald-400/40 flex items-center justify-center shrink-0 mt-0.5">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <div className="w-5 h-5 rounded-full bg-white/15 border border-white/30 flex items-center justify-center shrink-0 mt-0.5">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </div>
                 <div>
                   <p className="text-white text-xs font-semibold">{item.title}</p>
-                  <p className="text-blue-200/75 text-[11px]">{item.desc}</p>
+                  <p className="text-white/85 text-[11px]">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -341,25 +337,25 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Painel Direito (formulário interativo) ────────────────────────── */}
-      <div className="w-full lg:w-1/2 bg-[#f8fafc] flex items-center justify-center p-6 sm:p-10 relative overflow-y-auto">
+      <div className="w-full lg:w-1/2 bg-[var(--bg-base)] flex items-center justify-center p-6 sm:p-10 relative overflow-y-auto">
         <div className="w-full max-w-sm relative my-auto py-6">
 
           {/* ── CASO 1: Tela de Sucesso ── */}
           {step === 'success' && (
             <div className="flex flex-col items-center text-center py-10 space-y-5 animate-fadeIn">
-              <div className="w-20 h-20 rounded-full bg-emerald-100 border-2 border-emerald-300 flex items-center justify-center shadow-lg shadow-emerald-100 animate-pulse">
-                <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+              <div className="w-20 h-20 rounded-full bg-[var(--success-bg)] border-2 border-[var(--success)]/40 flex items-center justify-center">
+                <CheckCircle2 className="w-10 h-10 text-[var(--success)]" />
               </div>
               <div>
-                <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+                <h2 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
                   Conta Validada com Sucesso!
                 </h2>
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-sm text-[var(--text-muted)] mt-1">
                   O seu período de avaliação de 7 dias foi ativado.
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-xs font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
-                <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+              <div className="flex items-center gap-2 text-xs font-medium text-[var(--primary)] bg-[var(--primary-subtle)] px-4 py-2 rounded-full border border-[var(--primary)]/40">
+                <Loader2 className="w-4 h-4 animate-spin text-[var(--primary)]" />
                 A preparar o seu ambiente…
               </div>
             </div>
@@ -369,16 +365,16 @@ export default function RegisterPage() {
           {step === 'verify-code' && (
             <div className="space-y-5 animate-fadeIn">
               <div className="flex flex-col items-center text-center mb-5">
-                <div className="w-14 h-14 rounded-2xl bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-600 mb-3 shadow-xs">
+                <div className="w-14 h-14 rounded-2xl bg-[var(--primary-subtle)]/10 border border-[var(--primary)]/30 flex items-center justify-center text-[var(--primary)] mb-3 shadow-xs">
                   <KeyRound className="w-7 h-7" />
                 </div>
-                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                <h2 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
                   Confirme o seu Acesso
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                   Enviamos um código de verificação para seu e-mail:
                   <br />
-                  <strong className="text-slate-800 font-semibold">{formData.email}</strong>
+                  <strong className="text-[var(--text-primary)] font-semibold">{formData.email}</strong>
                 </p>
               </div>
 
@@ -399,7 +395,7 @@ export default function RegisterPage() {
 
               <form onSubmit={handleConfirmCode} className="space-y-4">
                 <div>
-                  <label htmlFor="input-codigo-otp" className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label htmlFor="input-codigo-otp" className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
                     Código de Confirmação (6 dígitos) <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -410,9 +406,9 @@ export default function RegisterPage() {
                     placeholder="000000"
                     value={codigoInput}
                     onChange={(e) => setCodigoInput(e.target.value.replace(/\D/g, ''))}
-                    className="w-full text-center tracking-[0.4em] font-mono text-2xl py-3 px-4 bg-white border border-slate-200 focus:border-blue-600 focus:ring-3 focus:ring-blue-600/15 rounded-xl font-bold text-slate-800 outline-none transition-all shadow-2xs"
+                    className="w-full text-center tracking-[0.4em] font-mono text-2xl py-3 px-4 bg-white border border-[var(--border)] focus:border-[var(--primary)]/40 focus:ring-3 focus:ring-[var(--primary)]/20 rounded-xl font-bold text-[var(--text-primary)] outline-none transition-all shadow-2xs"
                   />
-                  <p className="mt-1.5 text-[11px] text-slate-400 text-center">
+                  <p className="mt-1.5 text-[11px] text-[var(--text-muted)] text-center">
                     Código válido por 15 minutos.
                   </p>
                 </div>
@@ -420,7 +416,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={isLoading || codigoInput.length !== 6}
-                  className="w-full flex items-center justify-center gap-2 bg-[#1258b8] hover:bg-[#0e46a0] active:scale-[0.99] disabled:opacity-50 text-white py-3 rounded-xl font-bold text-sm shadow-md shadow-blue-200 transition-all cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-[0.99] disabled:opacity-50 text-[var(--on-primary)] py-3 rounded-xl font-bold text-sm shadow-sm transition-all cursor-pointer"
                 >
                   {isLoading ? (
                     <>
@@ -436,12 +432,12 @@ export default function RegisterPage() {
                 </button>
               </form>
 
-              <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
+              <div className="flex items-center justify-between pt-3 border-t border-[var(--border)] text-xs">
                 <button
                   type="button"
                   onClick={handleReenviarCodigo}
                   disabled={enviandoCodigo}
-                  className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 font-semibold disabled:opacity-50 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-[var(--primary)] hover:text-[var(--primary)] font-semibold disabled:opacity-50 transition-colors"
                 >
                   <RotateCcw className={`w-3.5 h-3.5 ${enviandoCodigo ? 'animate-spin' : ''}`} />
                   Reenviar código
@@ -450,7 +446,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setStep('form')}
-                  className="text-slate-500 hover:text-slate-700 font-medium transition-colors"
+                  className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] font-medium transition-colors"
                 >
                   Corrigir e-mail
                 </button>
@@ -463,16 +459,16 @@ export default function RegisterPage() {
             <>
               {/* Header do Formulário */}
               <div className="flex flex-col items-center mb-6 text-center">
-                <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-md shadow-blue-200 mb-3.5">
+                <div className="w-13 h-13 rounded-2xl bg-[var(--primary)] flex items-center justify-center shadow-sm mb-3.5">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 2C8.5 2 5 5.5 5 9c0 3 2 5.5 4 7l1 5h4l1-5c2-1.5 4-4 4-7 0-3.5-3.5-7-7-7z" />
                     <path d="M9 9h6M12 6v6" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-extrabold text-[#0f3469] tracking-tight">
+                <h2 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
                   Criar conta no OdontoSoft
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">
                   Avaliação gratuita de 7 dias com recursos essenciais
                 </p>
               </div>
@@ -502,7 +498,7 @@ export default function RegisterPage() {
                       <div className="mt-3 flex items-center gap-2">
                         <Link
                           href={`/login`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1258b8] hover:bg-[#0e46a0] text-white text-xs font-semibold shadow-xs transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-xs font-semibold shadow-xs transition-colors"
                         >
                           Iniciar sessão
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -510,7 +506,7 @@ export default function RegisterPage() {
                         <button
                           type="button"
                           onClick={() => setEmailJaEmUso(false)}
-                          className="px-2.5 py-1.5 text-xs text-slate-600 hover:text-slate-800 font-medium transition-colors"
+                          className="px-2.5 py-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium transition-colors"
                         >
                           Tentar outro e-mail
                         </button>
@@ -534,13 +530,13 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="register-nome-clinica"
-                    className="block text-xs font-semibold text-slate-700 mb-1.5"
+                    className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5"
                   >
                     Nome da Clínica <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Building2 className={`h-4 w-4 ${errors.nomeClinica ? 'text-rose-400' : 'text-slate-400'}`} />
+                      <Building2 className={`h-4 w-4 ${errors.nomeClinica ? 'text-rose-400' : 'text-[var(--text-muted)]'}`} />
                     </div>
                     <input
                       type="text"
@@ -551,10 +547,10 @@ export default function RegisterPage() {
                       placeholder="Ex: Clínica Sorriso Perfeito"
                       value={formData.nomeClinica}
                       onChange={(e) => handleChange('nomeClinica', e.target.value)}
-                      className={`w-full pl-10 pr-4 py-2.5 bg-white border rounded-xl text-slate-800 text-sm placeholder:text-slate-400 transition-all shadow-2xs disabled:opacity-60 focus:outline-hidden ${
+                      className={`w-full pl-10 pr-4 py-2.5 bg-white border rounded-xl text-[var(--text-primary)] text-sm placeholder:text-[var(--text-muted)] transition-all shadow-2xs disabled:opacity-60 focus:outline-hidden ${
                         errors.nomeClinica
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-3 focus:ring-rose-500/15'
-                          : 'border-slate-200 focus:border-[#1258b8] focus:ring-3 focus:ring-[#1258b8]/15'
+                          : 'border-[var(--border)] focus:border-[var(--primary)] focus:ring-3 focus:ring-[var(--primary)]/15'
                       }`}
                     />
                   </div>
@@ -570,13 +566,13 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="register-email"
-                    className="block text-xs font-semibold text-slate-700 mb-1.5"
+                    className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5"
                   >
                     E-mail do Administrador <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Mail className={`h-4 w-4 ${errors.email ? 'text-rose-400' : 'text-slate-400'}`} />
+                      <Mail className={`h-4 w-4 ${errors.email ? 'text-rose-400' : 'text-[var(--text-muted)]'}`} />
                     </div>
                     <input
                       type="email"
@@ -588,10 +584,10 @@ export default function RegisterPage() {
                       placeholder="dr.exemplo@clinica.com"
                       value={formData.email}
                       onChange={(e) => handleChange('email', e.target.value)}
-                      className={`w-full pl-10 pr-4 py-2.5 bg-white border rounded-xl text-slate-800 text-sm placeholder:text-slate-400 transition-all shadow-2xs disabled:opacity-60 focus:outline-hidden ${
+                      className={`w-full pl-10 pr-4 py-2.5 bg-white border rounded-xl text-[var(--text-primary)] text-sm placeholder:text-[var(--text-muted)] transition-all shadow-2xs disabled:opacity-60 focus:outline-hidden ${
                         errors.email
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-3 focus:ring-rose-500/15'
-                          : 'border-slate-200 focus:border-[#1258b8] focus:ring-3 focus:ring-[#1258b8]/15'
+                          : 'border-[var(--border)] focus:border-[var(--primary)] focus:ring-3 focus:ring-[var(--primary)]/15'
                       }`}
                     />
                   </div>
@@ -607,13 +603,13 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="register-password"
-                    className="block text-xs font-semibold text-slate-700 mb-1.5"
+                    className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5"
                   >
                     Senha de Acesso <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Lock className={`h-4 w-4 ${errors.senha ? 'text-rose-400' : 'text-slate-400'}`} />
+                      <Lock className={`h-4 w-4 ${errors.senha ? 'text-rose-400' : 'text-[var(--text-muted)]'}`} />
                     </div>
                     <input
                       type={mostrarSenha ? 'text' : 'password'}
@@ -625,17 +621,17 @@ export default function RegisterPage() {
                       placeholder="Mínimo de 8 caracteres"
                       value={formData.senha}
                       onChange={(e) => handleChange('senha', e.target.value)}
-                      className={`w-full pl-10 pr-10 py-2.5 bg-white border rounded-xl text-slate-800 text-sm placeholder:text-slate-400 transition-all shadow-2xs disabled:opacity-60 focus:outline-hidden ${
+                      className={`w-full pl-10 pr-10 py-2.5 bg-white border rounded-xl text-[var(--text-primary)] text-sm placeholder:text-[var(--text-muted)] transition-all shadow-2xs disabled:opacity-60 focus:outline-hidden ${
                         errors.senha
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-3 focus:ring-rose-500/15'
-                          : 'border-slate-200 focus:border-[#1258b8] focus:ring-3 focus:ring-[#1258b8]/15'
+                          : 'border-[var(--border)] focus:border-[var(--primary)] focus:ring-3 focus:ring-[var(--primary)]/15'
                       }`}
                     />
                     <button
                       type="button"
                       onClick={() => setMostrarSenha(!mostrarSenha)}
                       tabIndex={-1}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
                       title={mostrarSenha ? 'Ocultar senha' : 'Ver senha'}
                     >
                       {mostrarSenha ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -643,17 +639,17 @@ export default function RegisterPage() {
                   </div>
 
                   {formData.senha.length > 0 && (
-                    <div className="mt-2 p-2 bg-slate-50 border border-slate-200/60 rounded-lg flex items-center justify-between text-[11px] text-slate-500">
-                      <span className={`flex items-center gap-1 ${senhaValidaTamanho ? 'text-emerald-600 font-medium' : 'text-slate-400'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${senhaValidaTamanho ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                    <div className="mt-2 p-2 bg-[var(--bg-base)] border border-[var(--border)] rounded-lg flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
+                      <span className={`flex items-center gap-1 ${senhaValidaTamanho ? 'text-[var(--success)] font-medium' : 'text-[var(--text-secondary)]'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${senhaValidaTamanho ? 'bg-[var(--success)]' : 'bg-[var(--border-medium)]'}`} />
                         8+ caracteres
                       </span>
-                      <span className={`flex items-center gap-1 ${senhaTemLetra ? 'text-emerald-600 font-medium' : 'text-slate-400'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${senhaTemLetra ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                      <span className={`flex items-center gap-1 ${senhaTemLetra ? 'text-[var(--success)] font-medium' : 'text-[var(--text-secondary)]'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${senhaTemLetra ? 'bg-[var(--success)]' : 'bg-[var(--border-medium)]'}`} />
                         Pelo menos 1 letra
                       </span>
-                      <span className={`flex items-center gap-1 ${senhaTemNumero ? 'text-emerald-600 font-medium' : 'text-slate-400'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${senhaTemNumero ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                      <span className={`flex items-center gap-1 ${senhaTemNumero ? 'text-[var(--success)] font-medium' : 'text-[var(--text-secondary)]'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${senhaTemNumero ? 'bg-[var(--success)]' : 'bg-[var(--border-medium)]'}`} />
                         Pelo menos 1 número
                       </span>
                     </div>
@@ -671,13 +667,13 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="register-confirm-password"
-                    className="block text-xs font-semibold text-slate-700 mb-1.5"
+                    className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5"
                   >
                     Confirmar Senha <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Lock className={`h-4 w-4 ${errors.confirmarSenha ? 'text-rose-400' : 'text-slate-400'}`} />
+                      <Lock className={`h-4 w-4 ${errors.confirmarSenha ? 'text-rose-400' : 'text-[var(--text-muted)]'}`} />
                     </div>
                     <input
                       type={mostrarConfirmar ? 'text' : 'password'}
@@ -689,17 +685,17 @@ export default function RegisterPage() {
                       placeholder="Repita a sua senha"
                       value={formData.confirmarSenha}
                       onChange={(e) => handleChange('confirmarSenha', e.target.value)}
-                      className={`w-full pl-10 pr-10 py-2.5 bg-white border rounded-xl text-slate-800 text-sm placeholder:text-slate-400 transition-all shadow-2xs disabled:opacity-60 focus:outline-hidden ${
+                      className={`w-full pl-10 pr-10 py-2.5 bg-white border rounded-xl text-[var(--text-primary)] text-sm placeholder:text-[var(--text-muted)] transition-all shadow-2xs disabled:opacity-60 focus:outline-hidden ${
                         errors.confirmarSenha
                           ? 'border-rose-300 focus:border-rose-500 focus:ring-3 focus:ring-rose-500/15'
-                          : 'border-slate-200 focus:border-[#1258b8] focus:ring-3 focus:ring-[#1258b8]/15'
+                          : 'border-[var(--border)] focus:border-[var(--primary)] focus:ring-3 focus:ring-[var(--primary)]/15'
                       }`}
                     />
                     <button
                       type="button"
                       onClick={() => setMostrarConfirmar(!mostrarConfirmar)}
                       tabIndex={-1}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
                       title={mostrarConfirmar ? 'Ocultar senha' : 'Ver senha'}
                     >
                       {mostrarConfirmar ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -719,7 +715,7 @@ export default function RegisterPage() {
                   id="register-submit"
                   data-testid="btn-register-submit"
                   disabled={isLoading}
-                  className="w-full flex items-center justify-center gap-2 bg-[#1258b8] hover:bg-[#0e46a0] active:scale-[0.99] disabled:opacity-65 text-white py-3 rounded-xl font-bold text-sm shadow-md shadow-blue-200 transition-all cursor-pointer mt-2"
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-[0.99] disabled:opacity-65 text-[var(--on-primary)] py-3 rounded-xl font-bold text-sm shadow-sm transition-all cursor-pointer mt-2"
                 >
                   {isLoading ? (
                     <>
@@ -736,19 +732,19 @@ export default function RegisterPage() {
               </form>
 
               {/* Link para Login */}
-              <p className="mt-5 text-center text-xs sm:text-sm text-slate-500">
+              <p className="mt-5 text-center text-xs sm:text-sm text-[var(--text-muted)]">
                 Já tem uma conta registada?{' '}
                 <Link
                   href="/login"
-                  className="text-[#1258b8] font-semibold hover:underline transition-all"
+                  className="text-[var(--primary)] font-semibold hover:underline transition-all"
                 >
                   Entrar
                 </Link>
               </p>
 
               {/* Rodapé de Segurança e LGPD */}
-              <div className="mt-5 pt-4 border-t border-slate-200/60 flex items-center justify-center gap-1.5 text-center text-[11px] text-slate-400">
-                <ShieldCheck className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <div className="mt-5 pt-4 border-t border-[var(--border)]/60 flex items-center justify-center gap-1.5 text-center text-[11px] text-[var(--text-muted)]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[var(--text-muted)] shrink-0" />
                 <span>Dados encriptados e isolados com conformidade CFO/LGPD.</span>
               </div>
             </>

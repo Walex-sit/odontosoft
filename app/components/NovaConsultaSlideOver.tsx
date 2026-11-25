@@ -41,17 +41,17 @@ export default function NovaConsultaSlideOver({ isOpen, onClose }: NovaConsultaS
   return (
     <>
       <div 
-        className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 z-[60] bg-[var(--bg-base)] transition-opacity"
         onClick={onClose}
       />
       
-      <div className="fixed right-0 top-0 h-screen w-full sm:w-[500px] bg-slate-700 shadow-2xl z-[70] flex flex-col transform transition-transform duration-300 ease-in-out border-l border-slate-600">
+      <div className="fixed right-0 top-0 h-screen w-full sm:w-[500px] bg-[var(--bg-surface)] shadow-md z-[70] flex flex-col transform transition-transform duration-300 ease-in-out border-l border-[var(--border)]">
         
-        <div className="flex items-center justify-between p-6 border-b border-slate-600 shrink-0">
-          <h2 className="text-slate-100 font-bold text-lg">Nova Consulta</h2>
+        <div className="flex items-center justify-between p-6 border-b border-[var(--border)] shrink-0">
+          <h2 className="text-[var(--text-primary)] font-bold text-lg">Nova Consulta</h2>
           <button 
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-100 transition-colors bg-slate-800 p-1.5 rounded-md hover:bg-slate-600 border border-slate-600"
+            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors bg-[var(--bg-surface)] p-1.5 rounded-md hover:bg-[var(--border-medium)] border border-[var(--border)]"
           >
             <X size={18} />
           </button>
@@ -61,10 +61,10 @@ export default function NovaConsultaSlideOver({ isOpen, onClose }: NovaConsultaS
           <form id="nova-consulta-form" onSubmit={handleSalvar} className="space-y-6">
             
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Paciente</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Paciente</label>
               <select 
                 required
-                className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
               >
                 <option value="">Buscar paciente...</option>
                 <option value="1">Carlos Silva</option>
@@ -73,10 +73,10 @@ export default function NovaConsultaSlideOver({ isOpen, onClose }: NovaConsultaS
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Profissional (Dentista)</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Profissional (Dentista)</label>
               <select 
                 required
-                className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
               >
                 <option value="">Selecione o profissional...</option>
                 {dentistas.map(d => (
@@ -87,28 +87,28 @@ export default function NovaConsultaSlideOver({ isOpen, onClose }: NovaConsultaS
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Data</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Data</label>
                 <input 
                   type="date" 
                   required
-                  className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Horário</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Horário</label>
                 <input 
                   type="time" 
                   required
-                  className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Procedimento</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Procedimento</label>
               <select 
                 required
-                className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
               >
                 <option value="">Selecione...</option>
                 <option value="avaliacao">Avaliação Inicial</option>
@@ -120,11 +120,11 @@ export default function NovaConsultaSlideOver({ isOpen, onClose }: NovaConsultaS
           </form>
         </div>
 
-        <div className="border-t border-slate-600 bg-slate-700 p-4 flex justify-end gap-3 shrink-0">
+        <div className="border-t border-[var(--border)] bg-[var(--bg-surface)] p-4 flex justify-end gap-3 shrink-0">
           <button 
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-transparent text-slate-300 hover:text-white hover:bg-slate-600 border border-slate-600 rounded-md text-sm font-semibold transition-colors"
+            className="px-4 py-2 bg-transparent text-[var(--text-secondary)] hover:text-white hover:bg-[var(--border-medium)] border border-[var(--border)] rounded-md text-sm font-semibold transition-colors"
           >
             Cancelar
           </button>

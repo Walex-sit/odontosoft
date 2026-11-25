@@ -52,20 +52,20 @@ export default function PerformancePage() {
   }
 
   return (
-    <div className="flex flex-col w-full h-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 overflow-y-auto">
+    <div className="flex flex-col w-full h-full bg-[var(--bg-base)] dark:bg-[var(--bg-base)] text-[var(--text-primary)] overflow-y-auto">
       {/* Header */}
-      <header className="p-8 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
+      <header className="p-8 bg-[var(--bg-surface)] border-b border-[var(--border)]  shadow-sm shrink-0">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Desempenho e Comissões</h1>
-            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">Acompanhe seus procedimentos e valores gerados</p>
+            <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Desempenho e Comissões</h1>
+            <p className="text-sm font-semibold text-[var(--text-muted)] mt-1">Acompanhe seus procedimentos e valores gerados</p>
           </div>
-          <div className="flex items-center gap-3 bg-slate-100 p-2 rounded-xl">
-            <span className="text-sm font-bold text-slate-600 dark:text-slate-300 px-2">Visualizando como:</span>
+          <div className="flex items-center gap-3 bg-[var(--bg-base)] p-2 rounded-xl">
+            <span className="text-sm font-bold text-[var(--text-secondary)] px-2">Visualizando como:</span>
             <select 
               value={selectedDentistaId}
               onChange={e => setSelectedDentistaId(e.target.value)}
-              className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="bg-[var(--bg-surface)] border border-[var(--border-medium)]  rounded-lg px-3 py-1.5 text-sm font-bold outline-none focus:ring-2 focus:ring-[var(--primary)]/20"
             >
               {dentistas.map(d => (
                 <option key={d.id} value={d.id}>{d.nome}</option>
@@ -80,79 +80,79 @@ export default function PerformancePage() {
         
         {/* Cards de Resumo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-[24px] border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5">
+          <div className="bg-[var(--bg-surface)] p-6 rounded-[24px] border border-[var(--border)]  shadow-sm flex items-center gap-5">
             <div className="p-4 bg-green-100 text-green-600 rounded-2xl">
               <DollarSign className="h-8 w-8" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Comissões (30 dias)</p>
-              <h2 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">
+              <p className="text-sm font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Comissões (30 dias)</p>
+              <h2 className="text-2xl font-extrabold text-[var(--text-primary)]">
                 {loading ? '...' : formatCurrency(performance?.totalComissoes || 0)}
               </h2>
             </div>
           </div>
           
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-[24px] border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5">
-            <div className="p-4 bg-blue-100 text-blue-600 rounded-2xl">
+          <div className="bg-[var(--bg-surface)] p-6 rounded-[24px] border border-[var(--border)]  shadow-sm flex items-center gap-5">
+            <div className="p-4 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-2xl">
               <Activity className="h-8 w-8" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Procedimentos Realizados</p>
-              <h2 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">
+              <p className="text-sm font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Procedimentos Realizados</p>
+              <h2 className="text-2xl font-extrabold text-[var(--text-primary)]">
                 {loading ? '...' : performance?.procedimentos.length || 0}
               </h2>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-[24px] border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5">
-            <div className="p-4 bg-purple-100 text-purple-600 rounded-2xl">
+          <div className="bg-[var(--bg-surface)] p-6 rounded-[24px] border border-[var(--border)]  shadow-sm flex items-center gap-5">
+            <div className="p-4 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-2xl">
               <CalendarDays className="h-8 w-8" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Período</p>
-              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Últimos 30 dias</h2>
+              <p className="text-sm font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">Período</p>
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">Últimos 30 dias</h2>
             </div>
           </div>
         </div>
 
         {/* Tabela de Procedimentos */}
-        <div className="bg-white dark:bg-slate-800 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden mt-8">
-          <div className="p-6 border-b border-slate-100 flex items-center gap-3">
-            <TrendingUp className="h-5 w-5 text-blue-600" />
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Histórico de Procedimentos</h3>
+        <div className="bg-[var(--bg-surface)] rounded-[32px] border border-[var(--border)]  shadow-sm overflow-hidden mt-8">
+          <div className="p-6 border-b border-[var(--border)] flex items-center gap-3">
+            <TrendingUp className="h-5 w-5 text-[var(--primary)]" />
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">Histórico de Procedimentos</h3>
           </div>
           
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16">
-              <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-4" />
-              <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">Carregando dados...</p>
+              <Loader2 className="h-8 w-8 text-[var(--primary)] animate-spin mb-4" />
+              <p className="text-sm text-[var(--text-muted)] font-semibold">Carregando dados...</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">
+                  <tr className="bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border-b border-[var(--border)]  text-xs uppercase tracking-wider text-[var(--text-muted)] font-bold">
                     <th className="p-5">Data</th>
                     <th className="p-5">Procedimento</th>
                     <th className="p-5">Valor Cobrado</th>
                     <th className="p-5">Comissão Gerada</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-[var(--border)]">
                   {performance && performance.procedimentos.length > 0 ? (
                     performance.procedimentos.map(p => (
-                      <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-950/50 transition-colors">
-                        <td className="p-5 font-semibold text-slate-600 dark:text-slate-300">
+                      <tr key={p.id} className="hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)] transition-colors">
+                        <td className="p-5 font-semibold text-[var(--text-secondary)]">
                           {new Date(p.data_realizacao).toLocaleDateString('pt-BR')}
                         </td>
-                        <td className="p-5 font-bold text-slate-800 dark:text-slate-100">{p.procedimento_nome}</td>
-                        <td className="p-5 text-slate-600 dark:text-slate-300">{formatCurrency(p.valor_cobrado)}</td>
+                        <td className="p-5 font-bold text-[var(--text-primary)]">{p.procedimento_nome}</td>
+                        <td className="p-5 text-[var(--text-secondary)]">{formatCurrency(p.valor_cobrado)}</td>
                         <td className="p-5 font-bold text-green-600">{formatCurrency(p.comissao_gerada)}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4} className="p-12 text-center text-slate-500 dark:text-slate-400 font-semibold">
+                      <td colSpan={4} className="p-12 text-center text-[var(--text-muted)] font-semibold">
                         Nenhum procedimento realizado neste período.
                       </td>
                     </tr>

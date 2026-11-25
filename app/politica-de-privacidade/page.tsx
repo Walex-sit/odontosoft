@@ -8,16 +8,16 @@ export const metadata = {
 
 export default function PoliticaDePrivacidadePage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] font-sans selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
       {/* Header */}
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-20">
+      <header className="border-b border-[var(--border)] bg-[var(--bg-base)]  sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/planos" className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
+          <Link href="/planos" className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Voltar aos Planos
           </Link>
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-blue-500" />
+            <Activity className="w-5 h-5 text-[var(--primary)]" />
             <span className="font-extrabold text-white text-base">OdontoSoft SaaS</span>
           </div>
         </div>
@@ -33,16 +33,16 @@ export default function PoliticaDePrivacidadePage() {
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Política de Privacidade e Proteção de Dados
           </h1>
-          <p className="text-sm text-slate-400 mt-2">
+          <p className="text-sm text-[var(--text-muted)] mt-2">
             Vigência: 2026 • Em conformidade estrita com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).
           </p>
         </div>
 
-        <div className="prose prose-invert max-w-none space-y-8 text-sm leading-relaxed text-slate-300">
+        <div className="prose prose-invert max-w-none space-y-8 text-sm leading-relaxed text-[var(--text-secondary)]">
           {/* Seção 1 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-500 font-mono text-base">01.</span>
+              <span className="text-[var(--primary)] font-mono text-base">01.</span>
               Compromisso com a Privacidade
             </h2>
             <p>
@@ -54,9 +54,9 @@ export default function PoliticaDePrivacidadePage() {
           </section>
 
           {/* Seção 2 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-500 font-mono text-base">02.</span>
+              <span className="text-[var(--primary)] font-mono text-base">02.</span>
               Categorias de Dados e Bases Legais
             </h2>
             <div className="space-y-4">
@@ -79,12 +79,12 @@ export default function PoliticaDePrivacidadePage() {
           </section>
 
           {/* Seção 3 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8 border-l-4 border-l-emerald-500">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8 border-l-4 border-l-emerald-500">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
               <span className="text-emerald-500 font-mono text-base">03.</span>
               Medidas de Segurança Técnicas e Administrativas
             </h2>
-            <ul className="list-disc pl-5 space-y-2 text-slate-300">
+            <ul className="list-disc pl-5 space-y-2 text-[var(--text-secondary)]">
               <li>
                 <strong className="text-white">Criptografia em Repouso de CPFs:</strong> Armazenamento segregado de CPF em texto puro com cifragem AES-256 e hash determinístico SHA-256;
               </li>
@@ -101,9 +101,9 @@ export default function PoliticaDePrivacidadePage() {
           </section>
 
           {/* Seção 4 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-500 font-mono text-base">04.</span>
+              <span className="text-[var(--primary)] font-mono text-base">04.</span>
               Direito ao Esquecimento e Retenção CFO (20 Anos)
             </h2>
             <p>
@@ -116,29 +116,29 @@ export default function PoliticaDePrivacidadePage() {
           </section>
 
           {/* Seção 5 */}
-          <section className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8">
+          <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl p-6 sm:p-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-blue-500 font-mono text-base">05.</span>
+              <span className="text-[var(--primary)] font-mono text-base">05.</span>
               Encarregado de Proteção de Dados (DPO)
             </h2>
             <p className="mb-3">
               Para exercer seus direitos como titular ou esclarecer dúvidas sobre nossas práticas de governança de dados:
             </p>
-            <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center gap-3">
-              <Mail className="w-5 h-5 text-blue-400" />
+            <div className="p-4 rounded-xl bg-[var(--border)] border border-[var(--border)] flex items-center gap-3">
+              <Mail className="w-5 h-5 text-[var(--primary)]" />
               <div>
                 <div className="font-bold text-white text-xs">Canal Oficial do DPO OdontoSoft</div>
-                <div className="text-blue-400 text-xs">dpo@odontosoft.com.br</div>
+                <div className="text-[var(--primary)] text-xs">dpo@odontosoft.com.br</div>
               </div>
             </div>
           </section>
         </div>
 
         {/* Rodapé Interno */}
-        <div className="mt-12 pt-8 border-t border-slate-800 text-center">
+        <div className="mt-12 pt-8 border-t border-[var(--border)] text-center">
           <Link
             href="/planos"
-            className="inline-flex items-center gap-2 text-sm font-bold text-blue-400 hover:text-blue-300"
+            className="inline-flex items-center gap-2 text-sm font-bold text-[var(--primary)] hover:text-[var(--primary)]"
           >
             Conhecer os Planos e Iniciar Contratação
             <FileCheck className="w-4 h-4" />

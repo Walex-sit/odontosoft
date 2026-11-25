@@ -58,8 +58,8 @@ const STATUS_CONFIG: Record<StatusDente, StatusConfig> = {
   saudavel: {
     label: 'Saudável',
     dentClasses:
-      'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-blue-400 dark:hover:border-blue-500',
-    chipClasses: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600',
+      'bg-[var(--bg-surface)] border-[var(--border-medium)] text-[var(--text-secondary)] hover:border-[var(--primary)]/40 dark:hover:border-[var(--primary)]/40',
+    chipClasses: 'bg-[var(--bg-base)] dark:bg-[var(--border)] text-[var(--text-secondary)] border border-[var(--border)] ',
   },
   carie: {
     label: 'Cárie',
@@ -70,14 +70,14 @@ const STATUS_CONFIG: Record<StatusDente, StatusConfig> = {
   restaurado: {
     label: 'Restaurado',
     symbol: '■',
-    dentClasses: 'bg-blue-50 dark:bg-blue-950/40 border-blue-400 text-blue-600 dark:text-blue-400',
-    chipClasses: 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800',
+    dentClasses: 'bg-[var(--primary-subtle)] border-[var(--primary)]/40 text-[var(--primary)]',
+    chipClasses: 'bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/40 ',
   },
   ausente: {
     label: 'Ausente',
     symbol: '✕',
-    dentClasses: 'bg-slate-100 dark:bg-slate-900/60 border-slate-300 dark:border-slate-700 text-slate-400 opacity-60',
-    chipClasses: 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-300 dark:border-slate-600',
+    dentClasses: 'bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border-[var(--border-medium)]  text-[var(--text-muted)] opacity-60',
+    chipClasses: 'bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] text-[var(--text-muted)] border border-[var(--border-medium)]',
   },
   extrair: {
     label: 'Extrair',
@@ -88,8 +88,8 @@ const STATUS_CONFIG: Record<StatusDente, StatusConfig> = {
   canal: {
     label: 'Canal',
     symbol: 'C',
-    dentClasses: 'bg-purple-50 dark:bg-purple-950/40 border-purple-400 text-purple-600 dark:text-purple-400',
-    chipClasses: 'bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800',
+    dentClasses: 'bg-[var(--primary-subtle)] dark:bg-[var(--primary-subtle)] border-[var(--primary)]/30 text-[var(--primary)] dark:text-[var(--primary)]',
+    chipClasses: 'bg-[var(--primary-subtle)] dark:bg-[var(--primary-subtle)] text-[var(--primary)] dark:text-[var(--primary)] border border-[var(--primary)]/30 dark:border-[var(--primary)]/30',
   },
   implante: {
     label: 'Implante',
@@ -160,7 +160,7 @@ function DenteVisual({ numero, status, isSelected, onClick }: DenteProps) {
         'transition-all duration-150 hover:scale-110 active:scale-95 focus-visible:outline-none',
         cfg.dentClasses,
         isSelected
-          ? 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900 scale-110 shadow-md'
+          ? 'ring-2 ring-[var(--primary)] ring-offset-2 dark:ring-offset-[var(--bg-base)] scale-110 shadow-md'
           : '',
       ].join(' ')}
     >
@@ -185,7 +185,7 @@ function DenteVisual({ numero, status, isSelected, onClick }: DenteProps) {
 
 function DenteSkeleton() {
   return (
-    <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-700 animate-pulse" />
+    <div className="w-10 h-10 rounded-xl bg-[var(--border)] dark:bg-[var(--border)] animate-pulse" />
   )
 }
 
@@ -289,19 +289,19 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
       {/* ── Cabeçalho ──────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-            <ToothIcon className="h-5 w-5 text-blue-500" />
+          <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+            <ToothIcon className="h-5 w-5 text-[var(--primary)]" />
             Odontograma Interativo
           </h3>
           {savedAt && (
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
               Última actualização: {new Date(savedAt).toLocaleString('pt-BR')}
             </p>
           )}
         </div>
 
         {/* Toggle permanente / decíduo */}
-        <div className="flex items-center bg-slate-100 dark:bg-slate-900/60 p-1 rounded-xl self-start sm:self-auto">
+        <div className="flex items-center bg-[var(--bg-base)] dark:bg-[var(--bg-base)] p-1 rounded-xl self-start sm:self-auto">
           {(['permanente', 'deciduo'] as TipoArcada[]).map(t => (
             <button
               key={t}
@@ -310,8 +310,8 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
               className={[
                 'px-4 py-1.5 rounded-lg text-sm font-semibold transition-all',
                 tipo === t
-                  ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200',
+                  ? 'bg-white dark:bg-[var(--border)] text-[var(--text-primary)] shadow-sm'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] ',
               ].join(' ')}
             >
               {t === 'permanente' ? 'Permanentes' : 'Decíduos'}
@@ -321,12 +321,12 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
       </div>
 
       {/* ── Arcadas ────────────────────────────────────────────────────────── */}
-      <div className="bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-5 flex flex-col gap-6 items-center overflow-x-auto">
+      <div className="bg-[var(--bg-base)] dark:bg-[var(--bg-base)] rounded-2xl border border-[var(--border)]  p-5 flex flex-col gap-6 items-center overflow-x-auto">
 
         {/* Label superior */}
-        <div className="w-full flex justify-between text-[10px] font-bold tracking-widest uppercase text-slate-400 px-1">
+        <div className="w-full flex justify-between text-[10px] font-bold tracking-widest uppercase text-[var(--text-muted)] px-1">
           <span>Direita (D)</span>
-          <span className="text-slate-300 dark:text-slate-600">Arcada Superior</span>
+          <span className="text-[var(--border-medium)]">Arcada Superior</span>
           <span>Esquerda (E)</span>
         </div>
 
@@ -347,8 +347,8 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
 
         {/* Linha mediana */}
         <div className="relative w-full max-w-3xl">
-          <div className="w-full h-px bg-slate-200 dark:bg-slate-700" />
-          <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-slate-50 dark:bg-slate-950 px-3 text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+          <div className="w-full h-px bg-[var(--border)] dark:bg-[var(--border)]" />
+          <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] px-3 text-[10px] font-bold tracking-widest text-[var(--text-muted)] uppercase">
             Plano Oclusal
           </span>
         </div>
@@ -369,9 +369,9 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
         </div>
 
         {/* Label inferior */}
-        <div className="w-full flex justify-between text-[10px] font-bold tracking-widest uppercase text-slate-400 px-1">
+        <div className="w-full flex justify-between text-[10px] font-bold tracking-widest uppercase text-[var(--text-muted)] px-1">
           <span>Direita (D)</span>
-          <span className="text-slate-300 dark:text-slate-600">Arcada Inferior</span>
+          <span className="text-[var(--border-medium)]">Arcada Inferior</span>
           <span>Esquerda (E)</span>
         </div>
       </div>
@@ -380,18 +380,18 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
       {selectedDente !== null && (
         <div
           ref={panelRef}
-          className="p-4 bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-800/50 rounded-2xl shadow-lg
+          className="p-4 bg-[var(--bg-surface)] border border-[var(--primary)]/40  rounded-2xl shadow-lg
                      animate-in fade-in slide-in-from-bottom-2 duration-200"
         >
           <div className="flex items-center justify-between mb-3">
-            <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">
+            <p className="font-bold text-[var(--text-primary)] text-sm">
               Dente{' '}
-              <span className="text-blue-600 dark:text-blue-400 font-extrabold text-base">
+              <span className="text-[var(--primary)] font-extrabold text-base">
                 {selectedDente}
               </span>
               {' '}&mdash; selecione o estado:
             </p>
-            <span className="text-xs text-slate-400 dark:text-slate-500">
+            <span className="text-xs text-[var(--text-muted)]">
               Clique num dente diferente para mudar a selecção
             </span>
           </div>
@@ -409,7 +409,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
                     'px-3 py-1.5 text-xs font-bold rounded-lg transition-all border',
                     'hover:scale-105 active:scale-95 focus-visible:outline-none',
                     cfg.chipClasses,
-                    isActive ? 'ring-2 ring-offset-1 dark:ring-offset-slate-800 ring-current shadow-md' : '',
+                    isActive ? 'ring-2 ring-offset-1 dark:ring-offset-[var(--bg-base)] ring-current shadow-md' : '',
                   ].join(' ')}
                 >
                   {cfg.symbol && <span className="mr-1">{cfg.symbol}</span>}
@@ -425,7 +425,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
       <div>
         <label
           htmlFor="odontograma-observacao"
-          className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5"
+          className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5"
         >
           Observação Clínica
         </label>
@@ -435,10 +435,10 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
           value={observacao}
           onChange={e => setObservacao(e.target.value)}
           placeholder="Registe aqui observações clínicas relevantes do odontograma (ex: dente 16 com sensibilidade, aguarda tratamento)…"
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700
-                     bg-white dark:bg-slate-900/60
-                     text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-600
-                     text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/60
+          className="w-full px-4 py-3 rounded-xl border border-[var(--border)] 
+                     bg-[var(--bg-surface)]
+                     text-[var(--text-primary)] placeholder:text-[var(--text-muted)] dark:placeholder:text-[var(--text-secondary)]
+                     text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20
                      transition-shadow"
         />
       </div>
@@ -451,7 +451,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
           <button
             type="button"
             onClick={() => setLegendaAberta(p => !p)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-secondary)]  transition-colors"
           >
             <Info className="h-3.5 w-3.5" />
             Legenda de cores
@@ -480,8 +480,8 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
             onClick={carregar}
             disabled={loading || isPending}
             title="Recarregar dados do servidor"
-            className="p-2 rounded-xl border border-slate-200 dark:border-slate-700
-                       text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800
+            className="p-2 rounded-xl border border-[var(--border)] 
+                       text-[var(--text-muted)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)]
                        transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
@@ -493,7 +493,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
             onClick={handleSalvar}
             disabled={isPending || loading}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl
-                       bg-blue-600 hover:bg-blue-500 active:bg-blue-700
+                       bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:bg-[var(--primary-hover)]
                        text-white font-bold text-sm shadow-sm
                        transition-all hover:scale-105 active:scale-95
                        disabled:opacity-50 disabled:cursor-not-allowed"

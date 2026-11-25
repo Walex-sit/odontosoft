@@ -22,12 +22,12 @@ interface DenteProps {
 
 function DenteVisual({ numero, status, onClick }: DenteProps) {
   const cores = {
-    saudavel: 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300',
+    saudavel: 'bg-[var(--bg-surface)] border-[var(--border-medium)]  text-[var(--text-secondary)]',
     carie: 'bg-red-50 border-red-400 text-red-600',
-    restaurado: 'bg-blue-50 border-blue-400 text-blue-600',
-    ausente: 'bg-slate-100 border-slate-300 dark:border-slate-700 text-slate-400 opacity-50',
+    restaurado: 'bg-[var(--primary-subtle)] border-[var(--primary)]/40 text-[var(--primary)]',
+    ausente: 'bg-[var(--bg-base)] border-[var(--border-medium)]  text-[var(--text-muted)] opacity-50',
     extrair: 'bg-orange-50 border-orange-400 text-orange-600',
-    canal: 'bg-purple-50 border-purple-400 text-purple-600',
+    canal: 'bg-[var(--primary-subtle)] border-[var(--primary)]/30 text-[var(--primary)]',
   }
 
   return (
@@ -39,8 +39,8 @@ function DenteVisual({ numero, status, onClick }: DenteProps) {
       {numero}
       {status === 'ausente' && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-full h-0.5 bg-slate-400 rotate-45 absolute" />
-          <div className="w-full h-0.5 bg-slate-400 -rotate-45 absolute" />
+          <div className="w-full h-0.5 bg-[var(--border-medium)] rotate-45 absolute" />
+          <div className="w-full h-0.5 bg-[var(--border-medium)] -rotate-45 absolute" />
         </div>
       )}
     </button>
@@ -74,24 +74,24 @@ export default function Odontograma() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Odontograma</h3>
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl">
+        <h3 className="text-lg font-bold text-[var(--text-primary)]">Odontograma</h3>
+        <div className="flex items-center bg-[var(--bg-base)] p-1 rounded-xl">
           <button
             onClick={() => setTipo('permanente')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${tipo === 'permanente' ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200'}`}
+            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${tipo === 'permanente' ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
           >
             Permanentes
           </button>
           <button
             onClick={() => setTipo('deciduo')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${tipo === 'deciduo' ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-200'}`}
+            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${tipo === 'deciduo' ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
           >
             Decíduos
           </button>
         </div>
       </div>
 
-      <div className="bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] flex flex-col gap-8 items-center overflow-x-auto">
+      <div className="bg-[var(--bg-base)] dark:bg-[var(--bg-base)] p-6 rounded-2xl border border-[var(--border)]  shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] flex flex-col gap-8 items-center overflow-x-auto">
         {/* Superior */}
         <div className="flex items-center gap-2">
           {dentes.superior.map(num => (
@@ -100,8 +100,8 @@ export default function Odontograma() {
         </div>
         
         {/* Divisória */}
-        <div className="w-full max-w-2xl h-px bg-slate-200 relative flex justify-center">
-          <span className="absolute -top-3 bg-slate-50 dark:bg-slate-950 px-2 text-xs font-bold tracking-wider text-slate-400 uppercase">Direita | Esquerda</span>
+        <div className="w-full max-w-2xl h-px bg-[var(--border)] relative flex justify-center">
+          <span className="absolute -top-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] px-2 text-xs font-bold tracking-wider text-[var(--text-muted)] uppercase">Direita | Esquerda</span>
         </div>
 
         {/* Inferior */}
@@ -114,15 +114,15 @@ export default function Odontograma() {
 
       {/* Ferramentas de Status */}
       {selectedDente && (
-        <div className="p-4 bg-white dark:bg-slate-800 border border-blue-100 rounded-xl shadow-sm animate-in fade-in slide-in-from-bottom-2 flex items-center justify-between gap-4">
-          <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">Alterar status do dente <span className="text-blue-600">{selectedDente}</span>:</p>
+        <div className="p-4 bg-[var(--bg-surface)] border border-[var(--primary)]/40 rounded-xl shadow-sm animate-in fade-in slide-in-from-bottom-2 flex items-center justify-between gap-4">
+          <p className="font-semibold text-[var(--text-primary)] text-sm">Alterar status do dente <span className="text-[var(--primary)]">{selectedDente}</span>:</p>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => changeStatus('saudavel')} className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg transition-colors">Saudável</button>
+            <button onClick={() => changeStatus('saudavel')} className="px-3 py-1.5 bg-[var(--bg-base)] hover:bg-[var(--border)] text-[var(--text-secondary)] text-xs font-bold rounded-lg transition-colors">Saudável</button>
             <button onClick={() => changeStatus('carie')} className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold rounded-lg transition-colors">Cárie</button>
-            <button onClick={() => changeStatus('restaurado')} className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 text-xs font-bold rounded-lg transition-colors">Restaurado</button>
-            <button onClick={() => changeStatus('ausente')} className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-500 dark:text-slate-400 border border-slate-300 dark:border-slate-700 text-xs font-bold rounded-lg transition-colors">Ausente</button>
+            <button onClick={() => changeStatus('restaurado')} className="px-3 py-1.5 bg-[var(--primary-subtle)] hover:bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/40 text-xs font-bold rounded-lg transition-colors">Restaurado</button>
+            <button onClick={() => changeStatus('ausente')} className="px-3 py-1.5 bg-[var(--bg-base)] hover:bg-[var(--border)] text-[var(--text-muted)] border border-[var(--border-medium)]  text-xs font-bold rounded-lg transition-colors">Ausente</button>
             <button onClick={() => changeStatus('extrair')} className="px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-600 border border-orange-200 text-xs font-bold rounded-lg transition-colors">Extrair</button>
-            <button onClick={() => changeStatus('canal')} className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 border border-purple-200 text-xs font-bold rounded-lg transition-colors">Canal</button>
+            <button onClick={() => changeStatus('canal')} className="px-3 py-1.5 bg-[var(--primary-subtle)] hover:bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30 text-xs font-bold rounded-lg transition-colors">Canal</button>
           </div>
         </div>
       )}

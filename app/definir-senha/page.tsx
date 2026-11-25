@@ -56,14 +56,14 @@ function DefinirSenhaForm() {
 
   if (isSuccess) {
     return (
-      <div className="text-center p-8 bg-white dark:bg-slate-900 rounded-3xl border border-emerald-100 shadow-xl max-w-md w-full">
+      <div className="text-center p-8 bg-[var(--bg-surface)] rounded-3xl border border-emerald-100 shadow-xl max-w-md w-full">
         <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4">
           <CheckCircle2 size={32} />
         </div>
-        <h2 className="text-xl font-heading font-extrabold text-slate-900 dark:text-white">
+        <h2 className="text-xl font-heading font-extrabold text-[var(--text-primary)]">
           Acesso Configurado!
         </h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-sm text-[var(--text-muted)] mt-2">
           Sua senha foi salva e as permissões da clínica foram ativadas com sucesso.
         </p>
         <div className="mt-6 flex justify-center">
@@ -77,15 +77,15 @@ function DefinirSenhaForm() {
   }
 
   return (
-    <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-8 sm:p-10 shadow-2xl">
+    <div className="w-full max-w-md bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-3xl p-8 sm:p-10 shadow-md">
       <div className="text-center mb-8">
-        <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 flex items-center justify-center mx-auto mb-3.5 border border-blue-100 dark:border-blue-900/40 shadow-2xs">
+        <div className="w-12 h-12 rounded-2xl bg-[var(--primary-subtle)] text-[var(--primary)]   flex items-center justify-center mx-auto mb-3.5 border border-[var(--primary)]/40  shadow-2xs">
           <ShieldCheck size={24} />
         </div>
-        <h1 className="text-2xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-2xl font-heading font-extrabold text-[var(--text-primary)] tracking-tight">
           Definir Palavra-passe
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+        <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
           Bem-vindo(a) ao OdontoSoft. Crie sua senha de acesso para ingressar na equipe da clínica.
         </p>
       </div>
@@ -93,20 +93,20 @@ function DefinirSenhaForm() {
       <form onSubmit={handleSubmit} className="space-y-5">
         {emailParam && (
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
               E-mail Convidado
             </label>
             <input
               type="email"
               disabled
               value={emailParam}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm font-semibold text-slate-500 cursor-not-allowed"
+              className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)] rounded-2xl text-xs sm:text-sm font-semibold text-[var(--text-muted)] cursor-not-allowed"
             />
           </div>
         )}
 
         <div>
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
             Nova Palavra-passe
           </label>
           <div className="relative">
@@ -117,12 +117,12 @@ function DefinirSenhaForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Mínimo 6 caracteres"
-              className="w-full pl-4 pr-11 py-3 bg-white dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 rounded-2xl text-sm font-semibold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="w-full pl-4 pr-11 py-3 bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-2xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors p-1"
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
@@ -130,7 +130,7 @@ function DefinirSenhaForm() {
         </div>
 
         <div>
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
             Confirmar Palavra-passe
           </label>
           <input
@@ -140,14 +140,14 @@ function DefinirSenhaForm() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Repita a palavra-passe"
-            className="w-full px-4 py-3 bg-white dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 rounded-2xl text-sm font-semibold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-2xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-sm py-3 px-5 rounded-2xl shadow-sm shadow-blue-500/25 transition-all active:scale-[0.99] mt-2"
+          className="w-full flex items-center justify-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-[var(--on-primary)] font-bold text-sm py-3 px-5 rounded-2xl  transition-all active:scale-[0.99] mt-2"
         >
           {loading ? (
             <>
@@ -165,7 +165,7 @@ function DefinirSenhaForm() {
         <div className="text-center pt-2">
           <Link
             href="/login"
-            className="text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors"
+            className="text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
           >
             Já possui acesso configurado? Ir para Login
           </Link>
@@ -177,11 +177,11 @@ function DefinirSenhaForm() {
 
 export default function DefinirSenhaPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-slate-100 to-blue-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-[var(--bg-base)]">
       <Suspense
         fallback={
-          <div className="p-8 text-center text-slate-500 font-bold">
-            <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-blue-600" />
+          <div className="p-8 text-center text-[var(--text-muted)] font-bold">
+            <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-[var(--primary)]" />
             Carregando convite...
           </div>
         }

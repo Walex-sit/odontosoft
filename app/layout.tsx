@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins, Nunito } from "next/font/google";
 import "./globals.css";
-import { Toaster } from 'sonner';
 import { ThemeProvider } from "./components/ThemeProvider";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 
@@ -32,9 +31,8 @@ export default function RootLayout({
       className={`${poppins.variable} ${nunito.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="w-full min-h-screen flex flex-col font-sans bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-200">
+      <body className="w-full min-h-screen flex flex-col font-sans bg-[var(--bg-base)] dark:bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <Toaster theme="system" position="bottom-right" richColors />
           <div className="flex-1 flex flex-col">
             {children}
           </div>

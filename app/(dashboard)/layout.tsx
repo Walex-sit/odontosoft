@@ -20,7 +20,7 @@ export default function DashboardLayout({
         {/* Pré-carregador de rotas e dados de alta frequência em idle */}
         <RoutePrefetcher />
 
-        <div className="flex flex-col min-h-screen w-full bg-[#F8FAFC] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 overflow-hidden">
+        <div className="flex flex-col min-h-screen w-full bg-[var(--bg-base)] text-[var(--text-primary)] overflow-hidden">
           {/* Topbar 100% persistente e estática */}
           <Topbar />
 

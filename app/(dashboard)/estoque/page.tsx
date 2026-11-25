@@ -101,7 +101,7 @@ export default function EstoquePage() {
     return matchBusca && matchCat
   })
 
-  const criticos = itens.filter(i => i.quantidade < i.minimo).length
+  const criticos = itens.filter(i => i.minimo > 0 && i.quantidade <= i.minimo).length
   const total = itens.length
   const valorTotal = itens.reduce((acc, i) => acc + i.quantidade * i.custo, 0)
 
@@ -200,21 +200,21 @@ export default function EstoquePage() {
   }
 
   const statusColor = (item: Item) => {
-    if (item.quantidade === 0) return { bg: 'bg-red-100', text: 'text-red-700', label: 'Esgotado' }
-    if (item.quantidade < item.minimo) return { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Crítico' }
+    if (item.quantidade === 0 && item.minimo > 0) return { bg: 'bg-red-100', text: 'text-red-700', label: 'Esgotado' }
+    if (item.minimo > 0 && item.quantidade <= item.minimo) return { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Crítico' }
     return { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Normal' }
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 overflow-y-auto">
+    <div className="flex flex-col h-full bg-[var(--bg-base)] dark:bg-[var(--bg-base)] overflow-y-auto">
       {/* Header */}
-      <header className="p-8 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm shrink-0">
+      <header className="p-8 bg-[var(--bg-surface)] border-b border-[var(--border)]  shadow-sm shrink-0">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Gestão de Estoque</h1>
-            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1">Controle de materiais, insumos e suprimentos odontológicos</p>
+            <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Gestão de Estoque</h1>
+            <p className="text-sm font-semibold text-[var(--text-muted)] mt-1">Controle de materiais, insumos e suprimentos odontológicos</p>
           </div>
-          <button onClick={() => setNovoModal(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors">
+          <button onClick={() => setNovoModal(true)} className="flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors">
             <Plus className="h-4 w-4" /> Novo Item
           </button>
         </div>
@@ -228,12 +228,12 @@ export default function EstoquePage() {
             { label: 'Itens Críticos', value: criticos, icon: AlertTriangle, color: 'amber' },
             { label: 'Itens em Nível Normal', value: Math.max(0, total - criticos), icon: TrendingUp, color: 'emerald' },
           ].map(k => (
-            <div key={k.label} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm flex items-center justify-between">
+            <div key={k.label} className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]  p-5 shadow-sm flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{k.label}</p>
-                <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-1">{loading ? '...' : k.value}</p>
+                <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{k.label}</p>
+                <p className="text-2xl font-extrabold text-[var(--text-primary)] mt-1">{loading ? '...' : k.value}</p>
               </div>
-              <div className={`p-3 rounded-xl ${k.color === 'blue' ? 'bg-blue-50 text-blue-600' : k.color === 'amber' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
+              <div className={`p-3 rounded-xl ${k.color === 'blue' ? 'bg-[var(--primary-subtle)] text-[var(--primary)]' : k.color === 'amber' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
                 <k.icon className="h-6 w-6" />
               </div>
             </div>
@@ -243,13 +243,13 @@ export default function EstoquePage() {
         {/* Filtros e Busca */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Buscar item ou fornecedor..."
               value={busca}
               onChange={e => setBusca(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2.5 bg-[var(--bg-surface)] border border-[var(--border)]  rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40"
             />
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -259,8 +259,8 @@ export default function EstoquePage() {
                 onClick={() => setCategoria(cat)}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${
                   categoria === cat
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                    ? 'bg-[var(--primary)] text-[var(--on-primary)]'
+                    : 'bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]'
                 }`}
               >
                 {cat}
@@ -277,7 +277,7 @@ export default function EstoquePage() {
             onRetry={carregarEstoque}
           />
         ) : (
-          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700 shadow-sm overflow-hidden">
+          <div className="bg-[var(--bg-surface)] rounded-3xl border border-[var(--border)]/80  shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               {loading ? (
                 <div className="p-4">
@@ -303,25 +303,25 @@ export default function EstoquePage() {
                 </div>
               ) : (
                 <table className="w-full text-sm">
-                  <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+                  <thead className="bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] border-b border-[var(--border)] ">
                     <tr>
                       {['Item', 'Categoria', 'Qtd Atual', 'Mín.', 'Unidade', 'Fornecedor', 'Data Cadastro', 'Status', 'Ações'].map(h => (
-                        <th key={h} className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                        <th key={h} className="px-5 py-3.5 text-left text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                  <tbody className="divide-y divide-[var(--border)] divide-[var(--border)]">
                     {itensFiltrados.map(item => {
                       const st = statusColor(item)
                       return (
-                        <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                          <td className="px-5 py-3.5 font-bold text-slate-800 dark:text-slate-100">{item.nome}</td>
-                          <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{item.categoria}</td>
-                          <td className={`px-5 py-3.5 font-extrabold ${item.quantidade < item.minimo ? 'text-red-600' : 'text-slate-800 dark:text-slate-100'}`}>{item.quantidade}</td>
-                          <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.minimo}</td>
-                          <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.unidade}</td>
-                          <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{item.fornecedor}</td>
-                          <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{item.ultimaCompra}</td>
+                        <tr key={item.id} className="hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] transition-colors">
+                          <td className="px-5 py-3.5 font-bold text-[var(--text-primary)]">{item.nome}</td>
+                          <td className="px-5 py-3.5 text-[var(--text-secondary)]">{item.categoria}</td>
+                          <td className={`px-5 py-3.5 font-extrabold ${item.minimo > 0 && item.quantidade <= item.minimo ? 'text-red-600' : 'text-[var(--text-primary)]'}`}>{item.quantidade}</td>
+                          <td className="px-5 py-3.5 text-[var(--text-muted)]">{item.minimo}</td>
+                          <td className="px-5 py-3.5 text-[var(--text-muted)]">{item.unidade}</td>
+                          <td className="px-5 py-3.5 text-[var(--text-secondary)]">{item.fornecedor}</td>
+                          <td className="px-5 py-3.5 text-[var(--text-muted)]">{item.ultimaCompra}</td>
                           <td className="px-5 py-3.5">
                             <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${st.bg} ${st.text}`}>{st.label}</span>
                           </td>
@@ -333,7 +333,7 @@ export default function EstoquePage() {
                               <button onClick={() => { setMovModal({ item, tipo: 'saida' }); setMovQtd(1) }} className="flex items-center gap-1 px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors cursor-pointer" title="Registrar Saída">
                                 <ArrowUp className="h-3.5 w-3.5" /> Saída
                               </button>
-                              <button onClick={() => excluirItem(item)} className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer" title="Excluir item">
+                              <button onClick={() => excluirItem(item)} className="p-1 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer" title="Excluir item">
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
                             </div>
@@ -351,16 +351,16 @@ export default function EstoquePage() {
 
       {/* Modal Movimentação */}
       {movModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-sm p-8">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">
+        <div className="fixed inset-0 bg-[var(--bg-surface)] flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--bg-surface)] rounded-3xl shadow-md w-full max-w-sm p-8">
+            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">
               {movModal.tipo === 'entrada' ? '📦 Registrar Entrada' : '📤 Registrar Saída'}
             </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{movModal.item.nome} — estoque atual: <strong>{movModal.item.quantidade}</strong></p>
-            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">Quantidade ({movModal.item.unidade})</label>
-            <input type="number" min={1} value={movQtd} onChange={e => setMovQtd(Number(e.target.value))} className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 mb-6" />
+            <p className="text-sm text-[var(--text-muted)] mb-6">{movModal.item.nome} — estoque atual: <strong>{movModal.item.quantidade}</strong></p>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Quantidade ({movModal.item.unidade})</label>
+            <input type="number" min={1} value={movQtd} onChange={e => setMovQtd(Number(e.target.value))} className="w-full border border-[var(--border)]  rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 mb-6" />
             <div className="flex gap-3">
-              <button onClick={() => setMovModal(null)} className="flex-1 py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancelar</button>
+              <button onClick={() => setMovModal(null)} className="flex-1 py-3 bg-[var(--bg-base)] text-[var(--text-secondary)] rounded-xl font-bold text-sm hover:bg-[var(--border)] transition-colors">Cancelar</button>
               <button onClick={executarMovimentacao} className={`flex-1 py-3 text-white rounded-xl font-bold text-sm transition-colors ${movModal.tipo === 'entrada' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'}`}>Confirmar</button>
             </div>
           </div>
@@ -369,71 +369,71 @@ export default function EstoquePage() {
 
       {/* Modal Novo Item */}
       {novoModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-md p-8">
+        <div className="fixed inset-0 bg-[var(--bg-surface)] flex items-center justify-center z-50 p-4">
+          <div className="bg-[var(--bg-surface)] rounded-3xl shadow-md w-full max-w-md p-8">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Novo Item de Estoque</h3>
-              <button onClick={() => setNovoModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full"><X className="h-5 w-5 text-slate-400" /></button>
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">Novo Item de Estoque</h3>
+              <button onClick={() => setNovoModal(false)} className="p-2 hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] rounded-full"><X className="h-5 w-5 text-[var(--text-muted)]" /></button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Nome do Item</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Nome do Item</label>
                 <input
                   type="text"
                   value={novoItem.nome}
                   onChange={e => setNovoItem(p => ({ ...p, nome: e.target.value }))}
                   placeholder="Ex: Resina Composta A2"
-                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full border border-[var(--border)]  rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Fornecedor</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Fornecedor</label>
                 <input
                   type="text"
                   value={novoItem.fornecedor}
                   onChange={e => setNovoItem(p => ({ ...p, fornecedor: e.target.value }))}
                   placeholder="Ex: DentalX"
-                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full border border-[var(--border)]  rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Unidade</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Unidade</label>
                   <input
                     type="text"
                     value={novoItem.unidade}
                     onChange={e => setNovoItem(p => ({ ...p, unidade: e.target.value }))}
                     placeholder="Ex: un, caixa, seringa"
-                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    className="w-full border border-[var(--border)]  rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Qtd Inicial</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Qtd Inicial</label>
                   <input
                     type="number"
                     min={0}
                     value={novoItem.quantidade}
                     onChange={e => setNovoItem(p => ({ ...p, quantidade: Number(e.target.value) }))}
-                    className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    className="w-full border border-[var(--border)]  rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Estoque Mínimo</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Estoque Mínimo</label>
                 <input
                   type="number"
                   min={0}
                   value={novoItem.minimo}
                   onChange={e => setNovoItem(p => ({ ...p, minimo: Number(e.target.value) }))}
-                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full border border-[var(--border)]  rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Categoria</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Categoria</label>
                 <select
                   value={novoItem.categoria}
                   onChange={e => setNovoItem(p => ({ ...p, categoria: e.target.value }))}
-                  className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full border border-[var(--border)]  rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40"
                 >
                   {CATEGORIAS.filter(c => c !== 'Todos').map(c => (
                     <option key={c}>{c}</option>
@@ -442,8 +442,8 @@ export default function EstoquePage() {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setNovoModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancelar</button>
-              <button onClick={adicionarItem} className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors">Salvar Item</button>
+              <button onClick={() => setNovoModal(false)} className="flex-1 py-3 bg-[var(--bg-base)] text-[var(--text-secondary)] rounded-xl font-bold text-sm hover:bg-[var(--border)] transition-colors">Cancelar</button>
+              <button onClick={adicionarItem} className="flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-xl font-bold text-sm transition-colors">Salvar Item</button>
             </div>
           </div>
         </div>

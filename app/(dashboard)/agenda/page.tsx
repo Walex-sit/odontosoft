@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { useAuth } from '../../components/RequireAuth'
 import {
@@ -97,16 +97,13 @@ function iniciais(nome: string): string {
     : (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
 }
 
-/** Gera uma cor de avatar determinística a partir do nome */
+/** Gera uma cor de avatar determinística a partir do nome (tokens neutros/petróleo/semânticos sem azul-marinho/índigo/violeta) */
 const AVATAR_PALETTES = [
-  { bg: '#dbeafe', text: '#1d4ed8' }, // blue
-  { bg: '#d1fae5', text: '#065f46' }, // green
-  { bg: '#ede9fe', text: '#5b21b6' }, // violet
-  { bg: '#fce7f3', text: '#9d174d' }, // pink
-  { bg: '#fef3c7', text: '#92400e' }, // amber
-  { bg: '#cffafe', text: '#0e7490' }, // cyan
-  { bg: '#fee2e2', text: '#991b1b' }, // red
-  { bg: '#e0e7ff', text: '#3730a3' }, // indigo
+  { bg: 'var(--primary-subtle)', text: 'var(--primary)' },
+  { bg: 'var(--success-bg)',     text: 'var(--success)' },
+  { bg: 'var(--warning-bg)',     text: 'var(--warning)' },
+  { bg: 'var(--error-bg)',       text: 'var(--error)' },
+  { bg: 'var(--bg-base)',        text: 'var(--text-primary)' },
 ]
 function avatarColor(nome: string) {
   let hash = 0
@@ -117,11 +114,11 @@ function avatarColor(nome: string) {
 // ─── Tipos de status ──────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string }> = {
-  agendado:   { label: 'Agendado',        bg: '#eff6ff', text: '#1d4ed8', dot: '#3b82f6' },
-  confirmado: { label: 'Confirmado',      bg: '#f0fdf4', text: '#15803d', dot: '#22c55e' },
-  espera:     { label: 'Na Espera',       bg: '#fefce8', text: '#a16207', dot: '#eab308' },
-  atendido:   { label: 'Atendido',        bg: '#faf5ff', text: '#7e22ce', dot: '#a855f7' },
-  cancelado:  { label: 'Cancelado',       bg: '#fff1f2', text: '#be123c', dot: '#f43f5e' },
+  agendado:   { label: 'Agendado',        bg: 'var(--primary-subtle)', text: 'var(--primary)',        dot: 'var(--primary)' },
+  confirmado: { label: 'Confirmado',      bg: 'var(--success-bg)',     text: 'var(--success)',        dot: 'var(--success)' },
+  espera:     { label: 'Na Espera',       bg: 'var(--warning-bg)',     text: 'var(--warning)',        dot: 'var(--warning)' },
+  atendido:   { label: 'Atendido',        bg: 'var(--bg-base)',        text: 'var(--text-primary)',   dot: 'var(--text-secondary)' },
+  cancelado:  { label: 'Cancelado',       bg: 'var(--error-bg)',       text: 'var(--error)',          dot: 'var(--error)' },
 }
 
 // ─── Sub-componentes ──────────────────────────────────────────────────────────
@@ -174,8 +171,8 @@ function AgendamentoCard({
         w-full text-left group flex items-center gap-4 p-4 sm:p-5 rounded-3xl border transition-all duration-200
         hover:shadow-bento hover:-translate-y-0.5 active:scale-[0.99]
         ${isAtivo
-          ? 'bg-white dark:bg-slate-900 border-blue-200 dark:border-blue-900/50 shadow-xs'
-          : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs'
+          ? 'bg-[var(--bg-surface)] border-[var(--primary)]/40  shadow-xs'
+          : 'bg-[var(--bg-surface)] border-[var(--border)]/80  hover:border-[var(--border-medium)]  shadow-2xs'
         }
       `}
     >
@@ -187,11 +184,11 @@ function AgendamentoCard({
 
       {/* Horário */}
       <div className="text-center shrink-0 w-14">
-        <p className="text-sm font-black text-slate-900 dark:text-slate-100 tabular-nums">
+        <p className="text-sm font-black text-[var(--text-primary)] tabular-nums">
           {ag.hora_consulta?.slice(0, 5) ?? '--:--'}
         </p>
         {ag.hora_fim && (
-          <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 tabular-nums mt-0.5">
+          <p className="text-[10px] font-semibold text-[var(--text-muted)] tabular-nums mt-0.5">
             {ag.hora_fim.slice(0, 5)}
           </p>
         )}
@@ -203,24 +200,24 @@ function AgendamentoCard({
       {/* Informações principais */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="font-extrabold text-slate-900 dark:text-slate-100 text-sm truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+          <p className="font-extrabold text-[var(--text-primary)] text-sm truncate group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary)] transition-colors">
             {nome}
           </p>
           {ag.id && (
-            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 shrink-0">
+            <span className="text-[10px] font-mono text-[var(--text-muted)] shrink-0">
               #{String(ag.id).slice(-5)}
             </span>
           )}
         </div>
         <div className="flex items-center gap-2.5 mt-1.5 flex-wrap">
           {ag.procedimento && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-blue-50/80 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/50 text-xs font-bold truncate">
-              <Activity size={12} className="shrink-0 text-blue-500" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30 text-xs font-bold truncate">
+              <Activity size={12} className="shrink-0 text-[var(--primary)]" />
               {ag.procedimento}
             </span>
           )}
           {ag.dentistas?.nome && (
-            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1 truncate">
+            <span className="text-xs font-semibold text-[var(--text-muted)] flex items-center gap-1 truncate">
               <Stethoscope size={12} className="shrink-0" />
               {ag.dentistas.nome}
             </span>
@@ -286,9 +283,9 @@ function EsperaCard({ ag }: { ag: any }) {
     <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 hover:bg-amber-100/60 dark:hover:bg-amber-900/40 transition-colors shadow-2xs">
       <Avatar nome={nome} size={36} />
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-extrabold text-slate-900 dark:text-slate-100 truncate">{nome}</p>
+        <p className="text-xs font-extrabold text-[var(--text-primary)] truncate">{nome}</p>
         {ag.procedimento && (
-          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate mt-0.5">{ag.procedimento}</p>
+          <p className="text-[11px] font-medium text-[var(--text-muted)] truncate mt-0.5">{ag.procedimento}</p>
         )}
       </div>
       <div className="flex items-center gap-1 text-amber-700 dark:text-amber-400 shrink-0 font-bold bg-amber-100/80 dark:bg-amber-900/50 px-2 py-0.5 rounded-lg">
@@ -346,70 +343,63 @@ export default function Agenda() {
 
   // ── Carregamento de dados ──────────────────────────────────────────────────
 
+  const carregandoRef = useRef(false)
+
   const carregarDados = useCallback(async () => {
     const clinicaId = profile?.clinica_id
     if (!clinicaId) { setCarregando(false); return }
+
+    if (carregandoRef.current) return
+    carregandoRef.current = true
 
     setCarregando(true)
     setErro(null)
 
     try {
-      // Pacientes
-      const { data: pacs, error: pacErr } = await supabase
-        .from('pacientes')
-        .select('id, nome, telefone, cpf_mascarado')
+      // Pacientes, dentistas e agendamentos carregados em paralelo
+      let queryAgends = supabase
+        .from('agendamentos')
+        .select('*, pacientes(nome, telefone)')
         .eq('clinica_id', clinicaId)
-      if (pacErr) throw pacErr
-      setPacientes(pacs || [])
 
-      // Dentistas
-      const { data: dents, error: dentErr } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('role', 'dentista')
-        .eq('clinica_id', clinicaId)
-      if (dentErr) throw dentErr
-      const dentsList = (dents as Array<{ id: string; nome: string }>) || []
+      if (filtroDentista) queryAgends = queryAgends.eq('dentista_id', filtroDentista)
+
+      const [pacsRes, dentsRes, agendsRes] = await Promise.all([
+        supabase
+          .from('pacientes')
+          .select('id, nome, telefone, cpf_mascarado')
+          .eq('clinica_id', clinicaId),
+        supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('role', 'dentista')
+          .eq('clinica_id', clinicaId),
+        queryAgends,
+      ])
+
+      if (pacsRes.error) throw pacsRes.error
+      if (dentsRes.error) throw dentsRes.error
+      if (agendsRes.error) throw agendsRes.error
+
+      const pacs = pacsRes.data || []
+      const dentsList = (dentsRes.data as Array<{ id: string; nome: string }>) || []
+      const agendsData = agendsRes.data || []
+
+      setPacientes(pacs)
       setDentistas(dentsList)
 
-      // Agendamentos (toda a semana visível — filtro de dia é feito no cliente)
-      let query = supabase
-        .from('agendamentos')
-        .select('*, pacientes(nome, telefone), dentistas:user_profiles!dentista_id(nome)')
-        .eq('clinica_id', clinicaId)
-
-      if (filtroDentista) query = query.eq('dentista_id', filtroDentista)
-
-      const { data: agendsData, error: agendErr } = await query
-
-      let finalAgends: any[] = []
-      if (agendErr) {
-        console.warn('Busca com JOIN falhou, executando fallback:', agendErr.message)
-        let fbQuery = supabase
-          .from('agendamentos')
-          .select('*, pacientes(nome, telefone)')
-          .eq('clinica_id', clinicaId)
-        if (filtroDentista) fbQuery = fbQuery.eq('dentista_id', filtroDentista)
-        const { data: fbData } = await fbQuery
-        finalAgends = (fbData || []).map((a: any) => {
-          const dent = dentsList.find((d) => d.id === (a.dentista_id || a.profissional_id))
-          return { ...a, dentistas: dent ? { nome: dent.nome } : null }
-        })
-      } else {
-        finalAgends = ((agendsData as any[]) || []).map((a: any) => {
-          if (!a.dentistas) {
-            const dent = dentsList.find((d) => d.id === (a.dentista_id || a.profissional_id))
-            if (dent) a.dentistas = { nome: dent.nome }
-          }
-          return a
-        })
-      }
+      // Vincula o nome do dentista diretamente da lista de profissionais (sem JOIN problemático)
+      const finalAgends = agendsData.map((a: any) => {
+        const dent = dentsList.find((d) => d.id === (a.dentista_id || a.profissional_id))
+        return { ...a, dentistas: dent ? { nome: dent.nome } : null }
+      })
 
       setAgendamentos(finalAgends)
     } catch (err: any) {
       console.error('[Agenda] Erro ao carregar dados:', err?.message || err)
       setErro('Não foi possível sincronizar os agendamentos da clínica no momento.')
     } finally {
+      carregandoRef.current = false
       setCarregando(false)
     }
   }, [profile?.clinica_id, filtroDentista])
@@ -510,22 +500,22 @@ export default function Agenda() {
     : labelDiaSel
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-[#F8FAFC] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100">
+    <div className="flex flex-col h-full overflow-hidden bg-[var(--bg-base)] text-[var(--text-primary)]">
 
       {/* ── Topbar da Agenda ─────────────────────────────────────── */}
-      <div className="shrink-0 flex items-center justify-between gap-3 px-4 md:px-8 py-4 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/70 dark:border-slate-800/80 shadow-2xs">
+      <div className="shrink-0 flex items-center justify-between gap-3 px-4 md:px-8 py-4 bg-[var(--bg-surface)] border-b border-[var(--border)] shadow-2xs">
         <div className="min-w-0">
-          <h1 className="text-xl font-heading font-black text-slate-900 dark:text-slate-50 leading-tight tracking-tight">
+          <h1 className="text-xl font-heading font-black text-[var(--text-primary)] leading-tight tracking-tight">
             Agenda
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5 truncate">
+          <p className="text-xs text-[var(--text-muted)] font-semibold mt-0.5 truncate">
             {headerLabel}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {/* ── Seletor de Modo de Visualização ── */}
-          <div className="hidden sm:flex items-center bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/60 rounded-2xl p-0.5 gap-0.5">
+          <div className="hidden sm:flex items-center bg-[var(--bg-hover)] border border-[var(--border)]/70  rounded-2xl p-0.5 gap-0.5">
             {([
               { key: 'dia', label: 'Dia', icon: CalendarCheck },
               { key: 'semana', label: 'Semana', icon: Rows3 },
@@ -536,8 +526,8 @@ export default function Agenda() {
                 onClick={() => setViewMode(key)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 ${
                   viewMode === key
-                    ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                    ? 'bg-[var(--bg-surface)] text-[var(--primary)] shadow-sm'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] '
                 }`}
               >
                 <Icon size={13} />
@@ -547,12 +537,12 @@ export default function Agenda() {
           </div>
 
           {/* Filtro dentista */}
-          <div className="hidden md:flex items-center gap-1.5 text-xs bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/60 rounded-xl px-2.5 py-1">
-            <Filter size={13} className="text-slate-400" />
+          <div className="hidden md:flex items-center gap-1.5 text-xs bg-[var(--bg-base)] dark:bg-[var(--bg-hover)] border border-[var(--border)]/70  rounded-xl px-2.5 py-1">
+            <Filter size={13} className="text-[var(--text-muted)]" />
             <select
               value={filtroDentista}
               onChange={(e) => setFiltroDentista(e.target.value)}
-              className="text-xs font-bold bg-transparent border-0 text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer"
+              className="text-xs font-bold bg-transparent border-0 text-[var(--text-secondary)] focus:outline-none cursor-pointer"
             >
               <option value="">Todos os Dentistas</option>
               {dentistas.map((d) => (
@@ -563,12 +553,12 @@ export default function Agenda() {
 
           {/* Filtro status — só em modo dia */}
           {viewMode === 'dia' && (
-            <div className="hidden md:flex items-center gap-1.5 text-xs bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/60 rounded-xl px-2.5 py-1">
-              <Activity size={13} className="text-slate-400" />
+            <div className="hidden md:flex items-center gap-1.5 text-xs bg-[var(--bg-base)] dark:bg-[var(--bg-hover)] border border-[var(--border)]/70  rounded-xl px-2.5 py-1">
+              <Activity size={13} className="text-[var(--text-muted)]" />
               <select
                 value={filtroStatus}
                 onChange={(e) => setFiltroStatus(e.target.value)}
-                className="text-xs font-bold bg-transparent border-0 text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer"
+                className="text-xs font-bold bg-transparent border-0 text-[var(--text-secondary)] focus:outline-none cursor-pointer"
               >
                 <option value="">Todos os Status</option>
                 {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
@@ -580,7 +570,7 @@ export default function Agenda() {
 
           <button
             onClick={() => abrirNovoAgendamento()}
-            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl px-4 py-2 text-xs font-bold shadow-sm shadow-blue-500/25 transition-all active:scale-95"
+            className="flex items-center gap-1.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-2xl px-4 py-2 text-xs font-bold  transition-all active:scale-95"
           >
             <Plus size={14} /> Novo
           </button>
@@ -589,23 +579,23 @@ export default function Agenda() {
 
       {/* ── Sub-header de Navegação (visível apenas nos modos dia e semana) ── */}
       {viewMode !== 'mes' && (
-        <div className="shrink-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/70 dark:border-slate-800/80 px-4 md:px-8 py-3.5">
+        <div className="shrink-0 bg-[var(--bg-surface)] border-b border-[var(--border)] px-4 md:px-8 py-3.5">
           <div className="flex items-center gap-2 mb-2.5">
             <button
               onClick={semanaAnterior}
-              className="p-1.5 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] dark:hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] transition-colors"
             >
               <ChevronLeft size={16} />
             </button>
             <button
               onClick={irParaHoje}
-              className="text-xs font-extrabold text-blue-600 dark:text-blue-400 hover:underline px-1.5 py-0.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors"
+              className="text-xs font-extrabold text-[var(--primary)] hover:underline px-1.5 py-0.5 rounded-lg hover:bg-[var(--primary-subtle)] hover:bg-[var(--primary-subtle)] transition-colors"
             >
               Hoje
             </button>
             <button
               onClick={proximaSemana}
-              className="p-1.5 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] dark:hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] transition-colors"
             >
               <ChevronRight size={16} />
             </button>
@@ -627,21 +617,21 @@ export default function Agenda() {
                   className={`
                     relative flex flex-col items-center gap-1 py-2.5 px-1.5 rounded-2xl text-xs font-bold transition-all duration-200 active:scale-95
                     ${isSelected
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-[1.02]'
+                      ? 'bg-[var(--primary)] text-[var(--on-primary)]  scale-[1.02]'
                       : isToday
-                        ? 'bg-blue-50/80 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200/70 dark:border-blue-800/60'
-                        : 'bg-slate-50/60 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-slate-800/60 hover:bg-white dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                        ? 'bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30'
+                        : 'bg-[var(--bg-base)] dark:bg-[var(--bg-base)] text-[var(--text-secondary)] dark:text-[var(--text-muted)] border border-[var(--border)] hover:bg-[var(--bg-surface)] dark:hover:bg-[var(--bg-surface)] hover:border-[var(--border-medium)] '
                     }
                   `}
                 >
-                  <span className={`text-[10px] font-extrabold uppercase tracking-wider ${isSelected ? 'text-blue-200' : 'text-slate-400 dark:text-slate-500'}`}>
+                  <span className={`text-[10px] font-extrabold uppercase tracking-wider ${isSelected ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}>
                     {DIAS_SEMANA[dia.getDay()]}
                   </span>
-                  <span className={`text-base font-black leading-none ${isSelected ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>
+                  <span className={`text-base font-black leading-none ${isSelected ? 'text-white' : 'text-[var(--text-primary)]'}`}>
                     {dia.getDate()}
                   </span>
                   {count > 0 ? (
-                    <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full leading-none ${isSelected ? 'bg-blue-500 text-white' : 'bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
+                    <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full leading-none ${isSelected ? 'bg-[var(--primary)] text-[var(--on-primary)]' : 'bg-[var(--border)]/80 dark:bg-[var(--border)] text-[var(--text-secondary)]'}`}>
                       {count}
                     </span>
                   ) : (
@@ -664,19 +654,19 @@ export default function Agenda() {
               {/* Navegação do mês */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <button onClick={mesAnterior} className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200/70 dark:border-slate-800">
+                  <button onClick={mesAnterior} className="p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] dark:hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] transition-colors border border-[var(--border)]/70 ">
                     <ChevronLeft size={16} />
                   </button>
-                  <h2 className="text-xl font-heading font-black text-slate-900 dark:text-slate-50 tracking-tight min-w-[200px] text-center">
+                  <h2 className="text-xl font-heading font-black text-[var(--text-primary)] tracking-tight min-w-[200px] text-center">
                     {labelMes}
                   </h2>
-                  <button onClick={proximoMes} className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200/70 dark:border-slate-800">
+                  <button onClick={proximoMes} className="p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text-primary)] dark:hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] transition-colors border border-[var(--border)]/70 ">
                     <ChevronRight size={16} />
                   </button>
                 </div>
                 <button
                   onClick={irParaHoje}
-                  className="text-xs font-extrabold text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50 px-3 py-1.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors"
+                  className="text-xs font-extrabold text-[var(--primary)] border border-[var(--primary)]/40  px-3 py-1.5 rounded-xl hover:bg-[var(--primary-subtle)] hover:bg-[var(--primary-subtle)] transition-colors"
                 >
                   Hoje
                 </button>
@@ -685,7 +675,7 @@ export default function Agenda() {
               {/* Grid cabeçalho dos dias */}
               <div className="grid grid-cols-7 mb-2">
                 {DIAS_SEMANA.map((d) => (
-                  <div key={d} className="text-center text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 py-2">
+                  <div key={d} className="text-center text-[11px] font-black uppercase tracking-widest text-[var(--text-muted)] py-2">
                     {d}
                   </div>
                 ))}
@@ -694,7 +684,7 @@ export default function Agenda() {
               {/* Grid dos dias do mês */}
               {carregando ? (
                 <div className="flex items-center justify-center py-24">
-                  <div className="w-8 h-8 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
+                  <div className="w-8 h-8 rounded-full border-2 border-[var(--primary)]/40 border-t-transparent animate-spin" />
                 </div>
               ) : (
                 <div className="grid grid-cols-7 gap-1.5">
@@ -723,16 +713,16 @@ export default function Agenda() {
                           group relative flex flex-col min-h-[80px] p-2 rounded-2xl border transition-all duration-150 active:scale-[0.97] text-left
                           ${!isMesAtual ? 'opacity-35' : ''}
                           ${isSel
-                            ? 'bg-blue-600 border-blue-500 shadow-md shadow-blue-500/20'
+                            ? 'bg-[var(--primary)] border-[var(--primary)]/40 '
                             : isHoje
-                            ? 'bg-blue-50/80 dark:bg-blue-950/30 border-blue-300 dark:border-blue-700'
-                            : 'bg-white dark:bg-slate-900 border-slate-200/70 dark:border-slate-800/70 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm'
+                            ? 'bg-[var(--primary-subtle)] border-[var(--primary)]/40 '
+                            : 'bg-[var(--bg-surface)] border-[var(--border)]/70  hover:border-[var(--border-medium)]  hover:shadow-sm'
                           }
                         `}
                       >
                         {/* Número do dia */}
                         <span className={`text-sm font-black leading-none mb-1.5 ${
-                          isSel ? 'text-white' : isHoje ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-slate-100'
+                          isSel ? 'text-white' : isHoje ? 'text-[var(--primary)]' : 'text-[var(--text-primary)]'
                         }`}>
                           {dia.getDate()}
                         </span>
@@ -742,7 +732,7 @@ export default function Agenda() {
                           <div className="flex flex-col gap-1 w-full">
                             {/* Badge com total */}
                             <span className={`self-start text-[10px] font-extrabold px-1.5 py-0.5 rounded-lg leading-none ${
-                              isSel ? 'bg-blue-500 text-white' : 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300'
+                              isSel ? 'bg-[var(--primary)] text-[var(--on-primary)]' : 'bg-[var(--primary-subtle)] text-[var(--primary)]'
                             }`}>
                               {total} {total === 1 ? 'consulta' : 'consultas'}
                             </span>
@@ -788,25 +778,25 @@ export default function Agenda() {
 
                     return (
                       <div key={str} className={`flex flex-col rounded-3xl border overflow-hidden transition-all ${
-                        isHoje ? 'border-blue-400 dark:border-blue-600 shadow-md shadow-blue-500/10' : 'border-slate-200/70 dark:border-slate-800'
+                        isHoje ? 'border-[var(--primary)]/40  ' : 'border-[var(--border)]/70 '
                       }`}>
                         {/* Cabeçalho do dia */}
                         <div className={`flex flex-col items-center py-3 px-2 ${
-                          isSel ? 'bg-blue-600' : isHoje ? 'bg-blue-50/80 dark:bg-blue-950/30' : 'bg-slate-50/70 dark:bg-slate-900/70'
+                          isSel ? 'bg-[var(--primary)]' : isHoje ? 'bg-[var(--primary-subtle)]' : 'bg-[var(--bg-base)] dark:bg-[var(--bg-surface)]'
                         }`}>
                           <span className={`text-[10px] font-black uppercase tracking-widest ${
-                            isSel ? 'text-blue-200' : isHoje ? 'text-blue-500 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'
+                            isSel ? 'text-[var(--primary)]' : isHoje ? 'text-[var(--primary)] ' : 'text-[var(--text-muted)]'
                           }`}>
                             {DIAS_SEMANA[dia.getDay()]}
                           </span>
                           <span className={`text-xl font-black leading-tight mt-0.5 ${
-                            isSel ? 'text-white' : isHoje ? 'text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-slate-100'
+                            isSel ? 'text-white' : isHoje ? 'text-[var(--primary)]' : 'text-[var(--text-primary)]'
                           }`}>
                             {dia.getDate()}
                           </span>
                           {ags.length > 0 && (
                             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full mt-1 ${
-                              isSel ? 'bg-blue-500 text-white' : 'bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                              isSel ? 'bg-[var(--primary)] text-[var(--on-primary)]' : 'bg-[var(--border)]/80 dark:bg-[var(--border)] text-[var(--text-secondary)]'
                             }`}>
                               {ags.length}
                             </span>
@@ -814,10 +804,10 @@ export default function Agenda() {
                         </div>
 
                         {/* Cards dos agendamentos */}
-                        <div className="flex-1 bg-white dark:bg-slate-900 p-2 space-y-1.5 min-h-[160px]">
+                        <div className="flex-1 bg-[var(--bg-surface)] p-2 space-y-1.5 min-h-[160px]">
                           {ags.length === 0 ? (
                             <div className="flex items-center justify-center h-full min-h-[120px]">
-                              <p className="text-[10px] text-slate-300 dark:text-slate-600 font-semibold text-center">
+                              <p className="text-[10px] text-[var(--border-medium)] font-semibold text-center">
                                 Livre
                               </p>
                             </div>
@@ -829,7 +819,7 @@ export default function Agenda() {
                                 <button
                                   key={ag.id}
                                   onClick={() => abrirDetalhes(ag)}
-                                  className="w-full text-left flex items-start gap-1.5 p-2 rounded-xl border border-slate-100 dark:border-slate-800 hover:shadow-sm transition-all group"
+                                  className="w-full text-left flex items-start gap-1.5 p-2 rounded-xl border border-[var(--border)] hover:shadow-sm transition-all group"
                                   style={{ background: cfg.bg }}
                                 >
                                   <div style={{ background: cfg.dot }} className="w-1 self-stretch rounded-full shrink-0 mt-0.5" />
@@ -837,11 +827,11 @@ export default function Agenda() {
                                     <p className="text-[11px] font-black truncate" style={{ color: cfg.text }}>
                                       {ag.hora_consulta?.slice(0, 5) ?? '--:--'}
                                     </p>
-                                    <p className="text-[10px] font-bold text-slate-700 dark:text-slate-300 truncate leading-tight">
+                                    <p className="text-[10px] font-bold text-[var(--text-secondary)] truncate leading-tight">
                                       {ag.pacientes?.nome || 'Paciente'}
                                     </p>
                                     {ag.procedimento && (
-                                      <p className="text-[9px] text-slate-400 dark:text-slate-500 truncate">{ag.procedimento}</p>
+                                      <p className="text-[9px] text-[var(--text-muted)] truncate">{ag.procedimento}</p>
                                     )}
                                   </div>
                                 </button>
@@ -853,7 +843,7 @@ export default function Agenda() {
                         {/* Botão adicionar */}
                         <button
                           onClick={() => abrirNovoAgendamento(str)}
-                          className="shrink-0 w-full py-2 text-[11px] font-bold text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-colors border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center gap-1"
+                          className="shrink-0 w-full py-2 text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--primary)]  hover:bg-[var(--primary-subtle)]/50 hover:bg-[var(--primary-subtle)] transition-colors border-t border-[var(--border)] bg-[var(--bg-surface)] flex items-center justify-center gap-1"
                         >
                           <Plus size={11} /> Adicionar
                         </button>
@@ -873,10 +863,10 @@ export default function Agenda() {
             {/* Header do dia */}
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="text-lg font-heading font-black text-slate-900 dark:text-slate-50 tracking-tight">
+                <h2 className="text-lg font-heading font-black text-[var(--text-primary)] tracking-tight">
                   {labelDiaSel}
                 </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                <p className="text-xs text-[var(--text-muted)] font-medium mt-0.5">
                   {agendamentosDoDia.length === 0
                     ? 'Nenhuma consulta agendada'
                     : `${agendamentosDoDia.length} consulta${agendamentosDoDia.length > 1 ? 's' : ''}`}
@@ -884,7 +874,7 @@ export default function Agenda() {
               </div>
               <button
                 onClick={() => abrirNovoAgendamento(diaSelecionado)}
-                className="hidden md:flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors"
+                className="hidden md:flex items-center gap-1.5 text-xs font-bold text-[var(--primary)] hover:text-[var(--primary)] transition-colors"
               >
                 <Plus size={14} /> Agendar neste dia
               </button>
@@ -895,7 +885,7 @@ export default function Agenda() {
               <select
                 value={filtroDentista}
                 onChange={(e) => setFiltroDentista(e.target.value)}
-                className="flex-1 text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl px-3 py-2 text-slate-700 dark:text-slate-200 focus:outline-none"
+                className="flex-1 text-xs font-bold bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-xl px-3 py-2 text-[var(--text-secondary)] focus:outline-none"
               >
                 <option value="">Todos os Dentistas</option>
                 {dentistas.map((d) => (
@@ -905,7 +895,7 @@ export default function Agenda() {
               <select
                 value={filtroStatus}
                 onChange={(e) => setFiltroStatus(e.target.value)}
-                className="flex-1 text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl px-3 py-2 text-slate-700 dark:text-slate-200 focus:outline-none"
+                className="flex-1 text-xs font-bold bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-xl px-3 py-2 text-[var(--text-secondary)] focus:outline-none"
               >
                 <option value="">Todos os Status</option>
                 {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
@@ -951,12 +941,12 @@ export default function Agenda() {
         )}
 
         {/* ── Sidebar: Sala de Espera Ao Vivo ──────────────────── */}
-        <aside className="hidden lg:flex flex-col w-80 shrink-0 border-l border-slate-200/70 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md overflow-hidden">
-          <div className="p-5 border-b border-slate-100 dark:border-slate-800/80">
+        <aside className="hidden lg:flex flex-col w-80 shrink-0 border-l border-[var(--border)] bg-[var(--bg-surface)] overflow-hidden">
+          <div className="p-5 border-b border-[var(--border)]/80">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shadow-sm shadow-amber-400/50" />
-                <h3 className="text-sm font-black text-slate-900 dark:text-slate-50 tracking-tight">
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shadow-sm" />
+                <h3 className="text-sm font-black text-[var(--text-primary)] tracking-tight">
                   Sala de Espera
                 </h3>
               </div>
@@ -966,7 +956,7 @@ export default function Agenda() {
                 </span>
               )}
             </div>
-            <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 mt-1">
+            <p className="text-[11px] font-semibold text-[var(--text-muted)] mt-1">
               Painel de recepção em tempo real
             </p>
           </div>
@@ -974,13 +964,13 @@ export default function Agenda() {
           <div className="flex-1 overflow-y-auto p-4">
             {salaDeEspera.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center mb-3 text-slate-400">
+                <div className="w-12 h-12 rounded-2xl bg-[var(--bg-base)] border border-[var(--border)]/60  flex items-center justify-center mb-3 text-[var(--text-muted)]">
                   <Users size={20} />
                 </div>
-                <p className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                <p className="text-xs font-bold text-[var(--text-secondary)]">
                   Sala vazia
                 </p>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
                   Nenhum paciente aguardando
                 </p>
               </div>
@@ -1000,28 +990,28 @@ export default function Agenda() {
           </div>
 
           {/* Estatísticas rápidas do dia */}
-          <div className="shrink-0 p-5 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/40">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">
+          <div className="shrink-0 p-5 border-t border-[var(--border)]/80 bg-[var(--bg-base)] dark:bg-[var(--bg-base)]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-3">
               Resumo — {labelDiaSel.split(',')[0]}
             </p>
             <div className="grid grid-cols-2 gap-2.5">
               {[
-                { label: 'Total', value: agendamentosDoDia.length, icon: CalendarDays, color: 'text-blue-500', bg: 'bg-blue-50/80 dark:bg-blue-950/40' },
+                { label: 'Total', value: agendamentosDoDia.length, icon: CalendarDays, color: 'text-[var(--primary)]', bg: 'bg-[var(--primary-subtle)]' },
                 { label: 'Espera', value: agendamentosDoDia.filter(a => a.status === 'espera').length, icon: Timer, color: 'text-amber-500', bg: 'bg-amber-50/80 dark:bg-amber-950/40' },
                 { label: 'Confirmados', value: agendamentosDoDia.filter(a => a.status === 'confirmado').length, icon: Clock, color: 'text-emerald-500', bg: 'bg-emerald-50/80 dark:bg-emerald-950/40' },
-                { label: 'Atendidos', value: agendamentosDoDia.filter(a => a.status === 'atendido').length, icon: Activity, color: 'text-purple-500', bg: 'bg-purple-50/80 dark:bg-purple-950/40' },
+                { label: 'Atendidos', value: agendamentosDoDia.filter(a => a.status === 'atendido').length, icon: Activity, color: 'text-[var(--primary)]', bg: 'bg-[var(--primary-subtle)] dark:bg-[var(--primary-subtle)]' },
               ].map(({ label, value, icon: Icon, color, bg }) => (
                 <div
                   key={label}
-                  className="flex flex-col p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800/80 shadow-2xs"
+                  className="flex flex-col p-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border)] shadow-2xs"
                 >
                   <div className={`w-7 h-7 rounded-xl ${bg} flex items-center justify-center mb-1.5`}>
                     <Icon size={14} className={color} />
                   </div>
-                  <span className="text-lg font-black text-slate-900 dark:text-slate-100 leading-none">
+                  <span className="text-lg font-black text-[var(--text-primary)] leading-none">
                     {value}
                   </span>
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wider">{label}</span>
+                  <span className="text-[10px] font-bold text-[var(--text-muted)] mt-1 uppercase tracking-wider">{label}</span>
                 </div>
               ))}
             </div>

@@ -109,14 +109,14 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
       onClick={(e) => { if (e.target === overlayRef.current) onClose() }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" aria-hidden />
+      <div className="absolute inset-0 bg-[var(--bg-base)]" aria-hidden />
 
       {/* Dialog */}
       <div
         data-testid="modal-nova-evolucao"
         className="
           relative z-10 w-full sm:max-w-lg
-          bg-white dark:bg-slate-800 border-none
+          bg-[var(--bg-surface)] border-none
           rounded-t-[32px] sm:rounded-[24px]
           shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)]
           flex flex-col
@@ -128,27 +128,27 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
       >
         {/* Handle bar (mobile) */}
         <div className="sm:hidden flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full bg-slate-200" />
+          <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)]">
           <div className="flex items-center gap-4">
-            <div className="h-10 w-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center border border-blue-100">
+            <div className="h-10 w-10 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-xl flex items-center justify-center border border-[var(--primary)]/40">
               <FileText className="h-5 w-5" />
             </div>
             <div>
-              <h2 id="modal-title" className="text-lg font-heading font-extrabold text-slate-800 dark:text-slate-100">
+              <h2 id="modal-title" className="text-lg font-heading font-extrabold text-[var(--text-primary)]">
                 {evolucaoParaEditar ? 'Editar Evolução' : 'Nova Evolução'}
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Registro clínico do paciente</p>
+              <p className="text-xs text-[var(--text-muted)] font-medium">Registro clínico do paciente</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
             data-testid="btn-fechar-modal-evolucao"
-            className="h-8 w-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-95"
+            className="h-8 w-8 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] transition-all active:scale-95"
             aria-label="Fechar modal"
           >
             <X className="h-4 w-4" />
@@ -162,7 +162,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
           <div>
             <label
               htmlFor="evo-data"
-              className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2"
+              className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2"
             >
               Data da Evolução
             </label>
@@ -175,9 +175,9 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
               onChange={(e) => setData(e.target.value)}
               className="
                 w-full px-4 py-3
-                bg-slate-50 dark:bg-slate-950 border border-transparent
-                rounded-xl text-slate-800 dark:text-slate-100 font-medium
-                focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
+                bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-transparent
+                rounded-xl text-[var(--text-primary)] font-medium
+                focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40
                 text-sm transition-all
                 [color-scheme:light]
               "
@@ -188,7 +188,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
           <div>
             <label
               htmlFor="evo-descricao"
-              className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2"
+              className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2"
             >
               Evolução Clínica
             </label>
@@ -202,14 +202,14 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
               rows={6}
               className="
                 w-full px-4 py-3
-                bg-slate-50 dark:bg-slate-950 border border-transparent
-                rounded-xl text-slate-800 dark:text-slate-100 text-sm leading-relaxed font-medium
-                placeholder-slate-400
-                focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
+                bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-transparent
+                rounded-xl text-[var(--text-primary)] text-sm leading-relaxed font-medium
+                placeholder-[var(--text-secondary)]
+                focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40
                 transition-all resize-none
               "
             />
-            <p className="text-right text-[11px] font-medium text-slate-400 mt-2">
+            <p className="text-right text-[11px] font-medium text-[var(--text-muted)] mt-2">
               {evolucao.length} caracteres
             </p>
           </div>
@@ -230,8 +230,8 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
             data-testid="btn-cancelar-evolucao"
             className="
               w-full sm:w-auto px-5 py-2.5 rounded-xl
-              text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:text-slate-100
-              bg-slate-100 hover:bg-slate-200
+              text-sm font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)]
+              bg-[var(--bg-base)] hover:bg-[var(--border)]
               transition-all active:scale-95 disabled:opacity-50
             "
           >
@@ -245,8 +245,8 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
             className="
               w-full sm:w-auto px-6 py-2.5 rounded-xl
               text-sm font-bold text-white
-              bg-blue-600 hover:bg-blue-500
-              shadow-sm shadow-blue-500/20
+              bg-[var(--primary)] hover:bg-[var(--primary-hover)]
+              
               transition-all active:scale-95
               disabled:opacity-50 disabled:cursor-not-allowed
               flex items-center justify-center gap-2

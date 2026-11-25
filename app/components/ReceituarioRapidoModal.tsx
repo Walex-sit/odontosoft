@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { X, FileText, Printer, Search, Plus, Trash2, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '../lib/supabaseClient'
@@ -29,6 +30,11 @@ interface ReceitaItem {
 export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioRapidoModalProps) {
   const { profile } = useAuth()
   const modalRef = useRef<HTMLDivElement>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // ─── Estados do Formulário Pai ──────────────────────────────────────────────
   const [tipoReceituario, setTipoReceituario] = useState<'comum' | 'especial_azul' | 'especial_branco'>('comum')
@@ -99,6 +105,20 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
       resetForm()
     }
   }, [isOpen])
+
+  // Fechar com tecla Escape
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, onClose])
 
   // Fecha dropdown de busca ao clicar fora
   useEffect(() => {
@@ -217,41 +237,45 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
     }
   }
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted) return null
 
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-in fade-in">
+  return createPortal(
+    <div 
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 overflow-y-auto animate-in fade-in"
+    >
       <div 
         ref={modalRef}
-        className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl max-h-[90dvh] overflow-y-auto my-auto bg-[var(--bg-surface)] rounded-3xl shadow-md border border-[var(--border)] flex flex-col"
       >
         
         {/* Header */}
-        <div className="bg-blue-600 text-white p-5 flex items-center justify-between shrink-0">
+        <div className="bg-[var(--primary)] text-[var(--on-primary)] p-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/30 rounded-xl">
-              <FileText className="h-6 w-6 text-white" />
+            <div className="p-2 bg-black/10 rounded-xl">
+              <FileText className="h-6 w-6 text-[var(--on-primary)]" />
             </div>
             <div>
               <h3 className="font-bold text-lg">Emitir Receituário</h3>
-              <p className="text-xs text-blue-100 font-medium">Criação de receitas médicas e odontológicas</p>
+              <p className="text-xs text-[var(--on-primary)] opacity-90 font-medium">Criação de receitas médicas e odontológicas</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 rounded-xl text-blue-200 hover:text-white hover:bg-blue-500/40 transition-colors"
+            className="p-1.5 rounded-xl text-[var(--on-primary)] hover:bg-black/15 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Body Form */}
-        <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">
+        <div className="flex-1 overflow-y-auto p-6">
           
           {/* Seção: Paciente e Tipo */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div className="relative">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">
                 Paciente *
               </label>
               <div className="relative">
@@ -265,9 +289,9 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
                       setSelectedPaciente(null) // Reset se alterou
                     }
                   }}
-                  className="w-full px-4 py-2.5 pl-10 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-900 dark:text-slate-100"
+                  className="w-full px-4 py-2.5 pl-10 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)] rounded-xl text-sm font-medium focus:outline-none focus:border-[var(--primary)]/40 focus:ring-2 focus:ring-[var(--primary)]/20 text-[var(--text-primary)]"
                 />
-                <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-[var(--text-muted)]" />
                 
                 {selectedPaciente && (
                   <CheckCircle2 className="absolute right-3 top-3 h-4 w-4 text-emerald-500" />
@@ -276,36 +300,36 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
 
               {/* Autocomplete Dropdown */}
               {showResults && (
-                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                <div className="absolute z-10 w-full mt-1 bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl shadow-lg max-h-48 overflow-y-auto">
                   {isSearching ? (
-                    <div className="p-3 text-sm text-slate-500 dark:text-slate-400 text-center">Buscando...</div>
+                    <div className="p-3 text-sm text-[var(--text-muted)] text-center">Buscando...</div>
                   ) : pacientes.length > 0 ? (
                     pacientes.map(p => (
                       <button
                         key={p.id}
                         type="button"
                         onClick={() => handleSelectPaciente(p)}
-                        className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-0"
+                        className="w-full text-left px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--primary-subtle)] dark:hover:bg-[var(--bg-surface)] transition-colors border-b border-[var(--border)]  last:border-0"
                       >
                         <span className="font-medium">{p.nome}</span>
-                        {p.cpf_mascarado && <span className="text-xs text-slate-400 block">CPF: {p.cpf_mascarado}</span>}
+                        {p.cpf_mascarado && <span className="text-xs text-[var(--text-muted)] block">CPF: {p.cpf_mascarado}</span>}
                       </button>
                     ))
                   ) : (
-                    <div className="p-3 text-sm text-slate-500 text-center">Nenhum paciente encontrado.</div>
+                    <div className="p-3 text-sm text-[var(--text-muted)] text-center">Nenhum paciente encontrado.</div>
                   )}
                 </div>
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">
                 Tipo de Receituário *
               </label>
               <select
                 value={tipoReceituario}
                 onChange={(e) => setTipoReceituario(e.target.value as any)}
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-900 dark:text-slate-100"
+                className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)] rounded-xl text-sm font-medium focus:outline-none focus:border-[var(--primary)]/40 focus:ring-2 focus:ring-[var(--primary)]/20 text-[var(--text-primary)]"
               >
                 <option value="comum">Comum (Branco Simples)</option>
                 <option value="especial_azul">Receituário B (Azul)</option>
@@ -314,15 +338,15 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
             </div>
           </div>
 
-          <div className="h-px bg-slate-200 dark:bg-slate-800 my-6" />
+          <div className="h-px bg-[var(--border)] dark:bg-[var(--bg-surface)] my-6" />
 
           {/* Seção: Adicionar Item (Medicamento) */}
           <div className="mb-6">
-            <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+            <h4 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
               Adicionar Medicamento
             </h4>
             
-            <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+            <div className="bg-[var(--bg-base)] dark:bg-[var(--bg-base)] p-4 rounded-xl border border-[var(--border)] space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <div className="lg:col-span-2">
                   <input
@@ -330,7 +354,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
                     placeholder="Medicamento (ex: Amoxicilina) *"
                     value={novoItem.medicamento}
                     onChange={(e) => setNovoItem({ ...novoItem, medicamento: e.target.value })}
-                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)]  rounded-lg text-sm text-[var(--text-primary)]"
                   />
                 </div>
                 <div>
@@ -339,7 +363,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
                     placeholder="Conc. (ex: 500mg)"
                     value={novoItem.concentracao}
                     onChange={(e) => setNovoItem({ ...novoItem, concentracao: e.target.value })}
-                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)]  rounded-lg text-sm text-[var(--text-primary)]"
                   />
                 </div>
                 <div>
@@ -348,7 +372,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
                     placeholder="Forma (ex: Cápsulas)"
                     value={novoItem.forma_farm}
                     onChange={(e) => setNovoItem({ ...novoItem, forma_farm: e.target.value })}
-                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)]  rounded-lg text-sm text-[var(--text-primary)]"
                   />
                 </div>
                 <div>
@@ -357,7 +381,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
                     placeholder="Qtd. (ex: 1 caixa)"
                     value={novoItem.quantidade}
                     onChange={(e) => setNovoItem({ ...novoItem, quantidade: e.target.value })}
-                    className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)]  rounded-lg text-sm text-[var(--text-primary)]"
                   />
                 </div>
               </div>
@@ -367,7 +391,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
                   placeholder="Posologia (ex: 1 comp. 8/8h) *"
                   value={novoItem.posologia}
                   onChange={(e) => setNovoItem({ ...novoItem, posologia: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100"
+                  className="w-full px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)]  rounded-lg text-sm text-[var(--text-primary)]"
                 />
                 <div className="flex gap-2">
                   <input
@@ -375,12 +399,12 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
                     placeholder="Instruções adicionais"
                     value={novoItem.instrucoes}
                     onChange={(e) => setNovoItem({ ...novoItem, instrucoes: e.target.value })}
-                    className="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100"
+                    className="flex-1 px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)]  rounded-lg text-sm text-[var(--text-primary)]"
                   />
                   <button
                     type="button"
                     onClick={handleAddItem}
-                    className="px-3 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-bold flex items-center justify-center hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+                    className="px-3 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -392,18 +416,18 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
           {/* Lista de Itens Adicionados */}
           {itens.length > 0 && (
             <div className="mb-6">
-              <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">
+              <h4 className="text-sm font-bold text-[var(--text-primary)] mb-2">
                 Medicamentos na Receita
               </h4>
               <div className="space-y-2">
                 {itens.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-xl">
+                  <div key={index} className="flex items-center justify-between p-3 bg-[var(--primary-subtle)] border border-[var(--primary)]/30 rounded-xl">
                     <div className="pr-4">
-                      <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                      <p className="text-sm font-bold text-[var(--text-primary)]">
                         {item.medicamento} {item.concentracao && `- ${item.concentracao}`}
                       </p>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-                        <span className="font-semibold text-slate-700 dark:text-slate-300">Uso:</span> {item.posologia}
+                      <p className="text-xs text-[var(--text-secondary)] dark:text-[var(--text-muted)] mt-1">
+                        <span className="font-semibold text-[var(--text-secondary)]">Uso:</span> {item.posologia}
                         {item.quantidade && ` | Qtd: ${item.quantidade}`}
                       </p>
                     </div>
@@ -422,7 +446,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
 
           {/* Observações Gerais */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">
               Observações Gerais
             </label>
             <textarea
@@ -430,37 +454,37 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
               placeholder="Recomendações gerais ao paciente..."
               value={observacoesGlobais}
               onChange={(e) => setObservacoesGlobais(e.target.value)}
-              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-900 dark:text-slate-100"
+              className="w-full px-4 py-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)] rounded-xl text-sm font-medium focus:outline-none focus:border-[var(--primary)]/40 focus:ring-2 focus:ring-[var(--primary)]/20 text-[var(--text-primary)]"
             />
           </div>
 
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 shrink-0">
+        <div className="p-4 flex items-center justify-end gap-3 border-t border-[var(--border)] bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] shrink-0">
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl transition-colors disabled:opacity-50"
+            className="px-4 py-2.5 text-sm font-bold text-[var(--text-secondary)] dark:text-[var(--text-muted)] hover:bg-[var(--border)] dark:hover:bg-[var(--bg-surface)] rounded-xl transition-colors disabled:opacity-50"
           >
             Cancelar
           </button>
           <button
             onClick={() => handleGerar(false)}
             disabled={isLoading || !selectedPaciente || itens.length === 0}
-            className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-[var(--bg-base)] hover:bg-[var(--border)] dark:bg-[var(--bg-surface)] dark:hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] rounded-xl text-sm font-bold transition-all disabled:opacity-50"
           >
             {isLoading ? 'Salvando...' : 'Apenas Salvar'}
           </button>
           <button
             onClick={() => handleGerar(true)}
             disabled={isLoading || !selectedPaciente || itens.length === 0}
-            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-200 dark:shadow-none transition-all"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--primary)]/60 text-[var(--on-primary)] rounded-xl text-sm font-bold shadow-sm dark:shadow-none transition-all"
           >
             {isLoading ? (
               <span className="flex items-center gap-2">
-                <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> 
+                <div className="h-4 w-4 border-2 border-[var(--bg-surface)]/30 border-t-white rounded-full animate-spin" /> 
                 Processando...
               </span>
             ) : (
@@ -472,6 +496,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

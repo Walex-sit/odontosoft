@@ -60,7 +60,7 @@ export function AdminContextBanner() {
     <div
       role="region"
       aria-label="Contexto Administrativo de Clínica"
-      className="w-full bg-gradient-to-r from-amber-600 via-amber-700 to-orange-700 text-white shadow-md border-b border-amber-500/40 sticky top-0 z-40 transition-all"
+      className="w-full bg-[var(--super-bg)] text-[var(--super-text)] border-b border-[var(--super-border)] sticky top-0 z-40 transition-all"
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs sm:text-sm">
         {/* Identificação da Clínica */}
@@ -96,7 +96,7 @@ export function AdminContextBanner() {
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
                   isActive
                     ? 'bg-white text-amber-900 shadow-sm'
-                    : 'text-amber-100 hover:bg-white/10 hover:text-white'
+                    : 'text-amber-100 hover:bg-[var(--bg-surface)] hover:text-white'
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />

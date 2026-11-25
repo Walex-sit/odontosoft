@@ -35,32 +35,32 @@ export function TrialBanner() {
   const isUrgente = diasRestantes <= 3 && !expirado
   const isCritico = expirado
 
-  // Paleta de cores por urgência
+  // Paleta de cores por urgência (chapada e WCAG AA nos dois temas)
   const paleta = isCritico
     ? {
-        bg: 'bg-red-950/60 border-red-500/30',
-        icon: 'text-red-400',
-        texto: 'text-red-100',
-        subtexto: 'text-red-300',
-        cta: 'bg-red-600 hover:bg-red-700 text-white',
-        fechar: 'text-red-400 hover:text-red-200',
+        bg: 'bg-[var(--error-bg)] border-[var(--error)]/40',
+        icon: 'text-[var(--error)]',
+        texto: 'text-[var(--text-primary)]',
+        subtexto: 'text-[var(--text-secondary)]',
+        cta: 'bg-[var(--error)] hover:opacity-90 text-white',
+        fechar: 'text-[var(--error)] hover:text-[var(--text-primary)]',
       }
     : isUrgente
     ? {
-        bg: 'bg-amber-950/60 border-amber-500/30',
-        icon: 'text-amber-400',
-        texto: 'text-amber-100',
-        subtexto: 'text-amber-300',
-        cta: 'bg-amber-500 hover:bg-amber-600 text-white',
-        fechar: 'text-amber-400 hover:text-amber-200',
+        bg: 'bg-[var(--warning-bg)] border-[var(--warning)]/40',
+        icon: 'text-[var(--warning)]',
+        texto: 'text-[var(--text-primary)]',
+        subtexto: 'text-[var(--text-secondary)]',
+        cta: 'bg-[var(--super-bg)] hover:bg-[var(--super-surface)] text-[var(--super-text)]',
+        fechar: 'text-[var(--warning)] hover:text-[var(--text-primary)]',
       }
     : {
-        bg: 'bg-blue-950/60 border-blue-500/20',
-        icon: 'text-blue-400',
-        texto: 'text-blue-100',
-        subtexto: 'text-blue-300',
-        cta: 'bg-blue-600 hover:bg-blue-700 text-white',
-        fechar: 'text-blue-400 hover:text-blue-200',
+        bg: 'bg-[var(--primary-subtle)] border-[var(--primary)]/30',
+        icon: 'text-[var(--primary)]',
+        texto: 'text-[var(--text-primary)]',
+        subtexto: 'text-[var(--text-secondary)]',
+        cta: 'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)]',
+        fechar: 'text-[var(--primary)] hover:text-[var(--text-primary)]',
       }
 
   const mensagem = isCritico
@@ -78,7 +78,7 @@ export function TrialBanner() {
       className={`
         relative w-full border-b px-4 py-2.5
         ${paleta.bg}
-        backdrop-blur-sm
+       
         transition-all duration-300 ease-in-out
       `}
     >

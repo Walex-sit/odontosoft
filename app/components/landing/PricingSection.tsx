@@ -13,7 +13,7 @@ const plans = [
     popular: false,
     ctaText: 'Iniciar Teste de 7 Dias',
     ctaStyle:
-      'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 hover:border-slate-300',
+      'bg-[var(--bg-base)] hover:bg-[var(--border)] text-[var(--text-primary)] border border-[var(--border)] hover:border-[var(--border-medium)]',
     features: [
       '7 dias de teste gratuito',
       'Até 50 pacientes cadastrados',
@@ -34,13 +34,13 @@ const plans = [
     popular: true,
     ctaText: 'Desbloquear Acesso Completo',
     ctaStyle:
-      'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35',
+      'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] shadow-lg  hover:',
     features: [
       'Pacientes e prontuários ilimitados',
       'Odontograma interativo completo (32 dentes)',
       'Controle financeiro e DRE analítico liberados',
       'Múltiplos dentistas e divisão de comissões',
-      'Automação de lembretes via WhatsApp',
+      'Lembretes de consulta via WhatsApp',
       'Auditoria de segurança e conformidade LGPD',
       'Isolamento multi-tenant de banco de dados',
       'Suporte prioritário e backups automáticos',
@@ -50,12 +50,12 @@ const plans = [
 
 export default function PricingSection() {
   return (
-    <section className="relative py-24 px-6 bg-slate-50/60 border-t border-slate-100" id="preços">
+    <section className="relative py-24 px-6 bg-[var(--bg-base)] border-t border-[var(--border)]" id="preços">
       <div id="precos" className="absolute -top-24" />
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-4 shadow-2xs">
+          <div className="inline-flex items-center gap-2 bg-[var(--primary-subtle)] border border-[var(--primary)]/40 text-[var(--primary)] text-xs font-semibold px-4 py-1.5 rounded-full mb-4 shadow-2xs">
             <svg
               width="13"
               height="13"
@@ -71,10 +71,10 @@ export default function PricingSection() {
             </svg>
             Planos &amp; Preços
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-slate-900 tracking-tight mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-[var(--text-primary)] tracking-tight mb-4">
             Preços transparentes para cada etapa da sua clínica
           </h2>
-          <p className="text-base sm:text-lg text-slate-500 leading-relaxed">
+          <p className="text-base sm:text-lg text-[var(--text-muted)] leading-relaxed">
             Sem letras miúdas ou taxas ocultas. Escolha o plano perfeito para a sua operação ou explore a demonstração interativa.
           </p>
         </div>
@@ -86,14 +86,14 @@ export default function PricingSection() {
               key={plan.id}
               className={`relative rounded-3xl p-8 sm:p-10 flex flex-col justify-between transition-all duration-300 ${
                 plan.popular
-                  ? 'bg-white border-2 border-blue-600 shadow-xl shadow-blue-500/10 ring-4 ring-blue-50'
-                  : 'bg-white border border-slate-200/90 shadow-sm hover:shadow-md'
+                  ? 'bg-white border-2 border-[var(--primary)]/40 shadow-xl  ring-4 ring-[var(--primary)]'
+                  : 'bg-white border border-[var(--border)]/90 shadow-sm hover:shadow-md'
               }`}
             >
               {/* Popular Tag */}
               {plan.popular && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-[11px] font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                  <span className="inline-flex items-center gap-1.5 bg-[var(--primary)] text-[var(--on-primary)] text-[11px] font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow-sm">
                     <svg
                       width="11"
                       height="11"
@@ -110,40 +110,40 @@ export default function PricingSection() {
               <div>
                 {/* Header card info */}
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-heading font-bold text-slate-900">
+                  <h3 className="text-xl font-heading font-bold text-[var(--text-primary)]">
                     {plan.name}
                   </h3>
-                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
+                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border)]/60">
                     {plan.badge}
                   </span>
                 </div>
 
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed mb-6">
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed mb-6">
                   {plan.description}
                 </p>
 
                 {/* Price display */}
-                <div className="flex items-baseline gap-1.5 mb-8 pb-6 border-b border-slate-100">
-                  <span className="text-4xl sm:text-5xl font-heading font-extrabold text-slate-900 tracking-tight">
+                <div className="flex items-baseline gap-1.5 mb-8 pb-6 border-b border-[var(--border)]">
+                  <span className="text-4xl sm:text-5xl font-heading font-extrabold text-[var(--text-primary)] tracking-tight">
                     {plan.price}
                   </span>
-                  <span className="text-sm font-medium text-slate-400">
+                  <span className="text-sm font-medium text-[var(--text-muted)]">
                     {plan.period}
                   </span>
                 </div>
 
                 {/* Feature List */}
                 <div className="mb-8">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-4">
                     O que está incluído:
                   </p>
                   <ul className="space-y-3.5">
                     {plan.features.map((feature) => (
                       <li
                         key={feature}
-                        className="flex items-start gap-3 text-xs sm:text-sm text-slate-600"
+                        className="flex items-start gap-3 text-xs sm:text-sm text-[var(--text-secondary)]"
                       >
-                        <div className="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <div className="w-5 h-5 rounded-full bg-[var(--primary-subtle)] text-[var(--primary)] flex items-center justify-center shrink-0 mt-0.5">
                           <svg
                             width="12"
                             height="12"
@@ -192,7 +192,7 @@ export default function PricingSection() {
 
         {/* Demo Disclaimer / Notice */}
         <div className="mt-12 text-center">
-          <p className="text-xs sm:text-sm text-slate-400 inline-flex items-center gap-2">
+          <p className="text-xs sm:text-sm text-[var(--text-muted)] inline-flex items-center gap-2">
             <svg
               width="14"
               height="14"

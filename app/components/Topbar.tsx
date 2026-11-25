@@ -247,8 +247,8 @@ export default function Topbar() {
           })
         }
 
-        // 4. Alertas de Gestão, LGPD e Estoque (exclusivo admin)
-        if (role === 'admin' || role === 'admin_clinica') {
+        // 4. Alertas de Gestão, LGPD e Estoque (exclusivo admin / gestores)
+        if (role === 'admin' || role === 'admin_clinica' || role === 'super_admin') {
           const { count: lgpdPendentesCount } = await supabase
             .from('pacientes')
             .select('id', { count: 'exact', head: true })
@@ -266,15 +266,39 @@ export default function Topbar() {
             })
           }
 
-          notifs.push({
-            id: 'notif-estoque-critico',
-            type: 'stock',
-            title: 'Alerta de Estoque Mínimo',
-            description: 'Itens de consumo clínico (anestésicos e luvas) estão próximos da margem de segurança.',
-            time: 'Hoje',
-            unread: true,
-            link: '/estoque',
-          })
+          // Consulta real na tabela estoque respeitando isolamento multi-tenant
+          const effectiveClinicaId = profile?.clinica_id || clinica?.id
+          let estoqueQuery = supabase
+            .from('estoque')
+            .select('id, nome, quantidade, minimo')
+
+          if (effectiveClinicaId) {
+            estoqueQuery = estoqueQuery.eq('clinica_id', effectiveClinicaId)
+          }
+
+          const { data: estoqueItens, error: estoqueError } = await estoqueQuery
+
+          if (!estoqueError && estoqueItens && estoqueItens.length > 0) {
+            const itensCriticos = estoqueItens.filter((item: any) => {
+              const qtd = Number(item.quantidade ?? 0)
+              const min = Number(item.minimo ?? 0)
+              return min > 0 && qtd <= min
+            })
+
+            if (itensCriticos.length > 0) {
+              const nomesAmostra = itensCriticos.slice(0, 2).map((i: any) => i.nome).join(', ')
+              const sufixoMais = itensCriticos.length > 2 ? ` e mais ${itensCriticos.length - 2} item(ns)` : ''
+              notifs.push({
+                id: 'notif-estoque-critico',
+                type: 'stock',
+                title: 'Alerta de Estoque Mínimo',
+                description: `${itensCriticos.length} ${itensCriticos.length === 1 ? 'item atingiu' : 'itens atingiram'} o estoque mínimo de segurança (${nomesAmostra}${sufixoMais}).`,
+                time: 'Hoje',
+                unread: true,
+                link: '/estoque',
+              })
+            }
+          }
         }
 
         setNotifications(notifs)
@@ -284,7 +308,7 @@ export default function Topbar() {
     }
 
     fetchNotifications()
-  }, [role])
+  }, [role, profile?.clinica_id, clinica?.id])
 
   // Notificações visíveis e badge filtrados estritamente por perfil (RBAC)
   const visibleNotifications = useMemo(() => {
@@ -366,7 +390,7 @@ export default function Topbar() {
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
-    <header className="h-16 w-full flex items-center justify-between px-4 sm:px-8 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] shrink-0 transition-colors duration-200">
+    <header className="h-16 w-full flex items-center justify-between px-4 sm:px-8 z-50 bg-[var(--bg-surface)] border-b border-[var(--border)] shrink-0 transition-colors duration-200">
       
       {/* ── Lado esquerdo: Logo + Nav ── */}
       <div className="flex items-center gap-4 sm:gap-6">
@@ -376,7 +400,7 @@ export default function Topbar() {
           className="flex items-center gap-3 active:scale-95 transition-transform"
         >
           {clinica?.logo_url ? (
-            <div className="h-9 w-9 rounded-2xl overflow-hidden flex items-center justify-center bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs shrink-0">
+            <div className="h-9 w-9 rounded-2xl overflow-hidden flex items-center justify-center bg-[var(--bg-surface)] border border-[var(--border)]/80  shadow-2xs shrink-0">
               <img
                 src={clinica.logo_url}
                 alt="Logo da clínica"
@@ -384,15 +408,15 @@ export default function Topbar() {
               />
             </div>
           ) : (
-            <div className="h-9 w-9 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-sm shadow-blue-500/25 shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="h-9 w-9 bg-[var(--primary)] rounded-2xl flex items-center justify-center shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[var(--on-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
           )}
           <div className="flex items-center gap-2">
             <h1 
-              className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight truncate max-w-[140px] sm:max-w-[220px] md:max-w-[300px]" 
+              className="text-lg sm:text-xl font-black text-[var(--text-primary)] tracking-tight truncate max-w-[140px] sm:max-w-[220px] md:max-w-[300px]" 
               title={isSuper && !isSuperAdminContext ? 'OdontoSoft Global' : (clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft')}
             >
               {isSuper && !isSuperAdminContext ? 'OdontoSoft' : (clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft')}
@@ -403,7 +427,7 @@ export default function Topbar() {
               </span>
             )}
             {isSuper && !isSuperAdminContext && (
-              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30">
+              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
                 Painel Global
               </span>
             )}
@@ -411,7 +435,7 @@ export default function Topbar() {
         </Link>
 
         {/* Nav principal — filtrada por role e contexto */}
-        <nav className="hidden md:flex items-center gap-1.5 bg-slate-100/70 dark:bg-slate-900/60 p-1 rounded-2xl border border-slate-200/60 dark:border-slate-800/60">
+        <nav className="hidden md:flex items-center gap-1.5 bg-[var(--bg-base)] p-1 rounded-2xl border border-[var(--border)]">
           {renderedNavLinks.map(link => {
             const isBaseMatch = link.path === '/admin'
               ? pathname === '/admin'
@@ -423,8 +447,8 @@ export default function Topbar() {
                 prefetch={true}
                 className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all active:scale-95 ${
                   isBaseMatch
-                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-2xs border border-slate-200/80 dark:border-slate-700/80' 
-                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
+                    ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)]' 
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 {link.name}
@@ -444,46 +468,46 @@ export default function Topbar() {
               onClick={() => setIsToolsOpen(!isToolsOpen)}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border outline-none active:scale-[0.98] ${
                 isToolsOpen
-                  ? 'bg-slate-100/90 dark:bg-slate-800/90 border-slate-300 dark:border-slate-600 text-blue-600 dark:text-blue-400 shadow-2xs'
-                  : 'bg-slate-50/70 dark:bg-slate-900/60 border-slate-200/70 dark:border-slate-800/80 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:border-slate-300/80 dark:hover:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-2xs'
+                  ? 'bg-[var(--bg-base)] border-[var(--border-medium)] text-[var(--primary)]'
+                  : 'bg-[var(--bg-base)] border-[var(--border)] hover:border-[var(--border-medium)] text-[var(--text-primary)]'
               }`}
               aria-expanded={isToolsOpen}
               aria-haspopup="true"
               aria-label="Abrir menu de utilitários rápidos"
             >
-              <LayoutGrid className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+              <LayoutGrid className="h-4 w-4 text-[var(--text-muted)]" />
               <span className="hidden md:inline">Ferramentas</span>
               <ChevronDown
-                className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 shrink-0 ${
-                  isToolsOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : ''
+                className={`h-3.5 w-3.5 text-[var(--text-muted)] transition-transform duration-200 shrink-0 ${
+                  isToolsOpen ? 'rotate-180 text-[var(--primary)]' : ''
                 }`}
               />
             </button>
 
             {isToolsOpen && (
               <div 
-                className="absolute right-0 top-full mt-2 w-80 sm:w-84 max-h-[calc(100vh-5rem)] overflow-y-auto bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800 py-2 z-50 animate-in fade-in-50 zoom-in-95 duration-150 origin-top-right divide-y divide-slate-100 dark:divide-slate-800/80"
+                className="absolute right-0 top-full mt-2 w-80 sm:w-84 max-h-[calc(100vh-5rem)] overflow-y-auto bg-[var(--bg-surface)] rounded-3xl shadow-md border border-[var(--border)] py-2 z-50 animate-in fade-in-50 zoom-in-95 duration-150 origin-top-right divide-y divide-[var(--border)]"
                 role="menu"
               >
                 {/* ── GRUPO 1: UTILITÁRIOS RÁPIDOS ── */}
                 <div className="py-1 px-1.5 space-y-0.5">
                   <div className="px-3 pt-2 pb-1">
-                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">
                       Utilitários Rápidos
                     </p>
                   </div>
 
                   {/* Calculadora */}
                   <button
-                    onClick={() => { setIsCalculadoraOpen(true); setIsToolsOpen(false) }}
-                    className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group text-left"
+                    onClick={() => { setIsCalculadoraOpen(prev => !prev); setIsToolsOpen(false) }}
+                    className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group text-left"
                   >
-                    <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors shrink-0">
+                    <div className="p-2 rounded-xl bg-[var(--bg-base)] group-hover:bg-[var(--primary-subtle)] group-hover:text-[var(--primary)] transition-colors shrink-0">
                       <Calculator className="h-4 w-4" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-semibold text-slate-800 dark:text-slate-100">Calculadora</span>
-                      <span className="text-[10px] text-slate-400 font-normal">Cálculos e conversões imediatas</span>
+                      <span className="font-semibold text-[var(--text-primary)]">Calculadora</span>
+                      <span className="text-[10px] text-[var(--text-muted)] font-normal">Cálculos e conversões imediatas</span>
                     </div>
                   </button>
 
@@ -491,28 +515,28 @@ export default function Topbar() {
                   {canSeeMedicalDocs && (
                     <>
                       <button
-                        onClick={() => { setIsReceituarioOpen(true); setIsToolsOpen(false) }}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group text-left"
+                        onClick={() => { setIsReceituarioOpen(prev => !prev); setIsToolsOpen(false) }}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]  hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group text-left"
                       >
-                        <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/50 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors shrink-0">
+                        <div className="p-2 rounded-xl bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/50 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors shrink-0">
                           <FileText className="h-4 w-4" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-semibold text-slate-800 dark:text-slate-100">Receituário Rápido</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Emissão ágil com posologia</span>
+                          <span className="font-semibold text-[var(--text-primary)]">Receituário Rápido</span>
+                          <span className="text-[10px] text-[var(--text-muted)] font-normal">Emissão ágil com posologia</span>
                         </div>
                       </button>
 
                       <button
-                        onClick={() => { setIsAtestadoOpen(true); setIsToolsOpen(false) }}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group text-left"
+                        onClick={() => { setIsAtestadoOpen(prev => !prev); setIsToolsOpen(false) }}
+                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group text-left"
                       >
-                        <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors shrink-0">
+                        <div className="p-2 rounded-xl bg-[var(--bg-base)] group-hover:bg-[var(--primary-subtle)] group-hover:text-[var(--primary)] transition-colors shrink-0">
                           <FileBadge className="h-4 w-4" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-semibold text-slate-800 dark:text-slate-100">Atestado Odontológico</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Declaração e afastamento legal</span>
+                          <span className="font-semibold text-[var(--text-primary)]">Atestado Odontológico</span>
+                          <span className="text-[10px] text-[var(--text-secondary)] font-normal">Declaração e afastamento legal</span>
                         </div>
                       </button>
                     </>
@@ -523,7 +547,7 @@ export default function Topbar() {
                 {canSeeClinicalGroup && (
                   <div className="py-1 px-1.5 space-y-0.5">
                     <div className="px-3 pt-2 pb-1">
-                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-secondary)]">
                         Módulos Clínicos & Gestão
                       </p>
                     </div>
@@ -533,14 +557,14 @@ export default function Topbar() {
                         href="/planos-tratamento"
                         prefetch={true}
                         onClick={() => setIsToolsOpen(false)}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group"
                       >
-                        <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-sky-50 dark:group-hover:bg-sky-950/50 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors shrink-0">
+                        <div className="p-2 rounded-xl bg-[var(--bg-base)] group-hover:bg-[var(--primary-subtle)] group-hover:text-[var(--primary)] transition-colors shrink-0">
                           <ClipboardList className="h-4 w-4" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-semibold text-slate-800 dark:text-slate-100">Planos de Tratamento</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Orçamentos e fases de tratamento</span>
+                          <span className="font-semibold text-[var(--text-primary)]">Planos de Tratamento</span>
+                          <span className="text-[10px] text-[var(--text-secondary)] font-normal">Orçamentos e fases de tratamento</span>
                         </div>
                       </Link>
                     )}
@@ -550,14 +574,14 @@ export default function Topbar() {
                         href="/prontuarios"
                         prefetch={true}
                         onClick={() => setIsToolsOpen(false)}
-                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                        className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group"
                       >
-                        <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-violet-50 dark:group-hover:bg-violet-950/50 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors shrink-0">
+                        <div className="p-2 rounded-xl bg-[var(--bg-base)] group-hover:bg-[var(--primary-subtle)] group-hover:text-[var(--primary)] transition-colors shrink-0">
                           <ClipboardPlus className="h-4 w-4" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-semibold text-slate-800 dark:text-slate-100">Prontuário Eletrónico</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Histórico clínico e evoluções</span>
+                          <span className="font-semibold text-[var(--text-primary)]">Prontuário Eletrónico</span>
+                          <span className="text-[10px] text-[var(--text-secondary)] font-normal">Histórico clínico e evoluções</span>
                         </div>
                       </Link>
                     )}
@@ -568,7 +592,7 @@ export default function Topbar() {
                 {canSeeFinancialGroup && (
                   <div className="py-1 px-1.5 space-y-0.5">
                     <div className="px-3 pt-2 pb-1">
-                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">
                         Módulos Financeiros & Avançados
                       </p>
                     </div>
@@ -577,14 +601,14 @@ export default function Topbar() {
                       href="/comissoes"
                       prefetch={true}
                       onClick={() => setIsToolsOpen(false)}
-                      className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                      className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]  hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group"
                     >
-                      <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-amber-50 dark:group-hover:bg-amber-950/50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors shrink-0">
+                      <div className="p-2 rounded-xl bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] group-hover:bg-amber-50 dark:group-hover:bg-amber-950/50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors shrink-0">
                         <Percent className="h-4 w-4" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-semibold text-slate-800 dark:text-slate-100">Controle de Comissões</span>
-                        <span className="text-[10px] text-slate-400 font-normal">Repasses e produção dos dentistas</span>
+                        <span className="font-semibold text-[var(--text-primary)]">Controle de Comissões</span>
+                        <span className="text-[10px] text-[var(--text-muted)] font-normal">Repasses e produção dos dentistas</span>
                       </div>
                     </Link>
 
@@ -592,14 +616,14 @@ export default function Topbar() {
                       href="/regua-cobranca"
                       prefetch={true}
                       onClick={() => setIsToolsOpen(false)}
-                      className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                      className="flex items-center gap-3 w-full px-3 py-2 text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]  hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group"
                     >
-                      <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 group-hover:bg-rose-50 dark:group-hover:bg-rose-950/50 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors shrink-0">
+                      <div className="p-2 rounded-xl bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] group-hover:bg-rose-50 dark:group-hover:bg-rose-950/50 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors shrink-0">
                         <Clock className="h-4 w-4" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-semibold text-slate-800 dark:text-slate-100">Régua de Cobrança</span>
-                        <span className="text-[10px] text-slate-400 font-normal">Automação de lembretes e cobrança</span>
+                        <span className="font-semibold text-[var(--text-primary)]">Régua de Cobrança</span>
+                        <span className="text-[10px] text-[var(--text-muted)] font-normal">Automação de lembretes e cobrança</span>
                       </div>
                     </Link>
                   </div>
@@ -612,7 +636,7 @@ export default function Topbar() {
         {/* ── Botão Suporte WhatsApp ── */}
         <button
           onClick={() => window.open('https://wa.me/5511999999999', '_blank')}
-          className="hidden xl:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all shadow-sm shadow-blue-500/20 active:scale-[0.98]"
+          className="hidden xl:flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all active:scale-[0.98]"
           title="Falar com Suporte Técnico"
         >
           <HeadphonesIcon className="h-4 w-4" />
@@ -622,33 +646,33 @@ export default function Topbar() {
         {/* ── Busca global com atalho Kbd ── */}
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="flex items-center gap-2.5 bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 px-3.5 py-2 rounded-2xl text-slate-500 dark:text-slate-400 transition-all hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:border-slate-300/80 dark:hover:border-slate-700/80 text-xs sm:text-sm font-medium shadow-2xs group active:scale-[0.98]"
+          className="flex items-center gap-2.5 bg-[var(--bg-base)] border border-[var(--border)] px-3.5 py-2 rounded-2xl text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-hover)] hover:border-[var(--border-medium)] text-xs sm:text-sm font-medium group active:scale-[0.98]"
           title="Buscar no sistema (⌘K ou Ctrl+K)"
         >
-          <Search className="h-4 w-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
+          <Search className="h-4 w-4 text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors" />
           <span className="hidden sm:inline">Buscar...</span>
-          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-lg bg-slate-200/60 dark:bg-slate-800 text-[10px] font-extrabold text-slate-400 dark:text-slate-400 border border-slate-300/60 dark:border-slate-700 select-none">
+          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-lg bg-[var(--border)] text-[10px] font-extrabold text-[var(--text-secondary)] border border-[var(--border-medium)] select-none">
             ⌘K
           </kbd>
         </button>
 
         {/* ── Cluster: Notificações + Alternância de Tema ── */}
-        <div className="flex items-center bg-slate-50/80 dark:bg-slate-900/60 p-1 rounded-2xl border border-slate-200/80 dark:border-slate-800 gap-0.5 shadow-2xs">
+        <div className="flex items-center bg-[var(--bg-base)] p-1 rounded-2xl border border-[var(--border)] gap-0.5">
           {/* Notificações com badge */}
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className={`p-2 rounded-xl relative transition-all ${
                 isDropdownOpen
-                  ? 'bg-blue-50 text-blue-600 dark:bg-slate-800 dark:text-blue-400 shadow-2xs'
-                  : 'text-slate-500 hover:bg-white dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200'
+                  ? 'bg-[var(--primary-subtle)] text-[var(--primary)]'
+                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]'
               }`}
               title="Notificações da Clínica"
               aria-label="Abrir notificações"
             >
               <Bell className="h-4.5 w-4.5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-extrabold text-white shadow-sm ring-2 ring-white dark:ring-slate-900 animate-in zoom-in-50">
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--error)] px-1 text-[10px] font-extrabold text-white ring-2 ring-[var(--bg-surface)] animate-in zoom-in-50">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -668,13 +692,13 @@ export default function Topbar() {
         </div>
 
         {/* Divisor vertical sutil */}
-        <div className="h-6 w-px bg-slate-200/80 dark:bg-slate-800 mx-0.5 hidden sm:block" />
+        <div className="h-6 w-px bg-[var(--border)] mx-0.5 hidden sm:block" />
 
         {/* Botão Contextual: Voltar ao Painel Global para Super Admin em contexto */}
         {isSuper && isSuperAdminContext && (
           <button
             onClick={handleVoltarPainelGlobal}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-xs active:scale-[0.98] cursor-pointer shrink-0"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-xs font-bold transition-all active:scale-[0.98] cursor-pointer shrink-0"
             title="Voltar ao Painel Administrativo Global"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
@@ -688,33 +712,33 @@ export default function Topbar() {
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
             className={`flex items-center gap-2.5 p-1 sm:pr-3 rounded-2xl transition-all border outline-none active:scale-[0.98] ${
               isUserMenuOpen
-                ? 'bg-slate-100/90 dark:bg-slate-800/90 border-slate-300 dark:border-slate-600 shadow-2xs'
-                : 'bg-slate-50/70 dark:bg-slate-900/60 border-slate-200/70 dark:border-slate-800/80 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:border-slate-300/80 dark:hover:border-slate-700/80'
+                ? 'bg-[var(--bg-base)] border-[var(--border-medium)]'
+                : 'bg-[var(--bg-base)] border-[var(--border)] hover:bg-[var(--bg-hover)] hover:border-[var(--border-medium)]'
             }`}
             aria-expanded={isUserMenuOpen}
             aria-haspopup="true"
             aria-label="Menu de perfil do utilizador"
           >
-            {/* Avatar elegante com gradiente, iniciais e status online */}
-            <div className="relative h-9 w-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center font-extrabold text-xs shadow-sm shadow-blue-500/20 shrink-0">
+            {/* Avatar sem gradiente nem brilho, iniciais e status online */}
+            <div className="relative h-9 w-9 rounded-xl bg-[var(--primary)] text-[var(--on-primary)] flex items-center justify-center font-extrabold text-xs shrink-0">
               {getInitials(profile?.nome)}
-              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-950" />
+              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[var(--success)] ring-2 ring-[var(--bg-surface)]" />
             </div>
 
             {/* Informações do utilizador: Nome Completo + Cargo humanizado */}
             <div className="hidden sm:flex flex-col text-left leading-tight pr-0.5">
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate max-w-[130px] md:max-w-[170px]" title={profile?.nome?.trim() || 'Meu Perfil'}>
+              <span className="text-xs font-bold text-[var(--text-primary)] truncate max-w-[130px] md:max-w-[170px]" title={profile?.nome?.trim() || 'Meu Perfil'}>
                 {profile?.nome?.trim() || 'Meu Perfil'}
               </span>
-              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+              <span className="text-[10px] font-semibold text-[var(--text-muted)]">
                 {ROLE_LABELS[role] || 'Membro da Equipe'}
               </span>
             </div>
 
             {/* Chevron animado */}
             <ChevronDown
-              className={`hidden sm:block h-3.5 w-3.5 text-slate-400 transition-transform duration-200 shrink-0 ${
-                isUserMenuOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : ''
+              className={`hidden sm:block h-3.5 w-3.5 text-[var(--text-muted)] transition-transform duration-200 shrink-0 ${
+                isUserMenuOpen ? 'rotate-180 text-[var(--primary)]' : ''
               }`}
             />
           </button>
@@ -722,26 +746,26 @@ export default function Topbar() {
           {/* Dropdown / Popover Centralizado */}
           {isUserMenuOpen && (
             <div 
-              className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800 py-2.5 z-50 animate-in fade-in-50 zoom-in-95 duration-150 origin-top-right divide-y divide-slate-100 dark:divide-slate-800/80"
+              className="absolute right-0 top-full mt-2 w-72 bg-[var(--bg-surface)] rounded-3xl shadow-md border border-[var(--border)]/80  py-2.5 z-50 animate-in fade-in-50 zoom-in-95 duration-150 origin-top-right divide-y divide-[var(--border)]"
               role="menu"
             >
               {/* Header do Menu com identificação completa */}
               <div className="px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
+                  <div className="h-10 w-10 rounded-2xl bg-[var(--primary)] text-[var(--on-primary)] flex items-center justify-center font-black text-sm shrink-0">
                     {getInitials(profile?.nome)}
                   </div>
                   <div className="flex flex-col min-w-0 flex-1">
-                    <p className="text-sm font-extrabold text-slate-900 dark:text-white truncate" title={profile?.nome?.trim() || 'Usuário'}>
+                    <p className="text-sm font-extrabold text-[var(--text-primary)] truncate" title={profile?.nome?.trim() || 'Usuário'}>
                       {profile?.nome?.trim() || 'Usuário'}
                     </p>
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 truncate" title={session?.user?.email || ''}>
+                    <p className="text-xs font-medium text-[var(--text-muted)] truncate" title={session?.user?.email || ''}>
                       {session?.user?.email || 'Acesso seguro'}
                     </p>
                   </div>
                 </div>
                 <div className="mt-2.5 flex items-center gap-1.5">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
                     <ShieldCheck className="h-3 w-3" />
                     {ROLE_LABELS[role] || 'Membro da Equipe'}
                   </span>
@@ -750,21 +774,21 @@ export default function Topbar() {
 
               {/* Seção 1: Configurações Pessoais (Perfil, Senha e Credenciais) */}
               <div className="py-1.5 px-1.5 space-y-0.5">
-                <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                   Configurações Pessoais
                 </p>
                 <Link
                   href="/minha-conta"
                   prefetch={true}
                   onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                  className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]  hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group"
                 >
-                  <div className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <div className="p-1 rounded-lg bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] group-hover:bg-[var(--primary-subtle)] dark:group-hover:bg-[var(--primary-subtle)] group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary)] transition-colors">
                     <User className="h-4 w-4" />
                   </div>
                   <div className="flex flex-col text-left">
                     <span className="font-semibold">Meu Perfil</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Alterar dados pessoais e identificação</span>
+                    <span className="text-[10px] text-[var(--text-muted)] font-normal">Alterar dados pessoais e identificação</span>
                   </div>
                 </Link>
 
@@ -772,14 +796,14 @@ export default function Topbar() {
                   href="/minha-conta"
                   prefetch={true}
                   onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                  className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]  hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group"
                 >
-                  <div className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-amber-50 dark:group-hover:bg-amber-950/50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                  <div className="p-1 rounded-lg bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] group-hover:bg-amber-50 dark:group-hover:bg-amber-950/50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                     <KeyRound className="h-4 w-4" />
                   </div>
                   <div className="flex flex-col text-left">
                     <span className="font-semibold">Segurança & Palavra-passe</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Modificar senha e acessos</span>
+                    <span className="text-[10px] text-[var(--text-muted)] font-normal">Modificar senha e acessos</span>
                   </div>
                 </Link>
               </div>
@@ -787,21 +811,21 @@ export default function Topbar() {
               {/* Seção 2: Administração da Clínica (Exclusivo para admin / admin_clinica) */}
               {isAdmin && (
                 <div className="py-1.5 px-1.5 space-y-0.5">
-                  <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                     Administração da Clínica
                   </p>
                   <Link
                     href="/configuracoes"
                     prefetch={true}
                     onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-xl font-medium transition-colors group"
+                    className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group"
                   >
-                    <div className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    <div className="p-1 rounded-lg bg-[var(--bg-base)] group-hover:bg-[var(--primary-subtle)] group-hover:text-[var(--primary)] transition-colors">
                       <Settings className="h-4 w-4" />
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="font-semibold">Configurações do Sistema</span>
-                      <span className="text-[10px] text-slate-400 font-normal">Dados da clínica, logotipo e permissões</span>
+                      <span className="text-[10px] text-[var(--text-secondary)] font-normal">Dados da clínica, logotipo e permissões</span>
                     </div>
                   </Link>
                 </div>
@@ -810,21 +834,21 @@ export default function Topbar() {
               {/* Seção Super Admin: Painel Global da Plataforma */}
               {isSuper && (
                 <div className="py-1.5 px-1.5 space-y-0.5">
-                  <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                     Administração Geral SaaS
                   </p>
                   <Link
                     href="/admin"
                     prefetch={true}
                     onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-xl font-bold transition-colors group"
+                    className="flex items-center gap-2.5 w-full px-3 py-2 text-xs sm:text-sm text-[var(--primary)] hover:bg-[var(--primary-subtle)] rounded-xl font-bold transition-colors group"
                   >
-                    <div className="p-1 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 transition-colors">
+                    <div className="p-1 rounded-lg bg-[var(--primary-subtle)] text-[var(--primary)] transition-colors">
                       <ShieldCheck className="h-4 w-4" />
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="font-semibold">Painel Global</span>
-                      <span className="text-[10px] text-slate-400 font-normal">Clínicas, usuários e indicadores</span>
+                      <span className="text-[10px] text-[var(--text-secondary)] font-normal">Clínicas, usuários e indicadores</span>
                     </div>
                   </Link>
                 </div>
@@ -834,9 +858,9 @@ export default function Topbar() {
               <div className="py-1.5 px-1.5">
                 <button
                   onClick={logout}
-                  className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs sm:text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl font-bold transition-colors group"
+                  className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs sm:text-sm text-[var(--error)] hover:bg-[var(--error-bg)] rounded-xl font-bold transition-colors group"
                 >
-                  <div className="p-1 rounded-lg bg-red-100/60 dark:bg-red-950/60 group-hover:bg-red-100 dark:group-hover:bg-red-900/60 transition-colors">
+                  <div className="p-1 rounded-lg bg-[var(--error-bg)] transition-colors">
                     <LogOut className="h-4 w-4" />
                   </div>
                   <span>Terminar Sessão</span>

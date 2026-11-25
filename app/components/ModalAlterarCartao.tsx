@@ -27,18 +27,18 @@ export default function ModalAlterarCartao({ isOpen, onClose }: ModalAlterarCart
   return (
     <>
       <div 
-        className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg-base)] p-4"
         onClick={onClose}
       >
         <div 
-          className="bg-slate-700 w-full max-w-[400px] p-6 rounded-xl border border-slate-600 shadow-2xl flex flex-col relative"
+          className="bg-[var(--bg-surface)] w-full max-w-[400px] p-6 rounded-xl border border-[var(--border)] shadow-md flex flex-col relative"
           onClick={e => e.stopPropagation()}
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-slate-100 font-bold text-lg">Atualizar Método de Pagamento</h2>
+            <h2 className="text-[var(--text-primary)] font-bold text-lg">Atualizar Método de Pagamento</h2>
             <button 
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-100 transition-colors bg-slate-800 p-1.5 rounded-md hover:bg-slate-600 border border-slate-600"
+              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors bg-[var(--bg-surface)] p-1.5 rounded-md hover:bg-[var(--border-medium)] border border-[var(--border)]"
             >
               <X size={18} />
             </button>
@@ -47,21 +47,21 @@ export default function ModalAlterarCartao({ isOpen, onClose }: ModalAlterarCart
           <form id="alterar-cartao-form" onSubmit={handleSalvar} className="space-y-4">
             
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Nome no Cartão</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Nome no Cartão</label>
               <input 
                 type="text" 
                 required
-                className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500 uppercase"
+                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all placeholder-[var(--text-secondary)] uppercase"
                 placeholder="NOME IMPRESSO NO CARTÃO"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Número do Cartão</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Número do Cartão</label>
               <input 
                 type="text" 
                 required
-                className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
+                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all placeholder-[var(--text-secondary)]"
                 placeholder="0000 0000 0000 0000"
                 maxLength={19}
               />
@@ -69,21 +69,21 @@ export default function ModalAlterarCartao({ isOpen, onClose }: ModalAlterarCart
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Validade</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Validade</label>
                 <input 
                   type="text" 
                   required
-                  className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
+                  className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all placeholder-[var(--text-secondary)]"
                   placeholder="MM/AA"
                   maxLength={5}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">CVV</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">CVV</label>
                 <input 
                   type="text" 
                   required
-                  className="w-full bg-slate-800 text-slate-100 border border-slate-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
+                  className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all placeholder-[var(--text-secondary)]"
                   placeholder="123"
                   maxLength={4}
                 />
@@ -94,14 +94,14 @@ export default function ModalAlterarCartao({ isOpen, onClose }: ModalAlterarCart
               <button 
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-transparent text-slate-300 hover:text-white hover:bg-slate-600 border border-slate-600 rounded-md text-sm font-semibold transition-colors"
+                className="px-4 py-2 bg-transparent text-[var(--text-secondary)] hover:text-white hover:bg-[var(--border-medium)] border border-[var(--border)] rounded-md text-sm font-semibold transition-colors"
               >
                 Cancelar
               </button>
               <button 
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[170px]"
+                className="px-6 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[170px]"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Salvar Novo Cartão'}
               </button>

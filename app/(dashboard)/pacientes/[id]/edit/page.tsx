@@ -9,10 +9,10 @@ export default async function EditPatientPage({ params }: { params: Promise<{ id
 
   if (!id || id === 'undefined') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 p-8">
-        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">ID de Paciente Inválido</h2>
-        <p className="text-slate-500 dark:text-slate-400 mb-6">O ID fornecido para edição não é válido.</p>
-        <Link href="/pacientes" className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--bg-base)] dark:bg-[var(--bg-base)] p-8">
+        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4">ID de Paciente Inválido</h2>
+        <p className="text-[var(--text-muted)] mb-6">O ID fornecido para edição não é válido.</p>
+        <Link href="/pacientes" className="px-6 py-2 bg-[var(--primary)] text-[var(--on-primary)] font-semibold rounded-lg hover:bg-[var(--primary-hover)] transition-colors">
           Voltar para Lista
         </Link>
       </div>
@@ -24,10 +24,10 @@ export default async function EditPatientPage({ params }: { params: Promise<{ id
   
   if (!patient) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 p-8">
-        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Paciente não encontrado</h2>
-        <p className="text-slate-500 dark:text-slate-400 mb-6">Não foi possível carregar os dados deste paciente. Verifique se o ID está correto.</p>
-        <Link href="/pacientes" className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--bg-base)] dark:bg-[var(--bg-base)] p-8">
+        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-4">Paciente não encontrado</h2>
+        <p className="text-[var(--text-muted)] mb-6">Não foi possível carregar os dados deste paciente. Verifique se o ID está correto.</p>
+        <Link href="/pacientes" className="px-6 py-2 bg-[var(--primary)] text-[var(--on-primary)] font-semibold rounded-lg hover:bg-[var(--primary-hover)] transition-colors">
           Voltar para Lista
         </Link>
       </div>
@@ -35,7 +35,7 @@ export default async function EditPatientPage({ params }: { params: Promise<{ id
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 p-8">
+    <div className="flex min-h-screen bg-[var(--bg-base)] dark:bg-[var(--bg-base)] p-8">
       <EditPatientForm patient={patient as any} />
     </div>
   );
