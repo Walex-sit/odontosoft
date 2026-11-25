@@ -70,7 +70,7 @@ export default function TrialExpiradoPage() {
                   'Prontuários eletrônicos e odontograma dos pacientes',
                   'Controle financeiro e relatórios da clínica',
                   'Gestão de equipe e permissões de acesso',
-                  'Conformidade LGPD e histórico de alterações protegido',
+                  'Recursos de apoio à conformidade LGPD e histórico protegido',
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-2.5">
                     <CheckCircle2 className="h-4 w-4 text-[var(--success)] shrink-0" />
@@ -147,7 +147,7 @@ export default function TrialExpiradoPage() {
 
         {/* Badge de segurança */}
         <p className="text-center text-xs text-[var(--text-secondary)] mt-4">
-          OdontoSoft · Dados da sua clínica isolados e protegidos · LGPD Conforme
+          OdontoSoft · Dados da sua clínica isolados e protegidos · Apoio à LGPD
         </p>
       </div>
     </div>

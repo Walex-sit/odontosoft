@@ -51,10 +51,10 @@ export interface PaidPlanConfig {
 
 export const TRIAL_PLAN: TrialPlanConfig = {
   id: 'trial',
-  nome: 'Avaliação de 7 Dias',
-  badge: 'Teste Gratuito',
+  nome: 'Teste de 7 dias',
+  badge: 'Gratuito',
   descricao:
-    'Experimente o atendimento na prática com sua clínica por 7 dias antes de escolher um plano.',
+    'Experimente o sistema na rotina da clínica por 7 dias antes de escolher um plano.',
   precoMensal: 0,
   precoLabel: 'R$ 0',
   periodo: '/ 7 dias',
@@ -64,24 +64,22 @@ export const TRIAL_PLAN: TrialPlanConfig = {
     resumoCurto: '1 profissional · até 50 pacientes',
   },
   recursos: [
-    '7 dias de teste gratuito para conhecer o sistema',
-    'Até 50 pacientes cadastrados',
-    'Agenda para 1 profissional',
+    '7 dias de acesso para conhecer a rotina da clínica',
     'Odontograma digital e prontuário básico',
   ],
   limitacoes: [
     'Relatórios financeiros completos e comissões bloqueados',
     'Exige assinatura de um plano pago para continuar após 7 dias',
   ],
-  ctaText: 'Iniciar Teste de 7 Dias',
+  ctaText: 'Iniciar Teste de 7 dias',
 }
 
 export const PLANOS_SAAS_CATALOG: Record<PaidPlanId, PaidPlanConfig> = {
   essencial: {
     id: 'essencial',
     nome: 'Essencial',
-    nomeCompleto: 'Plano Essencial',
-    badge: 'Consultórios Individuais',
+    nomeCompleto: 'Essencial',
+    badge: 'Consultórios',
     descricao:
       'Ideal para consultórios individuais e clínicas em estruturação que precisam organizar agenda e finanças.',
     precoMensal: 149,
@@ -91,26 +89,26 @@ export const PLANOS_SAAS_CATALOG: Record<PaidPlanId, PaidPlanConfig> = {
     limites: {
       dentistas: 'Até 3 profissionais',
       pacientes: 'Pacientes ilimitados',
-      armazenamento: '5 GB de imagens e documentos',
-      resumoCurto: 'Até 3 profissionais',
+      armazenamento: '5 GB de armazenamento',
+      resumoCurto: 'Até 3 profissionais · Pacientes ilimitados · 5 GB',
     },
     recursos: [
       'Agendamento inteligente e confirmações de consulta',
-      'Pacientes e prontuários ilimitados com CPF validado',
+      'Prontuários com validação de CPF',
       'Controle financeiro de receitas e despesas',
       'Catálogo de procedimentos e Termo LGPD padrão',
       'Suporte por e-mail em dias úteis',
     ],
-    ctaText: 'Assinar Plano Essencial',
+    ctaText: 'Assinar Essencial',
   },
   premium: {
     id: 'premium',
     nome: 'Premium',
-    nomeCompleto: 'Premium & Compliance',
+    nomeCompleto: 'Premium',
     badge: 'Clínica Completa',
     popularBadge: 'Recomendado',
     descricao:
-      'Para clínicas consolidadas que precisam de equipe ilimitada, relatórios completos e proteção jurídica CFO e LGPD.',
+      'Para clínicas consolidadas que precisam de equipe ilimitada, relatórios completos e recursos de apoio à conformidade CFO e LGPD.',
     precoMensal: 299,
     precoAnual: 2870, // 20% desconto (~ R$ 239/mês)
     precoAnualMensalizado: 239,
@@ -119,26 +117,26 @@ export const PLANOS_SAAS_CATALOG: Record<PaidPlanId, PaidPlanConfig> = {
     limites: {
       dentistas: 'Profissionais ilimitados',
       pacientes: 'Pacientes ilimitados',
-      armazenamento: '50 GB com retenção legal de 20 anos',
-      resumoCurto: 'Ilimitado + LGPD/CFO',
+      armazenamento: '50 GB de armazenamento',
+      resumoCurto: 'Profissionais e pacientes ilimitados · 50 GB',
     },
     recursos: [
-      'Tudo do Plano Essencial incluído',
+      'Tudo do plano Essencial incluído',
       'Múltiplos dentistas e divisão automática de comissões',
       'Relatórios financeiros completos e acompanhamento de caixa',
-      'Prontuário protegido conforme normas do CFO (histórico de alterações)',
-      'Dados da sua clínica isolados e protegidos com auditoria LGPD',
+      'Recursos de apoio à conformidade CFO (histórico de alterações no prontuário)',
+      'Dados da sua clínica isolados com recursos de apoio à conformidade LGPD',
       'Termo de consentimento LGPD com registro de aceite digital',
-      'Backups automáticos e 50 GB de armazenamento por 20 anos',
+      'Backups automáticos e histórico de longo prazo (referência de 20 anos)',
       'Suporte prioritário via WhatsApp',
     ],
-    ctaText: 'Assinar Plano Premium',
+    ctaText: 'Assinar Premium',
   },
 }
 
 /**
  * Mapeamento canônico dos códigos armazenados na coluna `clinicas.plano` no banco
- * para os planos comerciais oficiais e seus valores vigentes.
+ * (`basico`, `profissional`, `enterprise`) para os nomes e valores unificados.
  */
 export interface DbPlanInfo {
   dbKey: DbPlanKey
@@ -150,7 +148,7 @@ export interface DbPlanInfo {
 export const DB_PLAN_CATALOG: Record<DbPlanKey, DbPlanInfo> = {
   basico: {
     dbKey: 'basico',
-    nome: 'Básico (Essencial)',
+    nome: 'Essencial (Legado Básico)',
     precoMensal: PLANOS_SAAS_CATALOG.essencial.precoMensal,
     limites: PLANOS_SAAS_CATALOG.essencial.limites,
   },
@@ -162,7 +160,7 @@ export const DB_PLAN_CATALOG: Record<DbPlanKey, DbPlanInfo> = {
   },
   enterprise: {
     dbKey: 'enterprise',
-    nome: PLANOS_SAAS_CATALOG.premium.nomeCompleto,
+    nome: PLANOS_SAAS_CATALOG.premium.nome,
     precoMensal: PLANOS_SAAS_CATALOG.premium.precoMensal,
     limites: PLANOS_SAAS_CATALOG.premium.limites,
   },

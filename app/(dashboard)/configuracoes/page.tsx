@@ -1076,8 +1076,8 @@ export default function ConfiguracoesPage() {
                     }`}>
                       <div>
                         <div className="flex items-center justify-between mb-4">
-                          <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--bg-base)] dark:bg-[var(--border)] text-[var(--text-secondary)]">
-                            PLANO ESSENCIAL
+                          <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-[var(--bg-base)] dark:bg-[var(--border)] text-[var(--text-secondary)]">
+                            {PLANOS_SAAS_CATALOG.essencial.nome}
                           </span>
                           {!isVitalicio && subscriptionData.planoId === 'essencial' && (
                             <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--primary-fill)] text-[var(--on-primary)] flex items-center gap-1">
@@ -1086,29 +1086,24 @@ export default function ConfiguracoesPage() {
                           )}
                         </div>
 
-                        <div className="flex items-baseline gap-1 mb-2">
+                        <div className="flex items-baseline gap-1 mb-1">
                           <span className="text-3xl font-extrabold text-[var(--text-primary)]">R$ {PLANOS_SAAS_CATALOG.essencial.precoMensal}</span>
-                          <span className="text-xs text-[var(--text-muted)] font-semibold">/ mês</span>
+                          <span className="text-xs text-[var(--text-secondary)] font-semibold">/ mês</span>
                         </div>
-                        <p className="text-xs text-[var(--text-muted)] mb-6">
+                        <p className="text-xs font-semibold text-[var(--primary)] mb-2">
+                          {PLANOS_SAAS_CATALOG.essencial.limites.resumoCurto}
+                        </p>
+                        <p className="text-xs text-[var(--text-secondary)] mb-6">
                           {PLANOS_SAAS_CATALOG.essencial.descricao}
                         </p>
 
                         <div className="space-y-3 mb-8">
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-[var(--success)] shrink-0" />
-                            <span><strong>{PLANOS_SAAS_CATALOG.essencial.limites.dentistas}</strong></span>
-                          </div>
                           {PLANOS_SAAS_CATALOG.essencial.recursos.map((rec) => (
                             <div key={rec} className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
                               <CheckCircle2 className="h-4 w-4 text-[var(--success)] shrink-0" />
                               <span>{rec}</span>
                             </div>
                           ))}
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-[var(--success)] shrink-0" />
-                            <span>{PLANOS_SAAS_CATALOG.essencial.limites.armazenamento}</span>
-                          </div>
                         </div>
                       </div>
 
@@ -1147,8 +1142,8 @@ export default function ConfiguracoesPage() {
                     }`}>
                       <div>
                         <div className="flex items-center justify-between mb-4">
-                          <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--primary-subtle)] text-[var(--primary)] flex items-center gap-1.5">
-                            <Sparkles className="h-3.5 w-3.5 text-[var(--primary)]" /> RECOMENDADO CFO & LGPD
+                          <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-[var(--primary-subtle)] text-[var(--primary)] flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-[var(--primary)]" /> {PLANOS_SAAS_CATALOG.premium.nome} · {PLANOS_SAAS_CATALOG.premium.popularBadge}
                           </span>
                           {isVitalicio ? (
                             <span className="px-3 py-1 rounded-full text-xs font-black bg-[var(--super-bg)] text-[var(--super-text)] flex items-center gap-1">
@@ -1161,20 +1156,19 @@ export default function ConfiguracoesPage() {
                           )}
                         </div>
 
-                        <div className="flex items-baseline gap-1 mb-2">
+                        <div className="flex items-baseline gap-1 mb-1">
                           <span className="text-3xl font-extrabold text-[var(--text-primary)]">R$ {PLANOS_SAAS_CATALOG.premium.precoMensal}</span>
-                          <span className="text-xs text-[var(--text-muted)] font-semibold">/ mês</span>
+                          <span className="text-xs text-[var(--text-secondary)] font-semibold">/ mês</span>
                         </div>
-                        <p className="text-xs text-[var(--text-muted)] mb-6">
+                        <p className="text-xs font-semibold text-[var(--primary)] mb-2">
+                          {PLANOS_SAAS_CATALOG.premium.limites.resumoCurto}
+                        </p>
+                        <p className="text-xs text-[var(--text-secondary)] mb-6">
                           {PLANOS_SAAS_CATALOG.premium.descricao}
                         </p>
 
                         <div className="space-y-3 mb-8">
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
-                            <span><strong>{PLANOS_SAAS_CATALOG.premium.limites.dentistas}</strong></span>
-                          </div>
-                          {PLANOS_SAAS_CATALOG.premium.recursos.slice(0, 5).map((rec) => (
+                          {PLANOS_SAAS_CATALOG.premium.recursos.slice(0, 6).map((rec) => (
                             <div key={rec} className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
                               <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
                               <span>{rec}</span>

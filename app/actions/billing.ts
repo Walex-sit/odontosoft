@@ -140,11 +140,11 @@ export async function fetchClinicSubscription(targetClinicaId?: string): Promise
 
     if (rawPlano.includes('premium') || rawPlano.includes('profissional')) {
       planoId = 'premium'
-      planoNome = PLANOS_SAAS.premium.nomeCompleto
+      planoNome = PLANOS_SAAS.premium.nome
       dentistasLimite = PLANOS_SAAS.premium.maxDentistas
     } else if (rawPlano.includes('enterprise')) {
       planoId = 'enterprise'
-      planoNome = PLANOS_SAAS.premium.nomeCompleto
+      planoNome = PLANOS_SAAS.premium.nome
       dentistasLimite = PLANOS_SAAS.premium.maxDentistas
     }
 
@@ -189,7 +189,7 @@ export async function fetchClinicSubscription(targetClinicaId?: string): Promise
       const fimData = trialEndsAt
         ? new Date(trialEndsAt)
         : new Date(new Date(clinica.criado_em || Date.now()).getTime() + 7 * 24 * 60 * 60 * 1000)
-      
+
       const diffTime = fimData.getTime() - Date.now()
       diasRestantesTrial = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
     }
@@ -198,27 +198,27 @@ export async function fetchClinicSubscription(targetClinicaId?: string): Promise
     const hoje = new Date()
     const faturas: InvoiceItem[] = isLifetime || isSuperAdmin
       ? [
-          {
-            id: 'fat_vitalicio_' + clinicaId.substring(0, 8),
-            numero: 'INV-MASTER-001',
-            dataEmissao: new Date(hoje.getFullYear(), hoje.getMonth(), 1).toLocaleDateString('pt-BR'),
-            valor: 0,
-            status: 'pago',
-            plano: 'Licença Vitalícia Irrestrita',
-            metodo: 'Isenção Vitalícia (Super Admin)',
-          },
-        ]
+        {
+          id: 'fat_vitalicio_' + clinicaId.substring(0, 8),
+          numero: 'INV-MASTER-001',
+          dataEmissao: new Date(hoje.getFullYear(), hoje.getMonth(), 1).toLocaleDateString('pt-BR'),
+          valor: 0,
+          status: 'pago',
+          plano: 'Licença Vitalícia Irrestrita',
+          metodo: 'Isenção Vitalícia (Super Admin)',
+        },
+      ]
       : [
-          {
-            id: 'fat_' + clinicaId.substring(0, 8) + '_01',
-            numero: 'INV-2026-001',
-            dataEmissao: new Date(hoje.getFullYear(), hoje.getMonth(), 1).toLocaleDateString('pt-BR'),
-            valor: precoGlobal,
-            status: status === 'inadimplente' ? 'pendente' : (status === 'trial' ? 'pendente' : 'pago'),
-            plano: planoNome,
-            metodo: status === 'trial' ? 'Período de Testes (7 Dias)' : 'Cartão de Crédito (Stripe)',
-          },
-        ]
+        {
+          id: 'fat_' + clinicaId.substring(0, 8) + '_01',
+          numero: 'INV-2026-001',
+          dataEmissao: new Date(hoje.getFullYear(), hoje.getMonth(), 1).toLocaleDateString('pt-BR'),
+          valor: precoGlobal,
+          status: status === 'inadimplente' ? 'pendente' : (status === 'trial' ? 'pendente' : 'pago'),
+          plano: planoNome,
+          metodo: status === 'trial' ? 'Período de Testes (7 Dias)' : 'Cartão de Crédito (Stripe)',
+        },
+      ]
 
     return {
       success: true,

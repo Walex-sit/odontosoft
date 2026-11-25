@@ -38,7 +38,7 @@ export default function AssinaturaPage() {
         <div className="p-5 flex-1 overflow-y-auto">
           <div className="mb-6">
             <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2 mb-1">
-              {PLANOS_SAAS_CATALOG.essencial.nomeCompleto}
+              {PLANOS_SAAS_CATALOG.essencial.nome}
               <span className="bg-[var(--bg-surface)] text-[var(--success)] border border-[var(--success)]/45 text-xs font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
                 Ativo
               </span>

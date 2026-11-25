@@ -170,19 +170,18 @@ export default function PlanosPage() {
         <div className="max-w-5xl mx-auto px-4 text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--primary-subtle)] border border-[var(--primary)]/30 text-[var(--primary)] text-xs font-semibold uppercase tracking-wider mb-6">
             <ShieldCheck className="w-4 h-4" />
-            O Único Software com Blindagem Jurídica CFO nº 198/2019 e LGPD
+            Recursos de Apoio à Conformidade CFO e LGPD
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--text-primary)] mb-6 leading-tight">
             Gestão odontológica com <br />
             <span className="text-[var(--primary)]">
-              segurança jurídica inabalável
+              segurança e apoio à conformidade
             </span>
           </h1>
 
           <p className="text-lg text-[var(--text-muted)] max-w-2xl mx-auto mb-10 leading-relaxed">
-            Elimine riscos de processos éticos e multas da ANPD. Prontuários append-only imutáveis,
-            assinatura digital e criptografia militar de dados de pacientes.
+            Organize prontuários com histórico imutável de evoluções, registro de consentimento e proteção dos dados dos pacientes da sua clínica.
           </p>
 
           {/* Toggle Mensal / Anual */}
@@ -216,37 +215,42 @@ export default function PlanosPage() {
       <section id="planos" className="py-16 max-w-6xl mx-auto px-4 sm:px-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           {/* Plano Essencial */}
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-base)] p-8 flex flex-col justify-between hover:border-[var(--border)] transition-all shadow-xl">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-8 flex flex-col justify-between transition-all">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-surface)] px-3 py-1 rounded-md">
-                  {PLANOS_SAAS.essencial.nome}
+              <div className="flex items-center justify-between mb-4 lg:min-h-[32px]">
+                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] bg-[var(--bg-base)] border border-[var(--border)] px-3 py-1 rounded-md">
+                  {PLANOS_SAAS.essencial.badge}
                 </span>
-                <span className="text-xs font-semibold text-[var(--text-muted)]">
+                <span className="text-xs font-semibold text-[var(--text-secondary)]">
                   {PLANOS_SAAS.essencial.limites.dentistas}
                 </span>
               </div>
 
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Plano Essencial</h2>
-              <p className="text-sm text-[var(--text-secondary)] mb-6 leading-relaxed">
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">{PLANOS_SAAS.essencial.nome}</h2>
+              <p className="text-sm text-[var(--text-secondary)] mb-6 leading-relaxed lg:min-h-[48px]">
                 {PLANOS_SAAS.essencial.descricao}
               </p>
 
-              <div className="mb-6 flex items-baseline gap-2">
-                <span className="text-4xl font-extrabold text-[var(--text-primary)]">
-                  R$ {anual ? PLANOS_SAAS.essencial.precoAnualMensalizado : PLANOS_SAAS.essencial.precoMensal}
-                </span>
-                <span className="text-sm text-[var(--text-secondary)] font-medium">/mês</span>
-                {anual && (
-                  <span className="text-xs text-[var(--success)] ml-2 font-medium">
-                    (Faturado R$ {PLANOS_SAAS.essencial.precoAnual}/ano)
+              <div className="mb-6 lg:min-h-[76px]">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-extrabold text-[var(--text-primary)]">
+                    R$ {anual ? PLANOS_SAAS.essencial.precoAnualMensalizado : PLANOS_SAAS.essencial.precoMensal}
                   </span>
-                )}
+                  <span className="text-sm text-[var(--text-secondary)] font-medium">/mês</span>
+                  {anual && (
+                    <span className="text-xs text-[var(--success)] ml-2 font-medium">
+                      (Faturado R$ {PLANOS_SAAS.essencial.precoAnual}/ano)
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs font-semibold text-[var(--primary)] mt-1.5">
+                  {PLANOS_SAAS.essencial.limites.resumoCurto}
+                </p>
               </div>
 
               <div className="border-t border-[var(--border)] pt-6 mb-8 space-y-3">
                 <div className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">
-                  O que está incluso:
+                  O que está incluído:
                 </div>
                 {PLANOS_SAAS.essencial.recursos.map((rec, i) => (
                   <div key={i} className="flex items-start gap-3 text-sm text-[var(--text-secondary)]">
@@ -259,50 +263,55 @@ export default function PlanosPage() {
 
             <button
               onClick={() => abrirCheckout('essencial')}
-              className="w-full py-3.5 px-4 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2 hover:border-[var(--border-medium)]"
+              className="w-full py-3.5 px-4 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2 hover:border-[var(--border-medium)]"
             >
-              Assinar Plano Essencial
+              {PLANOS_SAAS.essencial.ctaText}
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
           {/* Plano Premium (Destaque) */}
-          <div className="rounded-2xl border-2 border-[var(--primary)]/40 bg-[var(--bg-surface)] p-8 flex flex-col justify-between shadow-md dark:shadow-none relative">
+          <div className="rounded-2xl border-2 border-[var(--primary)] bg-[var(--bg-surface)] p-8 flex flex-col justify-between relative">
             <div className="absolute -top-3.5 right-8 bg-[var(--primary-fill)] text-[var(--on-primary)] text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
               {PLANOS_SAAS.premium.popularBadge || 'Recomendado'}
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 lg:min-h-[32px]">
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--primary)] bg-[var(--primary-subtle)] border border-[var(--primary)]/30 px-3 py-1 rounded-md">
-                  {PLANOS_SAAS.premium.nome}
+                  {PLANOS_SAAS.premium.badge}
                 </span>
                 <span className="text-xs font-semibold text-[var(--primary)]">
                   {PLANOS_SAAS.premium.limites.dentistas}
                 </span>
               </div>
 
-              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Premium & Compliance</h2>
-              <p className="text-sm text-[var(--text-secondary)] mb-6 leading-relaxed">
+              <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">{PLANOS_SAAS.premium.nome}</h2>
+              <p className="text-sm text-[var(--text-secondary)] mb-6 leading-relaxed lg:min-h-[48px]">
                 {PLANOS_SAAS.premium.descricao}
               </p>
 
-              <div className="mb-6 flex items-baseline gap-2">
-                <span className="text-4xl font-black text-[var(--text-primary)]">
-                  R$ {anual ? PLANOS_SAAS.premium.precoAnualMensalizado : PLANOS_SAAS.premium.precoMensal}
-                </span>
-                <span className="text-sm text-[var(--text-secondary)] font-medium">/mês</span>
-                {anual && (
-                  <span className="text-xs text-[var(--success)] ml-2 font-medium">
-                    (Faturado R$ {PLANOS_SAAS.premium.precoAnual}/ano)
+              <div className="mb-6 lg:min-h-[76px]">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-black text-[var(--text-primary)]">
+                    R$ {anual ? PLANOS_SAAS.premium.precoAnualMensalizado : PLANOS_SAAS.premium.precoMensal}
                   </span>
-                )}
+                  <span className="text-sm text-[var(--text-secondary)] font-medium">/mês</span>
+                  {anual && (
+                    <span className="text-xs text-[var(--success)] ml-2 font-medium">
+                      (Faturado R$ {PLANOS_SAAS.premium.precoAnual}/ano)
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs font-semibold text-[var(--primary)] mt-1.5">
+                  {PLANOS_SAAS.premium.limites.resumoCurto}
+                </p>
               </div>
 
-              <div className="border-t border-[var(--primary)]/30 pt-6 mb-8 space-y-3">
+              <div className="border-t border-[var(--border)] pt-6 mb-8 space-y-3">
                 <div className="text-xs font-bold text-[var(--primary)] uppercase tracking-wider mb-2">
-                  Conformidade Integral CFO & LGPD:
+                  O que está incluído:
                 </div>
                 {PLANOS_SAAS.premium.recursos.map((rec, i) => (
                   <div key={i} className="flex items-start gap-3 text-sm text-[var(--text-primary)]">
@@ -315,9 +324,9 @@ export default function PlanosPage() {
 
             <button
               onClick={() => abrirCheckout('premium')}
-              className="w-full py-3.5 px-4 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-95 text-[var(--on-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2 shadow-lg "
+              className="w-full py-3.5 px-4 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-95 text-[var(--on-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2"
             >
-              Contratar com Proteção Total
+              {PLANOS_SAAS.premium.ctaText}
               <Zap className="w-4 h-4 fill-current" />
             </button>
           </div>
@@ -332,8 +341,7 @@ export default function PlanosPage() {
               Por que clínicas líderes escolhem o OdontoSoft?
             </h2>
             <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
-              Diferente de sistemas genéricos de consultório, nossa arquitetura foi construída
-              com base nas exigências legais estritas do CFO e da Lei Geral de Proteção de Dados.
+              Recursos de apoio técnico projetados para auxiliar clínicas na organização documental e boas práticas de proteção de dados.
             </p>
           </div>
 
@@ -342,10 +350,9 @@ export default function PlanosPage() {
               <div className="w-10 h-10 rounded-lg bg-[var(--primary-subtle)] text-[var(--primary)] flex items-center justify-center mb-4">
                 <Lock className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-[var(--text-primary)] mb-2">Prontuário Imutável (CFO 198/2019)</h3>
+              <h3 className="font-bold text-[var(--text-primary)] mb-2">Apoio à Conformidade CFO</h3>
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Operações de DELETE ou alteração direta de histórico clínico são bloqueadas por RLS e triggers.
-                Correções são registradas estritamente via Adendos vinculados.
+                Bloqueio de exclusão ou alteração direta de prontuários finalizados, com registro de correções via adendos vinculados.
               </p>
             </div>
 
@@ -353,10 +360,9 @@ export default function PlanosPage() {
               <div className="w-10 h-10 rounded-lg bg-[var(--primary-subtle)] text-[var(--primary)] flex items-center justify-center mb-4">
                 <FileText className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-[var(--text-primary)] mb-2">Trilha de Auditoria Privada (LGPD)</h3>
+              <h3 className="font-bold text-[var(--text-primary)] mb-2">Trilha de Auditoria (Apoio LGPD)</h3>
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Log imutável de todas as modificações no schema privado, gravando diff de dados anteriores (OLD)
-                e novos (NEW), usuário autor e IP da operação.
+                Registro histórico das modificações realizadas em cadastros e prontuários, com data, autor e histórico antes/depois.
               </p>
             </div>
 
@@ -364,10 +370,9 @@ export default function PlanosPage() {
               <div className="w-10 h-10 rounded-lg bg-[var(--success-bg)] text-[var(--success)] flex items-center justify-center mb-4">
                 <Clock className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-[var(--text-primary)] mb-2">Anonimização Dissociada (Art. 18)</h3>
+              <h3 className="font-bold text-[var(--text-primary)] mb-2">Anonimização de Dados (Apoio LGPD)</h3>
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Atendimento ao direito ao esquecimento sem corromper a obrigação de guarda documental de
-                20 anos exigida pela ética odontológica.
+                Recurso para anonimizar dados pessoais de identificação do paciente mantendo o histórico assistencial preservado.
               </p>
             </div>
           </div>

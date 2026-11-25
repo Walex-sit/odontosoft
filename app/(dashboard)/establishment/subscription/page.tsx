@@ -19,7 +19,7 @@ const plans = [
   },
   {
     id: PLANOS_SAAS_CATALOG.essencial.id,
-    name: PLANOS_SAAS_CATALOG.essencial.nomeCompleto,
+    name: PLANOS_SAAS_CATALOG.essencial.nome,
     price: PLANOS_SAAS_CATALOG.essencial.precoMensal,
     annualPrice: PLANOS_SAAS_CATALOG.essencial.precoAnualMensalizado,
     period: '/mês',
@@ -31,7 +31,7 @@ const plans = [
   },
   {
     id: PLANOS_SAAS_CATALOG.premium.id,
-    name: PLANOS_SAAS_CATALOG.premium.nomeCompleto,
+    name: PLANOS_SAAS_CATALOG.premium.nome,
     price: PLANOS_SAAS_CATALOG.premium.precoMensal,
     annualPrice: PLANOS_SAAS_CATALOG.premium.precoAnualMensalizado,
     period: '/mês',
@@ -56,10 +56,10 @@ export default function SubscriptionPage() {
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-y-auto bg-[var(--bg-base)] dark:bg-[var(--bg-base)]">
-      
+
       {/* Container Centralizado */}
       <div className="max-w-6xl mx-auto w-full px-6 py-12">
-        
+
         {/* Banner Informativo de Auditoria e Desativação Segura do Gateway */}
         <div className="mb-8 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-start gap-3">
           <ShieldCheck className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
@@ -83,16 +83,16 @@ export default function SubscriptionPage() {
               <p className="text-[var(--text-muted)] font-medium text-lg mb-8">
                 Preços transparentes, sem taxas ocultas. Altere ou cancele quando quiser.
               </p>
-              
+
               {/* Toggle Mensal/Anual */}
               <div className="inline-flex bg-[var(--border)]/60 p-1 rounded-2xl items-center shadow-inner">
-                <button 
+                <button
                   onClick={() => setBillingCycle('monthly')}
                   className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${billingCycle === 'monthly' ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
                 >
                   Mensal
                 </button>
-                <button 
+                <button
                   onClick={() => setBillingCycle('annual')}
                   className={`px-6 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${billingCycle === 'annual' ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
                 >
@@ -105,7 +105,7 @@ export default function SubscriptionPage() {
             {/* Grid de Planos */}
             <div className="grid md:grid-cols-3 gap-8">
               {plans.map((plan) => (
-                <div 
+                <div
                   key={plan.id}
                   className={`bg-[var(--bg-surface)] rounded-[32px] p-8 flex flex-col relative transition-all duration-300 hover:shadow-xl ${plan.popular ? 'ring-2 ring-[var(--primary)]  scale-105 z-10' : 'border border-[var(--border)]  shadow-sm'}`}
                 >
@@ -116,12 +116,12 @@ export default function SubscriptionPage() {
                       </span>
                     </div>
                   )}
-                  
+
                   <div className="mb-6">
                     <h3 className="text-xl font-extrabold text-[var(--text-primary)] mb-2">{plan.name}</h3>
                     <p className="text-[var(--text-secondary)] text-sm font-medium min-h-[40px]">{plan.description}</p>
                   </div>
-                  
+
                   <div className="mb-8 flex items-baseline">
                     <span className="text-[var(--text-secondary)] font-bold text-2xl mr-1">R$</span>
                     <span className="text-5xl font-extrabold text-[var(--text-primary)] tracking-tight">
@@ -129,14 +129,14 @@ export default function SubscriptionPage() {
                     </span>
                     <span className="text-[var(--text-secondary)] font-bold ml-1">{plan.period}</span>
                   </div>
-                  
-                  <button 
+
+                  <button
                     onClick={() => handleSelectPlan(plan)}
                     className={`w-full py-4 rounded-xl font-bold transition-all mb-8 ${plan.buttonStyle}`}
                   >
                     Assinar {plan.name}
                   </button>
-                  
+
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-[var(--text-primary)] mb-4 uppercase tracking-wider">O que está incluso:</h4>
                     <ul className="space-y-4">
@@ -161,7 +161,7 @@ export default function SubscriptionPage() {
                 </div>
               ))}
             </div>
-            
+
             {/* Trust Badges */}
             <div className="mt-16 flex flex-wrap justify-center items-center gap-8 border-t border-[var(--border)]  pt-12">
               <div className="flex items-center gap-2 text-[var(--text-muted)]">
@@ -182,13 +182,13 @@ export default function SubscriptionPage() {
 
         {step === 2 && (
           <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-right-8 duration-500">
-            <button 
+            <button
               onClick={() => setStep(1)}
               className="text-[var(--text-muted)] hover:text-[var(--text-primary)] font-bold text-sm mb-6 flex items-center gap-2 transition-colors"
             >
               &larr; Voltar para os planos
             </button>
-            
+
             <div className="bg-[var(--bg-surface)] rounded-[32px] p-8 md:p-12 shadow-sm border border-[var(--border)]  text-center">
               <div className="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-6">
                 <CreditCard className="h-8 w-8" />
@@ -205,7 +205,7 @@ export default function SubscriptionPage() {
                 <p>• Prontuários, pacientes, agenda e módulo financeiro funcionam com integridade plena.</p>
                 <p>• Nenhuma cobrança real ou cobrança fictícia é gerada sem liquidação bancária.</p>
               </div>
-              <button 
+              <button
                 onClick={() => setStep(1)}
                 className="w-full bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] font-bold text-sm rounded-xl py-3.5 transition-colors shadow-md"
               >

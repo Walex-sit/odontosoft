@@ -37,12 +37,12 @@ const plans: LandingPlanCard[] = [
   },
   {
     id: PLANOS_SAAS_CATALOG.essencial.id,
-    name: PLANOS_SAAS_CATALOG.essencial.nomeCompleto,
+    name: PLANOS_SAAS_CATALOG.essencial.nome,
     badge: PLANOS_SAAS_CATALOG.essencial.badge,
     description: PLANOS_SAAS_CATALOG.essencial.descricao,
     price: `R$ ${PLANOS_SAAS_CATALOG.essencial.precoMensal}`,
     period: '/mês',
-    limitNote: `${PLANOS_SAAS_CATALOG.essencial.limites.dentistas} · ${PLANOS_SAAS_CATALOG.essencial.limites.armazenamento}`,
+    limitNote: PLANOS_SAAS_CATALOG.essencial.limites.resumoCurto,
     popular: false,
     ctaHref: '/planos',
     ctaText: PLANOS_SAAS_CATALOG.essencial.ctaText,
@@ -50,13 +50,13 @@ const plans: LandingPlanCard[] = [
   },
   {
     id: PLANOS_SAAS_CATALOG.premium.id,
-    name: PLANOS_SAAS_CATALOG.premium.nomeCompleto,
+    name: PLANOS_SAAS_CATALOG.premium.nome,
     badge: PLANOS_SAAS_CATALOG.premium.badge,
     popularBadge: PLANOS_SAAS_CATALOG.premium.popularBadge,
     description: PLANOS_SAAS_CATALOG.premium.descricao,
     price: `R$ ${PLANOS_SAAS_CATALOG.premium.precoMensal}`,
     period: '/mês',
-    limitNote: `${PLANOS_SAAS_CATALOG.premium.limites.dentistas} · ${PLANOS_SAAS_CATALOG.premium.limites.armazenamento}`,
+    limitNote: PLANOS_SAAS_CATALOG.premium.limites.resumoCurto,
     popular: true,
     ctaHref: '/planos',
     ctaText: PLANOS_SAAS_CATALOG.premium.ctaText,
@@ -100,10 +100,11 @@ export default function PricingSection() {
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className={`relative rounded-3xl p-7 sm:p-8 flex flex-col justify-between bg-[var(--bg-surface)] transition-colors ${plan.popular
-                ? 'border-2 border-[var(--primary)]'
-                : 'border border-[var(--border)]'
-                }`}
+              className={`relative rounded-3xl p-7 sm:p-8 flex flex-col justify-between bg-[var(--bg-surface)] transition-colors ${
+                plan.popular
+                  ? 'border-2 border-[var(--primary)]'
+                  : 'border border-[var(--border)]'
+              }`}
             >
               {/* Recommended Tag */}
               {plan.popular && plan.popularBadge && (
@@ -122,9 +123,9 @@ export default function PricingSection() {
                 </div>
               )}
 
-              <div>
-                {/* Header card info */}
-                <div className="flex items-center justify-between gap-2 mb-4">
+              <div className="flex flex-col flex-1">
+                {/* Header card info — altura alinhada */}
+                <div className="flex items-center justify-between gap-2 mb-4 lg:min-h-[36px]">
                   <h3 className="text-xl font-heading font-bold text-[var(--text-primary)]">
                     {plan.name}
                   </h3>
@@ -133,12 +134,13 @@ export default function PricingSection() {
                   </span>
                 </div>
 
-                <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed mb-5">
+                {/* Descrição — altura alinhada */}
+                <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed mb-5 lg:min-h-[72px]">
                   {plan.description}
                 </p>
 
-                {/* Price display */}
-                <div className="mb-6 pb-6 border-b border-[var(--border)]">
+                {/* Preço + resumo — altura alinhada */}
+                <div className="mb-6 pb-6 border-b border-[var(--border)] lg:min-h-[96px] flex flex-col justify-between">
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-4xl font-heading font-extrabold text-[var(--text-primary)] tracking-tight">
                       {plan.price}
@@ -185,7 +187,7 @@ export default function PricingSection() {
 
                 {/* Limitations (separated with neutral dash icon — never check) */}
                 {plan.limitations && plan.limitations.length > 0 && (
-                  <div className="mb-8 pt-5 border-t border-[var(--border)]">
+                  <div className="mb-6 pt-5 border-t border-[var(--border)]">
                     <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-3">
                       Limitações do período de teste:
                     </p>
@@ -218,14 +220,15 @@ export default function PricingSection() {
               </div>
 
               {/* Action Button */}
-              <div className="pt-2">
+              <div className="pt-4">
                 <Link
                   href={plan.ctaHref}
                   id={`pricing-cta-${plan.id}`}
-                  className={`w-full inline-flex items-center justify-center gap-2 font-bold text-sm sm:text-base py-3.5 px-6 rounded-2xl transition-colors active:scale-95 ${plan.popular
-                    ? 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]'
-                    : 'bg-[var(--bg-base)] hover:bg-[var(--border)] text-[var(--text-primary)] border border-[var(--border)] hover:border-[var(--border-medium)]'
-                    }`}
+                  className={`w-full inline-flex items-center justify-center gap-2 font-bold text-sm sm:text-base py-3.5 px-6 rounded-2xl transition-colors active:scale-95 ${
+                    plan.popular
+                      ? 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]'
+                      : 'bg-[var(--bg-base)] hover:bg-[var(--border)] text-[var(--text-primary)] border border-[var(--border)] hover:border-[var(--border-medium)]'
+                  }`}
                 >
                   {plan.ctaText}
                   <svg
