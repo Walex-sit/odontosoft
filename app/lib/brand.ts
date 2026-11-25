@@ -14,11 +14,22 @@ export const BRAND_TOOTH_PATH =
   'M12 2C8.5 2 5 5.5 5 9c0 3 2 5.5 4 7l1 5h4l1-5c2-1.5 4-4 4-7 0-3.5-3.5-7-7-7z'
 export const BRAND_CROSS_PATH = 'M9 9h6M12 6v6'
 
+function sanitizeEnvText(raw?: string): string {
+  const val = raw?.trim() || ''
+  if (!val || val.toLowerCase() === 'undefined' || val.toLowerCase() === 'null') {
+    return ''
+  }
+  return val
+}
+
 export const BRAND_LEGAL_CONFIG = {
-  razaoSocial: process.env.NEXT_PUBLIC_COMPANY_LEGAL_NAME?.trim() || '',
-  cnpj: process.env.NEXT_PUBLIC_COMPANY_CNPJ?.trim() || '',
-  contatoEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || '',
-  dpoEmail: process.env.NEXT_PUBLIC_DPO_EMAIL?.trim() || '',
+  razaoSocial: sanitizeEnvText(process.env.NEXT_PUBLIC_COMPANY_LEGAL_NAME),
+  cnpj: sanitizeEnvText(process.env.NEXT_PUBLIC_COMPANY_CNPJ),
+  contatoEmail: sanitizeEnvText(process.env.NEXT_PUBLIC_CONTACT_EMAIL),
+  suporteEmail:
+    sanitizeEnvText(process.env.NEXT_PUBLIC_SUPPORT_EMAIL) ||
+    sanitizeEnvText(process.env.NEXT_PUBLIC_CONTACT_EMAIL),
+  dpoEmail: sanitizeEnvText(process.env.NEXT_PUBLIC_DPO_EMAIL),
 } as const
 
 export interface SocialLinkItem {

@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import { PLANOS_SAAS } from '@/app/lib/stripe'
 import { formatPlanPriceBRL } from '@/app/lib/plans'
+import { SHOW_CANCELLATION_POLICY } from '@/app/lib/env'
 import { supabase } from '@/app/lib/supabaseClient'
 import { BrandMark } from '@/app/components/BrandLogo'
 
@@ -258,11 +259,13 @@ export default function PlanosPage() {
                 {PLANOS_SAAS.essencial.ctaText}
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <p className="text-xs text-center text-[var(--text-secondary)] mt-2.5">
-                <Link href="/politica-cancelamento" className="hover:text-[var(--primary)] underline-offset-2 hover:underline">
-                  Política de cancelamento e reembolso
-                </Link>
-              </p>
+              {SHOW_CANCELLATION_POLICY && (
+                <p className="text-xs text-center text-[var(--text-secondary)] mt-2.5">
+                  <Link href="/politica-cancelamento" className="hover:text-[var(--primary)] underline-offset-2 hover:underline">
+                    Política de cancelamento e reembolso
+                  </Link>
+                </p>
+              )}
             </div>
           </div>
 
@@ -322,11 +325,13 @@ export default function PlanosPage() {
                 {PLANOS_SAAS.premium.ctaText}
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <p className="text-xs text-center text-[var(--text-secondary)] mt-2.5">
-                <Link href="/politica-cancelamento" className="hover:text-[var(--primary)] underline-offset-2 hover:underline">
-                  Política de cancelamento e reembolso
-                </Link>
-              </p>
+              {SHOW_CANCELLATION_POLICY && (
+                <p className="text-xs text-center text-[var(--text-secondary)] mt-2.5">
+                  <Link href="/politica-cancelamento" className="hover:text-[var(--primary)] underline-offset-2 hover:underline">
+                    Política de cancelamento e reembolso
+                  </Link>
+                </p>
+              )}
             </div>
           </div>
         </div>

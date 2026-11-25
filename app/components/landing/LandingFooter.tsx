@@ -31,8 +31,9 @@ function SocialIcon({ id }: { id: SocialLinkItem['id'] }) {
 
 export default function LandingFooter() {
   const currentYear = new Date().getFullYear()
-  const { razaoSocial, cnpj, contatoEmail, dpoEmail } = BRAND_LEGAL_CONFIG
+  const { razaoSocial, cnpj, contatoEmail, suporteEmail, dpoEmail } = BRAND_LEGAL_CONFIG
   const contactOrDpo = dpoEmail || contatoEmail
+  const hasLegalInfo = Boolean(razaoSocial || cnpj || contactOrDpo)
 
   return (
     <footer className="bg-[var(--bg-surface)] text-[var(--text-secondary)] border-t border-[var(--border)] px-6 pt-16 pb-8">
@@ -71,8 +72,6 @@ export default function LandingFooter() {
               {[
                 ['Funcionalidades', '#funcionalidades'],
                 ['Preços', '#preços'],
-                ['Atualizações', '#'],
-                ['Roadmap', '#'],
               ].map(([label, href]) => (
                 <li key={label}>
                   <a href={href} className="hover:text-[var(--text-primary)] transition-colors">
@@ -87,16 +86,20 @@ export default function LandingFooter() {
           <div>
             <h3 className="text-[var(--text-primary)] text-sm font-semibold mb-4">Suporte</h3>
             <ul className="space-y-2.5 text-sm">
-              {[
-                ['Central de Ajuda', '#'],
-                ['Contato', '#'],
-              ].map(([label, href]) => (
-                <li key={label}>
-                  <a href={href} className="hover:text-[var(--text-primary)] transition-colors">
-                    {label}
+              {suporteEmail && (
+                <li>
+                  <a href={`mailto:${suporteEmail}`} className="hover:text-[var(--text-primary)] transition-colors">
+                    Central de Ajuda
                   </a>
                 </li>
-              ))}
+              )}
+              {contatoEmail && (
+                <li>
+                  <a href={`mailto:${contatoEmail}`} className="hover:text-[var(--text-primary)] transition-colors">
+                    Contato
+                  </a>
+                </li>
+              )}
               <li>
                 <Link href="/termos" className="hover:text-[var(--text-primary)] transition-colors">
                   Termos de Uso
@@ -111,34 +114,40 @@ export default function LandingFooter() {
           </div>
         </div>
 
-        {/* Dados cadastrais e encarregado LGPD (via variáveis de ambiente) */}
-        <div className="border-t border-[var(--border)] py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-[var(--text-secondary)]">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <span>
-              <strong className="text-[var(--text-primary)] font-semibold">Razão social:</strong>{' '}
-              {razaoSocial || 'Não configurada'}
-            </span>
-            <span>
-              <strong className="text-[var(--text-primary)] font-semibold">CNPJ:</strong>{' '}
-              {cnpj || 'Não configurado'}
-            </span>
-          </div>
-          <div>
-            <strong className="text-[var(--text-primary)] font-semibold">
-              Contato / Encarregado LGPD:
-            </strong>{' '}
-            {contactOrDpo ? (
-              <a
-                href={`mailto:${contactOrDpo}`}
-                className="text-[var(--primary)] hover:underline font-medium"
-              >
-                {contactOrDpo}
-              </a>
-            ) : (
-              'Não configurado'
+        {/* Dados cadastrais e encarregado LGPD (via variáveis de ambiente; omite campos sem valor) */}
+        {hasLegalInfo && (
+          <div className="border-t border-[var(--border)] py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-[var(--text-secondary)]">
+            {(razaoSocial || cnpj) && (
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                {razaoSocial && (
+                  <span>
+                    <strong className="text-[var(--text-primary)] font-semibold">Razão social:</strong>{' '}
+                    {razaoSocial}
+                  </span>
+                )}
+                {cnpj && (
+                  <span>
+                    <strong className="text-[var(--text-primary)] font-semibold">CNPJ:</strong>{' '}
+                    {cnpj}
+                  </span>
+                )}
+              </div>
+            )}
+            {contactOrDpo && (
+              <div>
+                <strong className="text-[var(--text-primary)] font-semibold">
+                  Contato / Encarregado LGPD:
+                </strong>{' '}
+                <a
+                  href={`mailto:${contactOrDpo}`}
+                  className="text-[var(--primary)] hover:underline font-medium"
+                >
+                  {contactOrDpo}
+                </a>
+              </div>
             )}
           </div>
-        </div>
+        )}
 
         {/* Bottom bar */}
         <div className="border-t border-[var(--border)] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
