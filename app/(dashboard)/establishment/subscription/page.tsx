@@ -1,64 +1,52 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, ArrowRight, ShieldCheck, CreditCard, HelpCircle } from 'lucide-react'
+import { Check, Minus, ArrowRight, ShieldCheck, CreditCard, HelpCircle } from 'lucide-react'
+import { PLANOS_SAAS_CATALOG, TRIAL_PLAN } from '@/app/lib/plans'
 
 const plans = [
   {
-    id: 'essencial',
-    name: 'Essencial',
-    price: '99',
-    period: '/mês',
-    description: 'Perfeito para dentistas independentes começando a digitalizar a clínica.',
-    features: [
-      'Agenda inteligente',
-      'Até 500 pacientes ativos',
-      'Prontuário eletrônico básico',
-      'Emissão de atestados e receitas',
-      'Suporte via email'
-    ],
+    id: TRIAL_PLAN.id,
+    name: TRIAL_PLAN.nome,
+    price: TRIAL_PLAN.precoMensal,
+    annualPrice: 0,
+    period: TRIAL_PLAN.periodo,
+    description: TRIAL_PLAN.descricao,
+    features: TRIAL_PLAN.recursos,
+    limitations: TRIAL_PLAN.limitacoes,
     popular: false,
-    buttonStyle: 'bg-[var(--bg-base)] text-[var(--text-primary)] hover:bg-[var(--border)] border border-[var(--border)] '
+    buttonStyle: 'bg-[var(--bg-base)] text-[var(--text-primary)] hover:bg-[var(--border)] border border-[var(--border)]'
   },
   {
-    id: 'controle',
-    name: 'Controle',
-    price: '199',
+    id: PLANOS_SAAS_CATALOG.essencial.id,
+    name: PLANOS_SAAS_CATALOG.essencial.nomeCompleto,
+    price: PLANOS_SAAS_CATALOG.essencial.precoMensal,
+    annualPrice: PLANOS_SAAS_CATALOG.essencial.precoAnualMensalizado,
     period: '/mês',
-    description: 'Ideal para clínicas em crescimento que precisam de gestão financeira.',
-    features: [
-      'Tudo do plano Essencial',
-      'Pacientes ilimitados',
-      'Controle Financeiro completo',
-      'Gestão de orçamentos e comissões',
-      'Odontograma digital completo',
-      'Suporte prioritário via WhatsApp'
-    ],
+    description: PLANOS_SAAS_CATALOG.essencial.descricao,
+    features: PLANOS_SAAS_CATALOG.essencial.recursos,
+    limitations: undefined,
+    popular: false,
+    buttonStyle: 'bg-[var(--bg-base)] text-[var(--text-primary)] hover:bg-[var(--border)] border border-[var(--border)]'
+  },
+  {
+    id: PLANOS_SAAS_CATALOG.premium.id,
+    name: PLANOS_SAAS_CATALOG.premium.nomeCompleto,
+    price: PLANOS_SAAS_CATALOG.premium.precoMensal,
+    annualPrice: PLANOS_SAAS_CATALOG.premium.precoAnualMensalizado,
+    period: '/mês',
+    description: PLANOS_SAAS_CATALOG.premium.descricao,
+    features: PLANOS_SAAS_CATALOG.premium.recursos,
+    limitations: undefined,
     popular: true,
-    buttonStyle: 'bg-[var(--primary-fill)] text-[var(--on-primary)] hover:bg-[var(--primary-fill-hover)] border border-transparent'
-  },
-  {
-    id: 'avancado',
-    name: 'Avançado',
-    price: '349',
-    period: '/mês',
-    description: 'A solução definitiva para grandes clínicas com múltiplos profissionais.',
-    features: [
-      'Tudo do plano Controle',
-      'Múltiplos profissionais (até 10)',
-      'Campanhas de marketing SMS/Email',
-      'Central de Mensagens (WhatsApp API)',
-      'Gestão de Laboratório/Próteses',
-      'API Aberta para integrações'
-    ],
-    popular: false,
+    popularBadge: PLANOS_SAAS_CATALOG.premium.popularBadge || 'Recomendado',
     buttonStyle: 'bg-[var(--primary-fill)] text-[var(--on-primary)] hover:bg-[var(--primary-fill-hover)] border border-transparent'
   }
 ]
 
 export default function SubscriptionPage() {
   const [step, setStep] = useState(1) // 1: Plans, 2: Checkout, 3: Success
-  const [selectedPlan, setSelectedPlan] = useState(plans[1])
+  const [selectedPlan, setSelectedPlan] = useState(plans[2])
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
 
   const handleSelectPlan = (plan: typeof plans[0]) => {
@@ -123,23 +111,23 @@ export default function SubscriptionPage() {
                 >
                   {plan.popular && (
                     <div className="absolute -top-4 left-0 right-0 flex justify-center">
-                      <span className="bg-[var(--primary-fill)] text-[var(--on-primary)] px-4 py-1 rounded-full text-xs font-bold shadow-md uppercase tracking-wider">
-                        Mais Escolhido
+                      <span className="bg-[var(--primary-fill)] text-[var(--on-primary)] px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        {plan.popularBadge}
                       </span>
                     </div>
                   )}
                   
                   <div className="mb-6">
                     <h3 className="text-xl font-extrabold text-[var(--text-primary)] mb-2">{plan.name}</h3>
-                    <p className="text-[var(--text-muted)] text-sm font-medium min-h-[40px]">{plan.description}</p>
+                    <p className="text-[var(--text-secondary)] text-sm font-medium min-h-[40px]">{plan.description}</p>
                   </div>
                   
                   <div className="mb-8 flex items-baseline">
-                    <span className="text-[var(--text-muted)] font-bold text-2xl mr-1">R$</span>
+                    <span className="text-[var(--text-secondary)] font-bold text-2xl mr-1">R$</span>
                     <span className="text-5xl font-extrabold text-[var(--text-primary)] tracking-tight">
-                      {billingCycle === 'annual' ? (parseInt(plan.price) * 0.8).toFixed(0) : plan.price}
+                      {plan.price === 0 ? 0 : billingCycle === 'annual' ? plan.annualPrice : plan.price}
                     </span>
-                    <span className="text-[var(--text-muted)] font-bold ml-1">{plan.period}</span>
+                    <span className="text-[var(--text-secondary)] font-bold ml-1">{plan.period}</span>
                   </div>
                   
                   <button 
@@ -158,6 +146,14 @@ export default function SubscriptionPage() {
                             <Check className="h-3 w-3 stroke-[3]" />
                           </div>
                           <span className="text-sm font-medium text-[var(--text-secondary)]">{feature}</span>
+                        </li>
+                      ))}
+                      {plan.limitations?.map((limitation, i) => (
+                        <li key={`lim-${i}`} className="flex items-start gap-3">
+                          <div className="mt-0.5 bg-[var(--bg-base)] border border-[var(--border)] p-1 rounded-full text-[var(--text-secondary)] shrink-0">
+                            <Minus className="h-3 w-3 stroke-[2.5]" />
+                          </div>
+                          <span className="text-sm font-medium text-[var(--text-secondary)]">{limitation}</span>
                         </li>
                       ))}
                     </ul>

@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import { AdminHeader } from '../AdminHeader'
 import { ModalAcessoClinica } from '../ModalAcessoClinica'
+import { DB_PLAN_CATALOG, getDbPlanInfo } from '@/app/lib/plans'
 import {
   getGlobalClinicsList,
   updateClinicStatusAdmin,
@@ -155,9 +156,9 @@ export default function SuperAdminClinicasPage() {
               className="px-3 py-2 bg-[var(--bg-base)] border border-[var(--border)] rounded-xl text-xs font-semibold text-[var(--text-primary)]"
             >
               <option value="todos">Todos os Planos</option>
-              <option value="basico">Básico</option>
-              <option value="profissional">Profissional</option>
-              <option value="enterprise">Enterprise</option>
+              <option value="basico">{DB_PLAN_CATALOG.basico.nome}</option>
+              <option value="profissional">{DB_PLAN_CATALOG.profissional.nome}</option>
+              <option value="enterprise">{DB_PLAN_CATALOG.enterprise.nome}</option>
             </select>
           </div>
         </div>
@@ -211,7 +212,7 @@ export default function SuperAdminClinicasPage() {
                           <td className="px-5 py-3.5">
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-extrabold uppercase tracking-wide bg-[var(--bg-base)] text-[var(--text-primary)] border border-[var(--border)]">
-                                {c.plano}
+                                {getDbPlanInfo(c.plano).nome}
                               </span>
                               <span
                                 className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-extrabold uppercase tracking-wide border ${

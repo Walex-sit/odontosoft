@@ -16,6 +16,7 @@ import { fetchCommissions } from '@/app/actions/commissions'
 import { fetchAuditLogs, fetchComplianceStats, AuditLog, ComplianceStats } from '@/app/actions/audit'
 import { fetchClinicaSettings, updateClinicaSettings, uploadClinicaLogo, removeClinicaLogo, ClinicaSettings } from '@/app/actions/clinica'
 import { fetchClinicSubscription, upgradeOrChangePlan, ClinicSubscriptionData } from '@/app/actions/billing'
+import { PLANOS_SAAS_CATALOG, formatPlanPriceBRL } from '@/app/lib/plans'
 import { useAuth } from '@/app/components/RequireAuth'
 import { useClinica } from '@/app/contexts/ClinicaContext'
 import Link from 'next/link'
@@ -965,7 +966,7 @@ export default function ConfiguracoesPage() {
                         ) : (
                           <>
                             <span className="text-sm font-extrabold text-[var(--text-primary)]">
-                              R$ {subscriptionData.valorPlano > 0 ? subscriptionData.valorPlano.toFixed(2).replace('.', ',') : (subscriptionData.planoId === 'premium' ? '299,00' : '149,00')} / mês
+                              R$ {subscriptionData.valorPlano > 0 ? formatPlanPriceBRL(subscriptionData.valorPlano) : formatPlanPriceBRL(subscriptionData.planoId === 'premium' ? PLANOS_SAAS_CATALOG.premium.precoMensal : PLANOS_SAAS_CATALOG.essencial.precoMensal)} / mês
                             </span>
                             <span className="text-xs text-[var(--text-secondary)] font-medium">
                               (Tabela oficial OdontoSoft)
@@ -1061,7 +1062,7 @@ export default function ConfiguracoesPage() {
                     <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs font-medium flex items-center gap-3">
                       <Sparkles className="h-5 w-5 text-amber-500 shrink-0" />
                       <span>
-                        Como <strong>Administrador Vitalício / Dono do SaaS</strong>, sua conta possui o pacote Master completo liberado em definitivo. Os valores de <strong>R$ 149</strong> e <strong>R$ 299</strong> são definidos globalmente por si para os clientes da plataforma e não geram encargos para a sua conta.
+                        Como <strong>Administrador Vitalício / Dono do SaaS</strong>, sua conta possui o pacote Master completo liberado em definitivo. Os valores de <strong>R$ {PLANOS_SAAS_CATALOG.essencial.precoMensal}</strong> e <strong>R$ {PLANOS_SAAS_CATALOG.premium.precoMensal}</strong> são definidos globalmente por si para os clientes da plataforma e não geram encargos para a sua conta.
                       </span>
                     </div>
                   )}
@@ -1086,33 +1087,27 @@ export default function ConfiguracoesPage() {
                         </div>
 
                         <div className="flex items-baseline gap-1 mb-2">
-                          <span className="text-3xl font-extrabold text-[var(--text-primary)]">R$ 149</span>
+                          <span className="text-3xl font-extrabold text-[var(--text-primary)]">R$ {PLANOS_SAAS_CATALOG.essencial.precoMensal}</span>
                           <span className="text-xs text-[var(--text-muted)] font-semibold">/ mês</span>
                         </div>
                         <p className="text-xs text-[var(--text-muted)] mb-6">
-                          Ideal para consultórios individuais e clínicas em fase de estruturação.
+                          {PLANOS_SAAS_CATALOG.essencial.descricao}
                         </p>
 
                         <div className="space-y-3 mb-8">
                           <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                            <span>Até <strong>3 profissionais / dentistas</strong></span>
+                            <CheckCircle2 className="h-4 w-4 text-[var(--success)] shrink-0" />
+                            <span><strong>{PLANOS_SAAS_CATALOG.essencial.limites.dentistas}</strong></span>
                           </div>
+                          {PLANOS_SAAS_CATALOG.essencial.recursos.map((rec) => (
+                            <div key={rec} className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
+                              <CheckCircle2 className="h-4 w-4 text-[var(--success)] shrink-0" />
+                              <span>{rec}</span>
+                            </div>
+                          ))}
                           <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                            <span>Pacientes e prontuários ilimitados</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                            <span>Agenda inteligente e disparo de confirmações</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                            <span>Controle de fluxo de caixa e relatórios financeiros</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                            <span>5 GB de armazenamento em nuvem</span>
+                            <CheckCircle2 className="h-4 w-4 text-[var(--success)] shrink-0" />
+                            <span>{PLANOS_SAAS_CATALOG.essencial.limites.armazenamento}</span>
                           </div>
                         </div>
                       </div>
@@ -1167,34 +1162,24 @@ export default function ConfiguracoesPage() {
                         </div>
 
                         <div className="flex items-baseline gap-1 mb-2">
-                          <span className="text-3xl font-extrabold text-[var(--text-primary)]">R$ 299</span>
+                          <span className="text-3xl font-extrabold text-[var(--text-primary)]">R$ {PLANOS_SAAS_CATALOG.premium.precoMensal}</span>
                           <span className="text-xs text-[var(--text-muted)] font-semibold">/ mês</span>
                         </div>
                         <p className="text-xs text-[var(--text-muted)] mb-6">
-                          Para clínicas consolidadas que exigem blindagem jurídica total (CFO & LGPD).
+                          {PLANOS_SAAS_CATALOG.premium.descricao}
                         </p>
 
                         <div className="space-y-3 mb-8">
                           <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
                             <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
-                            <span><strong>Dentistas e Usuários Ilimitados</strong></span>
+                            <span><strong>{PLANOS_SAAS_CATALOG.premium.limites.dentistas}</strong></span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
-                            <span>Prontuário Imutável CFO 198/2019 (Bloqueio UPDATE/DELETE)</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
-                            <span>Trilha de Auditoria LGPD e hash SHA-256</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
-                            <span>50 GB com retenção de dados por 20 anos</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-                            <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
-                            <span>Suporte VIP prioritário via WhatsApp</span>
-                          </div>
+                          {PLANOS_SAAS_CATALOG.premium.recursos.slice(0, 5).map((rec) => (
+                            <div key={rec} className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
+                              <CheckCircle2 className="h-4 w-4 text-[var(--primary)] shrink-0" />
+                              <span>{rec}</span>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
@@ -1271,7 +1256,7 @@ export default function ConfiguracoesPage() {
                               ) : fat.valor > 0 ? (
                                 `R$ ${fat.valor.toFixed(2).replace('.', ',')}`
                               ) : (
-                                `R$ ${subscriptionData.planoId === 'premium' ? '299,00' : '149,00'}`
+                                `R$ ${formatPlanPriceBRL(subscriptionData.planoId === 'premium' ? PLANOS_SAAS_CATALOG.premium.precoMensal : PLANOS_SAAS_CATALOG.essencial.precoMensal)}`
                               )}
                             </td>
                             <td className="px-6 py-4">

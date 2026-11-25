@@ -18,6 +18,7 @@
 import { cookies } from 'next/headers'
 import { checkServerAuth } from '@/app/lib/rbac'
 import { supabaseAdmin } from '@/app/lib/supabase/admin'
+import { DB_PLAN_CATALOG, getDbPlanInfo } from '@/app/lib/plans'
 
 const CONTEXT_COOKIE_NAME = 'odontosoft_admin_context'
 
@@ -101,21 +102,15 @@ export async function getGlobalPlatformMetrics(): Promise<{
     const clinicasInadimplentes = list.filter((c: any) => c.status_assinatura === 'inadimplente').length
     const clinicasCanceladas = list.filter((c: any) => c.status_assinatura === 'cancelado' || !c.ativo).length
 
-    // MRR Estimado por plano (Básico: R$ 97, Profissional: R$ 197, Enterprise: R$ 397)
-    const PRECOS_PLANO: Record<string, number> = {
-      basico: 97,
-      profissional: 197,
-      enterprise: 397,
-    }
-
+    // MRR Estimado usando tabela oficial compartilhada em app/lib/plans.ts
     const mrrEstimado = list
       .filter((c: any) => c.status_assinatura === 'ativo' && c.ativo)
-      .reduce((sum: number, c: any) => sum + (PRECOS_PLANO[c.plano] || 197), 0)
+      .reduce((sum: number, c: any) => sum + getDbPlanInfo(c.plano).precoMensal, 0)
 
     const planosDistribuicao = {
-      basico: list.filter((c: any) => c.plano === 'basico').length,
-      profissional: list.filter((c: any) => c.plano === 'profissional').length,
-      enterprise: list.filter((c: any) => c.plano === 'enterprise').length,
+      basico: list.filter((c: any) => c.plano === DB_PLAN_CATALOG.basico.dbKey).length,
+      profissional: list.filter((c: any) => c.plano === DB_PLAN_CATALOG.profissional.dbKey).length,
+      enterprise: list.filter((c: any) => c.plano === DB_PLAN_CATALOG.enterprise.dbKey).length,
     }
 
     const d30DiasAtras = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)

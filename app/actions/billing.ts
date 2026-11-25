@@ -132,24 +132,27 @@ export async function fetchClinicSubscription(targetClinicaId?: string): Promise
         .eq('clinica_id', clinicaId),
     ])
 
-    // Normalização do plano
+    // Normalização do plano usando tabela compartilhada (PLANOS_SAAS)
     const rawPlano = (clinica.plano || 'essencial').toLowerCase()
     let planoId: 'essencial' | 'premium' | 'enterprise' = 'essencial'
-    let planoNome = 'Essencial'
-    let dentistasLimite: number | 'Ilimitado' = 3
+    let planoNome = PLANOS_SAAS.essencial.nome
+    let dentistasLimite: number | 'Ilimitado' = PLANOS_SAAS.essencial.maxDentistas
 
     if (rawPlano.includes('premium') || rawPlano.includes('profissional')) {
       planoId = 'premium'
-      planoNome = 'Premium & Compliance'
-      dentistasLimite = 'Ilimitado'
+      planoNome = PLANOS_SAAS.premium.nomeCompleto
+      dentistasLimite = PLANOS_SAAS.premium.maxDentistas
     } else if (rawPlano.includes('enterprise')) {
       planoId = 'enterprise'
-      planoNome = 'Enterprise'
-      dentistasLimite = 'Ilimitado'
+      planoNome = PLANOS_SAAS.premium.nomeCompleto
+      dentistasLimite = PLANOS_SAAS.premium.maxDentistas
     }
 
-    // Preços Globais Oficiais Definidos pelo Dono do SaaS
-    const precoGlobal = planoId === 'premium' ? 299.00 : 149.00
+    // Preços Globais Oficiais vindos da fonte única (app/lib/plans.ts)
+    const precoGlobal =
+      planoId === 'premium' || planoId === 'enterprise'
+        ? PLANOS_SAAS.premium.precoMensal
+        : PLANOS_SAAS.essencial.precoMensal
 
     // Cálculo do Status da Assinatura e Período de Avaliação (7 dias)
     const rawStatus = (clinica.status_assinatura || 'trial').toLowerCase()

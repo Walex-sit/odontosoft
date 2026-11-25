@@ -31,6 +31,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { AdminHeader } from './AdminHeader'
+import { DB_PLAN_CATALOG } from '@/app/lib/plans'
 import {
   getGlobalPlatformMetrics,
   getGlobalClinicsList,
@@ -242,50 +243,31 @@ export default function SuperAdminGlobalPanel() {
                 </div>
 
                 <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between text-xs font-semibold mb-1">
-                      <span className="text-[var(--text-secondary)]">Profissional (R$ 197/mês)</span>
-                      <span className="font-bold">{metrics.planosDistribuicao.profissional} clínicas</span>
-                    </div>
-                    <div className="w-full bg-[var(--border)] h-2 rounded-full overflow-hidden">
-                      <div
-                        className="bg-[var(--primary-fill)] h-full rounded-full"
-                        style={{
-                          width: `${(metrics.planosDistribuicao.profissional / (metrics.totalClinicas || 1)) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-xs font-semibold mb-1">
-                      <span className="text-[var(--text-secondary)]">Enterprise (R$ 397/mês)</span>
-                      <span className="font-bold">{metrics.planosDistribuicao.enterprise} clínicas</span>
-                    </div>
-                    <div className="w-full bg-[var(--border)] h-2 rounded-full overflow-hidden">
-                      <div
-                        className="bg-[var(--primary-fill)] h-full rounded-full opacity-75"
-                        style={{
-                          width: `${(metrics.planosDistribuicao.enterprise / (metrics.totalClinicas || 1)) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-xs font-semibold mb-1">
-                      <span className="text-[var(--text-secondary)]">Básico (R$ 97/mês)</span>
-                      <span className="font-bold">{metrics.planosDistribuicao.basico} clínicas</span>
-                    </div>
-                    <div className="w-full bg-[var(--border)] h-2 rounded-full overflow-hidden">
-                      <div
-                        className="bg-[var(--primary-fill)] h-full rounded-full opacity-55"
-                        style={{
-                          width: `${(metrics.planosDistribuicao.basico / (metrics.totalClinicas || 1)) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
+                  {[
+                    { key: 'profissional' as const, opacity: '', count: metrics.planosDistribuicao.profissional },
+                    { key: 'enterprise' as const, opacity: 'opacity-75', count: metrics.planosDistribuicao.enterprise },
+                    { key: 'basico' as const, opacity: 'opacity-55', count: metrics.planosDistribuicao.basico },
+                  ].map((item) => {
+                    const planInfo = DB_PLAN_CATALOG[item.key]
+                    return (
+                      <div key={item.key}>
+                        <div className="flex justify-between text-xs font-semibold mb-1">
+                          <span className="text-[var(--text-secondary)]">
+                            {planInfo.nome} (R$ {planInfo.precoMensal}/mês)
+                          </span>
+                          <span className="font-bold">{item.count} clínicas</span>
+                        </div>
+                        <div className="w-full bg-[var(--border)] h-2 rounded-full overflow-hidden">
+                          <div
+                            className={`bg-[var(--primary-fill)] h-full rounded-full ${item.opacity}`}
+                            style={{
+                              width: `${(item.count / (metrics.totalClinicas || 1)) * 100}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
 

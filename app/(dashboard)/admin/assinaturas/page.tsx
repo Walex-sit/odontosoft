@@ -25,6 +25,7 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import { AdminHeader } from '../AdminHeader'
+import { getDbPlanInfo } from '@/app/lib/plans'
 import {
   getGlobalClinicsList,
   type GlobalClinicaItem,
@@ -171,7 +172,7 @@ export default function SuperAdminAssinaturasPage() {
                           {c.nome}
                         </td>
                         <td className="px-5 py-3.5 font-semibold text-[var(--text-secondary)]">
-                          {c.plano}
+                          {getDbPlanInfo(c.plano).nome}
                         </td>
                         <td className="px-5 py-3.5">
                           <span

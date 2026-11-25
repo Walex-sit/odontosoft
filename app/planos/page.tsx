@@ -150,7 +150,7 @@ export default function PlanosPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="text-sm font-semibold text-[var(--text-secondary)] hover:text-white px-3.5 py-2 rounded-lg transition-colors"
+              className="text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3.5 py-2 rounded-lg transition-colors"
             >
               Entrar
             </Link>
@@ -204,7 +204,7 @@ export default function PlanosPage() {
               }`}
             >
               Anual
-              <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full font-extrabold">
+              <span className="text-xs bg-[var(--bg-surface)] text-[var(--success)] border border-[var(--success)]/45 px-2 py-0.5 rounded-full font-extrabold">
                 20% OFF
               </span>
             </button>
@@ -270,7 +270,7 @@ export default function PlanosPage() {
           <div className="rounded-2xl border-2 border-[var(--primary)]/40 bg-[var(--bg-surface)] p-8 flex flex-col justify-between shadow-md dark:shadow-none relative">
             <div className="absolute -top-3.5 right-8 bg-[var(--primary-fill)] text-[var(--on-primary)] text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
-              Recomendado para Clínicas
+              {PLANOS_SAAS.premium.popularBadge || 'Recomendado'}
             </div>
 
             <div>
@@ -317,8 +317,8 @@ export default function PlanosPage() {
               onClick={() => abrirCheckout('premium')}
               className="w-full py-3.5 px-4 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-95 text-[var(--on-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2 shadow-lg "
             >
-              Contratar com Blindagem Total
-              <Zap className="w-4 h-4 fill-white" />
+              Contratar com Proteção Total
+              <Zap className="w-4 h-4 fill-current" />
             </button>
           </div>
         </div>
@@ -433,7 +433,7 @@ export default function PlanosPage() {
           <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl max-w-md w-full p-6 relative shadow-md">
             <button
               onClick={() => setModalAberto(false)}
-              className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-white p-1 rounded-lg"
+              className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1 rounded-lg"
             >
               <X className="w-5 h-5" />
             </button>

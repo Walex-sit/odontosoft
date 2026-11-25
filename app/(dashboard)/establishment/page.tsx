@@ -5,6 +5,7 @@ import { CreditCard, CheckCircle2, Download, ExternalLink, ShieldCheck, Zap, Sea
 import { toast } from 'sonner'
 import ModalAlterarCartao from '@/app/components/ModalAlterarCartao'
 import ModalPagamentoFatura from '@/app/components/ModalPagamentoFatura'
+import { PLANOS_SAAS_CATALOG, formatPlanPriceBRL } from '@/app/lib/plans'
 
 // Faturas serão carregadas via Stripe Billing API / webhook.
 // Por enquanto, estado vazio até integração com Stripe Customer Portal.
@@ -37,12 +38,14 @@ export default function AssinaturaPage() {
         <div className="p-5 flex-1 overflow-y-auto">
           <div className="mb-6">
             <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2 mb-1">
-              Plano Pro
-              <span className="bg-green-100 text-green-700 border border-green-200 text-xs font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
+              {PLANOS_SAAS_CATALOG.essencial.nomeCompleto}
+              <span className="bg-[var(--bg-surface)] text-[var(--success)] border border-[var(--success)]/45 text-xs font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
                 Ativo
               </span>
             </h3>
-            <p className="text-xs font-medium text-[var(--text-secondary)]">R$ 199,90 / mês</p>
+            <p className="text-xs font-medium text-[var(--text-secondary)]">
+              R$ {formatPlanPriceBRL(PLANOS_SAAS_CATALOG.essencial.precoMensal)} / mês
+            </p>
           </div>
 
           <div className="mb-6 pt-5 border-t border-[var(--border)]">
