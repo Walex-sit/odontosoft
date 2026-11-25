@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Check, Minus, ArrowRight, ShieldCheck, CreditCard, HelpCircle } from 'lucide-react'
-import { PLANOS_SAAS_CATALOG, TRIAL_PLAN } from '@/app/lib/plans'
+import { PLANOS_SAAS_CATALOG, TRIAL_PLAN, formatPlanPriceBRL } from '@/app/lib/plans'
 
 const plans = [
   {
@@ -125,7 +125,7 @@ export default function SubscriptionPage() {
                   <div className="mb-8 flex items-baseline">
                     <span className="text-[var(--text-secondary)] font-bold text-2xl mr-1">R$</span>
                     <span className="text-5xl font-extrabold text-[var(--text-primary)] tracking-tight">
-                      {plan.price === 0 ? 0 : billingCycle === 'annual' ? plan.annualPrice : plan.price}
+                      {plan.price === 0 ? 0 : formatPlanPriceBRL(billingCycle === 'annual' ? plan.annualPrice : plan.price)}
                     </span>
                     <span className="text-[var(--text-secondary)] font-bold ml-1">{plan.period}</span>
                   </div>

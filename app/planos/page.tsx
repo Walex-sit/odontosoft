@@ -15,20 +15,19 @@ import Link from 'next/link'
 import {
   ShieldCheck,
   Check,
-  Sparkles,
-  Zap,
   ArrowRight,
   Lock,
   FileText,
   Clock,
   HelpCircle,
-  Activity,
   ChevronRight,
   Loader2,
   X,
 } from 'lucide-react'
 import { PLANOS_SAAS } from '@/app/lib/stripe'
+import { formatPlanPriceBRL } from '@/app/lib/plans'
 import { supabase } from '@/app/lib/supabaseClient'
+import { BrandMark } from '@/app/components/BrandLogo'
 
 export default function PlanosPage() {
   const [anual, setAnual] = useState(false)
@@ -130,14 +129,9 @@ export default function PlanosPage() {
       <header className="border-b border-[var(--border)] bg-[var(--bg-base)] sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--primary-fill)] flex items-center justify-center shadow-lg ">
-              <Activity className="w-5 h-5 text-[var(--on-primary)]" />
-            </div>
+            <BrandMark size="md" className="rounded-xl" />
             <span className="text-xl font-black tracking-tight text-[var(--text-primary)]">
               Odonto<span className="text-[var(--primary)]">Soft</span>
-            </span>
-            <span className="ml-1 text-xs font-bold px-2 py-0.5 rounded bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30 tracking-wider uppercase">
-              B2B SaaS
             </span>
           </Link>
 
@@ -189,22 +183,20 @@ export default function PlanosPage() {
             <button
               type="button"
               onClick={() => setAnual(false)}
-              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
-                !anual ? 'bg-[var(--primary-fill)] text-[var(--on-primary)] shadow-md' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${!anual ? 'bg-[var(--primary-fill)] text-[var(--on-primary)] shadow-md' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                }`}
             >
               Mensal
             </button>
             <button
               type="button"
               onClick={() => setAnual(true)}
-              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
-                anual ? 'bg-[var(--primary-fill)] text-[var(--on-primary)] shadow-md' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${anual ? 'bg-[var(--primary-fill)] text-[var(--on-primary)] shadow-md' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                }`}
             >
               Anual
               <span className="text-xs bg-[var(--bg-surface)] text-[var(--success)] border border-[var(--success)]/45 px-2 py-0.5 rounded-full font-extrabold">
-                20% OFF
+                20% de desconto
               </span>
             </button>
           </div>
@@ -221,9 +213,6 @@ export default function PlanosPage() {
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] bg-[var(--bg-base)] border border-[var(--border)] px-3 py-1 rounded-md">
                   {PLANOS_SAAS.essencial.badge}
                 </span>
-                <span className="text-xs font-semibold text-[var(--text-secondary)]">
-                  {PLANOS_SAAS.essencial.limites.dentistas}
-                </span>
               </div>
 
               <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">{PLANOS_SAAS.essencial.nome}</h2>
@@ -231,18 +220,18 @@ export default function PlanosPage() {
                 {PLANOS_SAAS.essencial.descricao}
               </p>
 
-              <div className="mb-6 lg:min-h-[76px]">
+              <div className="mb-6 lg:min-h-[92px]">
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-extrabold text-[var(--text-primary)]">
-                    R$ {anual ? PLANOS_SAAS.essencial.precoAnualMensalizado : PLANOS_SAAS.essencial.precoMensal}
+                    R$ {formatPlanPriceBRL(anual ? PLANOS_SAAS.essencial.precoAnualMensalizado : PLANOS_SAAS.essencial.precoMensal)}
                   </span>
                   <span className="text-sm text-[var(--text-secondary)] font-medium">/mês</span>
-                  {anual && (
-                    <span className="text-xs text-[var(--success)] ml-2 font-medium">
-                      (Faturado R$ {PLANOS_SAAS.essencial.precoAnual}/ano)
-                    </span>
-                  )}
                 </div>
+                {anual && (
+                  <p className="text-xs font-medium text-[var(--text-secondary)] mt-1">
+                    R$ {formatPlanPriceBRL(PLANOS_SAAS.essencial.precoAnual)} cobrados por ano
+                  </p>
+                )}
                 <p className="text-xs font-semibold text-[var(--primary)] mt-1.5">
                   {PLANOS_SAAS.essencial.limites.resumoCurto}
                 </p>
@@ -261,19 +250,25 @@ export default function PlanosPage() {
               </div>
             </div>
 
-            <button
-              onClick={() => abrirCheckout('essencial')}
-              className="w-full py-3.5 px-4 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2 hover:border-[var(--border-medium)]"
-            >
-              {PLANOS_SAAS.essencial.ctaText}
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div>
+              <button
+                onClick={() => abrirCheckout('essencial')}
+                className="w-full py-3.5 px-4 rounded-xl border border-[var(--border)] bg-[var(--bg-base)] hover:bg-[var(--bg-hover)] text-[var(--text-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2 hover:border-[var(--border-medium)]"
+              >
+                {PLANOS_SAAS.essencial.ctaText}
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <p className="text-xs text-center text-[var(--text-secondary)] mt-2.5">
+                <Link href="/politica-cancelamento" className="hover:text-[var(--primary)] underline-offset-2 hover:underline">
+                  Política de cancelamento e reembolso
+                </Link>
+              </p>
+            </div>
           </div>
 
           {/* Plano Premium (Destaque) */}
           <div className="rounded-2xl border-2 border-[var(--primary)] bg-[var(--bg-surface)] p-8 flex flex-col justify-between relative">
             <div className="absolute -top-3.5 right-8 bg-[var(--primary-fill)] text-[var(--on-primary)] text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" />
               {PLANOS_SAAS.premium.popularBadge || 'Recomendado'}
             </div>
 
@@ -282,9 +277,6 @@ export default function PlanosPage() {
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--primary)] bg-[var(--primary-subtle)] border border-[var(--primary)]/30 px-3 py-1 rounded-md">
                   {PLANOS_SAAS.premium.badge}
                 </span>
-                <span className="text-xs font-semibold text-[var(--primary)]">
-                  {PLANOS_SAAS.premium.limites.dentistas}
-                </span>
               </div>
 
               <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">{PLANOS_SAAS.premium.nome}</h2>
@@ -292,18 +284,18 @@ export default function PlanosPage() {
                 {PLANOS_SAAS.premium.descricao}
               </p>
 
-              <div className="mb-6 lg:min-h-[76px]">
+              <div className="mb-6 lg:min-h-[92px]">
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-black text-[var(--text-primary)]">
-                    R$ {anual ? PLANOS_SAAS.premium.precoAnualMensalizado : PLANOS_SAAS.premium.precoMensal}
+                    R$ {formatPlanPriceBRL(anual ? PLANOS_SAAS.premium.precoAnualMensalizado : PLANOS_SAAS.premium.precoMensal)}
                   </span>
                   <span className="text-sm text-[var(--text-secondary)] font-medium">/mês</span>
-                  {anual && (
-                    <span className="text-xs text-[var(--success)] ml-2 font-medium">
-                      (Faturado R$ {PLANOS_SAAS.premium.precoAnual}/ano)
-                    </span>
-                  )}
                 </div>
+                {anual && (
+                  <p className="text-xs font-medium text-[var(--text-secondary)] mt-1">
+                    R$ {formatPlanPriceBRL(PLANOS_SAAS.premium.precoAnual)} cobrados por ano
+                  </p>
+                )}
                 <p className="text-xs font-semibold text-[var(--primary)] mt-1.5">
                   {PLANOS_SAAS.premium.limites.resumoCurto}
                 </p>
@@ -322,13 +314,20 @@ export default function PlanosPage() {
               </div>
             </div>
 
-            <button
-              onClick={() => abrirCheckout('premium')}
-              className="w-full py-3.5 px-4 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-95 text-[var(--on-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2"
-            >
-              {PLANOS_SAAS.premium.ctaText}
-              <Zap className="w-4 h-4 fill-current" />
-            </button>
+            <div>
+              <button
+                onClick={() => abrirCheckout('premium')}
+                className="w-full py-3.5 px-4 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-95 text-[var(--on-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2"
+              >
+                {PLANOS_SAAS.premium.ctaText}
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <p className="text-xs text-center text-[var(--text-secondary)] mt-2.5">
+                <Link href="/politica-cancelamento" className="hover:text-[var(--primary)] underline-offset-2 hover:underline">
+                  Política de cancelamento e reembolso
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -416,8 +415,8 @@ export default function PlanosPage() {
       <footer className="border-t border-[var(--border)] bg-[var(--bg-base)] py-10 mt-auto text-xs text-[var(--text-muted)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-[var(--primary)]" />
-            <span className="font-bold text-[var(--text-secondary)]">OdontoSoft SaaS Tecnologia Ltda.</span>
+            <BrandMark size="sm" />
+            <span className="font-bold text-[var(--text-secondary)]">OdontoSoft</span>
           </div>
 
           <div className="flex items-center gap-6">

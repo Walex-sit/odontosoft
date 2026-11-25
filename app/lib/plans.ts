@@ -34,6 +34,9 @@ export interface PaidPlanConfig {
   badge: string
   popularBadge?: string
   descricao: string
+  precoMensalCentavos: number
+  precoAnualCentavos: number
+  precoAnualMensalizadoCentavos: number
   precoMensal: number
   precoAnual: number
   precoAnualMensalizado: number
@@ -74,6 +77,14 @@ export const TRIAL_PLAN: TrialPlanConfig = {
   ctaText: 'Iniciar Teste de 7 dias',
 }
 
+const ESSENCIAL_MENSAL_CENTAVOS = 14900
+const ESSENCIAL_ANUAL_CENTAVOS = Math.round(ESSENCIAL_MENSAL_CENTAVOS * 12 * 0.8) // 143040
+const ESSENCIAL_ANUAL_MENSALIZADO_CENTAVOS = Math.round(ESSENCIAL_ANUAL_CENTAVOS / 12) // 11920
+
+const PREMIUM_MENSAL_CENTAVOS = 29900
+const PREMIUM_ANUAL_CENTAVOS = Math.round(PREMIUM_MENSAL_CENTAVOS * 12 * 0.8) // 287040
+const PREMIUM_ANUAL_MENSALIZADO_CENTAVOS = Math.round(PREMIUM_ANUAL_CENTAVOS / 12) // 23920
+
 export const PLANOS_SAAS_CATALOG: Record<PaidPlanId, PaidPlanConfig> = {
   essencial: {
     id: 'essencial',
@@ -82,9 +93,12 @@ export const PLANOS_SAAS_CATALOG: Record<PaidPlanId, PaidPlanConfig> = {
     badge: 'Consultórios',
     descricao:
       'Ideal para consultórios individuais e clínicas em estruturação que precisam organizar agenda e finanças.',
-    precoMensal: 149,
-    precoAnual: 1430, // 20% desconto (~ R$ 119/mês)
-    precoAnualMensalizado: 119,
+    precoMensalCentavos: ESSENCIAL_MENSAL_CENTAVOS,
+    precoAnualCentavos: ESSENCIAL_ANUAL_CENTAVOS,
+    precoAnualMensalizadoCentavos: ESSENCIAL_ANUAL_MENSALIZADO_CENTAVOS,
+    precoMensal: ESSENCIAL_MENSAL_CENTAVOS / 100,
+    precoAnual: ESSENCIAL_ANUAL_CENTAVOS / 100,
+    precoAnualMensalizado: ESSENCIAL_ANUAL_MENSALIZADO_CENTAVOS / 100,
     maxDentistas: 3,
     limites: {
       dentistas: 'Até 3 profissionais',
@@ -109,9 +123,12 @@ export const PLANOS_SAAS_CATALOG: Record<PaidPlanId, PaidPlanConfig> = {
     popularBadge: 'Recomendado',
     descricao:
       'Para clínicas consolidadas que precisam de equipe ilimitada, relatórios completos e recursos de apoio à conformidade CFO e LGPD.',
-    precoMensal: 299,
-    precoAnual: 2870, // 20% desconto (~ R$ 239/mês)
-    precoAnualMensalizado: 239,
+    precoMensalCentavos: PREMIUM_MENSAL_CENTAVOS,
+    precoAnualCentavos: PREMIUM_ANUAL_CENTAVOS,
+    precoAnualMensalizadoCentavos: PREMIUM_ANUAL_MENSALIZADO_CENTAVOS,
+    precoMensal: PREMIUM_MENSAL_CENTAVOS / 100,
+    precoAnual: PREMIUM_ANUAL_CENTAVOS / 100,
+    precoAnualMensalizado: PREMIUM_ANUAL_MENSALIZADO_CENTAVOS / 100,
     popular: true,
     maxDentistas: 'Ilimitado',
     limites: {
@@ -125,9 +142,9 @@ export const PLANOS_SAAS_CATALOG: Record<PaidPlanId, PaidPlanConfig> = {
       'Múltiplos dentistas e divisão automática de comissões',
       'Relatórios financeiros completos e acompanhamento de caixa',
       'Recursos de apoio à conformidade CFO (histórico de alterações no prontuário)',
-      'Dados da sua clínica isolados com recursos de apoio à conformidade LGPD',
+      'Dados da sua clínica isolados e protegidos',
       'Termo de consentimento LGPD com registro de aceite digital',
-      'Backups automáticos e histórico de longo prazo (referência de 20 anos)',
+      'Backups automáticos',
       'Suporte prioritário via WhatsApp',
     ],
     ctaText: 'Assinar Premium',
@@ -178,8 +195,8 @@ export function getDbPlanInfo(rawPlano?: string | null): DbPlanInfo {
 }
 
 export function formatPlanPriceBRL(value: number): string {
-  return value.toLocaleString('pt-BR', {
+  return new Intl.NumberFormat('pt-BR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })
+  }).format(value)
 }

@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
               name: `OdontoSoft SaaS - Plano ${plano.nome}`,
               description: plano.descricao,
             },
-            unit_amount: (intervalo === 'anual' ? plano.precoAnual : plano.precoMensal) * 100,
+            unit_amount: intervalo === 'anual' ? plano.precoAnualCentavos : plano.precoMensalCentavos,
             recurring: {
               interval: intervalo === 'anual' ? 'year' : 'month',
             },
