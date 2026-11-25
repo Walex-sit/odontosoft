@@ -104,7 +104,7 @@ export default function TarefasSlideOver({ isOpen, onClose }: { isOpen: boolean;
                           {tarefa.title}
                         </h4>
                         {!tarefa.completed && tarefa.priority === 'high' && (
-                          <span className="flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded uppercase tracking-wider shrink-0">
+                          <span className="flex items-center gap-1 text-xs font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded uppercase tracking-wider shrink-0">
                             <AlertCircle className="h-3 w-3" /> Alta
                           </span>
                         )}

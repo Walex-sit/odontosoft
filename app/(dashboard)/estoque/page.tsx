@@ -214,7 +214,7 @@ export default function EstoquePage() {
             <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Gestão de Estoque</h1>
             <p className="text-sm font-semibold text-[var(--text-muted)] mt-1">Controle de materiais, insumos e suprimentos odontológicos</p>
           </div>
-          <button onClick={() => setNovoModal(true)} className="flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors">
+          <button onClick={() => setNovoModal(true)} className="flex items-center gap-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors">
             <Plus className="h-4 w-4" /> Novo Item
           </button>
         </div>
@@ -233,7 +233,7 @@ export default function EstoquePage() {
                 <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{k.label}</p>
                 <p className="text-2xl font-extrabold text-[var(--text-primary)] mt-1">{loading ? '...' : k.value}</p>
               </div>
-              <div className={`p-3 rounded-xl ${k.color === 'blue' ? 'bg-[var(--primary-subtle)] text-[var(--primary)]' : k.color === 'amber' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
+              <div className={`p-3 rounded-xl border ${k.color === 'blue' ? 'bg-[var(--primary-subtle)] text-[var(--primary)] border-[var(--primary)]/20' : 'bg-[var(--bg-base)] text-[var(--text-secondary)] border-[var(--border)]'}`}>
                 <k.icon className="h-6 w-6" />
               </div>
             </div>
@@ -259,7 +259,7 @@ export default function EstoquePage() {
                 onClick={() => setCategoria(cat)}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${
                   categoria === cat
-                    ? 'bg-[var(--primary)] text-[var(--on-primary)]'
+                    ? 'bg-[var(--primary-fill)] text-[var(--on-primary)]'
                     : 'bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]'
                 }`}
               >
@@ -443,7 +443,7 @@ export default function EstoquePage() {
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={() => setNovoModal(false)} className="flex-1 py-3 bg-[var(--bg-base)] text-[var(--text-secondary)] rounded-xl font-bold text-sm hover:bg-[var(--border)] transition-colors">Cancelar</button>
-              <button onClick={adicionarItem} className="flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-xl font-bold text-sm transition-colors">Salvar Item</button>
+              <button onClick={adicionarItem} className="flex-1 py-3 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] rounded-xl font-bold text-sm transition-colors">Salvar Item</button>
             </div>
           </div>
         </div>

@@ -134,7 +134,7 @@ export default function SuperAdminUsuariosPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs sm:text-sm">
                 <thead>
-                  <tr className="border-b border-[var(--border)] bg-[var(--bg-base)] text-[11px] font-extrabold uppercase text-[var(--text-secondary)] tracking-wider">
+                  <tr className="border-b border-[var(--border)] bg-[var(--bg-base)] text-xs font-extrabold uppercase text-[var(--text-secondary)] tracking-wider">
                     <th className="px-5 py-3.5">Nome / E-mail</th>
                     <th className="px-5 py-3.5">Cargo / Papel</th>
                     <th className="px-5 py-3.5">Clínica Vinculada</th>
@@ -157,14 +157,14 @@ export default function SuperAdminUsuariosPage() {
                             <span className="font-bold text-[var(--text-primary)]">
                               {u.nome}
                             </span>
-                            <span className="text-[11px] text-[var(--text-secondary)]">
+                            <span className="text-xs text-[var(--text-secondary)]">
                               {u.email || u.id}
                             </span>
                           </div>
                         </td>
 
                         <td className="px-5 py-3.5">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-[var(--primary-subtle)]/10 text-[var(--primary)] border border-[var(--primary)]/20">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20">
                             {u.role}
                           </span>
                         </td>
@@ -177,9 +177,8 @@ export default function SuperAdminUsuariosPage() {
 
                         <td className="px-5 py-3.5">
                           {u.is_lifetime ? (
-                            // Lifetime é contexto especial — amber mantido
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">
-                              <Sparkles className="h-3 w-3" />
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-[var(--warning)]">
+                              <Sparkles className="h-3.5 w-3.5" />
                               Vitalício (Lifetime)
                             </span>
                           ) : (

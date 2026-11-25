@@ -151,7 +151,7 @@ export default function ImprimirAtestado() {
       <div className="fixed top-4 right-4 print:hidden">
         <button 
           onClick={() => window.print()} 
-          className="bg-[var(--primary)] hover:bg-[var(--primary)] text-[var(--on-primary)] px-4 py-2 rounded-lg shadow-lg font-medium transition-colors"
+          className="bg-[var(--primary-fill)] hover:bg-[var(--primary-fill)] text-[var(--on-primary)] px-4 py-2 rounded-lg shadow-lg font-medium transition-colors"
         >
           Imprimir Novamente
         </button>

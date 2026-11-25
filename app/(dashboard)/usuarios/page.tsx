@@ -203,7 +203,7 @@ export default function Usuarios() {
             <button
               onClick={salvarUsuario}
               disabled={salvando}
-              className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-4 py-2 rounded font-semibold text-xs transition-colors mt-2 disabled:opacity-50"
+              className="w-full bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-4 py-2 rounded font-semibold text-xs transition-colors mt-2 disabled:opacity-50"
             >
               {salvando ? 'Salvando...' : 'Adicionar Usuário'}
             </button>
@@ -243,7 +243,7 @@ export default function Usuarios() {
               className="bg-transparent border-none focus:outline-none text-sm w-full text-[var(--text-primary)] placeholder-[var(--text-secondary)]"
             />
           </div>
-          <button className="flex items-center gap-1 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded px-4 py-1.5 text-xs font-semibold">
+          <button className="flex items-center gap-1 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] rounded px-4 py-1.5 text-xs font-semibold">
             <Plus size={14} /> Convidar
           </button>
         </header>

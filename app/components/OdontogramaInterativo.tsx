@@ -156,7 +156,7 @@ function DenteVisual({ numero, status, isSelected, onClick }: DenteProps) {
       title={`Dente ${numero} — ${cfg.label}`}
       className={[
         'relative w-10 h-10 flex flex-col items-center justify-center rounded-xl',
-        'border-2 font-bold text-[11px] shadow-sm select-none',
+        'border-2 font-bold text-xs shadow-sm select-none',
         'transition-all duration-150 hover:scale-110 active:scale-95 focus-visible:outline-none',
         cfg.dentClasses,
         isSelected
@@ -169,7 +169,7 @@ function DenteVisual({ numero, status, isSelected, onClick }: DenteProps) {
 
       {/* Símbolo de status (pequeno, sob o número) */}
       {cfg.symbol && status !== 'saudavel' && (
-        <span className="text-[8px] leading-none opacity-80 mt-0.5">{cfg.symbol}</span>
+        <span className="text-xs leading-none opacity-80 mt-0.5">{cfg.symbol}</span>
       )}
 
       {/* X duplo para ausente */}
@@ -324,7 +324,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
       <div className="bg-[var(--bg-base)] dark:bg-[var(--bg-base)] rounded-2xl border border-[var(--border)]  p-5 flex flex-col gap-6 items-center overflow-x-auto">
 
         {/* Label superior */}
-        <div className="w-full flex justify-between text-[10px] font-bold tracking-widest uppercase text-[var(--text-muted)] px-1">
+        <div className="w-full flex justify-between text-xs font-bold tracking-widest uppercase text-[var(--text-muted)] px-1">
           <span>Direita (D)</span>
           <span className="text-[var(--border-medium)]">Arcada Superior</span>
           <span>Esquerda (E)</span>
@@ -348,7 +348,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
         {/* Linha mediana */}
         <div className="relative w-full max-w-3xl">
           <div className="w-full h-px bg-[var(--border)] dark:bg-[var(--border)]" />
-          <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] px-3 text-[10px] font-bold tracking-widest text-[var(--text-muted)] uppercase">
+          <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] px-3 text-xs font-bold tracking-widest text-[var(--text-muted)] uppercase">
             Plano Oclusal
           </span>
         </div>
@@ -369,7 +369,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
         </div>
 
         {/* Label inferior */}
-        <div className="w-full flex justify-between text-[10px] font-bold tracking-widest uppercase text-[var(--text-muted)] px-1">
+        <div className="w-full flex justify-between text-xs font-bold tracking-widest uppercase text-[var(--text-muted)] px-1">
           <span>Direita (D)</span>
           <span className="text-[var(--border-medium)]">Arcada Inferior</span>
           <span>Esquerda (E)</span>
@@ -425,7 +425,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
       <div>
         <label
           htmlFor="odontograma-observacao"
-          className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5"
+          className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5"
         >
           Observação Clínica
         </label>
@@ -493,8 +493,8 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
             onClick={handleSalvar}
             disabled={isPending || loading}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl
-                       bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:bg-[var(--primary-hover)]
-                       text-white font-bold text-sm shadow-sm
+                       bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:bg-[var(--primary-fill-hover)]
+                       text-[var(--on-primary)] font-bold text-sm shadow-sm
                        transition-all hover:scale-105 active:scale-95
                        disabled:opacity-50 disabled:cursor-not-allowed"
           >

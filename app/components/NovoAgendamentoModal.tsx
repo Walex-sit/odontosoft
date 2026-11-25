@@ -171,7 +171,7 @@ export default function NovoAgendamentoModal({ isOpen, onClose, onSuccess, pacie
               <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-xl text-sm font-bold text-[var(--text-secondary)] bg-[var(--bg-base)] hover:bg-[var(--border)] border border-[var(--border)]  transition-all active:scale-95">
                 Cancelar
               </button>
-              <button type="submit" disabled={loading} className="flex-[2] py-2.5 rounded-xl text-sm font-bold text-white bg-[var(--primary)] hover:bg-[var(--primary-hover)] transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+              <button type="submit" disabled={loading} className="flex-[2] py-2.5 rounded-xl text-sm font-bold text-[var(--on-primary)] bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                 {loading ? 'Salvando...' : 'Salvar Agendamento'}
               </button>
             </div>

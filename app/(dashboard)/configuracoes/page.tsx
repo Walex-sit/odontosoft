@@ -24,18 +24,18 @@ import Image from 'next/image'
 // ─── Badge de ação colorido ──────────────────────────────────────────────────
 
 const ACTION_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  criacao:    { bg: 'bg-emerald-50 border border-emerald-200', text: 'text-emerald-700', label: 'CRIAÇÃO' },
-  edicao:     { bg: 'bg-[var(--primary-subtle)] border border-[var(--primary)]/40',       text: 'text-[var(--primary)]',    label: 'EDIÇÃO' },
-  exclusao:   { bg: 'bg-red-50 border border-red-200',         text: 'text-red-700',     label: 'EXCLUSÃO' },
-  financeiro: { bg: 'bg-amber-50 border border-amber-200',     text: 'text-amber-700',   label: 'FINANCEIRO' },
-  login:      { bg: 'bg-[var(--primary)] border border-[var(--primary)]/40',   text: 'text-[var(--primary)]',  label: 'LOGIN' },
-  logout:     { bg: 'bg-[var(--bg-base)] border border-[var(--border)] ',    text: 'text-[var(--text-secondary)]',   label: 'LOGOUT' },
+  criacao:    { bg: 'bg-[var(--bg-surface)] border border-[var(--success)]/45', text: 'text-[var(--success)]', label: 'CRIAÇÃO' },
+  edicao:     { bg: 'bg-[var(--bg-surface)] border border-[var(--primary)]/45', text: 'text-[var(--primary)]', label: 'EDIÇÃO' },
+  exclusao:   { bg: 'bg-[var(--bg-surface)] border border-[var(--error)]/45', text: 'text-[var(--error)]', label: 'EXCLUSÃO' },
+  financeiro: { bg: 'bg-[var(--bg-surface)] border border-[var(--warning)]/45', text: 'text-[var(--warning)]', label: 'FINANCEIRO' },
+  login:      { bg: 'bg-[var(--bg-surface)] border border-[var(--primary)]/45', text: 'text-[var(--primary)]', label: 'LOGIN' },
+  logout:     { bg: 'bg-[var(--bg-surface)] border border-[var(--border)]', text: 'text-[var(--text-secondary)]', label: 'LOGOUT' },
 }
 
 function ActionBadge({ action }: { action: string }) {
-  const style = ACTION_STYLES[action] ?? { bg: 'bg-[var(--bg-base)] border border-[var(--border)] ', text: 'text-[var(--text-secondary)]', label: action.toUpperCase() }
+  const style = ACTION_STYLES[action] ?? { bg: 'bg-[var(--bg-surface)] border border-[var(--border)]', text: 'text-[var(--text-secondary)]', label: action.toUpperCase() }
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold ${style.bg} ${style.text}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${style.bg} ${style.text}`}>
       {style.label}
     </span>
   )
@@ -454,7 +454,7 @@ export default function ConfiguracoesPage() {
           <button
             onClick={handleSalvar}
             disabled={salvando}
-            className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-6 py-2.5 rounded-xl font-bold text-sm transition-all  flex items-center justify-center gap-2 self-start md:self-auto disabled:opacity-50"
+            className="bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-6 py-2.5 rounded-xl font-bold text-sm transition-all  flex items-center justify-center gap-2 self-start md:self-auto disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {salvando ? 'Salvando...' : 'Salvar Alterações'}
@@ -478,24 +478,24 @@ export default function ConfiguracoesPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all border-b-2 whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'border-[var(--primary)]/40 text-[var(--primary)] bg-[var(--primary-subtle)]/50 dark:bg-[var(--bg-surface)]'
+                  ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--primary-subtle)]'
                   : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)]'
               }`}
             >
               {tab.icon} {tab.label}
               {tab.id === 'assinatura' && subscriptionData && (
-                <span className={`ml-1 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full ${
+                <span className={`ml-1 text-xs font-extrabold px-2 py-0.5 rounded-full bg-[var(--bg-surface)] border ${
                   subscriptionData.status === 'ativo'
-                    ? 'bg-emerald-100 text-emerald-700'
+                    ? 'text-[var(--success)] border-[var(--success)]/45'
                     : subscriptionData.status === 'inadimplente'
-                    ? 'bg-rose-100 text-rose-700'
-                    : 'bg-amber-100 text-amber-700'
+                    ? 'text-[var(--error)] border-[var(--error)]/45'
+                    : 'text-[var(--warning)] border-[var(--warning)]/45'
                 }`}>
                   {subscriptionData.status === 'trial' ? 'TRIAL' : subscriptionData.status === 'ativo' ? 'ATIVO' : 'PENDENTE'}
                 </span>
               )}
               {tab.id === 'seguranca' && (
-                <span className="ml-1 bg-[var(--primary-subtle)] text-[var(--primary)] text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">LGPD</span>
+                <span className="ml-1 bg-[var(--primary-subtle)] text-[var(--primary)] text-xs font-extrabold px-1.5 py-0.5 rounded-full">LGPD</span>
               )}
             </button>
           ))}
@@ -525,7 +525,7 @@ export default function ConfiguracoesPage() {
                 </p>
                 <Link
                   href="/admin/clinicas"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-xs font-bold transition-all shadow-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] text-xs font-bold transition-all shadow-sm"
                 >
                   <ExternalLink className="h-3.5 w-3.5" /> Ir para Gestão de Clínicas
                 </Link>
@@ -560,16 +560,16 @@ export default function ConfiguracoesPage() {
                         ) : (
                           <div className="flex flex-col items-center gap-1 text-[var(--text-muted)]">
                             <Camera className="h-8 w-8" />
-                            <span className="text-[10px] font-bold uppercase tracking-wider">Sem logo</span>
+                            <span className="text-xs font-bold uppercase tracking-wider">Sem logo</span>
                           </div>
                         )}
                       </div>
                       {/* Badge de estado */}
                       {logoPreview && (
-                        <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">PENDENTE</span>
+                        <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs font-extrabold px-2 py-0.5 rounded-full">PENDENTE</span>
                       )}
                       {logoUrl && !logoPreview && (
-                        <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">ATIVO</span>
+                        <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs font-extrabold px-2 py-0.5 rounded-full">ATIVO</span>
                       )}
                     </div>
 
@@ -597,7 +597,7 @@ export default function ConfiguracoesPage() {
                           <button
                             onClick={handleLogoUpload}
                             disabled={isUploadingLogo}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-[var(--on-primary)] rounded-xl text-sm font-bold transition-colors "
+                            className="flex items-center gap-2 px-4 py-2.5 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:opacity-50 text-[var(--on-primary)] rounded-xl text-sm font-bold transition-colors "
                           >
                             {isUploadingLogo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                             {isUploadingLogo ? 'Enviando...' : 'Confirmar Upload'}
@@ -649,7 +649,7 @@ export default function ConfiguracoesPage() {
                         maxLength={80}
                         className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)]  rounded-xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all pr-20"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-[var(--text-secondary)] select-none">
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--text-secondary)] select-none">
                         {nomeExibido.length}/80
                       </span>
                     </div>
@@ -818,7 +818,7 @@ export default function ConfiguracoesPage() {
                 </div>
                 <button
                   onClick={() => setIsCreateUserModalOpen(true)}
-                  className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm transition-all  flex items-center gap-2"
+                  className="bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm transition-all  flex items-center gap-2"
                 >
                   <UserPlus className="h-4 w-4" />
                   Novo Usuário
@@ -967,7 +967,7 @@ export default function ConfiguracoesPage() {
                             <span className="text-sm font-extrabold text-[var(--text-primary)]">
                               R$ {subscriptionData.valorPlano > 0 ? subscriptionData.valorPlano.toFixed(2).replace('.', ',') : (subscriptionData.planoId === 'premium' ? '299,00' : '149,00')} / mês
                             </span>
-                            <span className="text-[11px] text-[var(--text-secondary)] font-medium">
+                            <span className="text-xs text-[var(--text-secondary)] font-medium">
                               (Tabela oficial OdontoSoft)
                             </span>
                           </>
@@ -989,35 +989,35 @@ export default function ConfiguracoesPage() {
                   {/* ── Quotas e Uso do Tenant ───────────────────────────── */}
                   <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
                     <div className="p-4 rounded-2xl bg-[var(--bg-base)] border border-[var(--border)]">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Dentistas</p>
+                      <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">Dentistas</p>
                       <p className="text-xl font-extrabold text-[var(--text-primary)] mt-1">
                         {subscriptionData.dentistasCadastrados} <span className="text-xs text-[var(--text-secondary)] font-normal">/ {subscriptionData.dentistasLimite}</span>
                       </p>
-                      <p className="text-[10px] text-[var(--text-secondary)] mt-1">Profissionais ativos</p>
+                      <p className="text-xs text-[var(--text-secondary)] mt-1">Profissionais ativos</p>
                     </div>
 
                     <div className="p-4 rounded-2xl bg-[var(--bg-base)] border border-[var(--border)]">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Pacientes</p>
+                      <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">Pacientes</p>
                       <p className="text-xl font-extrabold text-[var(--text-primary)] mt-1">
                         {subscriptionData.pacientesCadastrados} <span className="text-xs text-[var(--success)] font-bold">Ilimitados</span>
                       </p>
-                      <p className="text-[10px] text-[var(--text-secondary)] mt-1">Cadastros totais</p>
+                      <p className="text-xs text-[var(--text-secondary)] mt-1">Cadastros totais</p>
                     </div>
 
                     <div className="p-4 rounded-2xl bg-[var(--bg-base)] border border-[var(--border)]">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Armazenamento</p>
+                      <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">Armazenamento</p>
                       <p className="text-xl font-extrabold text-[var(--text-primary)] mt-1">
                         {subscriptionData.armazenamentoUsadoMb} <span className="text-xs text-[var(--text-secondary)] font-normal">MB</span>
                       </p>
-                      <p className="text-[10px] text-[var(--text-secondary)] mt-1">Imagens e prontuários</p>
+                      <p className="text-xs text-[var(--text-secondary)] mt-1">Imagens e prontuários</p>
                     </div>
 
                     <div className="p-4 rounded-2xl bg-[var(--bg-base)] border border-[var(--border)]">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Isolamento & RLS</p>
+                      <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">Isolamento & RLS</p>
                       <p className="text-xl font-extrabold text-[var(--success)] mt-1 flex items-center gap-1.5">
                         <CheckCircle2 className="h-5 w-5 text-[var(--success)]" /> Ativo
                       </p>
-                      <p className="text-[10px] text-[var(--text-secondary)] mt-1">LGPD & CFO Compliant</p>
+                      <p className="text-xs text-[var(--text-secondary)] mt-1">LGPD & CFO Compliant</p>
                     </div>
                   </div>
                 </div>
@@ -1079,7 +1079,7 @@ export default function ConfiguracoesPage() {
                             PLANO ESSENCIAL
                           </span>
                           {!isVitalicio && subscriptionData.planoId === 'essencial' && (
-                            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--primary)] text-[var(--on-primary)] flex items-center gap-1">
+                            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--primary-fill)] text-[var(--on-primary)] flex items-center gap-1">
                               <Check className="h-3.5 w-3.5" /> SEU PLANO ATUAL
                             </span>
                           )}
@@ -1128,7 +1128,7 @@ export default function ConfiguracoesPage() {
                           className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                             subscriptionData.planoId === 'essencial'
                               ? 'bg-[var(--border)] text-[var(--text-secondary)] cursor-default'
-                              : 'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)]'
+                              : 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]'
                           }`}
                         >
                           {isChangingPlan === 'essencial' ? (
@@ -1160,7 +1160,7 @@ export default function ConfiguracoesPage() {
                               👑 ACESSO VITALÍCIO ATIVO
                             </span>
                           ) : subscriptionData.planoId === 'premium' && (
-                            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--primary)] text-[var(--on-primary)] flex items-center gap-1">
+                            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[var(--primary-fill)] text-[var(--on-primary)] flex items-center gap-1">
                               <Check className="h-3.5 w-3.5" /> SEU PLANO ATUAL
                             </span>
                           )}
@@ -1209,7 +1209,7 @@ export default function ConfiguracoesPage() {
                           className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                             subscriptionData.planoId === 'premium'
                               ? 'bg-[var(--border)] text-[var(--text-secondary)] cursor-default'
-                              : 'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)]'
+                              : 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]'
                           }`}
                         >
                           {isChangingPlan === 'premium' ? (
@@ -1265,7 +1265,7 @@ export default function ConfiguracoesPage() {
                             </td>
                             <td className="px-6 py-4 text-xs font-extrabold text-[var(--text-primary)]">
                               {isVitalicio ? (
-                                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/40">
+                                <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/40">
                                   <CheckCircle2 className="h-3 w-3" /> Isento (Vitalício)
                                 </span>
                               ) : fat.valor > 0 ? (
@@ -1275,7 +1275,7 @@ export default function ConfiguracoesPage() {
                               )}
                             </td>
                             <td className="px-6 py-4">
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold ${
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${
                                 isVitalicio || fat.status === 'pago'
                                   ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                   : 'bg-amber-50 text-amber-700 border border-amber-200'
@@ -1311,7 +1311,7 @@ export default function ConfiguracoesPage() {
                 </p>
                 <Link
                   href="/admin/clinicas"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-xs font-bold transition-all shadow-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] text-xs font-bold transition-all shadow-sm"
                 >
                   <ExternalLink className="h-3.5 w-3.5" /> Ir para Gestão de Clínicas
                 </Link>
@@ -1512,15 +1512,15 @@ export default function ConfiguracoesPage() {
                 </div>
 
                 {/* Card 2: Pendentes */}
-                <div className={`bg-[var(--bg-surface)] rounded-2xl p-5 shadow-sm border ${complianceStats.pacientesSemAceite > 0 ? 'border-red-200' : 'border-[var(--border)] '}`}>
+                <div className={`bg-[var(--bg-surface)] rounded-2xl p-5 shadow-sm border ${complianceStats.pacientesSemAceite > 0 ? 'border-[var(--error)]/45' : 'border-[var(--border)]'}`}>
                   <div className="flex items-center gap-3 mb-3">
-                    <div className={`p-2 rounded-xl ${complianceStats.pacientesSemAceite > 0 ? 'bg-red-100' : 'bg-[var(--bg-base)]'}`}>
-                      <AlertTriangle className={`h-5 w-5 ${complianceStats.pacientesSemAceite > 0 ? 'text-red-500' : 'text-[var(--text-muted)]'}`} />
+                    <div className="p-2 rounded-xl bg-[var(--bg-base)] border border-[var(--border)]">
+                      <AlertTriangle className={`h-5 w-5 ${complianceStats.pacientesSemAceite > 0 ? 'text-[var(--error)]' : 'text-[var(--text-secondary)]'}`} />
                     </div>
-                    <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Pendentes LGPD</p>
+                    <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Pendentes LGPD</p>
                   </div>
-                  <p className="text-3xl font-extrabold text-[var(--text-primary)]">{complianceStats.pacientesSemAceite}</p>
-                  <p className="text-xs text-[var(--text-muted)] mt-2">
+                  <p className={`text-3xl font-extrabold ${complianceStats.pacientesSemAceite > 0 ? 'text-[var(--error)]' : 'text-[var(--text-primary)]'}`}>{complianceStats.pacientesSemAceite}</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-2">
                     {complianceStats.pacientesSemAceite > 0
                       ? 'Pacientes sem consentimento registrado'
                       : 'Todos os pacientes estão em conformidade ✓'}
@@ -1530,22 +1530,22 @@ export default function ConfiguracoesPage() {
                 {/* Card 3: Logs hoje */}
                 <div className="bg-[var(--bg-surface)] border border-[var(--border)]  rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-[var(--primary-subtle)] rounded-xl">
+                    <div className="p-2 bg-[var(--primary-subtle)] border border-[var(--primary)]/20 rounded-xl">
                       <FileText className="h-5 w-5 text-[var(--primary)]" />
                     </div>
-                    <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Logs (24h)</p>
+                    <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Logs (24h)</p>
                   </div>
                   <p className="text-3xl font-extrabold text-[var(--text-primary)]">{complianceStats.totalLogsHoje}</p>
-                  <p className="text-xs text-[var(--text-muted)] mt-2">Ações registradas nas últimas 24 horas</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-2">Ações registradas nas últimas 24 horas</p>
                 </div>
 
                 {/* Card 4: Último evento */}
                 <div className="bg-[var(--bg-surface)] border border-[var(--border)]  rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-[var(--primary)] rounded-xl">
+                    <div className="p-2 bg-[var(--primary-subtle)] border border-[var(--primary)]/20 rounded-xl">
                       <Clock className="h-5 w-5 text-[var(--primary)]" />
                     </div>
-                    <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Último Evento</p>
+                    <p className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">Último Evento</p>
                   </div>
                   {complianceStats.ultimoEvento ? (
                     <>

@@ -125,18 +125,18 @@ export default function PlanosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex flex-col font-sans selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex flex-col font-sans selection:bg-[var(--primary-fill)] selection:text-[var(--on-primary)]">
       {/* Header / Navegação Pública */}
       <header className="border-b border-[var(--border)] bg-[var(--bg-base)] sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[var(--primary)] flex items-center justify-center shadow-lg ">
-              <Activity className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 rounded-xl bg-[var(--primary-fill)] flex items-center justify-center shadow-lg ">
+              <Activity className="w-5 h-5 text-[var(--on-primary)]" />
             </div>
-            <span className="text-xl font-black tracking-tight text-white">
+            <span className="text-xl font-black tracking-tight text-[var(--text-primary)]">
               Odonto<span className="text-[var(--primary)]">Soft</span>
             </span>
-            <span className="ml-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--primary-subtle)]/10 text-[var(--primary)] border border-[var(--primary)]/30 tracking-wider uppercase">
+            <span className="ml-1 text-xs font-bold px-2 py-0.5 rounded bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30 tracking-wider uppercase">
               B2B SaaS
             </span>
           </Link>
@@ -156,7 +156,7 @@ export default function PlanosPage() {
             </Link>
             <button
               onClick={() => abrirCheckout('premium')}
-              className="text-sm font-bold bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-95 text-[var(--on-primary)] px-4 py-2 rounded-lg transition-all  flex items-center gap-1.5"
+              className="text-sm font-bold bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-95 text-[var(--on-primary)] px-4 py-2 rounded-lg transition-all  flex items-center gap-1.5"
             >
               Começar Agora
               <ArrowRight className="w-4 h-4" />
@@ -191,7 +191,7 @@ export default function PlanosPage() {
               type="button"
               onClick={() => setAnual(false)}
               className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
-                !anual ? 'bg-[var(--primary)] text-[var(--on-primary)] shadow-md' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                !anual ? 'bg-[var(--primary-fill)] text-[var(--on-primary)] shadow-md' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               }`}
             >
               Mensal
@@ -200,11 +200,11 @@ export default function PlanosPage() {
               type="button"
               onClick={() => setAnual(true)}
               className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
-                anual ? 'bg-[var(--primary)] text-[var(--on-primary)] shadow-md' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                anual ? 'bg-[var(--primary-fill)] text-[var(--on-primary)] shadow-md' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               }`}
             >
               Anual
-              <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full font-extrabold">
+              <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full font-extrabold">
                 20% OFF
               </span>
             </button>
@@ -268,7 +268,7 @@ export default function PlanosPage() {
 
           {/* Plano Premium (Destaque) */}
           <div className="rounded-2xl border-2 border-[var(--primary)]/40 bg-[var(--bg-surface)] p-8 flex flex-col justify-between shadow-md dark:shadow-none relative">
-            <div className="absolute -top-3.5 right-8 bg-[var(--primary)] text-[var(--on-primary)] text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5">
+            <div className="absolute -top-3.5 right-8 bg-[var(--primary-fill)] text-[var(--on-primary)] text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
               Recomendado para Clínicas
             </div>
@@ -315,7 +315,7 @@ export default function PlanosPage() {
 
             <button
               onClick={() => abrirCheckout('premium')}
-              className="w-full py-3.5 px-4 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-95 text-[var(--on-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2 shadow-lg "
+              className="w-full py-3.5 px-4 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-95 text-[var(--on-primary)] font-bold text-sm transition-all text-center flex items-center justify-center gap-2 shadow-lg "
             >
               Contratar com Blindagem Total
               <Zap className="w-4 h-4 fill-white" />
@@ -495,7 +495,7 @@ export default function PlanosPage() {
                 <button
                   type="submit"
                   disabled={carregandoCheckout}
-                  className="w-full py-3 px-4 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-[var(--on-primary)] font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg "
+                  className="w-full py-3 px-4 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:opacity-50 text-[var(--on-primary)] font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg "
                 >
                   {carregandoCheckout ? (
                     <>
@@ -511,7 +511,7 @@ export default function PlanosPage() {
                 </button>
               </div>
 
-              <p className="text-[11px] text-[var(--text-muted)] text-center pt-2">
+              <p className="text-xs text-[var(--text-muted)] text-center pt-2">
                 Ao continuar, você concorda com nossos{' '}
                 <Link href="/termos-de-uso" target="_blank" className="text-[var(--primary)] hover:underline">
                   Termos de Uso

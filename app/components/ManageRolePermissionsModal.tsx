@@ -146,7 +146,7 @@ export default function ManageRolePermissionsModal({
                   type="button"
                   onClick={() => handleToggle(perm.id)}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 focus:ring-offset-2 ${
-                    perm.enabled ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'
+                    perm.enabled ? 'bg-[var(--primary-fill)]' : 'bg-[var(--border)]'
                   } ${role === 'admin' ? 'opacity-50 cursor-not-allowed' : ''}`}
                   role="switch"
                   aria-checked={perm.enabled}
@@ -174,7 +174,7 @@ export default function ManageRolePermissionsModal({
           <button
             onClick={handleSave}
             disabled={isSaving || role === 'admin'}
-            className="flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm transition-all "
+            className="flex items-center gap-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm transition-all "
           >
             {isSaving ? (
               <span className="flex items-center gap-2">

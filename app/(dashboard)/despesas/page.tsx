@@ -124,7 +124,7 @@ export default function Despesas() {
           <button 
             onClick={salvarDespesa} 
             disabled={!descricao.trim() || !valor || !dataVencimento}
-            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-4 py-2 rounded-md text-sm font-semibold transition-colors disabled:opacity-50 mt-2"
+            className="w-full bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-4 py-2 rounded-md text-sm font-semibold transition-colors disabled:opacity-50 mt-2"
           >
             Lançar Despesa
           </button>
@@ -179,7 +179,7 @@ export default function Despesas() {
                     <td className="py-2 px-3 border-r border-[var(--border)] text-[var(--text-secondary)] capitalize">{d.categoria || '—'}</td>
                     <td className="py-2 px-3 border-r border-[var(--border)] text-[var(--text-secondary)]">{d.data_vencimento ? new Date(d.data_vencimento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
                     <td className="py-2 px-3 border-r border-[var(--border)] text-[var(--text-secondary)]">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${
                         d.status === 'pendente' ? 'bg-amber-100 text-amber-800' : 
                         d.status === 'pago' ? 'bg-emerald-100 text-emerald-800' : 
                         'bg-[var(--bg-surface)] text-[var(--text-secondary)]'

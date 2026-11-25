@@ -419,7 +419,7 @@ export default function Pacientes() {
                 <span className="text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider">
                   Total
                 </span>
-                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30   ">
+                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30   ">
                   Base Ativa
                 </span>
               </div>
@@ -431,15 +431,15 @@ export default function Pacientes() {
 
           {/* KPI 2: Novos este Mês */}
           <div className="bento-card bento-card-interactive p-6 rounded-3xl shadow-bento flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200/70 flex items-center justify-center shrink-0 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-900/60">
+            <div className="h-12 w-12 rounded-2xl bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20 flex items-center justify-center shrink-0">
               <Sparkles className="h-6 w-6" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider">
+                <span className="text-xs font-extrabold text-[var(--text-secondary)] uppercase tracking-wider">
                   Novos este Mês
                 </span>
-                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/70 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40">
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[var(--success-bg)] text-[var(--success)] border border-[var(--success)]/30">
                   Crescimento
                 </span>
               </div>
@@ -451,15 +451,15 @@ export default function Pacientes() {
 
           {/* KPI 3: Conformidade LGPD */}
           <div className="bento-card bento-card-interactive p-6 rounded-3xl shadow-bento flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-200/70 flex items-center justify-center shrink-0 dark:bg-teal-950/50 dark:text-teal-400 dark:border-teal-900/60">
+            <div className="h-12 w-12 rounded-2xl bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border)] flex items-center justify-center shrink-0">
               <ShieldCheck className="h-6 w-6" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider">
+                <span className="text-xs font-extrabold text-[var(--text-secondary)] uppercase tracking-wider">
                   LGPD Conforme
                 </span>
-                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200/70 dark:bg-teal-950/60 dark:text-teal-300 dark:border-teal-800/40">
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
                   {kpis.taxaLgpd}%
                 </span>
               </div>
@@ -479,7 +479,7 @@ export default function Pacientes() {
                 <span className="text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider">
                   Contato Cadastrado
                 </span>
-                <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30   ">
+                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30   ">
                   WhatsApp
                 </span>
               </div>
@@ -507,7 +507,7 @@ export default function Pacientes() {
 
           <div className="flex flex-col sm:flex-row gap-3 items-end">
             <div className="flex-1 w-full">
-              <label className="block text-[11px] font-extrabold text-[var(--text-muted)] uppercase tracking-wider mb-2">
+              <label className="block text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider mb-2">
                 Nome completo do paciente *
               </label>
               <input
@@ -524,7 +524,7 @@ export default function Pacientes() {
               onClick={adicionarPaciente}
               disabled={salvando || !nome.trim()}
               data-testid="btn-quick-adicionar-paciente"
-              className="w-full sm:w-auto bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--on-primary)] px-6 py-3 rounded-2xl transition-all font-bold text-sm h-[46px]  flex items-center justify-center gap-2 shrink-0 active:scale-95 mb-0.5"
+              className="w-full sm:w-auto bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--on-primary)] px-6 py-3 rounded-2xl transition-all font-bold text-sm h-[46px]  flex items-center justify-center gap-2 shrink-0 active:scale-95 mb-0.5"
             >
               {salvando ? (
                 <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white inline-block" />
@@ -784,7 +784,7 @@ export default function Pacientes() {
                           )}
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold text-[var(--text-secondary)] dark:text-[var(--text-muted)] bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] border border-[var(--border)]  px-2 py-1 rounded shrink-0">
+                      <span className="text-xs font-bold text-[var(--text-secondary)] dark:text-[var(--text-muted)] bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] border border-[var(--border)]  px-2 py-1 rounded shrink-0">
                         #{p.id.substring(0, 6)}
                       </span>
                     </div>
@@ -797,7 +797,7 @@ export default function Pacientes() {
                         title="WhatsApp"
                       >
                         <MessageCircle className="h-3.5 w-3.5" />
-                        <span className="text-[11px]">Zap</span>
+                        <span className="text-xs">Zap</span>
                       </button>
 
                       <button
@@ -806,7 +806,7 @@ export default function Pacientes() {
                         title="Agendar"
                       >
                         <CalendarPlus className="h-3.5 w-3.5" />
-                        <span className="text-[11px]">Agendar</span>
+                        <span className="text-xs">Agendar</span>
                       </button>
 
                       <button
@@ -815,7 +815,7 @@ export default function Pacientes() {
                         title="Prontuário"
                       >
                         <FileText className="h-3.5 w-3.5" />
-                        <span className="text-[11px]">Ficha</span>
+                        <span className="text-xs">Ficha</span>
                       </button>
 
                       <button
@@ -824,7 +824,7 @@ export default function Pacientes() {
                         title="Editar"
                       >
                         <Edit2 className="h-3.5 w-3.5" />
-                        <span className="text-[11px]">Editar</span>
+                        <span className="text-xs">Editar</span>
                       </button>
                     </div>
                   </div>

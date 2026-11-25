@@ -149,7 +149,7 @@ export default function Prontuarios() {
             <button 
               onClick={salvarProntuario} 
               disabled={!pacienteId || !descricao.trim()}
-              className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] px-4 py-2.5 rounded-md font-bold text-sm transition-colors"
+              className="w-full bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] px-4 py-2.5 rounded-md font-bold text-sm transition-colors"
             >
               Salvar Registro
             </button>
@@ -212,7 +212,7 @@ export default function Prontuarios() {
                       </td>
                       <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">
                         {p.tratamento ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)]">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)]">
                             {p.tratamento}
                           </span>
                         ) : (

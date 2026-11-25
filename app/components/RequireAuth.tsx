@@ -211,7 +211,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
           </p>
           <button
             onClick={() => supabase.auth.signOut()}
-            className="w-full py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded font-medium transition-colors"
+            className="w-full py-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] rounded font-medium transition-colors"
           >
             Sair e tentar novamente
           </button>

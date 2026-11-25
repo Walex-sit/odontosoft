@@ -105,7 +105,7 @@ export default function ImprimirReceituario() {
         <p className="text-xs text-[var(--text-secondary)]">Se o erro persistir, aguarde alguns segundos e recarregue a página.</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-[var(--primary)] text-[var(--on-primary)] rounded-lg text-sm font-medium hover:bg-[var(--primary-hover)]"
+          className="mt-4 px-4 py-2 bg-[var(--primary-fill)] text-[var(--on-primary)] rounded-lg text-sm font-medium hover:bg-[var(--primary-fill-hover)]"
         >
           Tentar novamente
         </button>
@@ -213,7 +213,7 @@ export default function ImprimirReceituario() {
       <div className="fixed top-4 right-4 print:hidden">
         <button 
           onClick={() => window.print()} 
-          className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-4 py-2 rounded-lg shadow-lg font-medium transition-colors"
+          className="bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-4 py-2 rounded-lg shadow-lg font-medium transition-colors"
         >
           Imprimir Novamente
         </button>

@@ -89,7 +89,7 @@ export default function Fornecedores() {
           <button 
             onClick={salvarFornecedor} 
             disabled={!nome.trim()}
-            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-4 py-2 rounded-md text-sm font-semibold transition-colors disabled:opacity-50 mt-2"
+            className="w-full bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-4 py-2 rounded-md text-sm font-semibold transition-colors disabled:opacity-50 mt-2"
           >
             Cadastrar
           </button>

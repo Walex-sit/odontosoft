@@ -531,7 +531,7 @@ export default function ModalConsentimentoLGPD({
                         <FileText className="h-3.5 w-3.5 text-[var(--primary)]" />
                         Termo {t.tipo} (v{t.versao})
                       </div>
-                      <p className="text-[11px] text-[var(--text-muted)] mt-1">
+                      <p className="text-xs text-[var(--text-muted)] mt-1">
                         Publicado em {new Date(t.publicado_em).toLocaleDateString('pt-BR')}
                       </p>
                     </div>
@@ -610,7 +610,7 @@ export default function ModalConsentimentoLGPD({
                 placeholder="Ex: Maria dos Santos Silva"
                 className="w-full bg-[var(--bg-surface)] border border-amber-300 dark:border-amber-700 rounded-xl px-3.5 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:ring-2 focus:ring-amber-500 outline-none"
               />
-              <p className="text-[11px] text-amber-700 dark:text-amber-300/80 mt-1">
+              <p className="text-xs text-amber-700 dark:text-amber-300/80 mt-1">
                 Obrigatório para menores de 18 anos ou titulares legalmente representados.
               </p>
             </div>
@@ -622,7 +622,7 @@ export default function ModalConsentimentoLGPD({
               <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
                 Finalidades Específicas Autorizadas
               </label>
-              <span className="text-[11px] font-medium text-[var(--text-muted)]">
+              <span className="text-xs font-medium text-[var(--text-muted)]">
                 Controle granular (Art. 8º §4º LGPD)
               </span>
             </div>
@@ -665,7 +665,7 @@ export default function ModalConsentimentoLGPD({
                           {fin.label}
                         </span>
                         <span
-                          className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                          className={`text-xs font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                             isChecked
                               ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300'
                               : 'bg-[var(--border)] text-[var(--text-secondary)] dark:bg-[var(--border)] dark:text-[var(--text-muted)]'
@@ -690,7 +690,7 @@ export default function ModalConsentimentoLGPD({
         <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] flex flex-col gap-3">
           {/* Linha superior: dica + botão de impressão */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <p className="text-[11px] text-[var(--text-muted)]">
+            <p className="text-xs text-[var(--text-muted)]">
               Ao salvar, um registro auditável de conformidade será anexado à ficha do paciente.
             </p>
             <button

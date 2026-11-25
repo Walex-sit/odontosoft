@@ -82,7 +82,7 @@ export default function NavigationProgress() {
       aria-hidden="true"
     >
       <div
-        className="h-full bg-[var(--primary)] transition-all duration-150 ease-out"
+        className="h-full bg-[var(--primary-fill)] transition-all duration-150 ease-out"
         style={{
           width: `${progress}%`,
           opacity: progress === 100 ? 0 : 1,

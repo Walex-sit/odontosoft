@@ -255,7 +255,7 @@ export default function RegisterPage() {
   const isLoading = step === 'loading' || enviandoCodigo
 
   return (
-    <div className="min-h-screen w-full flex font-sans antialiased selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
+    <div className="min-h-screen w-full flex font-sans antialiased selection:bg-[var(--primary-fill)] selection:text-[var(--on-primary)]">
       {/* ── Painel Esquerdo (visual de autoridade odontológica e SaaS) ─────── */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#0F6E7A] flex-col items-center justify-center relative overflow-hidden select-none">
         {/* Grid pontilhado suave */}
@@ -328,7 +328,7 @@ export default function RegisterPage() {
                 </div>
                 <div>
                   <p className="text-white text-xs font-semibold">{item.title}</p>
-                  <p className="text-white/85 text-[11px]">{item.desc}</p>
+                  <p className="text-white/85 text-xs">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -365,7 +365,7 @@ export default function RegisterPage() {
           {step === 'verify-code' && (
             <div className="space-y-5 animate-fadeIn">
               <div className="flex flex-col items-center text-center mb-5">
-                <div className="w-14 h-14 rounded-2xl bg-[var(--primary-subtle)]/10 border border-[var(--primary)]/30 flex items-center justify-center text-[var(--primary)] mb-3 shadow-xs">
+                <div className="w-14 h-14 rounded-2xl bg-[var(--primary-subtle)] border border-[var(--primary)]/30 flex items-center justify-center text-[var(--primary)] mb-3">
                   <KeyRound className="w-7 h-7" />
                 </div>
                 <h2 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
@@ -408,7 +408,7 @@ export default function RegisterPage() {
                     onChange={(e) => setCodigoInput(e.target.value.replace(/\D/g, ''))}
                     className="w-full text-center tracking-[0.4em] font-mono text-2xl py-3 px-4 bg-white border border-[var(--border)] focus:border-[var(--primary)]/40 focus:ring-3 focus:ring-[var(--primary)]/20 rounded-xl font-bold text-[var(--text-primary)] outline-none transition-all shadow-2xs"
                   />
-                  <p className="mt-1.5 text-[11px] text-[var(--text-muted)] text-center">
+                  <p className="mt-1.5 text-xs text-[var(--text-muted)] text-center">
                     Código válido por 15 minutos.
                   </p>
                 </div>
@@ -416,7 +416,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={isLoading || codigoInput.length !== 6}
-                  className="w-full flex items-center justify-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-[0.99] disabled:opacity-50 text-[var(--on-primary)] py-3 rounded-xl font-bold text-sm shadow-sm transition-all cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-[0.99] disabled:opacity-50 text-[var(--on-primary)] py-3 rounded-xl font-bold text-sm shadow-sm transition-all cursor-pointer"
                 >
                   {isLoading ? (
                     <>
@@ -459,7 +459,7 @@ export default function RegisterPage() {
             <>
               {/* Header do Formulário */}
               <div className="flex flex-col items-center mb-6 text-center">
-                <div className="w-13 h-13 rounded-2xl bg-[var(--primary)] flex items-center justify-center shadow-sm mb-3.5">
+                <div className="w-13 h-13 rounded-2xl bg-[var(--primary-fill)] flex items-center justify-center shadow-sm mb-3.5">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 2C8.5 2 5 5.5 5 9c0 3 2 5.5 4 7l1 5h4l1-5c2-1.5 4-4 4-7 0-3.5-3.5-7-7-7z" />
                     <path d="M9 9h6M12 6v6" />
@@ -498,7 +498,7 @@ export default function RegisterPage() {
                       <div className="mt-3 flex items-center gap-2">
                         <Link
                           href={`/login`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-xs font-semibold shadow-xs transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] text-xs font-semibold shadow-xs transition-colors"
                         >
                           Iniciar sessão
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -639,7 +639,7 @@ export default function RegisterPage() {
                   </div>
 
                   {formData.senha.length > 0 && (
-                    <div className="mt-2 p-2 bg-[var(--bg-base)] border border-[var(--border)] rounded-lg flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
+                    <div className="mt-2 p-2 bg-[var(--bg-base)] border border-[var(--border)] rounded-lg flex items-center justify-between text-xs text-[var(--text-secondary)]">
                       <span className={`flex items-center gap-1 ${senhaValidaTamanho ? 'text-[var(--success)] font-medium' : 'text-[var(--text-secondary)]'}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${senhaValidaTamanho ? 'bg-[var(--success)]' : 'bg-[var(--border-medium)]'}`} />
                         8+ caracteres
@@ -715,7 +715,7 @@ export default function RegisterPage() {
                   id="register-submit"
                   data-testid="btn-register-submit"
                   disabled={isLoading}
-                  className="w-full flex items-center justify-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-[0.99] disabled:opacity-65 text-[var(--on-primary)] py-3 rounded-xl font-bold text-sm shadow-sm transition-all cursor-pointer mt-2"
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-[0.99] disabled:opacity-65 text-[var(--on-primary)] py-3 rounded-xl font-bold text-sm shadow-sm transition-all cursor-pointer mt-2"
                 >
                   {isLoading ? (
                     <>
@@ -743,7 +743,7 @@ export default function RegisterPage() {
               </p>
 
               {/* Rodapé de Segurança e LGPD */}
-              <div className="mt-5 pt-4 border-t border-[var(--border)]/60 flex items-center justify-center gap-1.5 text-center text-[11px] text-[var(--text-muted)]">
+              <div className="mt-5 pt-4 border-t border-[var(--border)]/60 flex items-center justify-center gap-1.5 text-center text-xs text-[var(--text-muted)]">
                 <ShieldCheck className="w-3.5 h-3.5 text-[var(--text-muted)] shrink-0" />
                 <span>Dados encriptados e isolados com conformidade CFO/LGPD.</span>
               </div>

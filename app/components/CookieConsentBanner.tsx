@@ -59,7 +59,7 @@ export default function CookieConsentBanner() {
             <div className="flex items-center justify-between gap-2">
               <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-1.5">
                 Privacidade & Cookies
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50">
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50">
                   <Shield className="w-3 h-3" />
                   LGPD
                 </span>
@@ -88,7 +88,7 @@ export default function CookieConsentBanner() {
               <button
                 type="button"
                 onClick={aceitar}
-                className="flex-1 px-3.5 py-2 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-[0.98] text-[var(--on-primary)] text-xs font-bold transition-all"
+                className="flex-1 px-3.5 py-2 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-[0.98] text-[var(--on-primary)] text-xs font-bold transition-all"
               >
                 Entendi e Aceito
               </button>

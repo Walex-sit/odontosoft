@@ -35,7 +35,7 @@ const plans = [
       'Suporte prioritário via WhatsApp'
     ],
     popular: true,
-    buttonStyle: 'bg-[var(--primary)] text-[var(--on-primary)] hover:bg-[var(--primary-hover)] shadow-[0_4px_12px_rgba(37,99,235,0.2)] border border-transparent'
+    buttonStyle: 'bg-[var(--primary-fill)] text-[var(--on-primary)] hover:bg-[var(--primary-fill-hover)] border border-transparent'
   },
   {
     id: 'avancado',
@@ -52,7 +52,7 @@ const plans = [
       'API Aberta para integrações'
     ],
     popular: false,
-    buttonStyle: 'bg-[var(--primary)] text-[var(--on-primary)] hover:bg-[var(--primary-hover)] shadow-md border border-transparent'
+    buttonStyle: 'bg-[var(--primary-fill)] text-[var(--on-primary)] hover:bg-[var(--primary-fill-hover)] border border-transparent'
   }
 ]
 
@@ -109,7 +109,7 @@ export default function SubscriptionPage() {
                   className={`px-6 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${billingCycle === 'annual' ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
                 >
                   Anual
-                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider">-20%</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs uppercase tracking-wider">-20%</span>
                 </button>
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function SubscriptionPage() {
                 >
                   {plan.popular && (
                     <div className="absolute -top-4 left-0 right-0 flex justify-center">
-                      <span className="bg-[var(--primary)] text-[var(--on-primary)] px-4 py-1 rounded-full text-xs font-bold shadow-md uppercase tracking-wider">
+                      <span className="bg-[var(--primary-fill)] text-[var(--on-primary)] px-4 py-1 rounded-full text-xs font-bold shadow-md uppercase tracking-wider">
                         Mais Escolhido
                       </span>
                     </div>
@@ -211,7 +211,7 @@ export default function SubscriptionPage() {
               </div>
               <button 
                 onClick={() => setStep(1)}
-                className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] font-bold text-sm rounded-xl py-3.5 transition-colors shadow-md"
+                className="w-full bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] font-bold text-sm rounded-xl py-3.5 transition-colors shadow-md"
               >
                 Retornar à Seleção de Planos
               </button>

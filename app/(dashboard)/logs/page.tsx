@@ -24,12 +24,12 @@ import { EmptyState } from '@/app/components/ui/EmptyState'
 import { ErrorState } from '@/app/components/ui/ErrorState'
 
 const ACTION_STYLES: Record<string, { bg: string; text: string; border: string; label: string }> = {
-  criacao: { bg: 'bg-emerald-50 dark:bg-emerald-950/40', text: 'text-emerald-700 dark:text-emerald-300', border: 'border-emerald-200/70 dark:border-emerald-800/60', label: 'Criação' },
-  edicao: { bg: 'bg-[var(--primary-subtle)]', text: 'text-[var(--primary)]', border: 'border-[var(--primary)]/30', label: 'Edição' },
-  exclusao: { bg: 'bg-red-50 dark:bg-red-950/40', text: 'text-red-700 dark:text-red-300', border: 'border-red-200/70 dark:border-red-800/60', label: 'Exclusão' },
-  financeiro: { bg: 'bg-amber-50 dark:bg-amber-950/40', text: 'text-amber-700 dark:text-amber-300', border: 'border-amber-200/70 dark:border-amber-800/60', label: 'Financeiro' },
-  login: { bg: 'bg-[var(--primary)] ', text: 'text-[var(--primary)] ', border: 'border-[var(--primary)]/30 ', label: 'Acesso (Login)' },
-  logout: { bg: 'bg-[var(--bg-base)] dark:bg-[var(--bg-surface)]', text: 'text-[var(--text-secondary)]', border: 'border-[var(--border)] ', label: 'Logout' },
+  criacao: { bg: 'bg-[var(--bg-surface)]', text: 'text-[var(--success)]', border: 'border-[var(--success)]/45', label: 'Criação' },
+  edicao: { bg: 'bg-[var(--bg-surface)]', text: 'text-[var(--primary)]', border: 'border-[var(--primary)]/45', label: 'Edição' },
+  exclusao: { bg: 'bg-[var(--bg-surface)]', text: 'text-[var(--error)]', border: 'border-[var(--error)]/45', label: 'Exclusão' },
+  financeiro: { bg: 'bg-[var(--bg-surface)]', text: 'text-[var(--warning)]', border: 'border-[var(--warning)]/45', label: 'Financeiro' },
+  login: { bg: 'bg-[var(--bg-surface)]', text: 'text-[var(--primary)]', border: 'border-[var(--primary)]/45', label: 'Acesso (Login)' },
+  logout: { bg: 'bg-[var(--bg-surface)]', text: 'text-[var(--text-secondary)]', border: 'border-[var(--border)]', label: 'Logout' },
 }
 
 export default function LogsPage() {
@@ -132,7 +132,7 @@ export default function LogsPage() {
       <div className="px-6 sm:px-8 pt-7 pb-4 shrink-0 bg-[var(--bg-surface)] border-b border-[var(--border)]/80 ">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 max-w-7xl mx-auto">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30 mb-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30 mb-2">
               <ShieldCheck className="h-3.5 w-3.5" />
               Conformidade LGPD &amp; Rastreabilidade
             </div>
@@ -213,7 +213,7 @@ export default function LogsPage() {
                 <span className="text-xs font-bold text-[var(--text-muted)]">
                   Exibindo {logsFiltrados.length} evento(s) auditado(s)
                 </span>
-                <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-200/60 dark:border-emerald-800/60">
+                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-200/60 dark:border-emerald-800/60">
                   RLS Ativo por Clínica
                 </span>
               </div>
@@ -270,7 +270,7 @@ export default function LogsPage() {
                             </td>
                             <td className="px-5 py-3.5 whitespace-nowrap">
                               <span
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${style.bg} ${style.text} ${style.border}`}
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${style.bg} ${style.text} ${style.border}`}
                               >
                                 {style.label}
                               </span>
@@ -342,28 +342,28 @@ export default function LogsPage() {
             <div className="p-6 overflow-y-auto space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3 p-4 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] rounded-2xl border border-[var(--border)]/60 ">
                 <div>
-                  <span className="font-bold text-[var(--text-muted)] uppercase text-[10px] block">Ação</span>
+                  <span className="font-bold text-[var(--text-muted)] uppercase text-xs block">Ação</span>
                   <span className="font-extrabold text-[var(--text-primary)] capitalize">{selectedLog.action}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-[var(--text-muted)] uppercase text-[10px] block">Entidade</span>
+                  <span className="font-bold text-[var(--text-muted)] uppercase text-xs block">Entidade</span>
                   <span className="font-extrabold text-[var(--text-primary)] capitalize">{selectedLog.entity}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-[var(--text-muted)] uppercase text-[10px] block">Data / Hora</span>
+                  <span className="font-bold text-[var(--text-muted)] uppercase text-xs block">Data / Hora</span>
                   <span className="font-semibold text-[var(--text-secondary)]">{new Date(selectedLog.created_at).toLocaleString('pt-BR')}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-[var(--text-muted)] uppercase text-[10px] block">Usuário</span>
+                  <span className="font-bold text-[var(--text-muted)] uppercase text-xs block">Usuário</span>
                   <span className="font-semibold text-[var(--text-secondary)]">{selectedLog.user_nome || 'Sistema'}</span>
                 </div>
               </div>
 
               <div>
-                <span className="font-bold text-[var(--text-muted)] uppercase text-[11px] block mb-2">
+                <span className="font-bold text-[var(--text-muted)] uppercase text-xs block mb-2">
                   Metadados e Carga Útil (Payload JSON)
                 </span>
-                <pre className="p-4 bg-[var(--bg-base)] text-[var(--text-primary)] rounded-2xl text-[11px] font-mono overflow-x-auto leading-relaxed border border-[var(--border)]">
+                <pre className="p-4 bg-[var(--bg-base)] text-[var(--text-primary)] rounded-2xl text-xs font-mono overflow-x-auto leading-relaxed border border-[var(--border)]">
                   {JSON.stringify(selectedLog.details, null, 2)}
                 </pre>
               </div>
@@ -372,7 +372,7 @@ export default function LogsPage() {
             <div className="p-5 border-t border-[var(--border)] bg-[var(--bg-base)] dark:bg-[var(--bg-base)] flex justify-end">
               <button
                 onClick={() => setSelectedLog(null)}
-                className="px-5 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-xs font-bold rounded-xl transition-all"
+                className="px-5 py-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] text-xs font-bold rounded-xl transition-all"
               >
                 Fechar
               </button>

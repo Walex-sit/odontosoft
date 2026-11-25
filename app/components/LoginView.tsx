@@ -207,7 +207,7 @@ export default function LoginView() {
               type="submit"
               data-testid="btn-login-submit"
               disabled={carregando}
-              className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-[0.99] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] py-3 rounded-lg font-semibold text-base transition-all mt-4"
+              className="w-full bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-[0.99] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] py-3 rounded-lg font-semibold text-base transition-all mt-4"
             >
               {carregando ? 'Entrando...' : 'Entrar'}
             </button>

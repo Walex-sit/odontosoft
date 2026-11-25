@@ -89,7 +89,7 @@ export default function TrialExpiradoPage() {
                 <p className="text-xs text-[var(--text-muted)] mt-1">Até 3 profissionais</p>
               </div>
               <div className="p-4 rounded-2xl border border-[var(--primary)]/30 bg-[var(--primary)]/5 text-center relative">
-                <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-[var(--primary)] text-[var(--on-primary)] text-[10px] font-extrabold uppercase tracking-wider">
+                <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-[var(--primary-fill)] text-[var(--on-primary)] text-xs font-extrabold uppercase tracking-wider">
                   RECOMENDADO
                 </span>
                 <p className="text-xs font-bold text-[var(--primary)] uppercase tracking-wider mb-1">Premium</p>
@@ -104,7 +104,7 @@ export default function TrialExpiradoPage() {
             <div className="space-y-3">
               <Link
                 href="/planos"
-                className="w-full flex items-center justify-center gap-2.5 px-6 py-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] font-extrabold text-sm rounded-2xl transition-all shadow-lg  hover: hover:-translate-y-0.5"
+                className="w-full flex items-center justify-center gap-2.5 px-6 py-4 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] font-extrabold text-sm rounded-2xl transition-all shadow-lg  hover: hover:-translate-y-0.5"
               >
                 <CreditCard className="h-5 w-5" />
                 Activar Assinatura Agora

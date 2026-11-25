@@ -180,7 +180,7 @@ export default function ComissoesPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsCommissionModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-xl text-sm font-bold shadow-sm transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] rounded-xl text-sm font-bold shadow-sm transition-colors"
             >
               <Percent className="h-4 w-4" /> Configurar Comissões
             </button>
@@ -191,15 +191,15 @@ export default function ComissoesPage() {
       <main className="flex-1 p-8 max-w-7xl mx-auto w-full space-y-6">
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]  p-5 shadow-sm col-span-2 md:col-span-1">
-            <div className="p-2.5 bg-amber-50 text-amber-600 rounded-xl w-fit mb-3"><DollarSign className="h-5 w-5" /></div>
+          <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] p-5 shadow-sm col-span-2 md:col-span-1">
+            <div className="p-2.5 bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border)] rounded-xl w-fit mb-3"><DollarSign className="h-5 w-5" /></div>
             <p className="text-2xl font-extrabold text-[var(--text-primary)]">R$ {totalPendente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-            <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">A Repassar</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)] mt-1">A Repassar</p>
           </div>
-          <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]  p-5 shadow-sm col-span-2 md:col-span-1">
-            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl w-fit mb-3"><CheckCircle2 className="h-5 w-5" /></div>
+          <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] p-5 shadow-sm col-span-2 md:col-span-1">
+            <div className="p-2.5 bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20 rounded-xl w-fit mb-3"><CheckCircle2 className="h-5 w-5" /></div>
             <p className="text-2xl font-extrabold text-[var(--text-primary)]">R$ {totalPago.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-            <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">Já Repassado</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)] mt-1">Já Repassado</p>
           </div>
           <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]  p-5 shadow-sm col-span-2 md:col-span-1">
             <div className="p-2.5 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-xl w-fit mb-3"><Users className="h-5 w-5" /></div>
@@ -277,7 +277,7 @@ export default function ComissoesPage() {
           </select>
           <div className="flex gap-2">
             {(['todos', 'pendente', 'pago'] as const).map(s => (
-              <button key={s} onClick={() => setFiltroStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors capitalize ${filtroStatus === s ? 'bg-[var(--primary)] text-[var(--on-primary)]' : 'bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]'}`}>{s === 'todos' ? 'Todos' : s === 'pendente' ? 'Pendente' : 'Pago'}</button>
+              <button key={s} onClick={() => setFiltroStatus(s)} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors capitalize ${filtroStatus === s ? 'bg-[var(--primary-fill)] text-[var(--on-primary)]' : 'bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--border)]'}`}>{s === 'todos' ? 'Todos' : s === 'pendente' ? 'Pendente' : 'Pago'}</button>
             ))}
           </div>
         </div>

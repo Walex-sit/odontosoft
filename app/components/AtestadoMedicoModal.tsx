@@ -188,7 +188,7 @@ export default function AtestadoMedicoModal({ isOpen, onClose }: AtestadoMedicoM
       >
         
         {/* Header */}
-        <div className="bg-[var(--primary)] text-[var(--on-primary)] p-5 flex items-center justify-between shrink-0">
+        <div className="bg-[var(--primary-fill)] text-[var(--on-primary)] p-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-black/10 rounded-xl">
               <Award className="h-6 w-6 text-[var(--on-primary)]" />
@@ -246,7 +246,7 @@ export default function AtestadoMedicoModal({ isOpen, onClose }: AtestadoMedicoM
                         key={p.id}
                         type="button"
                         onClick={() => handleSelectPaciente(p)}
-                        className="w-full text-left px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--primary)] dark:hover:bg-[var(--bg-surface)] transition-colors border-b border-[var(--border)]  last:border-0"
+                        className="w-full text-left px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors border-b border-[var(--border)] last:border-0"
                       >
                         <span className="font-medium">{p.nome}</span>
                         {p.cpf_mascarado && <span className="text-xs text-[var(--text-muted)] block">CPF: {p.cpf_mascarado}</span>}
@@ -352,7 +352,7 @@ export default function AtestadoMedicoModal({ isOpen, onClose }: AtestadoMedicoM
           <button
             onClick={() => handleGerar(true)}
             disabled={isLoading || !selectedPaciente}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary)] disabled:bg-[var(--primary)] text-[var(--on-primary)] rounded-xl text-sm font-bold shadow-sm dark:shadow-none transition-all"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:opacity-50 text-[var(--on-primary)] rounded-xl text-sm font-bold shadow-sm dark:shadow-none transition-all"
           >
             {isLoading ? (
               <span className="flex items-center gap-2">

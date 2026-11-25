@@ -87,7 +87,7 @@ export default function SuperAdminAssinaturasPage() {
           <div className="bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border)] shadow-2xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[var(--text-secondary)]">Assinaturas Ativas</span>
-              <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+              <div className="p-2 rounded-xl bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20">
                 <CheckCircle2 className="h-4 w-4" />
               </div>
             </div>
@@ -95,14 +95,14 @@ export default function SuperAdminAssinaturasPage() {
               <span className="text-2xl sm:text-3xl font-black text-[var(--text-primary)]">
                 {totalAtivas}
               </span>
-              <span className="text-xs text-emerald-600 font-bold">pagantes</span>
+              <span className="text-xs text-[var(--success)] font-bold">pagantes</span>
             </div>
           </div>
 
           <div className="bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border)] shadow-2xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[var(--text-secondary)]">Período de Trial</span>
-              <div className="p-2 rounded-xl bg-[var(--primary-subtle)]/10 text-[var(--primary)]">
+              <div className="p-2 rounded-xl bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20">
                 <Clock className="h-4 w-4" />
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function SuperAdminAssinaturasPage() {
           <div className="bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border)] shadow-2xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[var(--text-secondary)]">Inadimplentes / Atraso</span>
-              <div className="p-2 rounded-xl bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400">
+              <div className="p-2 rounded-xl bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border)]">
                 <AlertTriangle className="h-4 w-4" />
               </div>
             </div>
@@ -125,7 +125,7 @@ export default function SuperAdminAssinaturasPage() {
               <span className="text-2xl sm:text-3xl font-black text-[var(--text-primary)]">
                 {totalInadimplentes}
               </span>
-              <span className="text-xs text-red-600 font-bold">pendências</span>
+              <span className="text-xs text-[var(--error)] font-bold">pendências</span>
             </div>
           </div>
         </div>
@@ -148,7 +148,7 @@ export default function SuperAdminAssinaturasPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs sm:text-sm">
                 <thead>
-                  <tr className="border-b border-[var(--border)] bg-[var(--bg-base)] text-[11px] font-extrabold uppercase text-[var(--text-secondary)] tracking-wider">
+                  <tr className="border-b border-[var(--border)] bg-[var(--bg-base)] text-xs font-extrabold uppercase text-[var(--text-secondary)] tracking-wider">
                     <th className="px-5 py-3">Clínica</th>
                     <th className="px-5 py-3">Plano</th>
                     <th className="px-5 py-3">Status Assinatura</th>
@@ -175,12 +175,12 @@ export default function SuperAdminAssinaturasPage() {
                         </td>
                         <td className="px-5 py-3.5">
                           <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${
+                            className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-extrabold uppercase border ${
                               c.status_assinatura === 'ativo'
-                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
+                                ? 'bg-[var(--bg-surface)] text-[var(--success)] border-[var(--success)]/45'
                                 : c.status_assinatura === 'trial'
-                                ? 'bg-[var(--primary-subtle)]/5 text-[var(--primary)]'
-                                : 'bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300'
+                                ? 'bg-[var(--bg-surface)] text-[var(--primary)] border-[var(--primary)]/45'
+                                : 'bg-[var(--bg-surface)] text-[var(--error)] border-[var(--error)]/45'
                             }`}
                           >
                             {c.status_assinatura}
@@ -189,10 +189,10 @@ export default function SuperAdminAssinaturasPage() {
                         <td className="px-5 py-3.5 text-[var(--text-secondary)] text-xs">
                           {c.trial_ends_at ? formatDate(c.trial_ends_at) : '—'}
                         </td>
-                        <td className="px-5 py-3.5 font-mono text-[11px] text-[var(--text-secondary)]">
+                        <td className="px-5 py-3.5 font-mono text-xs text-[var(--text-secondary)]">
                           {c.stripe_customer_id || '—'}
                         </td>
-                        <td className="px-5 py-3.5 text-right font-mono text-[11px] text-[var(--text-secondary)]">
+                        <td className="px-5 py-3.5 text-right font-mono text-xs text-[var(--text-secondary)]">
                           {c.stripe_subscription_id || '—'}
                         </td>
                       </tr>

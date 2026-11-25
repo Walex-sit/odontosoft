@@ -59,7 +59,7 @@ export function TrialBanner() {
         icon: 'text-[var(--primary)]',
         texto: 'text-[var(--text-primary)]',
         subtexto: 'text-[var(--text-secondary)]',
-        cta: 'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)]',
+        cta: 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]',
         fechar: 'text-[var(--primary)] hover:text-[var(--text-primary)]',
       }
 

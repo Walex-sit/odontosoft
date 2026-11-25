@@ -259,7 +259,7 @@ export default function EditPatientModal({ isOpen, onClose, onSuccess, patient }
             type="submit"
             form="edit-patient-form"
             disabled={salvando}
-            className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-6 py-2.5 rounded-xl font-bold shadow-sm transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-6 py-2.5 rounded-xl font-bold shadow-sm transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {salvando ? (
               <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white inline-block" />

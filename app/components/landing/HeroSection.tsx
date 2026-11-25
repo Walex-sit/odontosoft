@@ -42,7 +42,7 @@ export default function HeroSection() {
         style={{ '--delay': '0ms' } as React.CSSProperties}
       >
         <div className="inline-flex items-center gap-2 bg-[var(--primary-subtle)] border border-[var(--primary)]/40 text-[var(--primary)] text-xs font-semibold px-4 py-1.5 rounded-full">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary-fill)] animate-pulse" />
           Novo: Odontograma digital interativo
         </div>
       </div>
@@ -54,7 +54,7 @@ export default function HeroSection() {
         style={{ '--delay': '80ms' } as React.CSSProperties}
       >
         A gestão da sua clínica odontológica,{' '}
-        <span className="text-transparent bg-clip-text bg-[var(--primary)]">
+        <span className="text-[var(--primary)]">
           simples e previsível.
         </span>
       </h1>
@@ -78,7 +78,7 @@ export default function HeroSection() {
         <Link
           href="/register"
           id="hero-cta-primary"
-          className="inline-flex items-center gap-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] font-semibold px-8 py-3.5 rounded-2xl transition-all duration-200 active:scale-95 text-base"
+          className="inline-flex items-center gap-2.5 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] font-semibold px-8 py-3.5 rounded-2xl transition-all duration-200 active:scale-95 text-base"
         >
           Testar OdontoSoft Grátis
           <svg
@@ -161,12 +161,12 @@ export default function HeroSection() {
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                   <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
-                <span className="text-[11px] font-mono text-[var(--text-secondary)] font-medium">app.odontosoft.com.br</span>
-                <span className="text-[11px] font-mono text-[var(--primary)] font-semibold">/{mockupView}</span>
+                <span className="text-xs font-mono text-[var(--text-secondary)] font-medium">app.odontosoft.com.br</span>
+                <span className="text-xs font-mono text-[var(--primary)] font-semibold">/{mockupView}</span>
               </div>
               <div className="hidden sm:flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span className="text-[10px] text-[var(--text-muted)] font-medium">v2.4 Live</span>
+                <span className="text-xs text-[var(--text-muted)] font-medium">v2.4 Live</span>
               </div>
             </div>
 
@@ -175,7 +175,7 @@ export default function HeroSection() {
               <button
                 type="button"
                 onClick={() => setMockupView('agenda')}
-                className={`px-2.5 py-1 rounded-md text-[11px] transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md text-xs transition-all cursor-pointer ${
                   mockupView === 'agenda'
                     ? 'bg-white text-[var(--primary)] shadow-2xs font-bold'
                     : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -187,7 +187,7 @@ export default function HeroSection() {
               <button
                 type="button"
                 onClick={() => setMockupView('dashboard')}
-                className={`px-2.5 py-1 rounded-md text-[11px] transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md text-xs transition-all cursor-pointer ${
                   mockupView === 'dashboard'
                     ? 'bg-white text-[var(--primary)] shadow-2xs font-bold'
                     : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -205,7 +205,7 @@ export default function HeroSection() {
             <div className="flex items-center gap-3 sm:gap-6">
               {/* Logo OdontoSoft */}
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[var(--primary)] flex items-center justify-center text-[var(--on-primary)] ">
+                <div className="w-8 h-8 rounded-xl bg-[var(--primary-fill)] flex items-center justify-center text-[var(--on-primary)] ">
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 2C8.5 2 6 4.5 6 8c0 3.5 1.5 6.5 2.5 10 .5 1.8 1.5 4 3.5 4s3-2.2 3.5-4c1-3.5 2.5-6.5 2.5-10 0-3.5-2.5-6-6-6z" />
                     <path d="M9 9c1-1 2.5-1.5 3-1.5s2 .5 3 1.5" />
@@ -213,7 +213,7 @@ export default function HeroSection() {
                 </div>
                 <div className="hidden xs:flex flex-col">
                   <span className="text-sm font-extrabold tracking-tight text-[var(--text-primary)] leading-tight">OdontoSoft</span>
-                  <span className="text-[10px] text-[var(--primary)] font-bold uppercase tracking-wider">Cloud Suite</span>
+                  <span className="text-xs text-[var(--primary)] font-bold uppercase tracking-wider">Cloud Suite</span>
                 </div>
               </div>
 
@@ -221,7 +221,7 @@ export default function HeroSection() {
               <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] text-xs">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span className="font-semibold text-[var(--text-primary)]">Clínica Sorriso & Arte</span>
-                <span className="px-1.5 py-0.2 rounded bg-[var(--primary-subtle)] text-[10px] font-extrabold text-[var(--primary)]">ADMIN</span>
+                <span className="px-1.5 py-0.2 rounded bg-[var(--primary-subtle)] text-xs font-extrabold text-[var(--primary)]">ADMIN</span>
                 <svg className="w-3.5 h-3.5 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -266,7 +266,7 @@ export default function HeroSection() {
                   <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35" />
                 </svg>
                 <span className="flex-1 truncate">Buscar paciente, CPF...</span>
-                <kbd className="px-1.5 py-0.5 rounded bg-white border border-[var(--border)] text-[10px] font-mono text-[var(--text-muted)] font-bold">⌘K</kbd>
+                <kbd className="px-1.5 py-0.5 rounded bg-white border border-[var(--border)] text-xs font-mono text-[var(--text-muted)] font-bold">⌘K</kbd>
               </div>
 
               {/* Status do WhatsApp Bot */}
@@ -275,7 +275,7 @@ export default function HeroSection() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span className="text-[11px] font-bold">WhatsApp Ativo</span>
+                <span className="text-xs font-bold">WhatsApp Ativo</span>
               </div>
 
               {/* Sino de Notificações com Badge */}
@@ -283,17 +283,17 @@ export default function HeroSection() {
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-[var(--bg-surface)] text-[9px] text-white flex items-center justify-center font-bold">3</span>
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-[var(--bg-surface)] text-xs text-white flex items-center justify-center font-bold">3</span>
               </div>
 
               {/* Avatar do Dentista / Administrador */}
               <div className="flex items-center gap-2 pl-1 sm:pl-2 border-l border-[var(--border)]">
-                <div className="w-8 h-8 rounded-xl bg-[var(--primary)] flex items-center justify-center text-[var(--on-primary)] text-xs font-extrabold shadow-sm">
+                <div className="w-8 h-8 rounded-xl bg-[var(--primary-fill)] flex items-center justify-center text-[var(--on-primary)] text-xs font-extrabold shadow-sm">
                   BS
                 </div>
                 <div className="hidden xl:flex flex-col text-left">
                   <span className="text-xs font-bold text-[var(--text-primary)] leading-tight">Dra. Beatriz Santos</span>
-                  <span className="text-[10px] text-[var(--text-muted)] font-medium">Resp. Técnica</span>
+                  <span className="text-xs text-[var(--text-muted)] font-medium">Resp. Técnica</span>
                 </div>
               </div>
             </div>
@@ -309,7 +309,7 @@ export default function HeroSection() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="text-base sm:text-lg font-extrabold text-[var(--text-primary)] tracking-tight">Agenda Clínica</h2>
-                    <span className="hidden xs:inline-block px-2.5 py-0.5 rounded-full bg-[var(--primary-subtle)] text-[var(--primary)] text-[10px] font-bold">
+                    <span className="hidden xs:inline-block px-2.5 py-0.5 rounded-full bg-[var(--primary-subtle)] text-[var(--primary)] text-xs font-bold">
                       Multicadeira
                     </span>
                   </div>
@@ -325,8 +325,8 @@ export default function HeroSection() {
                     {['Dia', 'Semana', 'Mês'].map((v, i) => (
                       <span
                         key={v}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] ${
-                          i === 1 ? 'bg-[var(--primary)] text-[var(--on-primary)] font-bold' : 'text-[var(--text-secondary)]'
+                        className={`px-2.5 py-1 rounded-lg text-xs ${
+                          i === 1 ? 'bg-[var(--primary-fill)] text-[var(--on-primary)] font-bold' : 'text-[var(--text-secondary)]'
                         }`}
                       >
                         {v}
@@ -344,7 +344,7 @@ export default function HeroSection() {
                   </div>
 
                   {/* Botão Novo Agendamento */}
-                  <div className="flex items-center gap-1.5 bg-[var(--primary)] text-[var(--on-primary)] rounded-xl px-3.5 py-1.5 text-xs font-bold shrink-0 cursor-default">
+                  <div className="flex items-center gap-1.5 bg-[var(--primary-fill)] text-[var(--on-primary)] rounded-xl px-3.5 py-1.5 text-xs font-bold shrink-0 cursor-default">
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.6}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
@@ -363,7 +363,7 @@ export default function HeroSection() {
                     badge: '+3 vs média',
                     color: 'text-[var(--primary)]',
                     bg: 'bg-[var(--primary-subtle)]',
-                    dot: 'bg-[var(--primary)]',
+                    dot: 'bg-[var(--primary-fill)]',
                     icon: (
                       <svg className="w-4 h-4 text-[var(--primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -405,8 +405,8 @@ export default function HeroSection() {
                     sub: '100% dos procedimentos',
                     badge: '+18% vs ontem',
                     color: 'text-[var(--primary)]',
-                    bg: 'bg-[var(--primary)]',
-                    dot: 'bg-[var(--primary)]',
+                    bg: 'bg-[var(--primary-fill)]',
+                    dot: 'bg-[var(--primary-fill)]',
                     icon: (
                       <svg className="w-4 h-4 text-[var(--primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -419,13 +419,13 @@ export default function HeroSection() {
                     className="bg-white rounded-2xl border border-[var(--border)]/80 p-3.5 sm:p-4 shadow-2xs hover:shadow-xs transition-shadow flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">{card.label}</span>
+                      <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{card.label}</span>
                       <div className={`p-1.5 rounded-lg ${card.bg}`}>{card.icon}</div>
                     </div>
                     <div className="mt-2">
                       <div className="text-xl sm:text-2xl font-black text-[var(--text-primary)] tracking-tight leading-none">{card.value}</div>
                       <div className="flex items-center gap-1.5 mt-1.5">
-                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md ${card.bg} ${card.color}`}>
+                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-1.5 py-0.5 rounded-md ${card.bg} ${card.color}`}>
                           <span className={`w-1 h-1 rounded-full ${card.dot}`} />
                           {card.badge}
                         </span>
@@ -456,18 +456,18 @@ export default function HeroSection() {
                           key={item.day}
                           className={`rounded-xl py-2 px-1 flex flex-col items-center gap-1 transition-all ${
                             item.active
-                              ? 'bg-[var(--primary)] text-[var(--on-primary)] '
+                              ? 'bg-[var(--primary-fill)] text-[var(--on-primary)] '
                               : 'bg-white border border-[var(--border)]/60 text-[var(--text-secondary)] hover:bg-[var(--bg-base)]'
                           }`}
                         >
-                          <span className={`text-[9px] font-bold ${item.active ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}>
+                          <span className={`text-xs font-bold ${item.active ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}>
                             {item.day}
                           </span>
                           <span className="text-xs sm:text-sm font-extrabold leading-none">{item.num}</span>
                           {item.count > 0 && (
                             <span
-                              className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
-                                item.active ? 'bg-[var(--primary)] text-[var(--on-primary)]' : 'bg-[var(--primary-subtle)] text-[var(--primary)]'
+                              className={`text-xs font-bold px-1.5 py-0.2 rounded-full ${
+                                item.active ? 'bg-[var(--primary-fill)] text-[var(--on-primary)]' : 'bg-[var(--primary-subtle)] text-[var(--primary)]'
                               }`}
                             >
                               {item.count}
@@ -494,7 +494,7 @@ export default function HeroSection() {
                         statusDot: 'bg-emerald-500',
                         value: 'R$ 220',
                         avatar: 'MS',
-                        avatarBg: 'bg-[var(--primary)]',
+                        avatarBg: 'bg-[var(--primary-fill)]',
                       },
                       {
                         time: '09:45 – 11:00',
@@ -506,10 +506,10 @@ export default function HeroSection() {
                         chair: 'Cadeira 2',
                         status: 'Em Atendimento',
                         statusColor: 'bg-[var(--primary-subtle)] text-[var(--primary)] border-[var(--primary)]/30',
-                        statusDot: 'bg-[var(--primary)] animate-ping',
+                        statusDot: 'bg-[var(--primary-fill)] animate-ping',
                         value: 'R$ 1.850',
                         avatar: 'CR',
-                        avatarBg: 'bg-[var(--primary-hover)]',
+                        avatarBg: 'bg-[var(--primary-fill-hover)]',
                       },
                       {
                         time: '11:15 – 12:00',
@@ -552,11 +552,11 @@ export default function HeroSection() {
                           {/* Horário */}
                           <div className="w-20 shrink-0 text-left">
                             <span className="text-xs font-bold text-[var(--text-primary)] font-mono block">{slot.time.split('–')[0]}</span>
-                            <span className="text-[10px] text-[var(--text-secondary)] font-mono">até {slot.time.split('–')[1]}</span>
+                            <span className="text-xs text-[var(--text-secondary)] font-mono">até {slot.time.split('–')[1]}</span>
                           </div>
 
                           {/* Avatar com Iniciais */}
-                          <div className={`w-8 h-8 rounded-xl ${slot.avatarBg} flex items-center justify-center text-white text-[11px] font-bold shrink-0`}>
+                          <div className={`w-8 h-8 rounded-xl ${slot.avatarBg} flex items-center justify-center text-white text-xs font-bold shrink-0`}>
                             {slot.avatar}
                           </div>
 
@@ -564,9 +564,9 @@ export default function HeroSection() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               <span className="text-xs sm:text-sm font-bold text-[var(--text-primary)] truncate">{slot.patient}</span>
-                              <span className="text-[10px] text-[var(--text-muted)] font-mono">{slot.record}</span>
+                              <span className="text-xs text-[var(--text-muted)] font-mono">{slot.record}</span>
                             </div>
-                            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-[var(--text-muted)] truncate">
+                            <div className="flex items-center gap-2 mt-0.5 text-xs text-[var(--text-muted)] truncate">
                               <span className="font-medium text-[var(--text-secondary)]">{slot.procedure}</span>
                               <span>•</span>
                               <span className="text-[var(--text-muted)]">{slot.dentist} ({slot.chair})</span>
@@ -576,7 +576,7 @@ export default function HeroSection() {
 
                         {/* Status do Agendamento + Valor */}
                         <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pl-12 sm:pl-0">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${slot.statusColor}`}>
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${slot.statusColor}`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${slot.statusDot}`} />
                             {slot.status}
                           </span>
@@ -599,34 +599,34 @@ export default function HeroSection() {
                         </span>
                         <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">Sala de Espera (Ao Vivo)</h3>
                       </div>
-                      <span className="text-[11px] font-extrabold text-[var(--text-muted)] bg-[var(--bg-base)] px-2 py-0.5 rounded-md">2 na fila</span>
+                      <span className="text-xs font-extrabold text-[var(--text-muted)] bg-[var(--bg-base)] px-2 py-0.5 rounded-md">2 na fila</span>
                     </div>
 
                     <div className="space-y-2">
                       <div className="p-2.5 rounded-xl bg-amber-50/60 border border-amber-200/50 flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">
+                          <div className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold">
                             AC
                           </div>
                           <div>
                             <div className="text-xs font-bold text-[var(--text-primary)]">Ana Clara V.</div>
-                            <div className="text-[10px] text-amber-700 font-medium">Chegou há 6 min • Cadeira 1</div>
+                            <div className="text-xs text-amber-700 font-medium">Chegou há 6 min • Cadeira 1</div>
                           </div>
                         </div>
-                        <span className="text-[10px] font-bold text-amber-600 bg-white px-2 py-0.5 rounded shadow-2xs">Pronto</span>
+                        <span className="text-xs font-bold text-amber-600 bg-white px-2 py-0.5 rounded shadow-2xs">Pronto</span>
                       </div>
 
                       <div className="p-2.5 rounded-xl bg-[var(--bg-base)] border border-[var(--border)]/60 flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-[var(--border-medium)] text-white flex items-center justify-center text-[10px] font-bold">
+                          <div className="w-7 h-7 rounded-lg bg-[var(--border-medium)] text-white flex items-center justify-center text-xs font-bold">
                             RD
                           </div>
                           <div>
                             <div className="text-xs font-bold text-[var(--text-primary)]">Roberto Dias</div>
-                            <div className="text-[10px] text-[var(--text-muted)]">Chegou há 2 min • Recepção</div>
+                            <div className="text-xs text-[var(--text-muted)]">Chegou há 2 min • Recepção</div>
                           </div>
                         </div>
-                        <span className="text-[10px] font-bold text-[var(--text-muted)]">Aguardando</span>
+                        <span className="text-xs font-bold text-[var(--text-muted)]">Aguardando</span>
                       </div>
                     </div>
                   </div>
@@ -635,8 +635,8 @@ export default function HeroSection() {
                   <div className="bg-[var(--success)] text-white rounded-2xl p-4 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-200">Lembretes via WhatsApp</span>
-                        <span className="px-2 py-0.5 rounded bg-emerald-500/40 text-[9px] font-extrabold">98% Eficácia</span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-emerald-200">Lembretes via WhatsApp</span>
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/40 text-xs font-extrabold">98% Eficácia</span>
                       </div>
                       <h4 className="text-sm font-bold text-white">Confirmação via WhatsApp</h4>
                       <p className="text-xs text-emerald-100/90 mt-1 leading-relaxed">
@@ -663,7 +663,7 @@ export default function HeroSection() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="text-base sm:text-lg font-extrabold text-[var(--text-primary)] tracking-tight">Dashboard Gerencial</h2>
-                    <span className="hidden xs:inline-block px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                    <span className="hidden xs:inline-block px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
                       DRE em Tempo Real
                     </span>
                   </div>
@@ -677,7 +677,7 @@ export default function HeroSection() {
                     <span>Mês: Outubro / 2026</span>
                     <svg className="w-3 h-3 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
                   </div>
-                  <div className="bg-[var(--primary)] text-[var(--on-primary)] px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-2xs flex items-center gap-1.5">
+                  <div className="bg-[var(--primary-fill)] text-[var(--on-primary)] px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-2xs flex items-center gap-1.5">
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Exportar Relatório
                   </div>
@@ -717,18 +717,18 @@ export default function HeroSection() {
                     badge: '+12% crescimento',
                     sub: 'Ticket médio: R$ 850',
                     color: 'text-[var(--primary)]',
-                    bg: 'bg-[var(--primary)]',
+                    bg: 'bg-[var(--primary-fill)]',
                   },
                 ].map((card) => (
                   <div key={card.label} className="bg-white rounded-2xl border border-[var(--border)]/80 p-3.5 sm:p-4 shadow-2xs">
-                    <div className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">{card.label}</div>
+                    <div className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{card.label}</div>
                     <div className="text-xl sm:text-2xl font-black text-[var(--text-primary)] tracking-tight mt-1.5 leading-none">{card.value}</div>
                     <div className="flex items-center gap-1.5 mt-2">
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${card.bg} ${card.color}`}>
+                      <span className={`text-xs font-bold px-1.5 py-0.5 rounded-md ${card.bg} ${card.color}`}>
                         {card.badge}
                       </span>
                     </div>
-                    <div className="text-[10px] text-[var(--text-muted)] mt-1 font-medium">{card.sub}</div>
+                    <div className="text-xs text-[var(--text-muted)] mt-1 font-medium">{card.sub}</div>
                   </div>
                 ))}
               </div>
@@ -741,11 +741,11 @@ export default function HeroSection() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-xs sm:text-sm font-bold text-[var(--text-primary)]">Evolução do Fluxo de Caixa (Últimos 6 meses)</h3>
-                      <p className="text-[11px] text-[var(--text-muted)]">Receitas operacionais versus despesas da clínica</p>
+                      <p className="text-xs text-[var(--text-muted)]">Receitas operacionais versus despesas da clínica</p>
                     </div>
-                    <div className="flex items-center gap-3 text-[10px] font-bold">
+                    <div className="flex items-center gap-3 text-xs font-bold">
                       <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-                        <span className="w-2.5 h-2.5 rounded-sm bg-[var(--primary)]" />
+                        <span className="w-2.5 h-2.5 rounded-sm bg-[var(--primary-fill)]" />
                         Receita
                       </div>
                       <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
@@ -766,14 +766,14 @@ export default function HeroSection() {
                       { mes: 'OUT', rec: 100, desp: 32, val: 'R$ 58k', active: true },
                     ].map((col) => (
                       <div key={col.mes} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
-                        <span className="text-[9px] font-extrabold text-[var(--primary)] opacity-0 group-hover:opacity-100">{col.val}</span>
+                        <span className="text-xs font-extrabold text-[var(--primary)] opacity-0 group-hover:opacity-100">{col.val}</span>
                         <div className="w-full flex items-end justify-center gap-1 h-32">
                           <div
                             style={{ height: `${col.rec}%` }}
                             className={`w-1/2 rounded-t-md transition-all ${
                               col.active
-                                ? 'bg-[var(--primary)] '
-                                : 'bg-[var(--primary)]/80 hover:bg-[var(--primary)]'
+                                ? 'bg-[var(--primary-fill)] '
+                                : 'bg-[var(--primary)]/80 hover:bg-[var(--primary-fill)]'
                             }`}
                           />
                           <div
@@ -781,14 +781,14 @@ export default function HeroSection() {
                             className="w-1/2 bg-[var(--border-medium)] hover:bg-[var(--text-secondary)] rounded-t-md transition-all"
                           />
                         </div>
-                        <span className={`text-[10px] font-bold ${col.active ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}>
+                        <span className={`text-xs font-bold ${col.active ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}>
                           {col.mes}
                         </span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 text-[11px] text-[var(--text-muted)] font-medium">
+                  <div className="flex items-center justify-between pt-3 text-xs text-[var(--text-muted)] font-medium">
                     <span>Média de crescimento: <strong className="text-emerald-600">+14.2% ao mês</strong></span>
                     <span className="text-[var(--text-muted)]">Previsão Nov: R$ 62.000</span>
                   </div>
@@ -798,13 +798,13 @@ export default function HeroSection() {
                 <div className="bg-white rounded-2xl border border-[var(--border)]/80 p-4 shadow-2xs flex flex-col justify-between">
                   <div>
                     <h3 className="text-xs sm:text-sm font-bold text-[var(--text-primary)]">Receita por Especialidade</h3>
-                    <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Top procedimentos mais lucrativos</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">Top procedimentos mais lucrativos</p>
 
                     <div className="mt-4 space-y-3">
                       {[
-                        { name: 'Ortodontia & Alinhadores', pct: 38, value: 'R$ 22.199', color: 'bg-[var(--primary)]' },
+                        { name: 'Ortodontia & Alinhadores', pct: 38, value: 'R$ 22.199', color: 'bg-[var(--primary-fill)]' },
                         { name: 'Implantes & Próteses', pct: 28, value: 'R$ 16.357', color: 'bg-[var(--primary-subtle)]' },
-                        { name: 'Dentística & Clareamento', pct: 22, value: 'R$ 12.852', color: 'bg-[var(--primary)]' },
+                        { name: 'Dentística & Clareamento', pct: 22, value: 'R$ 12.852', color: 'bg-[var(--primary-fill)]' },
                         { name: 'Clínica Geral & Prevenção', pct: 12, value: 'R$ 7.012', color: 'bg-emerald-500' },
                       ].map((item) => (
                         <div key={item.name} className="space-y-1">
@@ -848,7 +848,7 @@ export default function HeroSection() {
               <span>Lembrete via WhatsApp</span>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             </div>
-            <div className="text-[11px] text-[var(--text-muted)] leading-tight mt-0.5">
+            <div className="text-xs text-[var(--text-muted)] leading-tight mt-0.5">
               &quot;Olá Mariana! Sua consulta está confirmada para hoje às 08:30.&quot;
             </div>
           </div>

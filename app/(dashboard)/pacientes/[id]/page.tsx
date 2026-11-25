@@ -102,7 +102,7 @@ function formatarResponsavel(tipo: string | null | undefined, nome: string | nul
 function InfoField({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div>
-      <label className="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
+      <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">
         {label}
       </label>
       {value ? (
@@ -411,7 +411,7 @@ export default function DetalhePaciente() {
         {/* Cabeçalho do paciente em Bento Card */}
         <div className="bg-[var(--bg-surface)] rounded-3xl border border-[var(--border)] p-6 sm:p-7 shadow-[0_2px_12px_-4px_rgba(15,23,42,0.035)] flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4 sm:gap-5 min-w-0">
-            <div className="h-16 w-16 rounded-2xl bg-[var(--primary)] flex items-center justify-center text-[var(--on-primary)] font-black text-2xl shadow-md border-2 border-[var(--bg-surface)]  ring-2 ring-[var(--primary)]/20 shrink-0">
+            <div className="h-16 w-16 rounded-2xl bg-[var(--primary-fill)] flex items-center justify-center text-[var(--on-primary)] font-black text-2xl shadow-md border-2 border-[var(--bg-surface)]  ring-2 ring-[var(--primary)]/20 shrink-0">
               {paciente.nome.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
@@ -572,11 +572,11 @@ export default function DetalhePaciente() {
                               {isAtivo ? 'Ativo' : isRevogado ? 'Revogado' : c.status}
                             </span>
                             {c.versao_termo && (
-                              <span className="text-[10px] font-mono text-[var(--text-muted)]">v{c.versao_termo}</span>
+                              <span className="text-xs font-mono text-[var(--text-muted)]">v{c.versao_termo}</span>
                             )}
                           </div>
                           {c.registrado_em && (
-                            <span className="text-[11px] font-semibold text-[var(--text-muted)]">
+                            <span className="text-xs font-semibold text-[var(--text-muted)]">
                               {new Date(c.registrado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                             </span>
                           )}
@@ -590,7 +590,7 @@ export default function DetalhePaciente() {
                           <button
                             onClick={() => handleRevogarConsentimento(c.consentimento_id ?? '')}
                             disabled={revogandoLgpd}
-                            className="mt-3 text-[11px] font-bold text-rose-500 hover:text-rose-600 flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                            className="mt-3 text-xs font-bold text-rose-500 hover:text-rose-600 flex items-center gap-1.5 transition-colors disabled:opacity-50"
                           >
                             {revogandoLgpd ? <RefreshCw className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
                             Revogar este consentimento
@@ -605,7 +605,7 @@ export default function DetalhePaciente() {
               {/* Finalidades autorizadas */}
               {isLgpdAtivo && consentimentoAtivo && (
                 <div className="mt-2">
-                  <p className="text-[11px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-3">Finalidades autorizadas</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-[var(--text-muted)] mb-3">Finalidades autorizadas</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {Object.entries(FINALIDADES_META).map(([key, meta]) => {
                       const Icon = meta.icon
@@ -653,7 +653,7 @@ export default function DetalhePaciente() {
               <h4 className="text-[var(--text-primary)] font-bold mb-1 text-base">Planejamento de Tratamento</h4>
               <button 
                 onClick={() => setOrcamentoModalOpen(true)}
-                className="mt-4 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-4 py-2 rounded-xl font-bold text-sm"
+                className="mt-4 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-4 py-2 rounded-xl font-bold text-sm"
               >
                 Novo Orçamento
               </button>
@@ -710,7 +710,7 @@ export default function DetalhePaciente() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-extrabold text-[var(--text-primary)] truncate">{cb.descricao || 'Cobrança'}</p>
-                          <p className="text-[11px] text-[var(--text-muted)] font-medium mt-0.5">
+                          <p className="text-xs text-[var(--text-muted)] font-medium mt-0.5">
                             {new Date(cb.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                           </p>
                         </div>
@@ -718,7 +718,7 @@ export default function DetalhePaciente() {
                           <span className="text-sm font-black text-[var(--text-primary)]">
                             {Number(cb.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                           </span>
-                          <span className={`text-[10px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                          <span className={`text-xs font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full ${
                             isPago ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400'
                               : isCancelado ? 'bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] text-[var(--text-muted)]'
                                 : 'bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400'
@@ -753,7 +753,7 @@ export default function DetalhePaciente() {
                     setEvolucaoSelecionada(null)
                     setModalAberto(true)
                   }}
-                  className="flex items-center gap-2 text-xs font-bold text-white bg-[var(--primary)] hover:bg-[var(--primary-hover)] px-4 py-2.5 rounded-2xl  transition-all active:scale-95"
+                  className="flex items-center gap-2 text-xs font-bold text-[var(--on-primary)] bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] px-4 py-2.5 rounded-2xl  transition-all active:scale-95"
                 >
                   <Plus className="h-4 w-4" /> Nova Evolução
                 </button>
@@ -820,7 +820,7 @@ export default function DetalhePaciente() {
           {activeTab === 'anamnese' && (
             <div className="bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] rounded-2xl border p-8 text-center">
               <HeartPulse className="h-10 w-10 text-[var(--primary)] mx-auto mb-4" />
-              <button onClick={() => setAnamneseOpen(true)} className="bg-[var(--primary)] text-[var(--on-primary)] px-6 py-3 rounded-xl font-bold text-sm">
+              <button onClick={() => setAnamneseOpen(true)} className="bg-[var(--primary-fill)] text-[var(--on-primary)] px-6 py-3 rounded-xl font-bold text-sm">
                 Abrir Ficha de Anamnese
               </button>
             </div>

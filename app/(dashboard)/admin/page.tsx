@@ -133,7 +133,7 @@ export default function SuperAdminGlobalPanel() {
                   <span className="text-xs font-bold text-[var(--text-secondary)] group-hover:text-[var(--primary)] transition-colors">
                     Total de Clínicas
                   </span>
-                  <div className="p-2 rounded-xl bg-[var(--primary-subtle)]/10 text-[var(--primary)]">
+                  <div className="p-2 rounded-xl bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20">
                     <Building2 className="h-4 w-4" />
                   </div>
                 </div>
@@ -141,26 +141,26 @@ export default function SuperAdminGlobalPanel() {
                   <span className="text-2xl sm:text-3xl font-black text-[var(--text-primary)]">
                     {metrics.totalClinicas}
                   </span>
-                  <span className="text-xs text-emerald-600 font-bold">
+                  <span className="text-xs text-[var(--success)] font-bold">
                     {metrics.clinicasAtivas} ativas
                   </span>
                 </div>
-                <div className="mt-3 pt-3 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
+                <div className="mt-3 pt-3 border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--text-secondary)]">
                   <span>Trial: <b>{metrics.clinicasTrial}</b></span>
-                  <span>Inadimplentes: <b className="text-red-500">{metrics.clinicasInadimplentes}</b></span>
+                  <span>Inadimplentes: <b className="text-[var(--error)]">{metrics.clinicasInadimplentes}</b></span>
                 </div>
               </Link>
 
               {/* MRR Estimado */}
               <Link
                 href="/admin/assinaturas"
-                className="bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border)] shadow-2xs hover:border-emerald-300 dark:hover:border-emerald-700 transition-all group block"
+                className="bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border)] shadow-2xs hover:border-[var(--primary)] transition-all group block"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[var(--text-secondary)] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                  <span className="text-xs font-bold text-[var(--text-secondary)] group-hover:text-[var(--primary)] transition-colors">
                     MRR Estimado (SaaS)
                   </span>
-                  <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                  <div className="p-2 rounded-xl bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20">
                     <DollarSign className="h-4 w-4" />
                   </div>
                 </div>
@@ -169,9 +169,9 @@ export default function SuperAdminGlobalPanel() {
                     {formatCurrency(metrics.mrrEstimado)}
                   </span>
                 </div>
-                <div className="mt-3 pt-3 border-t border-[var(--border)] text-[11px] text-[var(--text-secondary)] flex items-center justify-between">
+                <div className="mt-3 pt-3 border-t border-[var(--border)] text-xs text-[var(--text-secondary)] flex items-center justify-between">
                   <span>Recorrente mensal</span>
-                  <ArrowRight className="h-3 w-3 text-emerald-600" />
+                  <ArrowRight className="h-3.5 w-3.5 text-[var(--primary)]" />
                 </div>
               </Link>
 
@@ -184,7 +184,7 @@ export default function SuperAdminGlobalPanel() {
                   <span className="text-xs font-bold text-[var(--text-secondary)] group-hover:text-[var(--primary)] transition-colors">
                     Usuários Ativos
                   </span>
-                  <div className="p-2 rounded-xl bg-[var(--primary-subtle)]/10 text-[var(--primary)]">
+                  <div className="p-2 rounded-xl bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20">
                     <Users className="h-4 w-4" />
                   </div>
                 </div>
@@ -196,7 +196,7 @@ export default function SuperAdminGlobalPanel() {
                     na rede
                   </span>
                 </div>
-                <div className="mt-3 pt-3 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
+                <div className="mt-3 pt-3 border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--text-secondary)]">
                   <span>Dentistas: <b>{metrics.usuariosPorRole.dentista}</b></span>
                   <span>Admins: <b>{metrics.usuariosPorRole.admin_clinica}</b></span>
                 </div>
@@ -206,7 +206,7 @@ export default function SuperAdminGlobalPanel() {
               <div className="bg-[var(--bg-surface)] p-5 rounded-2xl border border-[var(--border)] shadow-2xs">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-[var(--text-secondary)]">Pacientes na Base</span>
-                  <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
+                  <div className="p-2 rounded-xl bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border)]">
                     <TrendingUp className="h-4 w-4" />
                   </div>
                 </div>
@@ -218,7 +218,7 @@ export default function SuperAdminGlobalPanel() {
                     em {metrics.totalClinicas} clínicas
                   </span>
                 </div>
-                <div className="mt-3 pt-3 border-t border-[var(--border)] text-[11px] text-[var(--text-secondary)]">
+                <div className="mt-3 pt-3 border-t border-[var(--border)] text-xs text-[var(--text-secondary)]">
                   Consultas registradas: <b>{metrics.totalConsultas}</b>
                 </div>
               </div>
@@ -249,7 +249,7 @@ export default function SuperAdminGlobalPanel() {
                     </div>
                     <div className="w-full bg-[var(--border)] h-2 rounded-full overflow-hidden">
                       <div
-                        className="bg-[var(--primary)] h-full rounded-full"
+                        className="bg-[var(--primary-fill)] h-full rounded-full"
                         style={{
                           width: `${(metrics.planosDistribuicao.profissional / (metrics.totalClinicas || 1)) * 100}%`,
                         }}
@@ -264,7 +264,7 @@ export default function SuperAdminGlobalPanel() {
                     </div>
                     <div className="w-full bg-[var(--border)] h-2 rounded-full overflow-hidden">
                       <div
-                        className="bg-[var(--primary)] h-full rounded-full opacity-70"
+                        className="bg-[var(--primary-fill)] h-full rounded-full opacity-75"
                         style={{
                           width: `${(metrics.planosDistribuicao.enterprise / (metrics.totalClinicas || 1)) * 100}%`,
                         }}
@@ -279,7 +279,7 @@ export default function SuperAdminGlobalPanel() {
                     </div>
                     <div className="w-full bg-[var(--border)] h-2 rounded-full overflow-hidden">
                       <div
-                        className="bg-[var(--primary)] h-full rounded-full opacity-50"
+                        className="bg-[var(--primary-fill)] h-full rounded-full opacity-55"
                         style={{
                           width: `${(metrics.planosDistribuicao.basico / (metrics.totalClinicas || 1)) * 100}%`,
                         }}
@@ -305,28 +305,28 @@ export default function SuperAdminGlobalPanel() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="p-3.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/40">
-                    <span className="text-emerald-700 dark:text-emerald-300 font-semibold block">Ativas & Pagantes</span>
-                    <span className="text-2xl font-black text-emerald-800 dark:text-emerald-200 mt-1 block">
+                  <div className="p-3.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--success)]/45">
+                    <span className="text-[var(--success)] font-semibold block">Ativas & Pagantes</span>
+                    <span className="text-2xl font-black text-[var(--success)] mt-1 block">
                       {metrics.clinicasAtivas}
                     </span>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-[var(--primary)]/5  border border-[var(--primary)]/20">
+                  <div className="p-3.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--primary)]/45">
                     <span className="text-[var(--primary)] font-semibold block">Período de Trial</span>
                     <span className="text-2xl font-black text-[var(--primary)] mt-1 block">
                       {metrics.clinicasTrial}
                     </span>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-red-50/60 dark:bg-red-950/30 border border-red-200/60 dark:border-red-800/40">
-                    <span className="text-red-700 dark:text-red-300 font-semibold block">Inadimplentes</span>
-                    <span className="text-2xl font-black text-red-800 dark:text-red-200 mt-1 block">
+                  <div className="p-3.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--error)]/45">
+                    <span className="text-[var(--error)] font-semibold block">Inadimplentes</span>
+                    <span className="text-2xl font-black text-[var(--error)] mt-1 block">
                       {metrics.clinicasInadimplentes}
                     </span>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-[var(--bg-base)] border border-[var(--border)]">
+                  <div className="p-3.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border)]">
                     <span className="text-[var(--text-secondary)] font-semibold block">Canceladas / Inativas</span>
                     <span className="text-2xl font-black text-[var(--text-primary)] mt-1 block">
                       {metrics.clinicasCanceladas}

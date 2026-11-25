@@ -50,7 +50,7 @@ export function BottomNav() {
                 }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? "stroke-[2.5px]" : "stroke-2"}`} />
-                <span className="text-[10px] font-medium">{item.name}</span>
+                <span className="text-xs font-medium">{item.name}</span>
               </Link>
             );
         })}

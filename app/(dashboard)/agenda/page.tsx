@@ -129,7 +129,7 @@ function StatusPill({ status }: { status: string }) {
   return (
     <span
       style={{ background: cfg.bg, color: cfg.text }}
-      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide whitespace-nowrap"
+      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide whitespace-nowrap"
     >
       <span style={{ background: cfg.dot }} className="w-1.5 h-1.5 rounded-full shrink-0" />
       {cfg.label}
@@ -188,7 +188,7 @@ function AgendamentoCard({
           {ag.hora_consulta?.slice(0, 5) ?? '--:--'}
         </p>
         {ag.hora_fim && (
-          <p className="text-[10px] font-semibold text-[var(--text-muted)] tabular-nums mt-0.5">
+          <p className="text-xs font-semibold text-[var(--text-muted)] tabular-nums mt-0.5">
             {ag.hora_fim.slice(0, 5)}
           </p>
         )}
@@ -204,7 +204,7 @@ function AgendamentoCard({
             {nome}
           </p>
           {ag.id && (
-            <span className="text-[10px] font-mono text-[var(--text-muted)] shrink-0">
+            <span className="text-xs font-mono text-[var(--text-muted)] shrink-0">
               #{String(ag.id).slice(-5)}
             </span>
           )}
@@ -285,12 +285,12 @@ function EsperaCard({ ag }: { ag: any }) {
       <div className="flex-1 min-w-0">
         <p className="text-xs font-extrabold text-[var(--text-primary)] truncate">{nome}</p>
         {ag.procedimento && (
-          <p className="text-[11px] font-medium text-[var(--text-muted)] truncate mt-0.5">{ag.procedimento}</p>
+          <p className="text-xs font-medium text-[var(--text-muted)] truncate mt-0.5">{ag.procedimento}</p>
         )}
       </div>
       <div className="flex items-center gap-1 text-amber-700 dark:text-amber-400 shrink-0 font-bold bg-amber-100/80 dark:bg-amber-900/50 px-2 py-0.5 rounded-lg">
         <Timer size={11} />
-        <span className="text-[11px] tabular-nums">{tempo}</span>
+        <span className="text-xs tabular-nums">{tempo}</span>
       </div>
     </div>
   )
@@ -570,7 +570,7 @@ export default function Agenda() {
 
           <button
             onClick={() => abrirNovoAgendamento()}
-            className="flex items-center gap-1.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-2xl px-4 py-2 text-xs font-bold  transition-all active:scale-95"
+            className="flex items-center gap-1.5 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] rounded-2xl px-4 py-2 text-xs font-bold  transition-all active:scale-95"
           >
             <Plus size={14} /> Novo
           </button>
@@ -617,21 +617,21 @@ export default function Agenda() {
                   className={`
                     relative flex flex-col items-center gap-1 py-2.5 px-1.5 rounded-2xl text-xs font-bold transition-all duration-200 active:scale-95
                     ${isSelected
-                      ? 'bg-[var(--primary)] text-[var(--on-primary)]  scale-[1.02]'
+                      ? 'bg-[var(--primary-fill)] text-[var(--on-primary)] scale-[1.02]'
                       : isToday
                         ? 'bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30'
-                        : 'bg-[var(--bg-base)] dark:bg-[var(--bg-base)] text-[var(--text-secondary)] dark:text-[var(--text-muted)] border border-[var(--border)] hover:bg-[var(--bg-surface)] dark:hover:bg-[var(--bg-surface)] hover:border-[var(--border-medium)] '
+                        : 'bg-[var(--bg-base)] dark:bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border)] hover:bg-[var(--bg-surface)] dark:hover:bg-[var(--bg-surface)] hover:border-[var(--border-medium)] '
                     }
                   `}
                 >
-                  <span className={`text-[10px] font-extrabold uppercase tracking-wider ${isSelected ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}>
+                  <span className={`text-xs font-extrabold uppercase tracking-wider ${isSelected ? 'text-[var(--on-primary)] opacity-90' : 'text-[var(--text-secondary)]'}`}>
                     {DIAS_SEMANA[dia.getDay()]}
                   </span>
-                  <span className={`text-base font-black leading-none ${isSelected ? 'text-white' : 'text-[var(--text-primary)]'}`}>
+                  <span className={`text-base font-black leading-none ${isSelected ? 'text-[var(--on-primary)]' : 'text-[var(--text-primary)]'}`}>
                     {dia.getDate()}
                   </span>
                   {count > 0 ? (
-                    <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full leading-none ${isSelected ? 'bg-[var(--primary)] text-[var(--on-primary)]' : 'bg-[var(--border)]/80 dark:bg-[var(--border)] text-[var(--text-secondary)]'}`}>
+                    <span className={`text-xs font-extrabold px-1.5 py-0.5 rounded-full leading-none ${isSelected ? 'bg-[var(--bg-surface)] text-[var(--primary)]' : 'bg-[var(--border)]/80 dark:bg-[var(--border)] text-[var(--text-secondary)]'}`}>
                       {count}
                     </span>
                   ) : (
@@ -675,7 +675,7 @@ export default function Agenda() {
               {/* Grid cabeçalho dos dias */}
               <div className="grid grid-cols-7 mb-2">
                 {DIAS_SEMANA.map((d) => (
-                  <div key={d} className="text-center text-[11px] font-black uppercase tracking-widest text-[var(--text-muted)] py-2">
+                  <div key={d} className="text-center text-xs font-black uppercase tracking-widest text-[var(--text-muted)] py-2">
                     {d}
                   </div>
                 ))}
@@ -713,7 +713,7 @@ export default function Agenda() {
                           group relative flex flex-col min-h-[80px] p-2 rounded-2xl border transition-all duration-150 active:scale-[0.97] text-left
                           ${!isMesAtual ? 'opacity-35' : ''}
                           ${isSel
-                            ? 'bg-[var(--primary)] border-[var(--primary)]/40 '
+                            ? 'bg-[var(--primary-fill)] border-[var(--primary)]/40 text-[var(--on-primary)]'
                             : isHoje
                             ? 'bg-[var(--primary-subtle)] border-[var(--primary)]/40 '
                             : 'bg-[var(--bg-surface)] border-[var(--border)]/70  hover:border-[var(--border-medium)]  hover:shadow-sm'
@@ -722,7 +722,7 @@ export default function Agenda() {
                       >
                         {/* Número do dia */}
                         <span className={`text-sm font-black leading-none mb-1.5 ${
-                          isSel ? 'text-white' : isHoje ? 'text-[var(--primary)]' : 'text-[var(--text-primary)]'
+                          isSel ? 'text-[var(--on-primary)]' : isHoje ? 'text-[var(--primary)]' : 'text-[var(--text-primary)]'
                         }`}>
                           {dia.getDate()}
                         </span>
@@ -731,8 +731,8 @@ export default function Agenda() {
                         {total > 0 && (
                           <div className="flex flex-col gap-1 w-full">
                             {/* Badge com total */}
-                            <span className={`self-start text-[10px] font-extrabold px-1.5 py-0.5 rounded-lg leading-none ${
-                              isSel ? 'bg-[var(--primary)] text-[var(--on-primary)]' : 'bg-[var(--primary-subtle)] text-[var(--primary)]'
+                            <span className={`self-start text-xs font-extrabold px-1.5 py-0.5 rounded-lg leading-none ${
+                              isSel ? 'bg-[var(--bg-surface)] text-[var(--primary)]' : 'bg-[var(--primary-subtle)] text-[var(--primary)]'
                             }`}>
                               {total} {total === 1 ? 'consulta' : 'consultas'}
                             </span>
@@ -782,21 +782,21 @@ export default function Agenda() {
                       }`}>
                         {/* Cabeçalho do dia */}
                         <div className={`flex flex-col items-center py-3 px-2 ${
-                          isSel ? 'bg-[var(--primary)]' : isHoje ? 'bg-[var(--primary-subtle)]' : 'bg-[var(--bg-base)] dark:bg-[var(--bg-surface)]'
+                          isSel ? 'bg-[var(--primary-fill)] text-[var(--on-primary)]' : isHoje ? 'bg-[var(--primary-subtle)]' : 'bg-[var(--bg-base)] dark:bg-[var(--bg-surface)]'
                         }`}>
-                          <span className={`text-[10px] font-black uppercase tracking-widest ${
-                            isSel ? 'text-[var(--primary)]' : isHoje ? 'text-[var(--primary)] ' : 'text-[var(--text-muted)]'
+                          <span className={`text-xs font-black uppercase tracking-widest ${
+                            isSel ? 'text-[var(--on-primary)] opacity-90' : isHoje ? 'text-[var(--primary)]' : 'text-[var(--text-secondary)]'
                           }`}>
                             {DIAS_SEMANA[dia.getDay()]}
                           </span>
                           <span className={`text-xl font-black leading-tight mt-0.5 ${
-                            isSel ? 'text-white' : isHoje ? 'text-[var(--primary)]' : 'text-[var(--text-primary)]'
+                            isSel ? 'text-[var(--on-primary)]' : isHoje ? 'text-[var(--primary)]' : 'text-[var(--text-primary)]'
                           }`}>
                             {dia.getDate()}
                           </span>
                           {ags.length > 0 && (
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full mt-1 ${
-                              isSel ? 'bg-[var(--primary)] text-[var(--on-primary)]' : 'bg-[var(--border)]/80 dark:bg-[var(--border)] text-[var(--text-secondary)]'
+                            <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full mt-1 ${
+                              isSel ? 'bg-[var(--bg-surface)] text-[var(--primary)]' : 'bg-[var(--border)]/80 dark:bg-[var(--border)] text-[var(--text-secondary)]'
                             }`}>
                               {ags.length}
                             </span>
@@ -807,7 +807,7 @@ export default function Agenda() {
                         <div className="flex-1 bg-[var(--bg-surface)] p-2 space-y-1.5 min-h-[160px]">
                           {ags.length === 0 ? (
                             <div className="flex items-center justify-center h-full min-h-[120px]">
-                              <p className="text-[10px] text-[var(--border-medium)] font-semibold text-center">
+                              <p className="text-xs text-[var(--text-secondary)] font-semibold text-center">
                                 Livre
                               </p>
                             </div>
@@ -824,14 +824,14 @@ export default function Agenda() {
                                 >
                                   <div style={{ background: cfg.dot }} className="w-1 self-stretch rounded-full shrink-0 mt-0.5" />
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-[11px] font-black truncate" style={{ color: cfg.text }}>
+                                    <p className="text-xs font-black truncate" style={{ color: cfg.text }}>
                                       {ag.hora_consulta?.slice(0, 5) ?? '--:--'}
                                     </p>
-                                    <p className="text-[10px] font-bold text-[var(--text-secondary)] truncate leading-tight">
+                                    <p className="text-xs font-bold text-[var(--text-secondary)] truncate leading-tight">
                                       {ag.pacientes?.nome || 'Paciente'}
                                     </p>
                                     {ag.procedimento && (
-                                      <p className="text-[9px] text-[var(--text-muted)] truncate">{ag.procedimento}</p>
+                                      <p className="text-xs text-[var(--text-muted)] truncate">{ag.procedimento}</p>
                                     )}
                                   </div>
                                 </button>
@@ -843,7 +843,7 @@ export default function Agenda() {
                         {/* Botão adicionar */}
                         <button
                           onClick={() => abrirNovoAgendamento(str)}
-                          className="shrink-0 w-full py-2 text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--primary)]  hover:bg-[var(--primary-subtle)]/50 hover:bg-[var(--primary-subtle)] transition-colors border-t border-[var(--border)] bg-[var(--bg-surface)] flex items-center justify-center gap-1"
+                          className="shrink-0 w-full py-2 text-xs font-bold text-[var(--text-muted)] hover:text-[var(--primary)]  hover:bg-[var(--primary-subtle)]/50 hover:bg-[var(--primary-subtle)] transition-colors border-t border-[var(--border)] bg-[var(--bg-surface)] flex items-center justify-center gap-1"
                         >
                           <Plus size={11} /> Adicionar
                         </button>
@@ -956,7 +956,7 @@ export default function Agenda() {
                 </span>
               )}
             </div>
-            <p className="text-[11px] font-semibold text-[var(--text-muted)] mt-1">
+            <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">
               Painel de recepção em tempo real
             </p>
           </div>
@@ -970,7 +970,7 @@ export default function Agenda() {
                 <p className="text-xs font-bold text-[var(--text-secondary)]">
                   Sala vazia
                 </p>
-                <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   Nenhum paciente aguardando
                 </p>
               </div>
@@ -991,15 +991,15 @@ export default function Agenda() {
 
           {/* Estatísticas rápidas do dia */}
           <div className="shrink-0 p-5 border-t border-[var(--border)]/80 bg-[var(--bg-base)] dark:bg-[var(--bg-base)]">
-            <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-3">
+            <p className="text-xs font-black uppercase tracking-widest text-[var(--text-muted)] mb-3">
               Resumo — {labelDiaSel.split(',')[0]}
             </p>
             <div className="grid grid-cols-2 gap-2.5">
               {[
                 { label: 'Total', value: agendamentosDoDia.length, icon: CalendarDays, color: 'text-[var(--primary)]', bg: 'bg-[var(--primary-subtle)]' },
-                { label: 'Espera', value: agendamentosDoDia.filter(a => a.status === 'espera').length, icon: Timer, color: 'text-amber-500', bg: 'bg-amber-50/80 dark:bg-amber-950/40' },
-                { label: 'Confirmados', value: agendamentosDoDia.filter(a => a.status === 'confirmado').length, icon: Clock, color: 'text-emerald-500', bg: 'bg-emerald-50/80 dark:bg-emerald-950/40' },
-                { label: 'Atendidos', value: agendamentosDoDia.filter(a => a.status === 'atendido').length, icon: Activity, color: 'text-[var(--primary)]', bg: 'bg-[var(--primary-subtle)] dark:bg-[var(--primary-subtle)]' },
+                { label: 'Espera', value: agendamentosDoDia.filter(a => a.status === 'espera').length, icon: Timer, color: 'text-[var(--text-secondary)]', bg: 'bg-[var(--bg-base)]' },
+                { label: 'Confirmados', value: agendamentosDoDia.filter(a => a.status === 'confirmado').length, icon: Clock, color: 'text-[var(--primary)]', bg: 'bg-[var(--primary-subtle)]' },
+                { label: 'Atendidos', value: agendamentosDoDia.filter(a => a.status === 'atendido').length, icon: Activity, color: 'text-[var(--text-secondary)]', bg: 'bg-[var(--bg-base)]' },
               ].map(({ label, value, icon: Icon, color, bg }) => (
                 <div
                   key={label}
@@ -1011,7 +1011,7 @@ export default function Agenda() {
                   <span className="text-lg font-black text-[var(--text-primary)] leading-none">
                     {value}
                   </span>
-                  <span className="text-[10px] font-bold text-[var(--text-muted)] mt-1 uppercase tracking-wider">{label}</span>
+                  <span className="text-xs font-bold text-[var(--text-muted)] mt-1 uppercase tracking-wider">{label}</span>
                 </div>
               ))}
             </div>

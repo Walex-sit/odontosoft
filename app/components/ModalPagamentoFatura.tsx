@@ -60,16 +60,16 @@ export default function ModalPagamentoFatura({ isOpen, onClose, fatura }: ModalP
               onClick={() => setMetodo('cartao')}
               className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left ${
                 metodo === 'cartao' 
-                  ? 'bg-[var(--border-medium)] border-[var(--primary)]/40 ring-1 ring-[var(--primary)]' 
-                  : 'bg-[var(--bg-surface)] border-[var(--border)] hover:border-[var(--border)]0'
+                  ? 'bg-[var(--bg-surface)] border-[var(--primary)] ring-1 ring-[var(--primary)]' 
+                  : 'bg-[var(--bg-surface)] border-[var(--border)] hover:border-[var(--border-medium)]'
               }`}
             >
-              <div className={`p-2 rounded-md ${metodo === 'cartao' ? 'bg-[var(--primary-subtle)]/20 text-[var(--primary)]' : 'bg-[var(--bg-surface)] text-[var(--text-muted)]'}`}>
+              <div className={`p-2 rounded-md ${metodo === 'cartao' ? 'bg-[var(--primary-subtle)] text-[var(--primary)]' : 'bg-[var(--bg-base)] text-[var(--text-secondary)]'}`}>
                 <CreditCard size={18} />
               </div>
               <div>
                 <h4 className="text-sm font-bold text-[var(--text-primary)]">Cartão de Crédito</h4>
-                <p className="text-xs text-[var(--text-muted)]">Terminado em 4321</p>
+                <p className="text-xs text-[var(--text-secondary)]">Terminado em 4321</p>
               </div>
             </button>
 
@@ -77,16 +77,16 @@ export default function ModalPagamentoFatura({ isOpen, onClose, fatura }: ModalP
               onClick={() => setMetodo('pix')}
               className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left ${
                 metodo === 'pix' 
-                  ? 'bg-[var(--border-medium)] border-[var(--primary)]/40 ring-1 ring-[var(--primary)]' 
-                  : 'bg-[var(--bg-surface)] border-[var(--border)] hover:border-[var(--border)]0'
+                  ? 'bg-[var(--bg-surface)] border-[var(--primary)] ring-1 ring-[var(--primary)]' 
+                  : 'bg-[var(--bg-surface)] border-[var(--border)] hover:border-[var(--border-medium)]'
               }`}
             >
-              <div className={`p-2 rounded-md ${metodo === 'pix' ? 'bg-[var(--primary-subtle)]/20 text-[var(--primary)]' : 'bg-[var(--bg-surface)] text-[var(--text-muted)]'}`}>
+              <div className={`p-2 rounded-md ${metodo === 'pix' ? 'bg-[var(--primary-subtle)] text-[var(--primary)]' : 'bg-[var(--bg-base)] text-[var(--text-secondary)]'}`}>
                 <QrCode size={18} />
               </div>
               <div>
                 <h4 className="text-sm font-bold text-[var(--text-primary)]">Pix (QR Code)</h4>
-                <p className="text-xs text-[var(--text-muted)]">Aprovação imediata</p>
+                <p className="text-xs text-[var(--text-secondary)]">Aprovação imediata</p>
               </div>
             </button>
 
@@ -94,16 +94,16 @@ export default function ModalPagamentoFatura({ isOpen, onClose, fatura }: ModalP
               onClick={() => setMetodo('boleto')}
               className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left ${
                 metodo === 'boleto' 
-                  ? 'bg-[var(--border-medium)] border-[var(--primary)]/40 ring-1 ring-[var(--primary)]' 
-                  : 'bg-[var(--bg-surface)] border-[var(--border)] hover:border-[var(--border)]0'
+                  ? 'bg-[var(--bg-surface)] border-[var(--primary)] ring-1 ring-[var(--primary)]' 
+                  : 'bg-[var(--bg-surface)] border-[var(--border)] hover:border-[var(--border-medium)]'
               }`}
             >
-              <div className={`p-2 rounded-md ${metodo === 'boleto' ? 'bg-[var(--primary-subtle)]/20 text-[var(--primary)]' : 'bg-[var(--bg-surface)] text-[var(--text-muted)]'}`}>
+              <div className={`p-2 rounded-md ${metodo === 'boleto' ? 'bg-[var(--primary-subtle)] text-[var(--primary)]' : 'bg-[var(--bg-base)] text-[var(--text-secondary)]'}`}>
                 <FileText size={18} />
               </div>
               <div>
                 <h4 className="text-sm font-bold text-[var(--text-primary)]">Boleto Bancário</h4>
-                <p className="text-xs text-[var(--text-muted)]">Até 3 dias úteis para compensar</p>
+                <p className="text-xs text-[var(--text-secondary)]">Até 3 dias úteis para compensar</p>
               </div>
             </button>
 

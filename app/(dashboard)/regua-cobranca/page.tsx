@@ -39,15 +39,15 @@ const REGRAS_INICIAIS: Regra[] = [
 // Logs de envio: serão carregados via Supabase (tabela comunicacao_logs) em iteração futura.
 
 const CANALICON: Record<Canal, { label: string; icon: React.ReactNode; color: string }> = {
-  whatsapp: { label: 'WhatsApp', icon: <MessageSquare className="h-4 w-4" />, color: 'text-emerald-600 bg-emerald-50' },
-  sms: { label: 'SMS', icon: <Phone className="h-4 w-4" />, color: 'text-[var(--primary)] bg-[var(--primary-subtle)]' },
+  whatsapp: { label: 'WhatsApp', icon: <MessageSquare className="h-4 w-4" />, color: 'text-[var(--primary)] bg-[var(--primary-subtle)]' },
+  sms: { label: 'SMS', icon: <Phone className="h-4 w-4" />, color: 'text-[var(--text-secondary)] bg-[var(--bg-base)]' },
   email: { label: 'E-mail', icon: <Mail className="h-4 w-4" />, color: 'text-[var(--primary)] bg-[var(--primary-subtle)]' },
 }
 
 const TIPO_LABEL: Record<TipoRegra, { label: string; color: string }> = {
-  lembrete: { label: 'Lembrete de Consulta', color: 'bg-[var(--primary-subtle)] text-[var(--primary)]' },
-  cobranca: { label: 'Cobrança', color: 'bg-red-100 text-red-700' },
-  retorno: { label: 'Retorno', color: 'bg-[var(--primary-subtle)] text-[var(--primary)]' },
+  lembrete: { label: 'Lembrete de Consulta', color: 'bg-[var(--bg-surface)] text-[var(--primary)] border border-[var(--primary)]/45' },
+  cobranca: { label: 'Cobrança', color: 'bg-[var(--bg-surface)] text-[var(--error)] border border-[var(--error)]/45' },
+  retorno: { label: 'Retorno', color: 'bg-[var(--bg-surface)] text-[var(--primary)] border border-[var(--primary)]/45' },
 }
 
 export default function ReguaCobrancaPage() {
@@ -80,8 +80,8 @@ export default function ReguaCobrancaPage() {
           <div>
             <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Régua de Cobrança e Lembretes</h1>
             <p className="text-sm font-semibold text-[var(--text-muted)] mt-1">Automações de comunicação com pacientes via WhatsApp, SMS e E-mail</p>
-            <div className="flex items-center gap-2 mt-2 px-3 py-1 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl text-xs text-amber-800 dark:text-amber-300 font-semibold w-fit">
-              <AlertCircle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+            <div className="flex items-center gap-2 mt-2 px-3 py-1 bg-[var(--bg-surface)] border border-[var(--warning)]/45 rounded-xl text-xs text-[var(--warning)] font-semibold w-fit">
+              <AlertCircle className="h-3.5 w-3.5 text-[var(--warning)] shrink-0" />
               <span>Ambiente em modo de demonstração: disparos não enviam mensagens externas reais.</span>
             </div>
           </div>
@@ -92,31 +92,31 @@ export default function ReguaCobrancaPage() {
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]  p-5 shadow-sm">
-            <div className="p-2.5 bg-[var(--primary-subtle)] text-[var(--primary)] rounded-xl w-fit mb-3"><Zap className="h-5 w-5" /></div>
+            <div className="p-2.5 bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20 rounded-xl w-fit mb-3"><Zap className="h-5 w-5" /></div>
             <p className="text-2xl font-extrabold text-[var(--text-primary)]">{ativos}</p>
-            <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">Réguas Ativas</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)] mt-1">Réguas Ativas</p>
           </div>
           <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]  p-5 shadow-sm">
-            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl w-fit mb-3"><CheckCircle2 className="h-5 w-5" /></div>
+            <div className="p-2.5 bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20 rounded-xl w-fit mb-3"><CheckCircle2 className="h-5 w-5" /></div>
             <p className="text-2xl font-extrabold text-[var(--text-primary)]">{enviados}</p>
-            <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">Enviados Hoje</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)] mt-1">Enviados Hoje</p>
           </div>
           <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]  p-5 shadow-sm">
-            <div className="p-2.5 bg-red-50 text-red-600 rounded-xl w-fit mb-3"><AlertCircle className="h-5 w-5" /></div>
+            <div className="p-2.5 bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border)] rounded-xl w-fit mb-3"><AlertCircle className="h-5 w-5" /></div>
             <p className="text-2xl font-extrabold text-[var(--text-primary)]">{inadimplentes.length}</p>
-            <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">Inadimplentes</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)] mt-1">Inadimplentes</p>
           </div>
           <div className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]  p-5 shadow-sm">
-            <div className="p-2.5 bg-amber-50 text-amber-600 rounded-xl w-fit mb-3"><AlertCircle className="h-5 w-5" /></div>
+            <div className="p-2.5 bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border)] rounded-xl w-fit mb-3"><AlertCircle className="h-5 w-5" /></div>
             <p className="text-2xl font-extrabold text-[var(--text-primary)]">R$ {totalPendente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-            <p className="text-xs font-semibold text-[var(--text-muted)] mt-1">Total Inadimplente</p>
+            <p className="text-xs font-semibold text-[var(--text-secondary)] mt-1">Total Inadimplente</p>
           </div>
         </div>
 
         {/* Tabs */}
         <div className="flex gap-1 bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)]  p-1.5 shadow-sm w-fit">
           {([['regras', 'Réguas de Comunicação'], ['logs', 'Log de Envios'], ['inadimplentes', 'Inadimplentes']] as const).map(([tab, label]) => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === tab ? 'bg-[var(--primary)] text-[var(--on-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)]'}`}>{label}</button>
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === tab ? 'bg-[var(--primary-fill)] text-[var(--on-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)]'}`}>{label}</button>
           ))}
         </div>
 

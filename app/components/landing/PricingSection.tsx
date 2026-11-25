@@ -34,7 +34,7 @@ const plans = [
     popular: true,
     ctaText: 'Desbloquear Acesso Completo',
     ctaStyle:
-      'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] shadow-lg  hover:',
+      'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] shadow-lg  hover:',
     features: [
       'Pacientes e prontuários ilimitados',
       'Odontograma interativo completo (32 dentes)',
@@ -93,7 +93,7 @@ export default function PricingSection() {
               {/* Popular Tag */}
               {plan.popular && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 bg-[var(--primary)] text-[var(--on-primary)] text-[11px] font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                  <span className="inline-flex items-center gap-1.5 bg-[var(--primary-fill)] text-[var(--on-primary)] text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow-sm">
                     <svg
                       width="11"
                       height="11"

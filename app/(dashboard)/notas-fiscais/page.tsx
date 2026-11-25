@@ -96,7 +96,7 @@ export default function NotasFiscais() {
           <button 
             onClick={salvarNota} 
             disabled={!numeroNota.trim() || !valor || !dataEmissao}
-            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-4 py-2 rounded-md text-sm font-semibold transition-colors disabled:opacity-50 mt-2"
+            className="w-full bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-4 py-2 rounded-md text-sm font-semibold transition-colors disabled:opacity-50 mt-2"
           >
             Registrar NF
           </button>

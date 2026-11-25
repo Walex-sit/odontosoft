@@ -303,7 +303,7 @@ export default function ModalReceituario({ isOpen, onClose, prontuarioId, pacien
             type="submit"
             form="receita-form"
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-[var(--primary)] hover:bg-[var(--primary-hover)] rounded-lg transition-colors shadow-lg  disabled:opacity-70 disabled:cursor-wait"
+            className="flex items-center gap-2 px-6 py-2 text-sm font-medium text-[var(--on-primary)] bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] rounded-lg transition-colors shadow-lg  disabled:opacity-70 disabled:cursor-wait"
           >
             {isSubmitting ? (
               <>

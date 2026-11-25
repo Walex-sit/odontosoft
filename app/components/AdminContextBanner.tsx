@@ -65,19 +65,19 @@ export function AdminContextBanner() {
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs sm:text-sm">
         {/* Identificação da Clínica */}
         <div className="flex items-center gap-2.5 w-full md:w-auto min-w-0">
-          <div className="p-1.5 rounded-lg bg-amber-900/60 border border-amber-400/40 text-amber-200 shrink-0">
-            <Building2 className="h-4 w-4" />
+          <div className="p-1.5 rounded-lg border border-[var(--super-text)]/40 text-[var(--super-text)] shrink-0">
+            <Building2 className="h-3.5 w-3.5" />
           </div>
           <div className="flex flex-col min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-extrabold uppercase tracking-wider text-[10px] bg-black/30 px-2 py-0.5 rounded text-amber-200 border border-amber-400/30">
+              <span className="font-extrabold uppercase tracking-wider text-xs bg-black/25 px-2 py-0.5 rounded text-[var(--super-text)] border border-[var(--super-text)]/30">
                 Super Admin • Contexto de Clínica
               </span>
               <span className="font-bold text-white truncate max-w-[200px] sm:max-w-xs" title={clinica.nome}>
                 {clinica.nome || 'Clínica Selecionada'}
               </span>
             </div>
-            <span className="text-[10px] text-amber-100/80 font-mono truncate">
+            <span className="text-xs text-[var(--super-text)]/90 font-mono truncate">
               ID: {clinica.id}
             </span>
           </div>

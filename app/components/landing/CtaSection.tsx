@@ -4,7 +4,7 @@ export default function CtaSection() {
   return (
     <section className="py-24 px-6 bg-white" id="comecar">
       <div className="max-w-4xl mx-auto">
-        <div className="relative rounded-3xl bg-[var(--primary)] p-12 sm:p-16 text-center overflow-hidden shadow-sm">
+        <div className="relative rounded-3xl bg-[var(--primary-fill)] p-12 sm:p-16 text-center overflow-hidden shadow-sm">
           {/* Background decoration */}
           <div
             aria-hidden

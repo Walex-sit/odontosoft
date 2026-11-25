@@ -15,7 +15,7 @@ const features = [
       'Lembretes e reagendamento em 1 clique',
       'Sincronização em tempo real',
     ],
-    accentColor: 'bg-[var(--primary)]',
+    accentColor: 'bg-[var(--primary-fill)]',
     lightBg: 'bg-[var(--primary-subtle)]',
     textColor: 'text-[var(--primary)]',
     previewContent: <AgendaPreview />,
@@ -32,7 +32,7 @@ const features = [
       'Prescrições e atestados digitais',
       'Histórico completo do paciente',
     ],
-    accentColor: 'bg-[var(--primary)]',
+    accentColor: 'bg-[var(--primary-fill)]',
     lightBg: 'bg-[var(--primary-subtle)]',
     textColor: 'text-[var(--primary)]',
     previewContent: <ProntuarioPreview />,
@@ -84,9 +84,9 @@ function AgendaPreview() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-semibold text-[var(--text-secondary)] truncate">{apt.name}</div>
-            <div className="text-[10px] text-[var(--text-muted)]">{apt.type}</div>
+            <div className="text-xs text-[var(--text-muted)]">{apt.type}</div>
           </div>
-          <div className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${apt.status === 'confirmed' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+          <div className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${apt.status === 'confirmed' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
             <span className={`w-1 h-1 rounded-full ${apt.status === 'confirmed' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
             {apt.status === 'confirmed' ? 'Confirmado' : 'Pendente'}
           </div>
@@ -101,7 +101,7 @@ function ProntuarioPreview() {
     <div className="flex flex-col gap-3 p-4">
       {/* Patient info */}
       <div className="flex items-center gap-3 mb-1">
-        <div className="w-10 h-10 rounded-full bg-[var(--primary)] flex items-center justify-center text-[var(--on-primary)] font-bold">M</div>
+        <div className="w-10 h-10 rounded-full bg-[var(--primary-fill)] flex items-center justify-center text-[var(--on-primary)] font-bold">M</div>
         <div>
           <div className="text-sm font-semibold text-[var(--text-secondary)]">Maria Silva, 34 anos</div>
           <div className="text-xs text-[var(--text-muted)]">Última visita: 12/09/2025</div>
@@ -109,7 +109,7 @@ function ProntuarioPreview() {
       </div>
       {/* Odontograma digital */}
       <div className="rounded-xl border border-[var(--border)] bg-white p-3">
-        <div className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2">Odontograma Digital</div>
+        <div className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2">Odontograma Digital</div>
         <div className="grid grid-cols-8 gap-1">
           {Array.from({ length: 32 }).map((_, i) => {
             const isAffected = [3, 7, 12, 18, 24, 29].includes(i)
@@ -117,7 +117,7 @@ function ProntuarioPreview() {
             return (
               <div
                 key={i}
-                className={`aspect-square rounded-md flex items-center justify-center text-[8px] font-bold border ${
+                className={`aspect-square rounded-md flex items-center justify-center text-xs font-bold border ${
                   isAffected
                     ? 'bg-red-100 border-red-200 text-red-600'
                     : isTreated
@@ -132,7 +132,7 @@ function ProntuarioPreview() {
         </div>
         <div className="flex gap-3 mt-2">
           {[{ color: 'bg-red-400', label: 'Afetado' }, { color: 'bg-emerald-400', label: 'Tratado' }, { color: 'bg-[var(--border)]', label: 'Saudável' }].map(l => (
-            <div key={l.label} className="flex items-center gap-1 text-[9px] text-[var(--text-muted)]">
+            <div key={l.label} className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
               <div className={`w-2 h-2 rounded-sm ${l.color}`} />
               {l.label}
             </div>
@@ -141,9 +141,9 @@ function ProntuarioPreview() {
       </div>
       {/* Última evolução */}
       <div className="rounded-xl border border-[var(--border)] bg-white p-3">
-        <div className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-1.5">Última Evolução Clínica</div>
+        <div className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-1.5">Última Evolução Clínica</div>
         <div className="text-xs text-[var(--text-secondary)] leading-relaxed">Paciente compareceu para procedimento de limpeza e raspagem supra-gengival. Sem intercorrências. Prescrito enxaguante...</div>
-        <div className="text-[10px] text-[var(--text-muted)] mt-1.5">Dr. Paulo Henrique — 12/09/2025 às 14:30</div>
+        <div className="text-xs text-[var(--text-muted)] mt-1.5">Dr. Paulo Henrique — 12/09/2025 às 14:30</div>
       </div>
     </div>
   )
@@ -165,35 +165,35 @@ function FinanceiroPreview() {
           { label: 'Lucro líquido', value: 'R$ 32.800', trend: '+18%', up: true },
         ].map((kpi) => (
           <div key={kpi.label} className="rounded-xl border border-[var(--border)] bg-white p-2.5">
-            <div className="text-[10px] text-[var(--text-muted)] mb-0.5">{kpi.label}</div>
+            <div className="text-xs text-[var(--text-muted)] mb-0.5">{kpi.label}</div>
             <div className="text-sm font-bold text-[var(--text-primary)]">{kpi.value}</div>
-            <div className={`text-[10px] font-semibold ${kpi.up ? 'text-emerald-600' : 'text-red-500'}`}>{kpi.trend}</div>
+            <div className={`text-xs font-semibold ${kpi.up ? 'text-emerald-600' : 'text-red-500'}`}>{kpi.trend}</div>
           </div>
         ))}
       </div>
       {/* Bar chart */}
       <div className="rounded-xl border border-[var(--border)] bg-white p-3">
-        <div className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-3">Receita Mensal (R$ mil)</div>
+        <div className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-3">Receita Mensal (R$ mil)</div>
         <div className="flex items-end gap-2 h-20">
           {months.map((month, i) => (
             <div key={month} className="flex-1 flex flex-col items-center gap-1">
               <div className="w-full rounded-t-md bg-[var(--success)] transition-all"
                    style={{ height: `${(values[i] / max) * 100}%` }} />
-              <div className="text-[9px] text-[var(--text-muted)] font-medium">{month}</div>
+              <div className="text-xs text-[var(--text-muted)] font-medium">{month}</div>
             </div>
           ))}
         </div>
       </div>
       {/* Split chart */}
       <div className="rounded-xl border border-[var(--border)] bg-white p-3">
-        <div className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2">Comissões por Dentista</div>
+        <div className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2">Comissões por Dentista</div>
         {[
           { name: 'Dr. Paulo Henrique', pct: 40, amount: 'R$ 19.280' },
           { name: 'Dra. Camila Rocha', pct: 35, amount: 'R$ 16.870' },
           { name: 'Clínica', pct: 25, amount: 'R$ 12.050' },
         ].map((item) => (
           <div key={item.name} className="mb-1.5 last:mb-0">
-            <div className="flex justify-between text-[10px] mb-0.5">
+            <div className="flex justify-between text-xs mb-0.5">
               <span className="text-[var(--text-secondary)] font-medium">{item.name}</span>
               <span className="text-[var(--text-muted)]">{item.amount}</span>
             </div>

@@ -64,8 +64,8 @@ export default function AnamneseDigitalModal({ pacienteNome = '', isOpen, onClos
 
   const Checkbox = ({ label, field }: { label: string; field: keyof Anamnese }) => (
     <label className="flex items-center gap-3 cursor-pointer group">
-      <button type="button" onClick={() => set(field, !form[field])} className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-all ${form[field] ? 'bg-[var(--primary)] border-[var(--primary)]/40' : 'border-[var(--border-medium)]  group-hover:border-[var(--primary)]/40'}`}>
-        {form[field] && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+      <button type="button" onClick={() => set(field, !form[field])} className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-all ${form[field] ? 'bg-[var(--primary-fill)] border-[var(--primary)]/40' : 'border-[var(--border-medium)]  group-hover:border-[var(--primary)]/40'}`}>
+        {form[field] && <CheckCircle2 className="h-3.5 w-3.5 text-[var(--on-primary)]" />}
       </button>
       <span className="text-sm font-medium text-[var(--text-secondary)]">{label}</span>
     </label>
@@ -161,7 +161,7 @@ export default function AnamneseDigitalModal({ pacienteNome = '', isOpen, onClos
         {/* Footer */}
         <div className="p-6 border-t border-[var(--border)] flex gap-3 shrink-0">
           <button onClick={onClose} className="flex-1 py-3 bg-[var(--bg-base)] hover:bg-[var(--border)] text-[var(--text-secondary)] rounded-xl font-bold text-sm transition-colors">Cancelar</button>
-          <button onClick={handleSave} disabled={!form.assinado} className="flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2">
+          <button onClick={handleSave} disabled={!form.assinado} className="flex-1 py-3 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2">
             <Save className="h-4 w-4" /> Salvar Anamnese
           </button>
         </div>

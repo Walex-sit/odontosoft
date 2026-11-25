@@ -173,7 +173,7 @@ export default function SuperAdminClinicasPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs sm:text-sm">
                 <thead>
-                  <tr className="border-b border-[var(--border)] bg-[var(--bg-base)] text-[11px] font-extrabold uppercase text-[var(--text-secondary)] tracking-wider">
+                  <tr className="border-b border-[var(--border)] bg-[var(--bg-base)] text-xs font-extrabold uppercase text-[var(--text-secondary)] tracking-wider">
                     <th className="px-5 py-3.5">Clínica / CNPJ</th>
                     <th className="px-5 py-3.5">Plano & Status</th>
                     <th className="px-5 py-3.5">Usuários</th>
@@ -202,7 +202,7 @@ export default function SuperAdminClinicasPage() {
                               <span className="font-bold text-[var(--text-primary)]">
                                 {c.nome}
                               </span>
-                              <span className="text-[11px] text-[var(--text-secondary)] font-mono">
+                              <span className="text-xs text-[var(--text-secondary)] font-mono">
                                 {c.cnpj || c.email || c.id}
                               </span>
                             </div>
@@ -210,18 +210,18 @@ export default function SuperAdminClinicasPage() {
 
                           <td className="px-5 py-3.5">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-[var(--bg-base)] text-[var(--text-primary)] border border-[var(--border)]">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-extrabold uppercase tracking-wide bg-[var(--bg-base)] text-[var(--text-primary)] border border-[var(--border)]">
                                 {c.plano}
                               </span>
                               <span
-                                className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wide border ${
+                                className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-extrabold uppercase tracking-wide border ${
                                   isAtivo
-                                    ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                                    ? 'bg-[var(--bg-surface)] text-[var(--success)] border-[var(--success)]/45'
                                     : isTrial
-                                    ? 'bg-[var(--primary-subtle)]/5 text-[var(--primary)] border-[var(--primary)]/20'
+                                    ? 'bg-[var(--bg-surface)] text-[var(--primary)] border-[var(--primary)]/45'
                                     : isInadimplente
-                                    ? 'bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800'
-                                    : 'bg-[var(--bg-base)] text-[var(--text-secondary)] border-[var(--border)]'
+                                    ? 'bg-[var(--bg-surface)] text-[var(--error)] border-[var(--error)]/45'
+                                    : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border-[var(--border)]'
                                 }`}
                               >
                                 {c.status_assinatura}
@@ -242,10 +242,10 @@ export default function SuperAdminClinicasPage() {
                           <td className="px-5 py-3.5">
                             <button
                               onClick={() => handleToggleAtivo(c)}
-                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                                 c.ativo
-                                  ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100'
-                                  : 'bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 hover:bg-red-100'
+                                  ? 'bg-[var(--bg-surface)] text-[var(--success)] border-[var(--success)]/45 hover:bg-[var(--bg-hover)]'
+                                  : 'bg-[var(--bg-surface)] text-[var(--error)] border-[var(--error)]/45 hover:bg-[var(--bg-hover)]'
                               }`}
                               title="Clique para alternar o bloqueio operacional"
                             >
@@ -257,7 +257,7 @@ export default function SuperAdminClinicasPage() {
                           <td className="px-5 py-3.5 text-right">
                             <button
                               onClick={() => setSelectedClinicaModal(c)}
-                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--primary)] hover:opacity-90 text-[var(--on-primary)] text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] text-xs font-bold active:scale-95 transition-all cursor-pointer"
                             >
                               <ExternalLink className="h-3.5 w-3.5" />
                               <span>Acessar clínica</span>

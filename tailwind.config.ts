@@ -27,10 +27,12 @@ const config: Config = {
         "text-sec":  "var(--text-secondary)",
         "text-mut":  "var(--text-muted)",
 
-        primary:   "var(--primary)",
-        "primary-hover": "var(--primary-hover)",
-        "on-primary": "var(--on-primary)",
-        "primary-subtle": "var(--primary-subtle)",
+        primary:              "var(--primary)",
+        "primary-hover":      "var(--primary-hover)",
+        "primary-fill":       "var(--primary-fill)",
+        "primary-fill-hover": "var(--primary-fill-hover)",
+        "on-primary":         "var(--on-primary)",
+        "primary-subtle":     "var(--primary-subtle)",
 
         success:   "var(--success)",
         "success-bg": "var(--success-bg)",

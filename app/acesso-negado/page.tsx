@@ -25,7 +25,7 @@ export default function AcessoNegado() {
 
         <button
           onClick={() => router.replace('/overview')}
-          className="px-6 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-sm font-bold rounded-xl transition-all border border-[var(--primary)] active:scale-95"
+          className="px-6 py-2.5 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] text-sm font-bold rounded-xl transition-all border border-[var(--primary)] active:scale-95"
         >
           Voltar ao Dashboard
         </button>

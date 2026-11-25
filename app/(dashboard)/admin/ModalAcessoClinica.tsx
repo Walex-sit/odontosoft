@@ -78,12 +78,12 @@ export function ModalAcessoClinica({ clinica, onClose }: ModalAcessoClinicaProps
           <X className="h-5 w-5" />
         </button>
 
-        <div className="flex items-center gap-3.5">
-          <div className="h-12 w-12 rounded-2xl bg-[var(--super-bg)] text-[var(--super-text)] border border-[var(--super-border)] flex items-center justify-center shrink-0">
-            <Building2 className="h-6 w-6" />
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-xl bg-[var(--bg-surface)] text-[var(--warning)] border border-[var(--warning)]/45 flex items-center justify-center shrink-0">
+            <Building2 className="h-4.5 w-4.5" />
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--warning)]">
               Acesso Contextual Seguro
             </span>
             <h3 className="text-lg font-black text-[var(--text-primary)] leading-tight">
@@ -92,14 +92,14 @@ export function ModalAcessoClinica({ clinica, onClose }: ModalAcessoClinicaProps
           </div>
         </div>
 
-        <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+        <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
           Você entrará no ambiente operacional desta clínica mantendo sua função de <b>Super Admin</b>. 
           Todas as visualizações e operações serão vinculadas a este tenant temporariamente. 
           Você poderá retornar ao Painel Global a qualquer momento.
         </p>
 
         <div className="space-y-2 pt-1">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">
+          <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-secondary)]">
             Selecione o módulo para iniciar:
           </span>
           <div className="grid grid-cols-2 gap-2 text-xs">
@@ -110,16 +110,16 @@ export function ModalAcessoClinica({ clinica, onClose }: ModalAcessoClinicaProps
                   key={mod.name}
                   onClick={() => handleAcessar(mod.path)}
                   disabled={conectando}
-                  className="flex items-start gap-2.5 p-3 rounded-2xl border border-[var(--border)]/80  bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:border-amber-300 dark:hover:border-amber-700 transition-all text-left cursor-pointer group active:scale-95 disabled:opacity-50"
+                  className="flex items-start gap-2.5 p-3 rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] hover:border-[var(--warning)]/45 transition-all text-left cursor-pointer group active:scale-95 disabled:opacity-50"
                 >
-                  <div className="p-1.5 rounded-lg bg-[var(--bg-surface)] text-[var(--text-secondary)] group-hover:text-amber-600 shadow-2xs shrink-0">
+                  <div className="p-1.5 rounded-lg bg-[var(--bg-base)] text-[var(--text-secondary)] group-hover:text-[var(--warning)] border border-[var(--border)] shrink-0">
                     <Icon className="h-4 w-4" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="font-bold text-[var(--text-primary)] group-hover:text-amber-900 dark:group-hover:text-amber-300">
+                    <span className="font-bold text-[var(--text-primary)] group-hover:text-[var(--warning)]">
                       {mod.name}
                     </span>
-                    <span className="text-[10px] text-[var(--text-muted)] font-normal truncate">
+                    <span className="text-xs text-[var(--text-secondary)] font-normal truncate">
                       {mod.desc}
                     </span>
                   </div>

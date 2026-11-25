@@ -132,7 +132,7 @@ export default function MinhaConta() {
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Nome Completo</label>
                 {nome.trim() !== (profile?.nome || '') && (
-                  <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">Alterações pendentes</span>
+                  <span className="text-xs font-bold text-amber-600 dark:text-amber-400">Alterações pendentes</span>
                 )}
               </div>
               <div className="flex items-center gap-2">
@@ -147,7 +147,7 @@ export default function MinhaConta() {
                   type="button"
                   onClick={atualizarNome}
                   disabled={salvandoNome || !nome.trim() || nome.trim() === (profile?.nome || '')}
-                  className="px-4 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--border)] disabled:text-[var(--text-muted)] dark:disabled:bg-[var(--bg-surface)] dark:disabled:text-[var(--text-secondary)] text-[var(--on-primary)] rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0"
+                  className="px-4 py-3 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:bg-[var(--border)] disabled:text-[var(--text-muted)] dark:disabled:bg-[var(--bg-surface)] dark:disabled:text-[var(--text-secondary)] text-[var(--on-primary)] rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0"
                 >
                   {salvandoNome ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   Salvar
@@ -289,7 +289,7 @@ export default function MinhaConta() {
             <button
               onClick={alterarSenha}
               disabled={salvando || !novaSenha || !confirmaSenha}
-              className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] disabled:shadow-none text-[var(--on-primary)] py-3.5 rounded-xl font-bold text-sm transition-all  flex items-center justify-center gap-2"
+              className="w-full bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] disabled:shadow-none text-[var(--on-primary)] py-3.5 rounded-xl font-bold text-sm transition-all  flex items-center justify-center gap-2"
             >
               {salvando ? (
                 <>

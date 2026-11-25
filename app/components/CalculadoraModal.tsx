@@ -108,7 +108,7 @@ export default function CalculadoraModal({ isOpen, onClose }: CalculadoraModalPr
                 onClick={() => handleBtnClick(btn)}
                 className={`py-3 rounded-2xl font-bold text-base transition-all active:scale-95 shadow-sm ${
                   btn === '='
-                    ? 'col-span-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] '
+                    ? 'col-span-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] '
                     : isOp
                     ? 'bg-[var(--primary-subtle)] text-[var(--primary)] hover:bg-[var(--primary-subtle)]'
                     : isClear

@@ -161,7 +161,7 @@ export default function SocialProofSection() {
           {trustBadges.map((badge) => (
             <span
               key={badge.label}
-              className="inline-flex items-center gap-1.5 bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-secondary)] text-[11px] sm:text-xs font-semibold px-3.5 py-1.5 rounded-xl"
+              className="inline-flex items-center gap-1.5 bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-secondary)] text-xs sm:text-xs font-semibold px-3.5 py-1.5 rounded-xl"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
@@ -189,7 +189,7 @@ export default function SocialProofSection() {
               </div>
 
               {/* Badge */}
-              <span className={`relative text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border mb-3 ${pillar.badgeColor}`}>
+              <span className={`relative text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border mb-3 ${pillar.badgeColor}`}>
                 {pillar.badge}
               </span>
 
@@ -213,7 +213,7 @@ export default function SocialProofSection() {
                     >
                       {stat.value}
                     </span>
-                    <span className="text-[10px] text-[var(--text-muted)] font-medium leading-tight">
+                    <span className="text-xs text-[var(--text-muted)] font-medium leading-tight">
                       {stat.label}
                     </span>
                   </div>
@@ -242,7 +242,7 @@ export default function SocialProofSection() {
                   <h4 className="text-base font-bold text-[var(--text-primary)]">
                     Segurança e Privacidade por Princípio (Privacy by Design)
                   </h4>
-                  <span className="text-[10px] font-semibold bg-emerald-100/70 text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+                  <span className="text-xs font-semibold bg-emerald-100/70 text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
                     Padrão de Saúde
                   </span>
                 </div>
@@ -253,7 +253,7 @@ export default function SocialProofSection() {
                   {['LGPD em Saúde', 'Sigilo Odontológico', 'Backups Redundantes', 'Isolamento de Base', 'Trilhas de Auditoria'].map((tag) => (
                     <span
                       key={tag}
-                      className="text-[11px] font-medium text-[var(--text-secondary)] bg-white border border-[var(--border)]/80 px-2.5 py-1 rounded-lg shadow-2xs"
+                      className="text-xs font-medium text-[var(--text-secondary)] bg-white border border-[var(--border)]/80 px-2.5 py-1 rounded-lg shadow-2xs"
                     >
                       {tag}
                     </span>

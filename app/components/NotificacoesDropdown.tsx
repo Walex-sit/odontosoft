@@ -77,7 +77,7 @@ export default function NotificacoesDropdown({
       case 'appointment':
         return {
           icon: Calendar,
-          bg: 'bg-[var(--primary-subtle)]/10  text-[var(--primary)] border-[var(--primary)]/30',
+          bg: 'bg-[var(--primary-subtle)] text-[var(--primary)] border-[var(--primary)]/30',
         }
       case 'financial':
         return {
@@ -119,7 +119,7 @@ export default function NotificacoesDropdown({
               <h3 className="text-sm font-extrabold text-[var(--text-primary)] flex items-center gap-2">
                 Notificações
                 {unreadCount > 0 && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">
                     {unreadCount} {unreadCount === 1 ? 'nova' : 'novas'}
                   </span>
                 )}
@@ -173,7 +173,7 @@ export default function NotificacoesDropdown({
                 >
                   {/* Unread Indicator */}
                   {item.unread && (
-                    <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[var(--primary)]" />
+                    <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[var(--primary-fill)]" />
                   )}
 
                   {/* Icon Wrapper */}
@@ -193,7 +193,7 @@ export default function NotificacoesDropdown({
                       >
                         {item.title}
                       </p>
-                      <span className="text-[10px] text-[var(--text-muted)] font-medium shrink-0">
+                      <span className="text-xs text-[var(--text-muted)] font-medium shrink-0">
                         {item.time}
                       </span>
                     </div>
@@ -202,7 +202,7 @@ export default function NotificacoesDropdown({
                     </p>
 
                     {item.link && (
-                      <div className="mt-2 flex items-center gap-1 text-[11px] font-bold text-[var(--primary)] hover:underline">
+                      <div className="mt-2 flex items-center gap-1 text-xs font-bold text-[var(--primary)] hover:underline">
                         <span>Ver detalhes</span>
                         <ChevronRight className="h-3 w-3" />
                       </div>

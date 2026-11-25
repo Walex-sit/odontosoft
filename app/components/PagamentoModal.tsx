@@ -131,7 +131,7 @@ export default function PagamentoModal({ isOpen, onClose }: PagamentoModalProps)
               type="submit"
               form="pagamento-form"
               disabled={loading}
-              className="px-6 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[150px]"
+              className="px-6 py-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[150px]"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Registrar Lançamento'}
             </button>

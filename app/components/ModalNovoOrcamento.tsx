@@ -97,7 +97,7 @@ export default function ModalNovoOrcamento({ pacienteId, isOpen, onClose, onSucc
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] font-bold text-sm rounded-xl transition-all flex items-center gap-2  disabled:opacity-50"
+              className="px-5 py-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] font-bold text-sm rounded-xl transition-all flex items-center gap-2  disabled:opacity-50"
             >
               {loading && <Loader2 size={16} className="animate-spin" />}
               Salvar Orçamento

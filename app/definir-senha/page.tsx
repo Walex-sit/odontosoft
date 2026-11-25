@@ -93,7 +93,7 @@ function DefinirSenhaForm() {
       <form onSubmit={handleSubmit} className="space-y-5">
         {emailParam && (
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
               E-mail Convidado
             </label>
             <input
@@ -106,7 +106,7 @@ function DefinirSenhaForm() {
         )}
 
         <div>
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+          <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
             Nova Palavra-passe
           </label>
           <div className="relative">
@@ -130,7 +130,7 @@ function DefinirSenhaForm() {
         </div>
 
         <div>
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+          <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
             Confirmar Palavra-passe
           </label>
           <input
@@ -147,7 +147,7 @@ function DefinirSenhaForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-[var(--on-primary)] font-bold text-sm py-3 px-5 rounded-2xl  transition-all active:scale-[0.99] mt-2"
+          className="w-full flex items-center justify-center gap-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:opacity-50 text-[var(--on-primary)] font-bold text-sm py-3 px-5 rounded-2xl  transition-all active:scale-[0.99] mt-2"
         >
           {loading ? (
             <>

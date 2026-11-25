@@ -59,7 +59,7 @@ function SectionHeader({ title, description }: { title: string; description?: st
         {title}
       </h2>
       {description && (
-        <p className="text-[11px] text-[var(--text-muted)] mt-0.5 font-medium">{description}</p>
+        <p className="text-xs text-[var(--text-muted)] mt-0.5 font-medium">{description}</p>
       )}
     </div>
   )
@@ -115,11 +115,11 @@ function AgendamentosDia({ agendamentos, carregando }: { agendamentos: Agendamen
             <div className="flex-1 min-w-0">
               <div className="font-bold text-xs text-[var(--text-primary)] truncate">{a.paciente_nome}</div>
               {a.procedimento && (
-                <div className="text-[10px] text-[var(--text-muted)] truncate mt-0.5">{a.procedimento}</div>
+                <div className="text-xs text-[var(--text-muted)] truncate mt-0.5">{a.procedimento}</div>
               )}
             </div>
             {/* Status */}
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${sc.color}`}>
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold border shrink-0 ${sc.color}`}>
               {sc.icon}
               {sc.label}
             </span>
@@ -163,11 +163,11 @@ function AlertasRapidos({
           <Package size={14} className="text-amber-500 shrink-0" />
           <div className="flex-1 min-w-0">
             <div className="text-xs font-bold text-[var(--text-primary)] truncate">{e.nome}</div>
-            <div className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5">
+            <div className="text-xs text-amber-600 dark:text-amber-400 font-semibold mt-0.5">
               Estoque crítico: {e.quantidade} {e.unidade} (mín. {e.minimo})
             </div>
           </div>
-          <Link href="/estoque" className="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 shrink-0 flex items-center gap-0.5 transition-colors">
+          <Link href="/estoque" className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 shrink-0 flex items-center gap-0.5 transition-colors">
             Ver <ArrowUpRight size={11} />
           </Link>
         </div>
@@ -179,11 +179,11 @@ function AlertasRapidos({
             <AlertTriangle size={14} className="text-rose-500 shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="text-xs font-bold text-[var(--text-primary)] truncate">{d.descricao}</div>
-              <div className="text-[10px] text-rose-600 dark:text-rose-400 font-semibold mt-0.5">
+              <div className="text-xs text-rose-600 dark:text-rose-400 font-semibold mt-0.5">
                 {formatCurrency(d.valor)} · vencida há {d.dias_atraso} {d.dias_atraso === 1 ? 'dia' : 'dias'}
               </div>
             </div>
-            <Link href="/financeiro" className="text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 shrink-0 flex items-center gap-0.5 transition-colors">
+            <Link href="/financeiro" className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 shrink-0 flex items-center gap-0.5 transition-colors">
               Ver <ArrowUpRight size={11} />
             </Link>
           </div>
@@ -364,7 +364,7 @@ export default function DashboardOverview() {
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2.5 bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-2xl px-3.5 py-2 shadow-2xs transition-all hover:border-[var(--border-medium)] ">
-            <span className="text-[11px] font-extrabold text-[var(--text-muted)] uppercase tracking-wider">Mês:</span>
+            <span className="text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider">Mês:</span>
             <input
               type="month"
               value={mesSelecionado}
@@ -377,7 +377,7 @@ export default function DashboardOverview() {
             <div className="relative">
               <button
                 onClick={() => setExportOpen(!exportOpen)}
-                className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-5 py-2.5 rounded-2xl font-bold text-xs sm:text-sm transition-all  flex items-center gap-2 active:scale-95"
+                className="bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-5 py-2.5 rounded-2xl font-bold text-xs sm:text-sm transition-all  flex items-center gap-2 active:scale-95"
               >
                 <Download size={15} />
                 Exportar
@@ -427,7 +427,7 @@ export default function DashboardOverview() {
                         className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-[var(--border)]"
                       />
                     ) : (
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[var(--primary)] flex items-center justify-center text-[var(--on-primary)] font-black text-xl sm:text-2xl border-2 border-[var(--border)] shrink-0 select-none">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[var(--primary-fill)] flex items-center justify-center text-[var(--on-primary)] font-black text-xl sm:text-2xl border-2 border-[var(--border)] shrink-0 select-none">
                         {initials}
                       </div>
                     )}
@@ -453,7 +453,7 @@ export default function DashboardOverview() {
                         <>
                           <span className="text-[var(--text-secondary)]">•</span>
                           <span className="font-semibold text-[var(--text-secondary)] flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary-fill)]" />
                             {clinicaNome}
                           </span>
                         </>
@@ -487,8 +487,8 @@ export default function DashboardOverview() {
               {/* Contador compacto */}
               <div className="bg-[var(--bg-surface)] rounded-3xl p-5 border border-[var(--border)] shadow-bento">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary-fill)]" />
                     Operacional do Dia
                   </span>
                   <div className="p-2 rounded-xl bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
@@ -501,7 +501,7 @@ export default function DashboardOverview() {
                     <div className="text-3xl font-black text-[var(--text-primary)] tracking-tight leading-none">
                       {carregando ? '...' : metrics?.consultasHoje || 0}
                     </div>
-                    <div className="text-[11px] font-semibold text-[var(--text-secondary)] mt-1">consultas hoje</div>
+                    <div className="text-xs font-semibold text-[var(--text-secondary)] mt-1">consultas hoje</div>
                   </div>
                   <div className="flex-1 space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
@@ -513,7 +513,7 @@ export default function DashboardOverview() {
                     </div>
                     <div className="w-full bg-[var(--bg-base)] h-1.5 rounded-full overflow-hidden">
                       <div
-                        className="bg-[var(--primary)] h-full rounded-full transition-all duration-700"
+                        className="bg-[var(--primary-fill)] h-full rounded-full transition-all duration-700"
                         style={{ width: `${Math.min(metrics?.taxaComparecimento || 0, 100)}%` }}
                       />
                     </div>
@@ -528,7 +528,7 @@ export default function DashboardOverview() {
                     <Clock size={13} className="text-[var(--text-secondary)]" />
                     Próximas consultas
                   </span>
-                  <Link href="/agenda" className="text-[11px] font-bold text-[var(--primary)] hover:text-[var(--primary-hover)] flex items-center gap-0.5 transition-colors">
+                  <Link href="/agenda" className="text-xs font-bold text-[var(--primary)] hover:text-[var(--primary-hover)] flex items-center gap-0.5 transition-colors">
                     Ver agenda <ArrowUpRight size={12} />
                   </Link>
                 </div>
@@ -545,7 +545,7 @@ export default function DashboardOverview() {
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Link href="/agenda" className="group bg-[var(--bg-surface)] border border-[var(--border)] hover:border-[var(--primary)]/40 p-5 sm:p-6 rounded-3xl shadow-bento transition-all flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--primary)]">Operacional</span>
+                  <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--primary)]">Operacional</span>
                   <h3 className="font-extrabold text-[var(--text-primary)] text-lg mt-0.5 group-hover:text-[var(--primary)] transition-colors">Acessar Agenda</h3>
                   <p className="text-[var(--text-secondary)] text-xs sm:text-sm mt-0.5">Visualize e gerencie consultas do dia</p>
                 </div>
@@ -555,7 +555,7 @@ export default function DashboardOverview() {
               </Link>
               <Link href="/pacientes" className="group bg-[var(--bg-surface)] border border-[var(--border)] hover:border-[var(--primary)]/40 p-5 sm:p-6 rounded-3xl shadow-bento transition-all flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--primary)]">Clínica</span>
+                  <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--primary)]">Clínica</span>
                   <h3 className="font-extrabold text-[var(--text-primary)] text-lg mt-0.5 group-hover:text-[var(--primary)] transition-colors">Prontuários e Pacientes</h3>
                   <p className="text-[var(--text-secondary)] text-xs sm:text-sm mt-0.5">Histórico clínico e cadastro de pacientes</p>
                 </div>
@@ -579,8 +579,8 @@ export default function DashboardOverview() {
             {isFinanceiroOrAdmin && (
               <div className="bento-card bento-card-interactive p-6 rounded-3xl shadow-bento flex flex-col justify-between relative overflow-hidden group">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-extrabold text-[var(--text-muted)] uppercase tracking-wider">Faturamento Mensal</span>
-                  <div className="h-10 w-10 bg-emerald-50 text-emerald-600 border border-emerald-200/70 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900/60 rounded-2xl flex items-center justify-center shrink-0">
+                  <span className="text-xs font-extrabold text-[var(--text-secondary)] uppercase tracking-wider">Faturamento Mensal</span>
+                  <div className="h-10 w-10 bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20 rounded-2xl flex items-center justify-center shrink-0">
                     <TrendingUp size={18} />
                   </div>
                 </div>
@@ -742,7 +742,7 @@ export default function DashboardOverview() {
                       </div>
                       {/* Saldo complementar no gráfico */}
                       {saldoLiquido !== null && !carregando && (
-                        <div className="text-[11px] font-semibold text-[var(--text-muted)]">
+                        <div className="text-xs font-semibold text-[var(--text-muted)]">
                           Saldo líquido:{' '}
                           <span className={`font-black ${saldoLiquido >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                             {formatCurrency(saldoLiquido)}

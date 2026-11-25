@@ -32,7 +32,7 @@ export function ErrorState({
       {onRetry && (
         <button
           onClick={onRetry}
-          className="mt-5 inline-flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-xs font-bold px-4 py-2 rounded-xl transition-all active:scale-95"
+          className="mt-5 inline-flex items-center gap-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] text-xs font-bold px-4 py-2 rounded-xl transition-all active:scale-95"
         >
           <RefreshCw size={13} />
           Tentar Novamente

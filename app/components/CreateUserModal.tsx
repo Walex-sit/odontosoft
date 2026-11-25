@@ -136,7 +136,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
             </div>
 
             <div className="p-3.5 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] rounded-2xl border border-[var(--border)] text-left">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+              <p className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
                 Link de Primeiro Acesso (Definir Senha)
               </p>
               <div className="flex items-center gap-2">
@@ -149,7 +149,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                 <button
                   type="button"
                   onClick={handleCopyLink}
-                  className="px-3 py-1.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shrink-0"
+                  className="px-3 py-1.5 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm shrink-0"
                 >
                   {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                   {copied ? 'Copiado' : 'Copiar'}
@@ -160,7 +160,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
             <button
               type="button"
               onClick={handleFinishInvite}
-              className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] font-bold text-sm py-3 rounded-2xl transition-all"
+              className="w-full bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] font-bold text-sm py-3 rounded-2xl transition-all"
             >
               Concluir
             </button>
@@ -198,7 +198,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
                   Nome Completo
                 </label>
                 <input
@@ -212,7 +212,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
                   E-mail Profissional
                 </label>
                 <input
@@ -227,7 +227,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
 
               {mode === 'manual' && (
                 <div>
-                  <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
                     Senha Provisória
                   </label>
                   <div className="relative">
@@ -252,7 +252,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
               )}
 
               <div>
-                <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
                   Cargo / Função (Permissões RBAC)
                 </label>
                 <select
@@ -270,7 +270,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
 
               {formData.role === 'dentista' && (
                 <div>
-                  <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">
                     Especialidade
                   </label>
                   <input
@@ -296,7 +296,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-xs transition-all  active:scale-95"
+                className="flex items-center gap-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:opacity-50 text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-xs transition-all  active:scale-95"
               >
                 {isSaving ? (
                   <span className="flex items-center gap-2">

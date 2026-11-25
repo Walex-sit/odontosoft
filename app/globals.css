@@ -23,10 +23,12 @@
   --text-muted:     #596470;   /* Ajustado de #7A8694 (3.27:1) para #596470 (5.33:1 AA) */
 
   /* ── Brand / Accent (petróleo) ────────────────────────────────────────── */
-  --primary:        #0F6E7A;
-  --primary-hover:  #0C5B65;
-  --primary-subtle: rgba(15, 110, 122, 0.08);
-  --on-primary:     #ffffff;
+  --primary:            #0F6E7A;
+  --primary-hover:      #0C5B65;
+  --primary-fill:       #0F6E7A;
+  --primary-fill-hover: #0C5B65;
+  --primary-subtle:     rgba(15, 110, 122, 0.08);
+  --on-primary:         #ffffff;
 
   /* ── Semânticas de estado (nunca decorativas — WCAG AA >= 4.5:1) ────── */
   --success:        #266D44;   /* Ajustado de #2D7D4F (4.46:1) para #266D44 (5.43:1 AA) */
@@ -63,10 +65,13 @@
   --text-muted:     #A0A8AF;   /* Ajustado de #6B7580 (3.84:1) para #A0A8AF (6.73:1 AA) */
 
   /* ── Brand / Accent (petróleo claro no escuro) ────────────────────────── */
-  --primary:        #4FB3BF;
-  --primary-hover:  #3D9BAA;
-  --primary-subtle: rgba(79, 179, 191, 0.12);
-  --on-primary:     #0F1417;
+  /* #4FB3BF para texto, links e ícones; #3C9AA6 para botões sólidos e barras */
+  --primary:            #4FB3BF;
+  --primary-hover:      #67C1CC;
+  --primary-fill:       #3C9AA6;
+  --primary-fill-hover: #46A7B3;
+  --primary-subtle:     rgba(79, 179, 191, 0.12);
+  --on-primary:         #0F1417;
 
   /* ── Semânticas de estado (WCAG AA >= 4.5:1) ────────────────────────── */
   --success:        #4CAF82;
@@ -101,9 +106,11 @@
   --color-text-primary:   var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted:     var(--text-muted);
-  --color-primary:        var(--primary);
-  --color-primary-hover:  var(--primary-hover);
-  --color-on-primary:     var(--on-primary);
+  --color-primary:            var(--primary);
+  --color-primary-hover:      var(--primary-hover);
+  --color-primary-fill:       var(--primary-fill);
+  --color-primary-fill-hover: var(--primary-fill-hover);
+  --color-on-primary:         var(--on-primary);
   --color-success:        var(--success);
   --color-warning:        var(--warning);
   --color-error:          var(--error);
@@ -188,9 +195,9 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Botões ─────────────────────────────────────────────────────────── */
 .btn-primary {
-  background: var(--primary);
+  background: var(--primary-fill);
   color: var(--on-primary);
-  border: 1px solid var(--primary);
+  border: 1px solid var(--primary-fill);
   border-radius: 0.75rem;
   font-weight: 700;
   padding: 0.5rem 1.25rem;
@@ -199,8 +206,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--primary-hover);
-  border-color: var(--primary-hover);
+  background: var(--primary-fill-hover);
+  border-color: var(--primary-fill-hover);
 }
 
 .btn-primary:focus-visible {
@@ -289,8 +296,8 @@ main {
   --fc-today-bg-color:            var(--primary-subtle);
   --fc-neutral-bg-color:          var(--bg-base);
   --fc-page-bg-color:             transparent;
-  --fc-event-bg-color:            var(--primary);
-  --fc-event-border-color:        var(--primary);
+  --fc-event-bg-color:            var(--primary-fill);
+  --fc-event-border-color:        var(--primary-fill);
   --fc-event-text-color:          var(--on-primary);
 }
 
@@ -454,8 +461,8 @@ main {
 .dark-calendar .fc .fc-button-primary:not(:disabled).fc-button-active,
 .dark-calendar .fc .fc-button-primary:not(:disabled):active {
   color: var(--on-primary);
-  background-color: var(--primary);
-  border-color: var(--primary);
+  background-color: var(--primary-fill);
+  border-color: var(--primary-fill);
 }
 
 .dark-calendar .fc .fc-scrollgrid {

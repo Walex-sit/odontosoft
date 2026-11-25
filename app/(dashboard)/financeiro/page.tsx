@@ -389,7 +389,7 @@ export default function FinanceiroPage() {
           <div className="flex gap-2.5 self-start sm:self-auto">
             <button
               onClick={() => setShowNewModal('receita')}
-              className="h-10 px-4 sm:px-5 rounded-2xl font-bold text-xs sm:text-sm bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] transition-all  flex items-center gap-2 active:scale-95"
+              className="h-10 px-4 sm:px-5 rounded-2xl font-bold text-xs sm:text-sm bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] transition-all  flex items-center gap-2 active:scale-95"
             >
               <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Nova </span>Receita
             </button>
@@ -443,11 +443,11 @@ export default function FinanceiroPage() {
               ].map((kpi, i) => {
                 const Icon = kpi.icon
                 const colorMap: Record<string, string> = {
-                  blue: 'bg-[var(--primary-subtle)] text-[var(--primary)]  ',
-                  green: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400',
-                  amber: 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400',
-                  red: 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400',
-                  cyan: 'bg-[var(--primary-subtle)] text-[var(--primary)] dark:bg-[var(--primary-subtle)] dark:text-[var(--primary)]',
+                  blue: 'bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20',
+                  green: 'bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20',
+                  amber: 'bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border)]',
+                  red: 'bg-[var(--bg-base)] text-[var(--text-secondary)] border border-[var(--border)]',
+                  cyan: 'bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/20',
                 }
 
                 return (
@@ -463,7 +463,7 @@ export default function FinanceiroPage() {
                     <div className="mt-auto">
                       <p className="text-2xl font-black text-[var(--text-primary)] tracking-tight">{kpi.value}</p>
                       <div className="flex items-center gap-1.5 mt-2">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
                           kpi.trend === 'up' ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/50' :
                           kpi.trend === 'down' ? 'bg-rose-50 text-rose-700 border-rose-200/60 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800/50' :
                           'bg-amber-50 text-amber-700 border-amber-200/60 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/50'
@@ -486,7 +486,7 @@ export default function FinanceiroPage() {
                 </div>
                 <div className="flex items-center gap-3 text-xs font-bold">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
-                    <span className="h-2 w-2 rounded-full bg-[var(--primary)]"></span> Entradas
+                    <span className="h-2 w-2 rounded-full bg-[var(--primary-fill)]"></span> Entradas
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/60">
                     <span className="h-2 w-2 rounded-full bg-rose-500"></span> Saídas
@@ -524,7 +524,7 @@ export default function FinanceiroPage() {
                       <div key={i} className="flex-1 flex flex-col items-center gap-2">
                         <div className="w-full flex gap-1.5 items-end justify-center h-48">
                           <div
-                            className="w-5 bg-[var(--primary)] rounded-t-xl transition-all duration-500 hover:bg-[var(--primary-hover)]"
+                            className="w-5 bg-[var(--primary-fill)] rounded-t-xl transition-all duration-500 hover:bg-[var(--primary-fill-hover)]"
                             style={{ height: `${(d.entradas / maxVal) * 100}%` }}
                             title={`Entradas: ${fmt(d.entradas)}`}
                           ></div>
@@ -653,11 +653,11 @@ export default function FinanceiroPage() {
                 ].map((k, i) => {
                   const Icon = k.icon
                   const colorMap: Record<string, string> = {
-                    blue: 'text-[var(--primary)] bg-[var(--primary-subtle)] ',
-                    green: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-400',
-                    amber: 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400',
-                    red: 'text-rose-600 bg-rose-50 dark:bg-rose-950/40 dark:text-rose-400',
-                    purple: 'text-[var(--primary)] bg-[var(--primary-subtle)] dark:bg-[var(--primary-subtle)] dark:text-[var(--primary)]',
+                    blue: 'text-[var(--primary)] bg-[var(--primary-subtle)] border border-[var(--primary)]/20',
+                    green: 'text-[var(--primary)] bg-[var(--primary-subtle)] border border-[var(--primary)]/20',
+                    amber: 'text-[var(--text-secondary)] bg-[var(--bg-base)] border border-[var(--border)]',
+                    red: 'text-[var(--text-secondary)] bg-[var(--bg-base)] border border-[var(--border)]',
+                    purple: 'text-[var(--text-secondary)] bg-[var(--bg-base)] border border-[var(--border)]',
                   }
                   return (
                     <div key={i} className="bento-card p-4 rounded-2xl shadow-2xs">
@@ -665,7 +665,7 @@ export default function FinanceiroPage() {
                         <Icon className="h-3.5 w-3.5" />
                       </div>
                       <p className="text-base font-black text-[var(--text-primary)] leading-tight">{fmt(k.value)}</p>
-                      <p className="text-[11px] font-bold text-[var(--text-muted)] mt-0.5">{k.label}</p>
+                      <p className="text-xs font-bold text-[var(--text-secondary)] mt-0.5">{k.label}</p>
                     </div>
                   )
                 })}
@@ -780,7 +780,7 @@ export default function FinanceiroPage() {
                         {l.forma}
                       </span>
 
-                      <span className={`text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-lg ${
+                      <span className={`text-xs uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-lg ${
                         l.status === 'pago' || l.status === 'recebido' || l.status === 'concluido'
                           ? 'bg-green-50 text-green-600 border border-green-200'
                           : l.status === 'vencido'
@@ -868,7 +868,7 @@ export default function FinanceiroPage() {
               <button
                 onClick={toggleSelectAll}
                 className={`h-4.5 w-4.5 flex items-center justify-center rounded border-2 transition-all shrink-0 ${
-                  allSelected ? 'bg-[var(--primary)] border-[var(--primary)]/40' :
+                  allSelected ? 'bg-[var(--primary-fill)] border-[var(--primary)]/40' :
                   someSelected ? 'bg-[var(--primary-subtle)] border-[var(--primary)]/40' :
                   'border-[var(--border-medium)]  hover:border-[var(--primary)]/40'
                 }`}
@@ -901,10 +901,10 @@ export default function FinanceiroPage() {
                   <button
                     onClick={() => toggleSelectOne(b.id)}
                     className={`h-4.5 w-4.5 flex items-center justify-center rounded border-2 transition-all shrink-0 ${
-                      selectedBoletos.has(b.id) ? 'bg-[var(--primary)] border-[var(--primary)]/40' : 'border-[var(--border-medium)]  hover:border-[var(--primary)]/40'
+                      selectedBoletos.has(b.id) ? 'bg-[var(--primary-fill)] border-[var(--primary)]/40' : 'border-[var(--border-medium)]  hover:border-[var(--primary)]/40'
                     }`}
                   >
-                    {selectedBoletos.has(b.id) && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+                    {selectedBoletos.has(b.id) && <Check className="h-3 w-3 text-[var(--on-primary)]" strokeWidth={3} />}
                   </button>
 
                   {/* Ícone de status */}
@@ -927,7 +927,7 @@ export default function FinanceiroPage() {
                   </div>
 
                   {/* Status badge */}
-                  <span className={`text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-lg shrink-0 ${
+                  <span className={`text-xs uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-lg shrink-0 ${
                     b.status === 'pago' ? 'bg-green-50 text-green-600 border border-green-200' :
                     b.status === 'vencido' ? 'bg-red-50 text-red-600 border border-red-200' :
                     'bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/40'
@@ -1073,7 +1073,7 @@ export default function FinanceiroPage() {
                       <span className="text-lg font-extrabold text-[var(--primary)]">{fmt(p.repasse)}</span>
                     </div>
                     <div className="w-full bg-[var(--border)] rounded-full h-2">
-                      <div className="bg-[var(--primary)] h-2 rounded-full transition-all duration-500" style={{ width: `${p.comissao}%` }}></div>
+                      <div className="bg-[var(--primary-fill)] h-2 rounded-full transition-all duration-500" style={{ width: `${p.comissao}%` }}></div>
                     </div>
                   </div>
 
@@ -1083,7 +1083,7 @@ export default function FinanceiroPage() {
                       <button 
                         onClick={() => handleQuitar(p.id)}
                         disabled={quittingId === p.id}
-                        className="flex-1 py-2.5 bg-[var(--primary)] text-[var(--on-primary)] rounded-xl font-bold text-sm hover:bg-[var(--primary-hover)] transition-colors disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] flex items-center justify-center gap-2"
+                        className="flex-1 py-2.5 bg-[var(--primary-fill)] text-[var(--on-primary)] rounded-xl font-bold text-sm hover:bg-[var(--primary-fill-hover)] transition-colors disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] flex items-center justify-center gap-2"
                       >
                         {quittingId === p.id ? (
                           <>
@@ -1209,7 +1209,7 @@ export default function FinanceiroPage() {
               <button
                 onClick={handleSalvarLancamento}
                 disabled={modalSaving}
-                className="flex-1 py-3 bg-[var(--primary)] text-[var(--on-primary)] rounded-xl font-bold text-sm hover:bg-[var(--primary-hover)] transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center justify-center gap-2 disabled:opacity-70"
+                className="flex-1 py-3 bg-[var(--primary-fill)] text-[var(--on-primary)] rounded-xl font-bold text-sm hover:bg-[var(--primary-fill-hover)] transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {modalSaving ? (
                   <><Loader2 className="h-4 w-4 animate-spin" /> Salvando...</>
@@ -1330,7 +1330,7 @@ export default function FinanceiroPage() {
               <button
                 onClick={handleSalvarEdicao}
                 disabled={editSaving}
-                className="flex-1 py-3 bg-[var(--primary)] text-[var(--on-primary)] rounded-xl font-bold text-sm hover:bg-[var(--primary-hover)] transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center justify-center gap-2 disabled:opacity-70"
+                className="flex-1 py-3 bg-[var(--primary-fill)] text-[var(--on-primary)] rounded-xl font-bold text-sm hover:bg-[var(--primary-fill-hover)] transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {editSaving ? (
                   <><Loader2 className="h-4 w-4 animate-spin" /> Salvando...</>
@@ -1385,7 +1385,7 @@ export default function FinanceiroPage() {
               <button onClick={() => setComissaoModal(false)} className="flex-1 py-3 bg-[var(--bg-base)] text-[var(--text-secondary)] rounded-xl font-bold text-sm hover:bg-[var(--border)] transition-colors">
                 Cancelar
               </button>
-              <button onClick={() => setComissaoModal(false)} className="flex-1 py-3 bg-[var(--primary)] text-[var(--on-primary)] rounded-xl font-bold text-sm hover:bg-[var(--primary-hover)] transition-colors">
+              <button onClick={() => setComissaoModal(false)} className="flex-1 py-3 bg-[var(--primary-fill)] text-[var(--on-primary)] rounded-xl font-bold text-sm hover:bg-[var(--primary-fill-hover)] transition-colors">
                 Salvar Regras
               </button>
             </div>

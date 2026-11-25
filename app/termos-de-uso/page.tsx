@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function TermosDeUsoPage() {
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] font-sans selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] font-sans selection:bg-[var(--primary-fill)] selection:text-[var(--on-primary)]">
       {/* Header */}
       <header className="border-b border-[var(--border)] bg-[var(--bg-base)]  sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -18,7 +18,7 @@ export default function TermosDeUsoPage() {
           </Link>
           <div className="flex items-center gap-2">
             <Activity className="w-5 h-5 text-[var(--primary)]" />
-            <span className="font-extrabold text-white text-base">OdontoSoft SaaS</span>
+            <span className="font-extrabold text-[var(--text-primary)] text-base">OdontoSoft SaaS</span>
           </div>
         </div>
       </header>
@@ -26,11 +26,11 @@ export default function TermosDeUsoPage() {
       {/* Conteúdo Principal */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
         <div className="mb-10 text-center sm:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--primary-subtle)]/10 border border-[var(--primary)]/30 text-[var(--primary)] text-xs font-semibold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--primary-subtle)] border border-[var(--primary)]/30 text-[var(--primary)] text-xs font-semibold uppercase tracking-wider mb-3">
             <Scale className="w-4 h-4" />
             Instrumento Jurídico B2B
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-[var(--text-primary)] tracking-tight">
             Termos de Uso e Condições Gerais de Contratação
           </h1>
           <p className="text-sm text-[var(--text-muted)] mt-2">

@@ -91,7 +91,7 @@ export default function PlanosTratamentoPage() {
             <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Planos de Tratamento</h1>
             <p className="text-sm font-semibold text-[var(--text-muted)] mt-1">Gestão de pacotes e tratamentos de longa duração por sessões ou parcelas</p>
           </div>
-          <button onClick={() => setNovoModal(true)} className="flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors">
+          <button onClick={() => setNovoModal(true)} className="flex items-center gap-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors">
             <Plus className="h-4 w-4" /> Novo Plano
           </button>
         </div>
@@ -157,7 +157,7 @@ export default function PlanosTratamentoPage() {
 
                   {/* Barra de Progresso */}
                   <div className="w-full bg-[var(--bg-base)] rounded-full h-2">
-                    <div className={`h-2 rounded-full transition-all ${plano.status === 'concluido' ? 'bg-emerald-500' : 'bg-[var(--primary)]'}`} style={{ width: `${prog}%` }} />
+                    <div className={`h-2 rounded-full transition-all ${plano.status === 'concluido' ? 'bg-emerald-500' : 'bg-[var(--primary-fill)]'}`} style={{ width: `${prog}%` }} />
                   </div>
                   <p className="text-xs text-[var(--text-muted)] mt-1 font-semibold">{prog}% concluído</p>
                 </div>
@@ -187,7 +187,7 @@ export default function PlanosTratamentoPage() {
                       <div className="flex items-center gap-3 shrink-0">
                         <div className="text-right">
                           <p className="text-xs font-bold text-[var(--text-secondary)]">R$ {sessao.valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
-                          <p className={`text-[10px] font-bold ${sessao.parcelaPaga ? 'text-emerald-600' : 'text-amber-600'}`}>{sessao.parcelaPaga ? 'Pago' : 'Pendente'}</p>
+                          <p className={`text-xs font-bold ${sessao.parcelaPaga ? 'text-emerald-600' : 'text-amber-600'}`}>{sessao.parcelaPaga ? 'Pago' : 'Pendente'}</p>
                         </div>
                         <button onClick={() => marcarPago(planoAtivo.id, sessao.id)} className={`h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all ${sessao.parcelaPaga ? 'bg-emerald-500 border-emerald-500' : 'border-[var(--border-medium)]  hover:border-emerald-400'}`}>
                           {sessao.parcelaPaga && <CheckCircle2 className="h-4 w-4 text-white" />}
@@ -229,7 +229,7 @@ export default function PlanosTratamentoPage() {
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={() => setNovoModal(false)} className="flex-1 py-3 bg-[var(--bg-base)] text-[var(--text-secondary)] rounded-xl font-bold text-sm hover:bg-[var(--border)] transition-colors">Cancelar</button>
-              <button onClick={criarPlano} className="flex-1 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-xl font-bold text-sm transition-colors">Criar Plano</button>
+              <button onClick={criarPlano} className="flex-1 py-3 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] rounded-xl font-bold text-sm transition-colors">Criar Plano</button>
             </div>
           </div>
         </div>

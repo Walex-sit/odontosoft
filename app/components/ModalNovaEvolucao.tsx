@@ -209,7 +209,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
                 transition-all resize-none
               "
             />
-            <p className="text-right text-[11px] font-medium text-[var(--text-muted)] mt-2">
+            <p className="text-right text-xs font-medium text-[var(--text-muted)] mt-2">
               {evolucao.length} caracteres
             </p>
           </div>
@@ -245,7 +245,7 @@ export default function ModalNovaEvolucao({ pacienteId, dentistaId, evolucaoPara
             className="
               w-full sm:w-auto px-6 py-2.5 rounded-xl
               text-sm font-bold text-white
-              bg-[var(--primary)] hover:bg-[var(--primary-hover)]
+              bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)]
               
               transition-all active:scale-95
               disabled:opacity-50 disabled:cursor-not-allowed

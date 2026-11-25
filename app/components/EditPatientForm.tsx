@@ -447,7 +447,7 @@ export default function EditPatientForm({ patient }: Props) {
         </button>
         <button
           type="submit"
-          className="px-6 py-2 bg-[var(--primary)] text-[var(--on-primary)] rounded-xl hover:bg-[var(--primary-hover)] flex items-center space-x-2"
+          className="px-6 py-2 bg-[var(--primary-fill)] text-[var(--on-primary)] rounded-xl hover:bg-[var(--primary-fill-hover)] flex items-center space-x-2"
         >
           <CheckCircle className="h-4 w-4" />
           <span>Atualizar paciente</span>

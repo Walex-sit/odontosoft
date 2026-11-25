@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function PoliticaDePrivacidadePage() {
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] font-sans selection:bg-[var(--primary)] selection:text-[var(--on-primary)]">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] font-sans selection:bg-[var(--primary-fill)] selection:text-[var(--on-primary)]">
       {/* Header */}
       <header className="border-b border-[var(--border)] bg-[var(--bg-base)]  sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">

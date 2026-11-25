@@ -38,7 +38,7 @@ export default function AssinaturaPage() {
           <div className="mb-6">
             <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2 mb-1">
               Plano Pro
-              <span className="bg-green-100 text-green-700 border border-green-200 text-[10px] font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
+              <span className="bg-green-100 text-green-700 border border-green-200 text-xs font-bold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
                 Ativo
               </span>
             </h3>
@@ -46,11 +46,11 @@ export default function AssinaturaPage() {
           </div>
 
           <div className="mb-6 pt-5 border-t border-[var(--border)]">
-            <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">Próximo Vencimento</p>
+            <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">Próximo Vencimento</p>
             <p className="text-sm font-bold text-[var(--text-primary)] mb-4">05 de Dezembro</p>
             <button 
               onClick={() => setAlterarCartaoOpen(true)}
-              className="w-full flex items-center justify-center gap-2 text-xs font-bold text-white bg-[var(--primary)] hover:bg-[var(--primary-hover)] px-3 py-2 rounded-md transition-colors"
+              className="w-full flex items-center justify-center gap-2 text-xs font-bold text-[var(--on-primary)] bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] px-3 py-2 rounded-md transition-colors"
             >
               Alterar Pagamento
             </button>
@@ -112,7 +112,7 @@ export default function AssinaturaPage() {
                       {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(fatura.valor)}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-0.5 rounded text-[11px] font-semibold border ${
+                      <span className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold border ${
                         fatura.status === 'PAGO' 
                           ? 'bg-green-50 text-green-700 border-green-200' 
                           : 'bg-amber-50 text-amber-700 border-amber-200'
@@ -124,7 +124,7 @@ export default function AssinaturaPage() {
                       {fatura.status === 'PAGO' ? (
                         <button 
                           onClick={() => handleDownloadRecibo(fatura.id)}
-                          className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--border)] px-2.5 py-1.5 rounded-md border border-[var(--border)] transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-surface)] hover:bg-[var(--border)] px-2.5 py-1.5 rounded-md border border-[var(--border)] transition-colors"
                         >
                           <Download className="h-3 w-3" />
                           Recibo
@@ -132,7 +132,7 @@ export default function AssinaturaPage() {
                       ) : (
                         <button 
                           onClick={() => handlePagarFatura(fatura)}
-                          className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[var(--primary)] hover:text-[var(--primary)] bg-[var(--primary-subtle)] hover:bg-[var(--primary-subtle)] px-2.5 py-1.5 rounded-md border border-[var(--primary)]/40 transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--primary)] hover:text-[var(--primary)] bg-[var(--primary-subtle)] hover:bg-[var(--primary-subtle)] px-2.5 py-1.5 rounded-md border border-[var(--primary)]/40 transition-colors"
                         >
                           <ExternalLink className="h-3 w-3" />
                           Pagar

@@ -10,7 +10,7 @@ export default function LandingFooter() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-[var(--primary)] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-[var(--primary-fill)] flex items-center justify-center">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2C8.5 2 5 5.5 5 9c0 3 2 5.5 4 7l1 5h4l1-5c2-1.5 4-4 4-7 0-3.5-3.5-7-7-7z"/>
                   <path d="M9 9h6M12 6v6"/>

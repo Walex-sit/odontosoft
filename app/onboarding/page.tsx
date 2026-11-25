@@ -233,7 +233,7 @@ function OnboardingForm() {
               <button
                 type="submit"
                 disabled={salvando}
-                className="w-full py-4 px-6 rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:scale-98 disabled:opacity-50 text-[var(--on-primary)] font-bold text-base transition-all flex items-center justify-center gap-2 shadow-xl "
+                className="w-full py-4 px-6 rounded-xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-98 disabled:opacity-50 text-[var(--on-primary)] font-bold text-base transition-all flex items-center justify-center gap-2 shadow-xl "
               >
                 {salvando ? (
                   <>

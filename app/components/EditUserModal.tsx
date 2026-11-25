@@ -142,7 +142,7 @@ export default function EditUserModal({ isOpen, onClose, onSuccess, user }: Edit
             <button
               type="submit"
               disabled={isSaving}
-              className="flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm transition-all "
+              className="flex items-center gap-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:bg-[var(--border-medium)] disabled:text-[var(--text-primary)] text-[var(--on-primary)] px-5 py-2.5 rounded-xl font-bold text-sm transition-all "
             >
               {isSaving ? (
                 <span className="flex items-center gap-2">

@@ -124,20 +124,20 @@ export default function LembreteModal({ isOpen, onClose, agendamento }: Lembrete
               </div>
               <div>
                 <p className="text-xs font-bold text-[var(--text-primary)]">{pacienteNome}</p>
-                <p className="text-[11px] text-[var(--text-muted)] font-medium">{telefone || 'Sem telefone'}</p>
+                <p className="text-xs text-[var(--text-muted)] font-medium">{telefone || 'Sem telefone'}</p>
               </div>
             </div>
             <div className="text-right">
               <p className="text-xs font-extrabold text-[var(--text-secondary)]">
                 {new Date(agendamento.data_consulta).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
               </p>
-              <p className="text-[11px] text-[var(--text-muted)] font-medium">{agendamento.hora_consulta.slice(0, 5)}</p>
+              <p className="text-xs text-[var(--text-muted)] font-medium">{agendamento.hora_consulta.slice(0, 5)}</p>
             </div>
           </div>
 
           {/* Seleção do Template */}
           <div>
-            <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">
               Selecione o Modelo de Mensagem
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -158,7 +158,7 @@ export default function LembreteModal({ isOpen, onClose, agendamento }: Lembrete
                   }`}
                 >
                   <p className="text-xs font-bold">{t.label}</p>
-                  <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{t.desc}</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">{t.desc}</p>
                 </button>
               ))}
             </div>
@@ -167,13 +167,13 @@ export default function LembreteModal({ isOpen, onClose, agendamento }: Lembrete
           {/* Prévia da Mensagem */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
+              <label className="block text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">
                 Prévia da Mensagem (Editável)
               </label>
               <button
                 type="button"
                 onClick={handleCopyMessage}
-                className="text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--primary)] flex items-center gap-1 transition-colors"
+                className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--primary)] flex items-center gap-1 transition-colors"
               >
                 {copied ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
                 {copied ? 'Copiado' : 'Copiar texto'}

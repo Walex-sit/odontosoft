@@ -251,7 +251,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
       >
         
         {/* Header */}
-        <div className="bg-[var(--primary)] text-[var(--on-primary)] p-5 flex items-center justify-between shrink-0">
+        <div className="bg-[var(--primary-fill)] text-[var(--on-primary)] p-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-black/10 rounded-xl">
               <FileText className="h-6 w-6 text-[var(--on-primary)]" />
@@ -404,7 +404,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
                   <button
                     type="button"
                     onClick={handleAddItem}
-                    className="px-3 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+                    className="px-3 py-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -480,7 +480,7 @@ export default function ReceituarioRapidoModal({ isOpen, onClose }: ReceituarioR
           <button
             onClick={() => handleGerar(true)}
             disabled={isLoading || !selectedPaciente || itens.length === 0}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:bg-[var(--primary)]/60 text-[var(--on-primary)] rounded-xl text-sm font-bold shadow-sm dark:shadow-none transition-all"
+            className="flex items-center gap-2 px-6 py-2.5 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] disabled:bg-[var(--primary)]/60 text-[var(--on-primary)] rounded-xl text-sm font-bold shadow-sm dark:shadow-none transition-all"
           >
             {isLoading ? (
               <span className="flex items-center gap-2">

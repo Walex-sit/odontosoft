@@ -101,7 +101,7 @@ export default function ModalAlterarCartao({ isOpen, onClose }: ModalAlterarCart
               <button 
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[170px]"
+                className="px-6 py-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[170px]"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Salvar Novo Cartão'}
               </button>

@@ -69,10 +69,10 @@ export function AdminHeader({
   return (
     <div className="border-b border-[var(--border)] bg-[var(--bg-surface)] px-4 sm:px-8 py-6">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          {/* Ícone com cor amber — contexto super admin */}
-          <div className="h-12 w-12 rounded-2xl bg-[var(--super-bg)] text-[var(--super-text)] border border-[var(--super-border)] flex items-center justify-center shrink-0">
-            <ShieldCheck className="h-6 w-6" />
+        <div className="flex items-center gap-3">
+          {/* Ícone de contexto Super Admin — leve, contorno âmbar/ocre fosco */}
+          <div className="h-9 w-9 rounded-xl bg-[var(--bg-surface)] text-[var(--warning)] border border-[var(--warning)]/45 flex items-center justify-center shrink-0">
+            <ShieldCheck className="h-4.5 w-4.5" />
           </div>
           <div>
             <div className="flex items-center gap-2.5">
@@ -80,7 +80,7 @@ export function AdminHeader({
                 {title}
               </h1>
               {/* Badge amber — identidade super admin */}
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-600/30">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[var(--bg-surface)] text-[var(--warning)] border border-[var(--warning)]/45">
                 Super Admin
               </span>
             </div>
@@ -128,9 +128,9 @@ export function AdminHeader({
               <span>{tab.label}</span>
               {tab.badge !== undefined && (
                 <span
-                  className={`px-1.5 py-0.5 text-[10px] font-extrabold rounded-full ${
+                  className={`px-1.5 py-0.5 text-xs font-extrabold rounded-full ${
                     isCurrent
-                      ? 'bg-[var(--primary)] text-[var(--on-primary)]'
+                      ? 'bg-[var(--primary-fill)] text-[var(--on-primary)]'
                       : 'bg-[var(--border)] text-[var(--text-secondary)]'
                   }`}
                 >

@@ -408,7 +408,7 @@ export default function Topbar() {
               />
             </div>
           ) : (
-            <div className="h-9 w-9 bg-[var(--primary)] rounded-2xl flex items-center justify-center shrink-0">
+            <div className="h-9 w-9 bg-[var(--primary-fill)] rounded-2xl flex items-center justify-center shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[var(--on-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
@@ -422,12 +422,12 @@ export default function Topbar() {
               {isSuper && !isSuperAdminContext ? 'OdontoSoft' : (clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft')}
             </h1>
             {isSuper && isSuperAdminContext && (
-              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
                 Contexto
               </span>
             )}
             {isSuper && !isSuperAdminContext && (
-              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
+              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-xs font-black uppercase tracking-wider bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
                 Painel Global
               </span>
             )}
@@ -492,7 +492,7 @@ export default function Topbar() {
                 {/* ── GRUPO 1: UTILITÁRIOS RÁPIDOS ── */}
                 <div className="py-1 px-1.5 space-y-0.5">
                   <div className="px-3 pt-2 pb-1">
-                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">
+                    <p className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-muted)]">
                       Utilitários Rápidos
                     </p>
                   </div>
@@ -507,7 +507,7 @@ export default function Topbar() {
                     </div>
                     <div className="flex flex-col">
                       <span className="font-semibold text-[var(--text-primary)]">Calculadora</span>
-                      <span className="text-[10px] text-[var(--text-muted)] font-normal">Cálculos e conversões imediatas</span>
+                      <span className="text-xs text-[var(--text-muted)] font-normal">Cálculos e conversões imediatas</span>
                     </div>
                   </button>
 
@@ -523,7 +523,7 @@ export default function Topbar() {
                         </div>
                         <div className="flex flex-col">
                           <span className="font-semibold text-[var(--text-primary)]">Receituário Rápido</span>
-                          <span className="text-[10px] text-[var(--text-muted)] font-normal">Emissão ágil com posologia</span>
+                          <span className="text-xs text-[var(--text-muted)] font-normal">Emissão ágil com posologia</span>
                         </div>
                       </button>
 
@@ -536,7 +536,7 @@ export default function Topbar() {
                         </div>
                         <div className="flex flex-col">
                           <span className="font-semibold text-[var(--text-primary)]">Atestado Odontológico</span>
-                          <span className="text-[10px] text-[var(--text-secondary)] font-normal">Declaração e afastamento legal</span>
+                          <span className="text-xs text-[var(--text-secondary)] font-normal">Declaração e afastamento legal</span>
                         </div>
                       </button>
                     </>
@@ -547,7 +547,7 @@ export default function Topbar() {
                 {canSeeClinicalGroup && (
                   <div className="py-1 px-1.5 space-y-0.5">
                     <div className="px-3 pt-2 pb-1">
-                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-secondary)]">
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-secondary)]">
                         Módulos Clínicos & Gestão
                       </p>
                     </div>
@@ -564,7 +564,7 @@ export default function Topbar() {
                         </div>
                         <div className="flex flex-col">
                           <span className="font-semibold text-[var(--text-primary)]">Planos de Tratamento</span>
-                          <span className="text-[10px] text-[var(--text-secondary)] font-normal">Orçamentos e fases de tratamento</span>
+                          <span className="text-xs text-[var(--text-secondary)] font-normal">Orçamentos e fases de tratamento</span>
                         </div>
                       </Link>
                     )}
@@ -581,7 +581,7 @@ export default function Topbar() {
                         </div>
                         <div className="flex flex-col">
                           <span className="font-semibold text-[var(--text-primary)]">Prontuário Eletrónico</span>
-                          <span className="text-[10px] text-[var(--text-secondary)] font-normal">Histórico clínico e evoluções</span>
+                          <span className="text-xs text-[var(--text-secondary)] font-normal">Histórico clínico e evoluções</span>
                         </div>
                       </Link>
                     )}
@@ -592,7 +592,7 @@ export default function Topbar() {
                 {canSeeFinancialGroup && (
                   <div className="py-1 px-1.5 space-y-0.5">
                     <div className="px-3 pt-2 pb-1">
-                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">
+                      <p className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-muted)]">
                         Módulos Financeiros & Avançados
                       </p>
                     </div>
@@ -608,7 +608,7 @@ export default function Topbar() {
                       </div>
                       <div className="flex flex-col">
                         <span className="font-semibold text-[var(--text-primary)]">Controle de Comissões</span>
-                        <span className="text-[10px] text-[var(--text-muted)] font-normal">Repasses e produção dos dentistas</span>
+                        <span className="text-xs text-[var(--text-muted)] font-normal">Repasses e produção dos dentistas</span>
                       </div>
                     </Link>
 
@@ -623,7 +623,7 @@ export default function Topbar() {
                       </div>
                       <div className="flex flex-col">
                         <span className="font-semibold text-[var(--text-primary)]">Régua de Cobrança</span>
-                        <span className="text-[10px] text-[var(--text-muted)] font-normal">Automação de lembretes e cobrança</span>
+                        <span className="text-xs text-[var(--text-muted)] font-normal">Automação de lembretes e cobrança</span>
                       </div>
                     </Link>
                   </div>
@@ -636,7 +636,7 @@ export default function Topbar() {
         {/* ── Botão Suporte WhatsApp ── */}
         <button
           onClick={() => window.open('https://wa.me/5511999999999', '_blank')}
-          className="hidden xl:flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all active:scale-[0.98]"
+          className="hidden xl:flex items-center gap-2 bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all active:scale-[0.98]"
           title="Falar com Suporte Técnico"
         >
           <HeadphonesIcon className="h-4 w-4" />
@@ -651,7 +651,7 @@ export default function Topbar() {
         >
           <Search className="h-4 w-4 text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors" />
           <span className="hidden sm:inline">Buscar...</span>
-          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-lg bg-[var(--border)] text-[10px] font-extrabold text-[var(--text-secondary)] border border-[var(--border-medium)] select-none">
+          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded-lg bg-[var(--border)] text-xs font-extrabold text-[var(--text-secondary)] border border-[var(--border-medium)] select-none">
             ⌘K
           </kbd>
         </button>
@@ -672,7 +672,7 @@ export default function Topbar() {
             >
               <Bell className="h-4.5 w-4.5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--error)] px-1 text-[10px] font-extrabold text-white ring-2 ring-[var(--bg-surface)] animate-in zoom-in-50">
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--error)] px-1 text-xs font-extrabold text-white ring-2 ring-[var(--bg-surface)] animate-in zoom-in-50">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -698,7 +698,7 @@ export default function Topbar() {
         {isSuper && isSuperAdminContext && (
           <button
             onClick={handleVoltarPainelGlobal}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--on-primary)] text-xs font-bold transition-all active:scale-[0.98] cursor-pointer shrink-0"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] text-xs font-bold transition-all active:scale-[0.98] cursor-pointer shrink-0"
             title="Voltar ao Painel Administrativo Global"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
@@ -720,7 +720,7 @@ export default function Topbar() {
             aria-label="Menu de perfil do utilizador"
           >
             {/* Avatar sem gradiente nem brilho, iniciais e status online */}
-            <div className="relative h-9 w-9 rounded-xl bg-[var(--primary)] text-[var(--on-primary)] flex items-center justify-center font-extrabold text-xs shrink-0">
+            <div className="relative h-9 w-9 rounded-xl bg-[var(--primary-fill)] text-[var(--on-primary)] flex items-center justify-center font-extrabold text-xs shrink-0">
               {getInitials(profile?.nome)}
               <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[var(--success)] ring-2 ring-[var(--bg-surface)]" />
             </div>
@@ -730,7 +730,7 @@ export default function Topbar() {
               <span className="text-xs font-bold text-[var(--text-primary)] truncate max-w-[130px] md:max-w-[170px]" title={profile?.nome?.trim() || 'Meu Perfil'}>
                 {profile?.nome?.trim() || 'Meu Perfil'}
               </span>
-              <span className="text-[10px] font-semibold text-[var(--text-muted)]">
+              <span className="text-xs font-semibold text-[var(--text-muted)]">
                 {ROLE_LABELS[role] || 'Membro da Equipe'}
               </span>
             </div>
@@ -752,7 +752,7 @@ export default function Topbar() {
               {/* Header do Menu com identificação completa */}
               <div className="px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-2xl bg-[var(--primary)] text-[var(--on-primary)] flex items-center justify-center font-black text-sm shrink-0">
+                  <div className="h-10 w-10 rounded-2xl bg-[var(--primary-fill)] text-[var(--on-primary)] flex items-center justify-center font-black text-sm shrink-0">
                     {getInitials(profile?.nome)}
                   </div>
                   <div className="flex flex-col min-w-0 flex-1">
@@ -765,7 +765,7 @@ export default function Topbar() {
                   </div>
                 </div>
                 <div className="mt-2.5 flex items-center gap-1.5">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold uppercase tracking-wide bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
                     <ShieldCheck className="h-3 w-3" />
                     {ROLE_LABELS[role] || 'Membro da Equipe'}
                   </span>
@@ -774,7 +774,7 @@ export default function Topbar() {
 
               {/* Seção 1: Configurações Pessoais (Perfil, Senha e Credenciais) */}
               <div className="py-1.5 px-1.5 space-y-0.5">
-                <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
+                <p className="px-3 pt-1.5 pb-1 text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">
                   Configurações Pessoais
                 </p>
                 <Link
@@ -788,7 +788,7 @@ export default function Topbar() {
                   </div>
                   <div className="flex flex-col text-left">
                     <span className="font-semibold">Meu Perfil</span>
-                    <span className="text-[10px] text-[var(--text-muted)] font-normal">Alterar dados pessoais e identificação</span>
+                    <span className="text-xs text-[var(--text-muted)] font-normal">Alterar dados pessoais e identificação</span>
                   </div>
                 </Link>
 
@@ -803,7 +803,7 @@ export default function Topbar() {
                   </div>
                   <div className="flex flex-col text-left">
                     <span className="font-semibold">Segurança & Palavra-passe</span>
-                    <span className="text-[10px] text-[var(--text-muted)] font-normal">Modificar senha e acessos</span>
+                    <span className="text-xs text-[var(--text-muted)] font-normal">Modificar senha e acessos</span>
                   </div>
                 </Link>
               </div>
@@ -811,7 +811,7 @@ export default function Topbar() {
               {/* Seção 2: Administração da Clínica (Exclusivo para admin / admin_clinica) */}
               {isAdmin && (
                 <div className="py-1.5 px-1.5 space-y-0.5">
-                  <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
+                  <p className="px-3 pt-1.5 pb-1 text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                     Administração da Clínica
                   </p>
                   <Link
@@ -825,7 +825,7 @@ export default function Topbar() {
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="font-semibold">Configurações do Sistema</span>
-                      <span className="text-[10px] text-[var(--text-secondary)] font-normal">Dados da clínica, logotipo e permissões</span>
+                      <span className="text-xs text-[var(--text-secondary)] font-normal">Dados da clínica, logotipo e permissões</span>
                     </div>
                   </Link>
                 </div>
@@ -834,7 +834,7 @@ export default function Topbar() {
               {/* Seção Super Admin: Painel Global da Plataforma */}
               {isSuper && (
                 <div className="py-1.5 px-1.5 space-y-0.5">
-                  <p className="px-3 pt-1.5 pb-1 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
+                  <p className="px-3 pt-1.5 pb-1 text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                     Administração Geral SaaS
                   </p>
                   <Link
@@ -848,7 +848,7 @@ export default function Topbar() {
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="font-semibold">Painel Global</span>
-                      <span className="text-[10px] text-[var(--text-secondary)] font-normal">Clínicas, usuários e indicadores</span>
+                      <span className="text-xs text-[var(--text-secondary)] font-normal">Clínicas, usuários e indicadores</span>
                     </div>
                   </Link>
                 </div>

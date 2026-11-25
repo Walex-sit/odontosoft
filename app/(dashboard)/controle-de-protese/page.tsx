@@ -52,7 +52,7 @@ export default function ProtesesPage() {
           <button className="h-10 px-4 rounded-xl font-bold text-sm bg-[var(--bg-surface)] border border-[var(--border)]  text-[var(--text-secondary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)] transition-colors shadow-sm">
             Filtros
           </button>
-          <button className="h-10 px-5 rounded-xl font-bold text-sm bg-[var(--primary)] text-[var(--on-primary)] hover:bg-[var(--primary-hover)] transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center gap-2">
+          <button className="h-10 px-5 rounded-xl font-bold text-sm bg-[var(--primary-fill)] text-[var(--on-primary)] hover:bg-[var(--primary-fill-hover)] transition-colors shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex items-center gap-2">
             <Plus className="h-4 w-4" />
             Nova Solicitação
           </button>
@@ -84,7 +84,7 @@ export default function ProtesesPage() {
                 {col.cards.map(card => (
                   <div key={card.id} className="bg-[var(--bg-surface)] rounded-xl p-4 shadow-[0_4px_12px_rgba(0,0,0,0.03)] border border-[var(--border)]  cursor-pointer hover:shadow-md transition-all hover:border-[var(--primary)]/40 group">
                     <div className="flex justify-between items-start mb-2">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-base)] px-2 py-1 rounded-md">{card.date}</span>
+                      <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-muted)] bg-[var(--bg-base)] px-2 py-1 rounded-md">{card.date}</span>
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                         <button className="text-[var(--text-muted)] hover:text-[var(--primary)]"><FileText className="h-3.5 w-3.5" /></button>
                       </div>
@@ -94,7 +94,7 @@ export default function ProtesesPage() {
                     <p className="text-sm font-semibold text-[var(--text-secondary)] mb-3">{card.item}</p>
                     
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="h-6 w-6 rounded-full bg-[var(--primary-subtle)] flex items-center justify-center text-[10px] font-bold text-[var(--primary)] shrink-0">
+                      <div className="h-6 w-6 rounded-full bg-[var(--primary-subtle)] flex items-center justify-center text-xs font-bold text-[var(--primary)] shrink-0">
                         {card.dentist.charAt(4)}
                       </div>
                       <span className="text-xs font-medium text-[var(--text-muted)] truncate">{card.dentist}</span>
@@ -102,7 +102,7 @@ export default function ProtesesPage() {
 
                     <div className="pt-3 border-t border-[var(--border)] flex items-center gap-2">
                       <Truck className="h-3.5 w-3.5 text-[var(--text-muted)] shrink-0" />
-                      <span className="text-[11px] font-bold text-[var(--text-muted)] truncate">{card.lab}</span>
+                      <span className="text-xs font-bold text-[var(--text-muted)] truncate">{card.lab}</span>
                     </div>
                   </div>
                 ))}
