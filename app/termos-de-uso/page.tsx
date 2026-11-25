@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Activity, ShieldCheck, Scale, AlertTriangle, ArrowLeft } from 'lucide-react'
+import { ShieldCheck, Scale, AlertTriangle, ArrowLeft } from 'lucide-react'
+import { BrandMark } from '@/app/components/BrandLogo'
 
 export const metadata = {
   title: 'Termos de Uso B2B | OdontoSoft',
@@ -17,8 +18,8 @@ export default function TermosDeUsoPage() {
             Voltar aos Planos
           </Link>
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-[var(--primary)]" />
-            <span className="font-extrabold text-[var(--text-primary)] text-base">OdontoSoft SaaS</span>
+            <BrandMark size="sm" />
+            <span className="font-extrabold text-[var(--text-primary)] text-base">OdontoSoft</span>
           </div>
         </div>
       </header>

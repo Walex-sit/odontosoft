@@ -28,6 +28,7 @@ import {
   Building2,
 } from 'lucide-react'
 import { exitClinicContextAction } from '@/app/actions/admin-global'
+import { BrandMark } from './BrandLogo'
 import { toast } from 'sonner'
 import NotificacoesDropdown, { NotificationItem } from './NotificacoesDropdown'
 import TarefasSlideOver from './TarefasSlideOver'
@@ -408,11 +409,7 @@ export default function Topbar() {
               />
             </div>
           ) : (
-            <div className="h-9 w-9 bg-[var(--primary-fill)] rounded-2xl flex items-center justify-center shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[var(--on-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
+            <BrandMark size="md" />
           )}
           <div className="flex items-center gap-2">
             <h1 

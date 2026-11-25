@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { BrandLogo } from '@/app/components/BrandLogo'
 
 export default function LandingNav() {
   const [scrolled, setScrolled] = useState(false)
@@ -22,26 +23,7 @@ export default function LandingNav() {
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[var(--primary-fill)] flex items-center justify-center shadow-sm">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 2C8.5 2 5 5.5 5 9c0 3 2 5.5 4 7l1 5h4l1-5c2-1.5 4-4 4-7 0-3.5-3.5-7-7-7z" />
-              <path d="M9 9h6M12 6v6" />
-            </svg>
-          </div>
-          <span className="font-heading font-bold text-[var(--text-primary)] text-lg tracking-tight">
-            OdontoSoft
-          </span>
-        </div>
+        <BrandLogo size="sm" />
 
         {/* Links centrais - apenas desktop */}
         <div className="hidden md:flex items-center gap-8">

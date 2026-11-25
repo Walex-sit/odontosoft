@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabaseClient'
 import { useRouter } from 'next/navigation'
 import { logAuthAction } from '@/app/actions/audit'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { BrandMark } from './BrandLogo'
 
 export default function LoginView() {
   const [email, setEmail] = useState('')
@@ -109,7 +110,7 @@ export default function LoginView() {
 
         {/* Textos inferiores */}
         <div className="relative z-10 mt-12 text-center">
-          <h1 className="text-4xl font-bold text-white mb-2 tracking-wide">Odontosoft</h1>
+          <h1 className="text-4xl font-bold text-white mb-2 tracking-wide">OdontoSoft</h1>
           <p className="text-white/90 text-lg">Bem-vindo novamente</p>
         </div>
       </div>
@@ -119,19 +120,12 @@ export default function LoginView() {
         
         <div className="w-full max-w-sm flex flex-col items-center">
           
-          {/* Logo Customizado */}
+          {/* Logo Centralizado */}
           <div className="mb-4">
-            <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 10 H50 C 75 10, 90 30, 90 50 C 90 70, 75 90, 50 90 H20 Z" stroke="var(--primary)" strokeWidth="8" fill="transparent"/>
-              {/* Estetoscópio simulado */}
-              <circle cx="50" cy="40" r="15" stroke="var(--primary)" strokeWidth="6" fill="transparent"/>
-              <path d="M50 55 V75" stroke="var(--primary)" strokeWidth="6"/>
-              <circle cx="65" cy="75" r="8" fill="var(--primary)"/>
-              <path d="M30 40 V50 C30 60, 40 70, 50 70" stroke="var(--primary)" strokeWidth="4" fill="transparent"/>
-            </svg>
+            <BrandMark size="lg" className="w-16 h-16 rounded-2xl" />
           </div>
           
-          <h2 className="text-3xl font-extrabold text-[var(--text-primary)] mb-10 tracking-tight">Odontosoft</h2>
+          <h2 className="text-3xl font-extrabold text-[var(--text-primary)] mb-10 tracking-tight">OdontoSoft</h2>
 
           <form onSubmit={login} className="w-full space-y-4">
             

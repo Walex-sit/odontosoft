@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Activity, Shield, Lock, FileCheck, ArrowLeft, Mail } from 'lucide-react'
+import { Shield, Lock, FileCheck, ArrowLeft, Mail } from 'lucide-react'
+import { BrandMark } from '@/app/components/BrandLogo'
 
 export const metadata = {
   title: 'Política de Privacidade | OdontoSoft',
@@ -12,13 +13,13 @@ export default function PoliticaDePrivacidadePage() {
       {/* Header */}
       <header className="border-b border-[var(--border)] bg-[var(--bg-base)]  sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/planos" className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-white transition-colors">
+          <Link href="/planos" className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Voltar aos Planos
           </Link>
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-[var(--primary)]" />
-            <span className="font-extrabold text-white text-base">OdontoSoft SaaS</span>
+            <BrandMark size="sm" />
+            <span className="font-extrabold text-[var(--text-primary)] text-base">OdontoSoft</span>
           </div>
         </div>
       </header>

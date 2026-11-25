@@ -13,6 +13,7 @@
 
 import 'server-only'
 import { Resend } from 'resend'
+import { renderBrandLogoEmailHtml } from '@/app/lib/brand'
 
 const apiKey = process.env.RESEND_API_KEY
 
@@ -74,29 +75,29 @@ export async function sendOtpEmail(
   <meta charset="utf-8">
   <title>Código de Confirmação - OdontoSoft</title>
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 40px 16px;">
-  <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #EFF1F3; margin: 0; padding: 40px 16px;">
+  <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width: 560px; margin: 0 auto; background-color: #FAFBFB; border-radius: 12px; border: 1px solid #DDE1E5; overflow: hidden;">
     <tr>
-      <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #f1f5f9;">
-        <div style="font-size: 26px; font-weight: 800; color: #0284c7; letter-spacing: -0.5px;">OdontoSoft</div>
-        <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Gestão Clínica Odontológica Inteligente</div>
+      <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #DDE1E5;">
+        ${renderBrandLogoEmailHtml()}
+        <div style="font-size: 13px; color: #596470; margin-top: 8px;">Agenda, prontuário e financeiro da sua clínica em um só lugar</div>
       </td>
     </tr>
     <tr>
       <td style="padding: 32px;">
-        <h2 style="font-size: 18px; font-weight: 600; color: #0f172a; margin: 0 0 12px;">Confirmação de Acesso</h2>
-        <p style="font-size: 15px; color: #334155; line-height: 1.6; margin: 0 0 24px;">
+        <h2 style="font-size: 18px; font-weight: 600; color: #1A2127; margin: 0 0 12px;">Confirmação de Acesso</h2>
+        <p style="font-size: 15px; color: #1A2127; line-height: 1.6; margin: 0 0 24px;">
           Você iniciou o registro de uma nova clínica no <strong>OdontoSoft</strong>. Digite o código de 6 dígitos abaixo para confirmar a titularidade do seu e-mail:
         </p>
 
         <div style="text-align: center; margin: 28px 0;">
-          <div style="display: inline-block; background-color: #f0f9ff; border: 2px dashed #0284c7; border-radius: 8px; padding: 16px 36px; font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #0369a1; font-family: monospace;">
+          <div style="display: inline-block; background-color: #EFF1F3; border: 2px dashed #0F6E7A; border-radius: 8px; padding: 16px 36px; font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #0F6E7A; font-family: monospace;">
             ${codigoOtp}
           </div>
         </div>
 
-        <div style="background-color: #f8fafc; border-radius: 8px; padding: 14px 18px; margin-top: 24px; border-left: 4px solid #0284c7;">
-          <p style="font-size: 13px; color: #475569; margin: 0; line-height: 1.5;">
+        <div style="background-color: #EFF1F3; border-radius: 8px; padding: 14px 18px; margin-top: 24px; border-left: 4px solid #0F6E7A;">
+          <p style="font-size: 13px; color: #596470; margin: 0; line-height: 1.5;">
             ⏱ <strong>Validade estrita:</strong> 15 minutos.<br/>
             🔒 <strong>Segurança:</strong> Nunca compartilhe este código com ninguém. Se você não solicitou este registro, pode ignorar este e-mail com segurança.
           </p>
@@ -104,10 +105,10 @@ export async function sendOtpEmail(
       </td>
     </tr>
     <tr>
-      <td style="padding: 24px 32px; background-color: #f8fafc; border-top: 1px solid #f1f5f9; text-align: center;">
-        <p style="font-size: 12px; color: #94a3b8; margin: 0;">
-          © ${new Date().getFullYear()} OdontoSoft SaaS. Todos os direitos reservados.<br/>
-          Protegido por isolamento multi-tenant e criptografia ponta a ponta.
+      <td style="padding: 24px 32px; background-color: #EFF1F3; border-top: 1px solid #DDE1E5; text-align: center;">
+        <p style="font-size: 12px; color: #596470; margin: 0;">
+          © ${new Date().getFullYear()} OdontoSoft. Todos os direitos reservados.<br/>
+          Dados da sua clínica isolados e protegidos.
         </p>
       </td>
     </tr>

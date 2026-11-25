@@ -18,6 +18,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '../lib/supabaseClient'
+import { BrandMark } from '../components/BrandLogo'
 import {
   registrarNovaClinica,
   verificarDisponibilidadeNomeClinica,
@@ -459,12 +460,7 @@ export default function RegisterPage() {
             <>
               {/* Header do Formulário */}
               <div className="flex flex-col items-center mb-6 text-center">
-                <div className="w-13 h-13 rounded-2xl bg-[var(--primary-fill)] flex items-center justify-center shadow-sm mb-3.5">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2C8.5 2 5 5.5 5 9c0 3 2 5.5 4 7l1 5h4l1-5c2-1.5 4-4 4-7 0-3.5-3.5-7-7-7z" />
-                    <path d="M9 9h6M12 6v6" />
-                  </svg>
-                </div>
+                <BrandMark size="lg" className="mb-3.5" />
                 <h2 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">
                   Criar conta no OdontoSoft
                 </h2>

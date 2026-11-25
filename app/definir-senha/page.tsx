@@ -3,9 +3,10 @@
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/app/lib/supabaseClient'
-import { Lock, CheckCircle2, ShieldCheck, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Lock, CheckCircle2, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { BrandMark } from '@/app/components/BrandLogo'
 
 function DefinirSenhaForm() {
   const router = useRouter()
@@ -79,9 +80,7 @@ function DefinirSenhaForm() {
   return (
     <div className="w-full max-w-md bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-3xl p-8 sm:p-10 shadow-md">
       <div className="text-center mb-8">
-        <div className="w-12 h-12 rounded-2xl bg-[var(--primary-subtle)] text-[var(--primary)]   flex items-center justify-center mx-auto mb-3.5 border border-[var(--primary)]/40  shadow-2xs">
-          <ShieldCheck size={24} />
-        </div>
+        <BrandMark size="lg" className="mx-auto mb-3.5" />
         <h1 className="text-2xl font-heading font-extrabold text-[var(--text-primary)] tracking-tight">
           Definir Palavra-passe
         </h1>
