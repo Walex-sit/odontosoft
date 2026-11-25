@@ -150,7 +150,8 @@ export async function inviteTeamMember(data: {
       return { success: false, error: 'Clínica não identificada no perfil do administrador.' }
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const { getAppUrl } = await import('@/app/lib/env')
+    const baseUrl = getAppUrl()
     const redirectUrl = `${baseUrl}/definir-senha`
     const cleanEmail = data.email.trim().toLowerCase()
 

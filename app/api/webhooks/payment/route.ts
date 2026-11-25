@@ -25,7 +25,7 @@ const UUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}
  * Sanitiza mensagens antes de qualquer envio a logs (console) ou persistência em banco.
  * Remove credenciais, chaves, segredos, tokens e dados pessoais sem expor a mensagem bruta.
  */
-function sanitizeLogMessage(input: unknown): string {
+export function sanitizeLogMessage(input: unknown): string {
   if (input === null || input === undefined) return ''
   let str: string
   if (input instanceof Error) {
@@ -44,11 +44,66 @@ function sanitizeLogMessage(input: unknown): string {
   return str
     .replace(/whsec_[a-zA-Z0-9_]+/gi, '[REDACTED_SECRET]')
     .replace(/sk_(live|test)_[a-zA-Z0-9_]+/gi, '[REDACTED_KEY]')
+    .replace(/rk_(live|test)_[a-zA-Z0-9_]+/gi, '[REDACTED_KEY]')
+    .replace(/sb_secret_[a-zA-Z0-9_]+/gi, '[REDACTED_SECRET]')
     .replace(/bearer\s+[a-zA-Z0-9_\-\.]+/gi, 'Bearer [REDACTED_TOKEN]')
+    .replace(/eyJ[a-zA-Z0-9_\-\.]+/gi, '[REDACTED_JWT]')
     .replace(/[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+/gi, '[REDACTED_EMAIL]')
     .replace(/[\u0000-\u001F\u007F-\u009F]/g, ' ')
     .trim()
     .slice(0, 500)
+}
+
+/**
+ * Helper para extrair o ID da assinatura de uma Invoice do Stripe.
+ * Lê o id com invoice.parent?.subscription_details?.subscription (conferindo parent.type)
+ * e, se ausente, invoice.subscription, aceitando string ou objeto.
+ */
+export function getInvoiceSubscriptionId(invoice: any): string | null {
+  if (!invoice) return null
+  let sub: any = null
+
+  if (
+    invoice.parent &&
+    invoice.parent.type === 'subscription_details' &&
+    invoice.parent.subscription_details?.subscription
+  ) {
+    sub = invoice.parent.subscription_details.subscription
+  } else if (invoice.subscription) {
+    sub = invoice.subscription
+  }
+
+  if (!sub) return null
+  if (typeof sub === 'string') return sub
+  if (typeof sub === 'object' && typeof sub.id === 'string') return sub.id
+  return null
+}
+
+/**
+ * Helper para obter o fim do período da assinatura em formato ISO (string) ou null.
+ * Lê items.data[0].current_period_end, com current_period_end como alternativa
+ * (e suporte a lines.data[0].period.end / period_end para Invoices).
+ */
+export function getSubscriptionPeriodEnd(target: any): string | null {
+  if (!target) return null
+
+  const raw =
+    target.items?.data?.[0]?.current_period_end ??
+    target.current_period_end ??
+    target.lines?.data?.[0]?.period?.end ??
+    target.period_end ??
+    null
+
+  if (raw === null || raw === undefined) return null
+
+  if (typeof raw === 'number' && !isNaN(raw)) {
+    return new Date(raw * 1000).toISOString()
+  }
+  if (typeof raw === 'string') {
+    const parsed = new Date(raw)
+    return isNaN(parsed.getTime()) ? null : parsed.toISOString()
+  }
+  return null
 }
 
 export async function POST(request: NextRequest) {
@@ -150,6 +205,12 @@ export async function POST(request: NextRequest) {
         const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id
         const rawSub = session.subscription
         const subscriptionId = typeof rawSub === 'string' ? rawSub : (rawSub as any)?.id
+
+        // 3. Em checkout.session.completed, só aplique se session.payment_status for 'paid' ou 'no_payment_required'. Em outro caso, não ative e registre.
+        if (session.payment_status !== 'paid' && session.payment_status !== 'no_payment_required') {
+          console.warn(`[Webhook/Payment] checkout.session.completed ignorado: payment_status '${session.payment_status}' não aprovado (esperado 'paid' ou 'no_payment_required').`)
+          break
+        }
 
         if (!userId) {
           console.warn('[Webhook/Payment] checkout.session.completed sem userId vinculado.')
@@ -278,14 +339,10 @@ export async function POST(request: NextRequest) {
       // ── 2. Pagamento de Fatura Aprovado (Renovação / Reativação) ─────────
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice
-        const rawSub = (invoice as any).subscription
-        const subscriptionId = typeof rawSub === 'string' ? rawSub : (rawSub?.id as string | undefined)
+        const subscriptionId = getInvoiceSubscriptionId(invoice)
         const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id
-        const invoicePeriodEnd = (invoice as any).lines?.data?.[0]?.period?.end
-          ? new Date((invoice as any).lines.data[0].period.end * 1000).toISOString()
-          : (invoice as any).period_end
-          ? new Date((invoice as any).period_end * 1000).toISOString()
-          : null
+        const invoicePeriodEnd = getSubscriptionPeriodEnd(invoice)
+        const rawSub = (invoice as any).parent?.subscription_details?.subscription ?? (invoice as any).subscription
 
         if (subscriptionId) {
           let subscriptionCreatedIso: string | null = null
@@ -449,8 +506,8 @@ export async function POST(request: NextRequest) {
       // ── 3. Falha no Pagamento de Fatura (Inadimplência) ───────────────────
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice
-        const rawSub = (invoice as any).subscription
-        const subscriptionId = typeof rawSub === 'string' ? rawSub : (rawSub?.id as string | undefined)
+        const subscriptionId = getInvoiceSubscriptionId(invoice)
+        const invoicePeriodEnd = getSubscriptionPeriodEnd(invoice)
 
         if (subscriptionId) {
           // Proteção temporal transacional com SELECT ... FOR UPDATE
@@ -536,21 +593,26 @@ export async function POST(request: NextRequest) {
         const customerId = typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.id
         const status = subscription.status
 
-        let statusAssinatura: 'trial' | 'ativo' | 'inadimplente' | 'cancelado' = 'ativo'
+        // 2. Em customer.subscription.updated, a variável de status começa nula.
+        // Status não mapeados (incomplete, paused e qualquer outro) não ativam a clínica: registre e encerre sem aplicar.
+        let statusAssinatura: 'trial' | 'ativo' | 'inadimplente' | 'cancelado' | null = null
 
-        if (status === 'past_due' || status === 'unpaid') {
+        if (status === 'active') {
+          statusAssinatura = 'ativo'
+        } else if (status === 'trialing') {
+          statusAssinatura = 'trial'
+        } else if (status === 'past_due' || status === 'unpaid') {
           statusAssinatura = 'inadimplente'
         } else if (status === 'canceled' || status === 'incomplete_expired') {
           statusAssinatura = 'cancelado'
-        } else if (status === 'trialing') {
-          statusAssinatura = 'trial'
-        } else if (status === 'active') {
-          statusAssinatura = 'ativo'
         }
 
-        const currentPeriodEnd = (subscription as any).current_period_end
-          ? new Date((subscription as any).current_period_end * 1000).toISOString()
-          : null
+        if (!statusAssinatura) {
+          console.info(`[Webhook/Payment] subscription.updated ignorado: status '${status}' não mapeado para ativação ou alteração de ciclo.`)
+          break
+        }
+
+        const currentPeriodEnd = getSubscriptionPeriodEnd(subscription)
         const subCreatedIso = subscription.created
           ? new Date(subscription.created * 1000).toISOString()
           : null

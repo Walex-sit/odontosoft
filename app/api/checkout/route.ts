@@ -12,6 +12,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, PLANOS_SAAS } from '@/app/lib/stripe'
+import { getAppUrl } from '@/app/lib/env'
 import { createServerClient } from '@/app/lib/supabase/server'
 import { z } from 'zod'
 
@@ -80,9 +81,6 @@ export async function POST(request: NextRequest) {
     const email = user.email
     const userId = user.id
 
-    const plano = PLANOS_SAAS[planoId] || PLANOS_SAAS.premium
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-
     // Desativação segura do fluxo de cobrança enquanto pendente de reconciliação no banco remoto:
     // O sistema não deve simular pagamentos reais nem emitir onboarding fictício como assinante pago.
     const isStripeDisabled =
@@ -101,6 +99,9 @@ export async function POST(request: NextRequest) {
         { status: 503 }
       )
     }
+
+    const plano = PLANOS_SAAS[planoId] || PLANOS_SAAS.premium
+    const appUrl = getAppUrl()
 
     // ── 4. Cria a sessão de Checkout no Stripe ────────────────────────────────
     const session = await stripe.checkout.sessions.create({

@@ -25,10 +25,12 @@ export const resendClient = apiKey ? new Resend(apiKey) : null
 
 /**
  * Endereço remetente padrão para e-mails transacionais.
- * Em produção, deve ser um domínio verificado no Resend (ex: noreply@odontosoft.com.br).
+ * Em produção, deve ser explicitamente configurado via RESEND_FROM_EMAIL (domínio verificado).
+ * Nunca utiliza fallback de teste (`onboarding@resend.dev`) em produção.
  */
 export const EMAIL_FROM =
-  process.env.RESEND_FROM_EMAIL || 'OdontoSoft <onboarding@resend.dev>'
+  process.env.RESEND_FROM_EMAIL?.trim() ||
+  (process.env.NODE_ENV === 'production' ? '' : 'OdontoSoft <onboarding@resend.dev>')
 
 export interface SendOtpEmailResult {
   success: boolean
@@ -46,6 +48,10 @@ export async function sendOtpEmail(
   const cleanEmail = email.trim().toLowerCase()
 
   // 1. Verificação em ambiente de produção
+  const fromEmail =
+    process.env.RESEND_FROM_EMAIL?.trim() ||
+    (process.env.NODE_ENV === 'production' ? '' : 'OdontoSoft <onboarding@resend.dev>')
+
   if (process.env.NODE_ENV === 'production') {
     if (!resendClient) {
       console.error(
@@ -54,6 +60,16 @@ export async function sendOtpEmail(
       return {
         success: false,
         error: 'Serviço de envio de e-mails temporariamente indisponível. Contacte o suporte.',
+      }
+    }
+
+    if (!fromEmail) {
+      console.error(
+        '[Email/Resend] ERRO CRÍTICO: RESEND_FROM_EMAIL não está configurada em ambiente de produção.'
+      )
+      return {
+        success: false,
+        error: 'Serviço de envio de e-mails com remetente não configurado. Contacte o suporte.',
       }
     }
   }
@@ -131,7 +147,7 @@ Seu código de confirmação para registro de clínica:
     `.trim()
 
     const { error } = await resendClient.emails.send({
-      from: EMAIL_FROM,
+      from: fromEmail,
       to: [cleanEmail],
       subject: `Seu código de acesso OdontoSoft: ${codigoOtp}`,
       html: htmlBody,

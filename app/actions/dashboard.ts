@@ -172,7 +172,166 @@ export async function fetchDashboardMetrics(anoParam?: number, mesParam?: number
 }
 
 // ==========================================
-// 2. Gráficos de Desempenho
+// 2. Métricas Complementares (saldo líquido e despesas do mês)
+// ==========================================
+export async function fetchDashboardComplement(anoParam?: number, mesParam?: number): Promise<{
+  success: boolean;
+  data: { despesasMes: number; saldoLiquido: number };
+  error?: string;
+}> {
+  try {
+    const supabase = await createServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, data: { despesasMes: 0, saldoLiquido: 0 }, error: 'Não autorizado.' };
+    }
+
+    const now = new Date();
+    const targetYear = anoParam ?? now.getFullYear();
+    const targetMonth = mesParam !== undefined ? mesParam : now.getMonth();
+    const startOfMonth = new Date(targetYear, targetMonth, 1).toISOString();
+    const endOfMonth = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59).toISOString();
+
+    const { data: despesasData } = await supabase
+      .from('despesas')
+      .select('valor, status, data_vencimento')
+      .gte('data_vencimento', startOfMonth.slice(0, 10))
+      .lte('data_vencimento', endOfMonth.slice(0, 10));
+
+    const despesasMes = (despesasData || []).reduce((acc, d) => acc + (Number(d.valor) || 0), 0);
+
+    // saldo líquido = faturamento já calculado na action principal — aqui só devolvemos despesas
+    // O chamador calcula: saldo = faturamentoMensal - despesasMes
+    return { success: true, data: { despesasMes, saldoLiquido: 0 } };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Erro desconhecido';
+    return { success: false, data: { despesasMes: 0, saldoLiquido: 0 }, error: msg };
+  }
+}
+
+// ==========================================
+// 3. Alertas Rápidos do Dashboard
+// ==========================================
+export interface AgendamentoDia {
+  id: string;
+  hora_consulta: string;
+  procedimento: string | null;
+  status: string;
+  paciente_nome: string;
+}
+
+export interface EstoqueCritico {
+  id: string;
+  nome: string;
+  quantidade: number;
+  minimo: number;
+  unidade: string;
+}
+
+export interface DespesaVencida {
+  id: string;
+  descricao: string;
+  valor: number;
+  data_vencimento: string;
+  dias_atraso: number;
+}
+
+export async function fetchDashboardAlerts(): Promise<{
+  success: boolean;
+  data: {
+    agendamentosDia: AgendamentoDia[];
+    estoqueCritico: EstoqueCritico[];
+    despesasVencidas: DespesaVencida[];
+  };
+  error?: string;
+}> {
+  const empty = { agendamentosDia: [], estoqueCritico: [], despesasVencidas: [] };
+  try {
+    const supabase = await createServerClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, data: empty, error: 'Não autorizado.' };
+    }
+
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const todayIso = now.toISOString().slice(0, 10);
+
+    // ── Agendamentos do dia (ordenados por hora) ──────────────────────────────
+    const [{ data: agData }, { data: pacData }] = await Promise.all([
+      supabase
+        .from('agendamentos')
+        .select('id, hora_consulta, procedimento, status, paciente_id')
+        .eq('data_consulta', todayStr)
+        .not('status', 'in', '("cancelado","faltou")')
+        .order('hora_consulta', { ascending: true })
+        .limit(8),
+      supabase
+        .from('pacientes')
+        .select('id, nome'),
+    ]);
+
+    const pacMap: Record<string, string> = {};
+    (pacData || []).forEach((p) => {
+      if (p.id && p.nome) pacMap[p.id] = p.nome;
+    });
+
+    const agendamentosDia: AgendamentoDia[] = (agData || []).map((a) => ({
+      id: a.id,
+      hora_consulta: a.hora_consulta,
+      procedimento: a.procedimento,
+      status: a.status,
+      paciente_nome: (a.paciente_id ? pacMap[a.paciente_id] : null) || 'Paciente',
+    }));
+
+    // ── Estoque crítico (quantidade <= minimo) ────────────────────────────────
+    const { data: estoqueData } = await supabase
+      .from('estoque')
+      .select('id, nome, quantidade, minimo, unidade');
+
+    const estoqueCritico: EstoqueCritico[] = (estoqueData || [])
+      .filter((e) => Number(e.quantidade ?? 0) <= Number(e.minimo ?? 0))
+      .slice(0, 5)
+      .map((e) => ({
+        id: e.id,
+        nome: e.nome,
+        quantidade: Number(e.quantidade ?? 0),
+        minimo: Number(e.minimo ?? 0),
+        unidade: e.unidade || 'un',
+      }));
+
+    // ── Despesas vencidas e ainda pendentes ───────────────────────────────────
+    const { data: despData } = await supabase
+      .from('despesas')
+      .select('id, descricao, valor, data_vencimento')
+      .eq('status', 'pendente')
+      .lt('data_vencimento', todayIso)
+      .order('data_vencimento', { ascending: true })
+      .limit(5);
+
+    const nowMs = now.getTime();
+    const despesasVencidas: DespesaVencida[] = (despData || []).map((d) => {
+      const vencMs = new Date(d.data_vencimento).getTime();
+      const diasAtraso = Math.max(1, Math.floor((nowMs - vencMs) / 86_400_000));
+      return {
+        id: d.id,
+        descricao: d.descricao,
+        valor: Number(d.valor ?? 0),
+        data_vencimento: d.data_vencimento,
+        dias_atraso: diasAtraso,
+      };
+    });
+
+    return { success: true, data: { agendamentosDia, estoqueCritico, despesasVencidas } };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Erro desconhecido';
+    console.error('Erro em fetchDashboardAlerts:', msg);
+    return { success: false, data: empty, error: msg };
+  }
+}
+
+// ==========================================
+// 4. Gráficos de Desempenho
 // ==========================================
 const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
 

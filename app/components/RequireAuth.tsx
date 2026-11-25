@@ -61,19 +61,11 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [trialInfo, setTrialInfo] = useState<TrialInfo | null>(null)
-  // R-004 (Auditoria Etapa 4): fallback hardcoded 'testealex@gmail.com' removido.
-  // No cliente, NEXT_PUBLIC_OWNER_EMAIL é opcional. Sem a variável configurada,
-  // isOwnerExactMatch é sempre false e o acesso especial depende apenas de
-  // is_lifetime=true ou role='super_admin' vindos do banco de dados.
-  const configuredOwnerEmail = (process.env.NEXT_PUBLIC_OWNER_EMAIL || '').toLowerCase().trim()
-  const isOwnerExactMatch = Boolean(
-    configuredOwnerEmail &&
-    session?.user?.email &&
-    session.user.email.toLowerCase().trim() === configuredOwnerEmail &&
-    (profile?.role === 'super_admin' || profile?.is_lifetime === true)
-  )
+  // R-004 / Hardening: privilégios de Super Admin e Lifetime vêm exclusivamente
+  // do perfil autenticado no banco de dados (role='super_admin' / is_lifetime=true),
+  // nunca de e-mail público exposto no cliente.
   const isSuperAdmin = profile?.role === 'super_admin'
-  const isLifetime = profile?.is_lifetime === true || isOwnerExactMatch
+  const isLifetime = profile?.is_lifetime === true
 
   async function refreshProfile() {
     const { data: { session } } = await supabase.auth.getSession()

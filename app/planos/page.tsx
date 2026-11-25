@@ -24,8 +24,7 @@ import {
   Loader2,
   X,
 } from 'lucide-react'
-import { PLANOS_SAAS } from '@/app/lib/stripe'
-import { formatPlanPriceBRL } from '@/app/lib/plans'
+import { PLANOS_SAAS_CATALOG as PLANOS_SAAS, formatPlanPriceBRL } from '@/app/lib/plans'
 import { SHOW_CANCELLATION_POLICY } from '@/app/lib/env'
 import { supabase } from '@/app/lib/supabaseClient'
 import { BrandMark } from '@/app/components/BrandLogo'

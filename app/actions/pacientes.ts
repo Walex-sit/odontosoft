@@ -18,7 +18,7 @@
 import { createServerClient } from '@/app/lib/supabase/server'
 import { supabaseAdmin } from '@/app/lib/supabase/admin'
 import { logAction, LogAction } from '@/app/lib/logger'
-import { requireActiveClinic } from '@/app/lib/auth-guards'
+import { requireActiveClinic, resolveAuthorizedClinicId } from '@/app/lib/auth-guards'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -468,16 +468,41 @@ export async function getConformidadeConsentimentos(
   return { success: true, data: (data ?? []) as ConformidadeConsentimento[] }
 }
 
-export async function getTermosPrivacidade(): Promise<ActionResult<TermoPrivacidade[]>> {
+export async function getTermosPrivacidade(targetClinicaId?: string): Promise<ActionResult<TermoPrivacidade[]>> {
   const supabase = await createServerClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) {
     return { success: false, error: 'Não autorizado.' }
   }
 
+  // Resolver clinica_id de forma segura (Super Admin usa contexto do servidor)
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('clinica_id, role')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile) {
+    return { success: false, error: 'Perfil do usuário não encontrado.' }
+  }
+
+  const { clinicaId, error: resolveError } = await resolveAuthorizedClinicId(
+    supabase, { id: user.id }, profile, targetClinicaId
+  )
+
+  if (resolveError) {
+    return { success: false, error: resolveError }
+  }
+
+  // Se não há clínica vinculada (Super Admin sem contexto ativo), retorna lista vazia
+  if (!clinicaId) {
+    return { success: true, data: [] }
+  }
+
   const { data, error } = await supabase
     .from('termos_privacidade')
     .select('*')
+    .eq('clinica_id', clinicaId)
     .eq('ativo', true)
     .order('publicado_em', { ascending: false })
 
@@ -494,6 +519,7 @@ export async function getTermosPrivacidade(): Promise<ActionResult<TermoPrivacid
 export async function registrarConsentimento(payload: {
   paciente_id: string
   termo_id?: string
+  targetClinicaId?: string
   responsavel_tipo?: 'proprio_paciente' | 'pai_mae' | 'tutor_legal' | 'curador'
   responsavel_nome?: string | null
   meio?: 'eletronico_interno' | 'upload_legado' | 'email_confirmado' | 'whatsapp_confirmado'
@@ -517,25 +543,71 @@ export async function registrarConsentimento(payload: {
     return { success: false, error: 'Não autorizado.' }
   }
 
+  // Resolver clinica_id de forma segura (Super Admin usa contexto do servidor)
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('clinica_id, role')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile) {
+    return { success: false, error: 'Perfil do usuário não encontrado.' }
+  }
+
+  const { clinicaId, error: resolveError } = await resolveAuthorizedClinicId(
+    supabase, { id: user.id }, profile, payload.targetClinicaId
+  )
+
+  if (resolveError) {
+    return { success: false, error: resolveError }
+  }
+
+  if (!clinicaId) {
+    return { success: false, error: 'Nenhuma clínica vinculada ou selecionada. Selecione uma clínica antes de registrar consentimentos.' }
+  }
+
+  // Validação estrita do paciente (garantir que pertence à mesma clínica autorizada)
+  const { data: pacienteCheck, error: pacError } = await supabase
+    .from('pacientes')
+    .select('id, clinica_id')
+    .eq('id', payload.paciente_id)
+    .maybeSingle()
+
+  if (pacError || !pacienteCheck) {
+    return { success: false, error: 'Paciente não encontrado.' }
+  }
+
+  if (pacienteCheck.clinica_id !== clinicaId) {
+    return { success: false, error: 'Acesso negado: Paciente pertence a outra clínica.' }
+  }
+
   let termoId = payload.termo_id
 
   if (!termoId) {
-    const termosRes = await getTermosPrivacidade()
+    const termosRes = await getTermosPrivacidade(payload.targetClinicaId)
     if (!termosRes.success || !termosRes.data.length) {
-      return { success: false, error: 'Nenhum termo de privacidade ativo encontrado para a clínica.' }
+      return { success: false, error: 'Nenhum termo de privacidade ativo encontrado para a clínica. O administrador deve cadastrar um termo antes de registrar consentimentos.' }
     }
     termoId = termosRes.data[0].id
   }
 
-  const { data: profile } = await supabase
-    .from('user_profiles')
-    .select('clinica_id')
-    .eq('id', user.id)
-    .single()
+  // Validação estrita do termo de referência (integridade multi-tenant e status ativo)
+  const { data: termoCheck, error: termoCheckError } = await supabase
+    .from('termos_privacidade')
+    .select('id, clinica_id, ativo')
+    .eq('id', termoId)
+    .maybeSingle()
 
-  const clinicaId = profile?.clinica_id
-  if (!clinicaId) {
-    return { success: false, error: 'Clínica não identificada no perfil do usuário.' }
+  if (termoCheckError || !termoCheck) {
+    return { success: false, error: 'Termo de privacidade informado não encontrado.' }
+  }
+
+  if (termoCheck.clinica_id !== clinicaId) {
+    return { success: false, error: 'Tentativa de utilizar termo de outra clínica não permitida.' }
+  }
+
+  if (!termoCheck.ativo) {
+    return { success: false, error: 'O termo de privacidade selecionado não está ativo.' }
   }
 
   // Se já existir consentimento ativo anterior para este termo/paciente, revoga antes para manter histórico limpo

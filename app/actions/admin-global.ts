@@ -78,6 +78,24 @@ export interface GlobalUserItem {
   created_at: string
 }
 
+export interface ClinicaUsersSummary {
+  id: string
+  nome: string
+  cnpj: string | null
+  email: string | null
+  status_assinatura: 'trial' | 'ativo' | 'inadimplente' | 'cancelado' | 'pendente'
+  ativo: boolean
+  criado_em: string
+  totalUsuarios: number
+  usuariosPorRole: {
+    admin_clinica: number
+    dentista: number
+    recepcao: number
+    financeiro: number
+    outros: number
+  }
+}
+
 // ─── 1. Indicadores Globais da Plataforma ────────────────────────────────────
 
 export async function getGlobalPlatformMetrics(): Promise<{
@@ -212,11 +230,11 @@ export async function getGlobalClinicsList(filters?: {
       .select('clinica_id')
 
     const userCountMap: Record<string, number> = {}
-    ;(userCounts || []).forEach((u: any) => {
-      if (u.clinica_id) {
-        userCountMap[u.clinica_id] = (userCountMap[u.clinica_id] || 0) + 1
-      }
-    })
+      ; (userCounts || []).forEach((u: any) => {
+        if (u.clinica_id) {
+          userCountMap[u.clinica_id] = (userCountMap[u.clinica_id] || 0) + 1
+        }
+      })
 
     const enrichedClinicas: GlobalClinicaItem[] = (clinicas || []).map((c: any) => ({
       ...c,
@@ -276,9 +294,9 @@ export async function getGlobalUsersList(filters?: {
       .select('id, nome')
 
     const clinicaMap: Record<string, string> = {}
-    ;(clinicas || []).forEach((c: any) => {
-      clinicaMap[c.id] = c.nome
-    })
+      ; (clinicas || []).forEach((c: any) => {
+        clinicaMap[c.id] = c.nome
+      })
 
     const enrichedUsers: GlobalUserItem[] = (users || []).map((u: any) => ({
       ...u,
@@ -288,6 +306,217 @@ export async function getGlobalUsersList(filters?: {
     return { success: true, data: enrichedUsers }
   } catch (err: any) {
     console.error('[admin-global.getGlobalUsersList] Erro:', err.message)
+    return { success: false, error: err.message }
+  }
+}
+
+// ─── 3b. Visão Hierárquica: Resumo de Clínicas + Usuários Vinculados ─────────
+
+export async function getGlobalClinicsUsersSummary(): Promise<{
+  success: boolean
+  data?: {
+    clinicas: ClinicaUsersSummary[]
+    totalUsuarios: number
+    totalUsuariosGlobais: number
+  }
+  error?: string
+}> {
+  try {
+    await checkServerAuth(['super_admin'])
+
+    const [{ data: clinicas, error: clinicasErr }, { data: profiles, error: profErr }] =
+      await Promise.all([
+        supabaseAdmin
+          .from('clinicas')
+          .select('id, nome, cnpj, email, status_assinatura, ativo, criado_em')
+          .order('nome', { ascending: true }),
+        supabaseAdmin
+          .from('user_profiles')
+          .select('id, clinica_id, role'),
+      ])
+
+    if (clinicasErr) throw new Error(clinicasErr.message)
+    if (profErr) throw new Error(profErr.message)
+
+    const countsByClinic: Record<
+      string,
+      {
+        total: number
+        admin_clinica: number
+        dentista: number
+        recepcao: number
+        financeiro: number
+        outros: number
+      }
+    > = {}
+
+    let totalUsuariosGlobais = 0
+
+    ;(profiles || []).forEach((p: any) => {
+      if (!p.clinica_id) {
+        totalUsuariosGlobais += 1
+        return
+      }
+      if (!countsByClinic[p.clinica_id]) {
+        countsByClinic[p.clinica_id] = {
+          total: 0,
+          admin_clinica: 0,
+          dentista: 0,
+          recepcao: 0,
+          financeiro: 0,
+          outros: 0,
+        }
+      }
+      const bucket = countsByClinic[p.clinica_id]
+      bucket.total += 1
+      if (p.role === 'admin_clinica' || p.role === 'admin') {
+        bucket.admin_clinica += 1
+      } else if (p.role === 'dentista') {
+        bucket.dentista += 1
+      } else if (p.role === 'recepcao') {
+        bucket.recepcao += 1
+      } else if (p.role === 'financeiro') {
+        bucket.financeiro += 1
+      } else {
+        bucket.outros += 1
+      }
+    })
+
+    const enriched: ClinicaUsersSummary[] = (clinicas || []).map((c: any) => {
+      const bucket = countsByClinic[c.id] || {
+        total: 0,
+        admin_clinica: 0,
+        dentista: 0,
+        recepcao: 0,
+        financeiro: 0,
+        outros: 0,
+      }
+      return {
+        id: c.id,
+        nome: c.nome,
+        cnpj: c.cnpj ?? null,
+        email: c.email ?? null,
+        status_assinatura: c.status_assinatura,
+        ativo: Boolean(c.ativo),
+        criado_em: c.criado_em,
+        totalUsuarios: bucket.total,
+        usuariosPorRole: {
+          admin_clinica: bucket.admin_clinica,
+          dentista: bucket.dentista,
+          recepcao: bucket.recepcao,
+          financeiro: bucket.financeiro,
+          outros: bucket.outros,
+        },
+      }
+    })
+
+    return {
+      success: true,
+      data: {
+        clinicas: enriched,
+        totalUsuarios: (profiles || []).length,
+        totalUsuariosGlobais,
+      },
+    }
+  } catch (err: any) {
+    console.error('[admin-global.getGlobalClinicsUsersSummary] Erro:', err.message)
+    return { success: false, error: err.message }
+  }
+}
+
+// ─── 3c. Usuários Exclusivos de uma Clínica Selecionada ──────────────────────
+
+export async function getClinicUsersByClinicId(clinicaId: string): Promise<{
+  success: boolean
+  data?: {
+    clinica: {
+      id: string
+      nome: string
+      cnpj: string | null
+      email: string | null
+      status_assinatura: string
+      ativo: boolean
+    }
+    usuarios: GlobalUserItem[]
+  }
+  error?: string
+}> {
+  try {
+    await checkServerAuth(['super_admin'])
+
+    if (!clinicaId || !/^[0-9a-f-]{36}$/i.test(clinicaId)) {
+      throw new Error('Identificador de clínica inválido.')
+    }
+
+    const [{ data: clinica, error: clinicaErr }, { data: users, error: usersErr }] =
+      await Promise.all([
+        supabaseAdmin
+          .from('clinicas')
+          .select('id, nome, cnpj, email, status_assinatura, ativo')
+          .eq('id', clinicaId)
+          .maybeSingle(),
+        supabaseAdmin
+          .from('user_profiles')
+          .select('id, nome, email, role, especialidade, clinica_id, is_lifetime, created_at')
+          .eq('clinica_id', clinicaId)
+          .order('created_at', { ascending: false }),
+      ])
+
+    if (clinicaErr) throw new Error(clinicaErr.message)
+    if (!clinica) throw new Error('Clínica não encontrada.')
+    if (usersErr) throw new Error(usersErr.message)
+
+    const mappedUsers: GlobalUserItem[] = (users || []).map((u: any) => ({
+      ...u,
+      clinica_nome: clinica.nome,
+    }))
+
+    return {
+      success: true,
+      data: {
+        clinica: {
+          id: clinica.id,
+          nome: clinica.nome,
+          cnpj: clinica.cnpj ?? null,
+          email: clinica.email ?? null,
+          status_assinatura: clinica.status_assinatura,
+          ativo: Boolean(clinica.ativo),
+        },
+        usuarios: mappedUsers,
+      },
+    }
+  } catch (err: any) {
+    console.error('[admin-global.getClinicUsersByClinicId] Erro:', err.message)
+    return { success: false, error: err.message }
+  }
+}
+
+// ─── 3d. Usuários Globais Sem Vínculo com Clínica ────────────────────────────
+
+export async function getUnlinkedGlobalUsers(): Promise<{
+  success: boolean
+  data?: GlobalUserItem[]
+  error?: string
+}> {
+  try {
+    await checkServerAuth(['super_admin'])
+
+    const { data: users, error } = await supabaseAdmin
+      .from('user_profiles')
+      .select('id, nome, email, role, especialidade, clinica_id, is_lifetime, created_at')
+      .is('clinica_id', null)
+      .order('created_at', { ascending: false })
+
+    if (error) throw new Error(error.message)
+
+    const mappedUsers: GlobalUserItem[] = (users || []).map((u: any) => ({
+      ...u,
+      clinica_nome: 'Global (Sem vínculo)',
+    }))
+
+    return { success: true, data: mappedUsers }
+  } catch (err: any) {
+    console.error('[admin-global.getUnlinkedGlobalUsers] Erro:', err.message)
     return { success: false, error: err.message }
   }
 }

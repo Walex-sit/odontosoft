@@ -59,3 +59,9 @@ CORRECOES_*.md
 ETAPA*.md
 REMEDIACAO_*.md
 
+
+# Backup local do banco, nunca publicar
+/backup-antes-do-deploy.sql
+
+# Manter relatório oficial de entrega versionado
+!documentacao/entrega/RELATORIO_DE_ENTREGA.md

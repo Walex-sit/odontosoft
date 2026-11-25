@@ -418,11 +418,6 @@ export default function Topbar() {
             >
               {isSuper && !isSuperAdminContext ? 'OdontoSoft' : (clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft')}
             </h1>
-            {isSuper && isSuperAdminContext && (
-              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
-                Contexto
-              </span>
-            )}
             {isSuper && !isSuperAdminContext && (
               <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-xs font-black uppercase tracking-wider bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
                 Painel Global

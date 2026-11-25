@@ -25,12 +25,12 @@ import Image from 'next/image'
 // ─── Badge de ação colorido ──────────────────────────────────────────────────
 
 const ACTION_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  criacao:    { bg: 'bg-[var(--bg-surface)] border border-[var(--success)]/45', text: 'text-[var(--success)]', label: 'CRIAÇÃO' },
-  edicao:     { bg: 'bg-[var(--bg-surface)] border border-[var(--primary)]/45', text: 'text-[var(--primary)]', label: 'EDIÇÃO' },
-  exclusao:   { bg: 'bg-[var(--bg-surface)] border border-[var(--error)]/45', text: 'text-[var(--error)]', label: 'EXCLUSÃO' },
+  criacao: { bg: 'bg-[var(--bg-surface)] border border-[var(--success)]/45', text: 'text-[var(--success)]', label: 'CRIAÇÃO' },
+  edicao: { bg: 'bg-[var(--bg-surface)] border border-[var(--primary)]/45', text: 'text-[var(--primary)]', label: 'EDIÇÃO' },
+  exclusao: { bg: 'bg-[var(--bg-surface)] border border-[var(--error)]/45', text: 'text-[var(--error)]', label: 'EXCLUSÃO' },
   financeiro: { bg: 'bg-[var(--bg-surface)] border border-[var(--warning)]/45', text: 'text-[var(--warning)]', label: 'FINANCEIRO' },
-  login:      { bg: 'bg-[var(--bg-surface)] border border-[var(--primary)]/45', text: 'text-[var(--primary)]', label: 'LOGIN' },
-  logout:     { bg: 'bg-[var(--bg-surface)] border border-[var(--border)]', text: 'text-[var(--text-secondary)]', label: 'LOGOUT' },
+  login: { bg: 'bg-[var(--bg-surface)] border border-[var(--primary)]/45', text: 'text-[var(--primary)]', label: 'LOGIN' },
+  logout: { bg: 'bg-[var(--bg-surface)] border border-[var(--border)]', text: 'text-[var(--text-secondary)]', label: 'LOGOUT' },
 }
 
 function ActionBadge({ action }: { action: string }) {
@@ -82,23 +82,13 @@ export default function ConfiguracoesPage() {
   const [isLoadingBilling, setIsLoadingBilling] = useState(false)
   const [isChangingPlan, setIsChangingPlan] = useState<string | null>(null)
 
-  // R-004 (Auditoria Etapa 4): fallback hardcoded 'testealex@gmail.com' removido.
-  const configuredOwnerEmail = (process.env.NEXT_PUBLIC_OWNER_EMAIL || '').toLowerCase().trim()
-  const isOwnerExactMatch = Boolean(
-    configuredOwnerEmail &&
-    session?.user?.email &&
-    session.user.email.toLowerCase().trim() === configuredOwnerEmail &&
-    (profile?.role === 'super_admin' || profile?.is_lifetime === true)
-  )
-
   const isVitalicio = Boolean(
     subscriptionData?.isLifetime ||
     subscriptionData?.isSuperAdmin ||
     isSuperAdmin ||
     isLifetime ||
     profile?.is_lifetime ||
-    profile?.role === 'super_admin' ||
-    isOwnerExactMatch
+    profile?.role === 'super_admin'
   )
 
   // ─── Perfil da Clínica (dados reais) ──────────────────────────────────────
@@ -466,32 +456,30 @@ export default function ConfiguracoesPage() {
         <div className="max-w-6xl mx-auto flex items-center gap-2 mt-8 border-b border-[var(--border)] pb-0.5 overflow-x-auto">
           {(
             [
-              { id: 'perfil',      label: 'Perfil da Clínica',      icon: <Building2 className="h-4 w-4" /> },
-              { id: 'usuarios',    label: 'Usuários e Permissões',   icon: <Users className="h-4 w-4" /> },
-              { id: 'assinatura',  label: 'Assinatura & Planos',     icon: <CreditCard className="h-4 w-4" /> },
-              { id: 'comissoes',   label: 'Comissões',               icon: <Percent className="h-4 w-4" /> },
-              { id: 'integracoes', label: 'Integrações',             icon: <Cpu className="h-4 w-4" /> },
-              { id: 'seguranca',   label: 'Segurança',               icon: <ShieldCheck className="h-4 w-4" /> },
+              { id: 'perfil', label: 'Perfil da Clínica', icon: <Building2 className="h-4 w-4" /> },
+              { id: 'usuarios', label: 'Usuários e Permissões', icon: <Users className="h-4 w-4" /> },
+              { id: 'assinatura', label: 'Assinatura & Planos', icon: <CreditCard className="h-4 w-4" /> },
+              { id: 'comissoes', label: 'Comissões', icon: <Percent className="h-4 w-4" /> },
+              { id: 'integracoes', label: 'Integrações', icon: <Cpu className="h-4 w-4" /> },
+              { id: 'seguranca', label: 'Segurança', icon: <ShieldCheck className="h-4 w-4" /> },
             ] as const
           ).map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all border-b-2 whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--primary-subtle)]'
-                  : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)]'
-              }`}
+              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-sm transition-all border-b-2 whitespace-nowrap ${activeTab === tab.id
+                ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--primary-subtle)]'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] dark:bg-[var(--bg-base)]'
+                }`}
             >
               {tab.icon} {tab.label}
               {tab.id === 'assinatura' && subscriptionData && (
-                <span className={`ml-1 text-xs font-extrabold px-2 py-0.5 rounded-full bg-[var(--bg-surface)] border ${
-                  subscriptionData.status === 'ativo'
-                    ? 'text-[var(--success)] border-[var(--success)]/45'
-                    : subscriptionData.status === 'inadimplente'
+                <span className={`ml-1 text-xs font-extrabold px-2 py-0.5 rounded-full bg-[var(--bg-surface)] border ${subscriptionData.status === 'ativo'
+                  ? 'text-[var(--success)] border-[var(--success)]/45'
+                  : subscriptionData.status === 'inadimplente'
                     ? 'text-[var(--error)] border-[var(--error)]/45'
                     : 'text-[var(--warning)] border-[var(--warning)]/45'
-                }`}>
+                  }`}>
                   {subscriptionData.status === 'trial' ? 'TRIAL' : subscriptionData.status === 'ativo' ? 'ATIVO' : 'PENDENTE'}
                 </span>
               )}
@@ -757,7 +745,7 @@ export default function ConfiguracoesPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div 
+              <div
                 onClick={() => { setSelectedRole('admin'); setSelectedRoleName('Administrador'); setIsModalOpen(true); }}
                 className="p-5 border border-[var(--border)]  rounded-2xl bg-[var(--bg-base)] dark:bg-[var(--bg-base)] flex items-start gap-4 cursor-pointer hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] hover:shadow-md transition-all"
               >
@@ -770,7 +758,7 @@ export default function ConfiguracoesPage() {
                 </div>
               </div>
 
-              <div 
+              <div
                 onClick={() => { setSelectedRole('dentista'); setSelectedRoleName('Dentista / Odontólogo'); setIsModalOpen(true); }}
                 className="p-5 border border-[var(--border)]  rounded-2xl bg-[var(--bg-base)] dark:bg-[var(--bg-base)] flex items-start gap-4 cursor-pointer hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] hover:shadow-md transition-all"
               >
@@ -783,7 +771,7 @@ export default function ConfiguracoesPage() {
                 </div>
               </div>
 
-              <div 
+              <div
                 onClick={() => { setSelectedRole('recepcao'); setSelectedRoleName('Recepção'); setIsModalOpen(true); }}
                 className="p-5 border border-[var(--border)]  rounded-2xl bg-[var(--bg-base)] dark:bg-[var(--bg-base)] flex items-start gap-4 cursor-pointer hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] hover:shadow-md transition-all"
               >
@@ -796,7 +784,7 @@ export default function ConfiguracoesPage() {
                 </div>
               </div>
 
-              <div 
+              <div
                 onClick={() => { setSelectedRole('financeiro'); setSelectedRoleName('Financeiro'); setIsModalOpen(true); }}
                 className="p-5 border border-[var(--border)]  rounded-2xl bg-[var(--bg-base)] dark:bg-[var(--bg-base)] flex items-start gap-4 cursor-pointer hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-surface)] hover:shadow-md transition-all"
               >
@@ -849,12 +837,11 @@ export default function ConfiguracoesPage() {
                             <td className="p-4 font-semibold text-[var(--text-primary)]">{member.nome}</td>
                             <td className="p-4 text-[var(--text-secondary)] text-sm">{member.email}</td>
                             <td className="p-4">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                                (member.role === 'admin' || member.role === 'admin_clinica') ? 'bg-[var(--primary-subtle)] text-[var(--primary)]' :
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${(member.role === 'admin' || member.role === 'admin_clinica') ? 'bg-[var(--primary-subtle)] text-[var(--primary)]' :
                                 member.role === 'dentista' ? 'bg-green-100 text-green-700' :
-                                member.role === 'recepcao' ? 'bg-amber-100 text-amber-700' :
-                                'bg-[var(--primary-subtle)] text-[var(--primary)]'
-                              }`}>
+                                  member.role === 'recepcao' ? 'bg-amber-100 text-amber-700' :
+                                    'bg-[var(--primary-subtle)] text-[var(--primary)]'
+                                }`}>
                                 {member.role === 'admin_clinica' ? 'Admin' : member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                               </span>
                             </td>
@@ -920,27 +907,24 @@ export default function ConfiguracoesPage() {
                             Acesso Vitalício / Administrador Geral (Isento de Cobrança)
                           </span>
                         ) : (
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold ${
-                            subscriptionData.status === 'ativo'
-                              ? 'bg-[var(--success-bg)] text-[var(--success)] border border-[var(--success)]/30'
-                              : subscriptionData.status === 'inadimplente'
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold ${subscriptionData.status === 'ativo'
+                            ? 'bg-[var(--success-bg)] text-[var(--success)] border border-[var(--success)]/30'
+                            : subscriptionData.status === 'inadimplente'
                               ? 'bg-[var(--error-bg)] text-[var(--error)] border border-[var(--error)]/30'
                               : 'bg-[var(--warning-bg)] text-[var(--warning)] border border-[var(--warning)]/30'
-                          }`}>
-                            <span className={`h-2 w-2 rounded-full ${
-                              subscriptionData.status === 'ativo' ? 'bg-[var(--success)]' : subscriptionData.status === 'inadimplente' ? 'bg-[var(--error)]' : 'bg-[var(--warning)]'
-                            }`} />
+                            }`}>
+                            <span className={`h-2 w-2 rounded-full ${subscriptionData.status === 'ativo' ? 'bg-[var(--success)]' : subscriptionData.status === 'inadimplente' ? 'bg-[var(--error)]' : 'bg-[var(--warning)]'
+                              }`} />
                             {subscriptionData.statusLabel}
                           </span>
                         )}
                       </div>
                       <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-3">
                         {subscriptionData.nomeClinica}
-                        <span className={`text-xs px-3 py-1 rounded-xl font-bold uppercase tracking-wider ${
-                          isVitalicio
-                            ? 'bg-[var(--warning-bg)] border border-[var(--warning)]/40 text-[var(--warning)]'
-                            : 'bg-[var(--primary-subtle)] border border-[var(--primary)]/30 text-[var(--primary)]'
-                        }`}>
+                        <span className={`text-xs px-3 py-1 rounded-xl font-bold uppercase tracking-wider ${isVitalicio
+                          ? 'bg-[var(--warning-bg)] border border-[var(--warning)]/40 text-[var(--warning)]'
+                          : 'bg-[var(--primary-subtle)] border border-[var(--primary)]/30 text-[var(--primary)]'
+                          }`}>
                           {isVitalicio ? '👑 Master Vitalício' : `Plano ${subscriptionData.planoNome}`}
                         </span>
                       </h2>
@@ -1069,11 +1053,10 @@ export default function ConfiguracoesPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* PLANO ESSENCIAL */}
-                    <div className={`p-8 rounded-[32px] border transition-all relative flex flex-col justify-between ${
-                      !isVitalicio && subscriptionData.planoId === 'essencial'
-                        ? 'border-[var(--primary)]/40 bg-[var(--primary-subtle)] shadow-md ring-2 ring-[var(--primary)]/20'
-                        : 'border-[var(--border)]  bg-[var(--bg-surface)] hover:border-[var(--border-medium)] dark:hover:border-[var(--border)]'
-                    }`}>
+                    <div className={`p-8 rounded-[32px] border transition-all relative flex flex-col justify-between ${!isVitalicio && subscriptionData.planoId === 'essencial'
+                      ? 'border-[var(--primary)]/40 bg-[var(--primary-subtle)] shadow-md ring-2 ring-[var(--primary)]/20'
+                      : 'border-[var(--border)]  bg-[var(--bg-surface)] hover:border-[var(--border-medium)] dark:hover:border-[var(--border)]'
+                      }`}>
                       <div>
                         <div className="flex items-center justify-between mb-4">
                           <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-[var(--bg-base)] dark:bg-[var(--border)] text-[var(--text-secondary)]">
@@ -1115,11 +1098,10 @@ export default function ConfiguracoesPage() {
                         <button
                           onClick={() => handleChangePlan('essencial')}
                           disabled={subscriptionData.planoId === 'essencial' || isChangingPlan !== null || !subscriptionData.podeGerenciar}
-                          className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
-                            subscriptionData.planoId === 'essencial'
-                              ? 'bg-[var(--border)] text-[var(--text-secondary)] cursor-default'
-                              : 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]'
-                          }`}
+                          className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${subscriptionData.planoId === 'essencial'
+                            ? 'bg-[var(--border)] text-[var(--text-secondary)] cursor-default'
+                            : 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]'
+                            }`}
                         >
                           {isChangingPlan === 'essencial' ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -1133,13 +1115,12 @@ export default function ConfiguracoesPage() {
                     </div>
 
                     {/* PLANO PREMIUM & COMPLIANCE */}
-                    <div className={`p-8 rounded-[32px] border transition-all relative flex flex-col justify-between ${
-                      isVitalicio
-                        ? 'border-[var(--warning)]/60 bg-[var(--warning-bg)]'
-                        : subscriptionData.planoId === 'premium'
+                    <div className={`p-8 rounded-[32px] border transition-all relative flex flex-col justify-between ${isVitalicio
+                      ? 'border-[var(--warning)]/60 bg-[var(--warning-bg)]'
+                      : subscriptionData.planoId === 'premium'
                         ? 'border-[var(--primary)] bg-[var(--primary-subtle)]'
                         : 'border-[var(--border)] bg-[var(--bg-surface)]'
-                    }`}>
+                      }`}>
                       <div>
                         <div className="flex items-center justify-between mb-4">
                           <span className="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-[var(--primary-subtle)] text-[var(--primary)] flex items-center gap-1.5">
@@ -1185,11 +1166,10 @@ export default function ConfiguracoesPage() {
                         <button
                           onClick={() => handleChangePlan('premium')}
                           disabled={subscriptionData.planoId === 'premium' || isChangingPlan !== null || !subscriptionData.podeGerenciar}
-                          className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
-                            subscriptionData.planoId === 'premium'
-                              ? 'bg-[var(--border)] text-[var(--text-secondary)] cursor-default'
-                              : 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]'
-                          }`}
+                          className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${subscriptionData.planoId === 'premium'
+                            ? 'bg-[var(--border)] text-[var(--text-secondary)] cursor-default'
+                            : 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]'
+                            }`}
                         >
                           {isChangingPlan === 'premium' ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -1254,11 +1234,10 @@ export default function ConfiguracoesPage() {
                               )}
                             </td>
                             <td className="px-6 py-4">
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${
-                                isVitalicio || fat.status === 'pago'
-                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                  : 'bg-amber-50 text-amber-700 border border-amber-200'
-                              }`}>
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${isVitalicio || fat.status === 'pago'
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                }`}>
                                 {isVitalicio ? 'ISENTO' : fat.status === 'pago' ? 'PAGO' : 'PENDENTE'}
                               </span>
                             </td>
@@ -1461,7 +1440,7 @@ export default function ConfiguracoesPage() {
             {/* Cards de Métricas LGPD */}
             {isLoadingSecurity && !complianceStats ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                {[1,2,3,4].map(i => (
+                {[1, 2, 3, 4].map(i => (
                   <div key={i} className="bg-[var(--bg-surface)] border border-[var(--border)]  rounded-2xl p-5 animate-pulse h-28" />
                 ))}
               </div>
@@ -1639,8 +1618,8 @@ export default function ConfiguracoesPage() {
                                 {log.details.nome
                                   ? `Paciente: ${log.details.nome}`
                                   : log.details.deleted_user_nome
-                                  ? `Usuário: ${log.details.deleted_user_nome}`
-                                  : JSON.stringify(log.details).substring(0, 60)}
+                                    ? `Usuário: ${log.details.deleted_user_nome}`
+                                    : JSON.stringify(log.details).substring(0, 60)}
                               </span>
                             ) : (
                               <span className="text-xs text-[var(--text-muted)]">—</span>

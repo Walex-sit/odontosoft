@@ -14,7 +14,7 @@
  */
 
 import { createServerClient } from '@/app/lib/supabase/server'
-import { PLANOS_SAAS } from '@/app/lib/stripe'
+import { PLANOS_SAAS_CATALOG as PLANOS_SAAS } from '@/app/lib/plans'
 import { revalidatePath } from 'next/cache'
 import { resolveAuthorizedClinicId } from '@/app/lib/auth-guards'
 
