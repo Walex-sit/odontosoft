@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { IS_NON_PRODUCTION_ENV } from '@/app/lib/env'
 
 export default function HeroSection() {
   const heroRef = useRef<HTMLElement>(null)
@@ -115,20 +116,22 @@ export default function HeroSection() {
         </a>
       </div>
 
-      {/* Demonstração técnica & portfólio notice */}
-      <div
-        data-animate
-        className="mt-8 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[var(--bg-base)] border border-[var(--border)]/80 shadow-2xs"
-        style={{ '--delay': '300ms' } as React.CSSProperties}
-      >
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-        </span>
-        <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)]">
-          Ambiente de demonstração técnica e portfólio.
-        </p>
-      </div>
+      {/* Demonstração técnica & portfólio notice — apenas desenvolvimento/staging */}
+      {IS_NON_PRODUCTION_ENV && (
+        <div
+          data-animate
+          className="mt-8 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[var(--bg-base)] border border-[var(--border)] shadow-2xs"
+          style={{ '--delay': '300ms' } as React.CSSProperties}
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--success)] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--success)]"></span>
+          </span>
+          <p className="text-xs sm:text-sm font-medium text-[var(--text-secondary)]">
+            Ambiente de demonstração técnica e portfólio.
+          </p>
+        </div>
+      )}
 
       {/* Hero Dashboard Mockup — fiel ao sistema real */}
       <div

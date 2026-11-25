@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { PLANOS_SAAS_CATALOG, TRIAL_PLAN } from '@/app/lib/plans'
+import { IS_NON_PRODUCTION_ENV } from '@/app/lib/env'
 
 interface LandingPlanCard {
   id: string
@@ -99,11 +100,10 @@ export default function PricingSection() {
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className={`relative rounded-3xl p-7 sm:p-8 flex flex-col justify-between bg-[var(--bg-surface)] transition-colors ${
-                plan.popular
-                  ? 'border-2 border-[var(--primary)]'
-                  : 'border border-[var(--border)]'
-              }`}
+              className={`relative rounded-3xl p-7 sm:p-8 flex flex-col justify-between bg-[var(--bg-surface)] transition-colors ${plan.popular
+                ? 'border-2 border-[var(--primary)]'
+                : 'border border-[var(--border)]'
+                }`}
             >
               {/* Recommended Tag */}
               {plan.popular && plan.popularBadge && (
@@ -222,11 +222,10 @@ export default function PricingSection() {
                 <Link
                   href={plan.ctaHref}
                   id={`pricing-cta-${plan.id}`}
-                  className={`w-full inline-flex items-center justify-center gap-2 font-bold text-sm sm:text-base py-3.5 px-6 rounded-2xl transition-colors active:scale-95 ${
-                    plan.popular
-                      ? 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]'
-                      : 'bg-[var(--bg-base)] hover:bg-[var(--border)] text-[var(--text-primary)] border border-[var(--border)] hover:border-[var(--border-medium)]'
-                  }`}
+                  className={`w-full inline-flex items-center justify-center gap-2 font-bold text-sm sm:text-base py-3.5 px-6 rounded-2xl transition-colors active:scale-95 ${plan.popular
+                    ? 'bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)]'
+                    : 'bg-[var(--bg-base)] hover:bg-[var(--border)] text-[var(--text-primary)] border border-[var(--border)] hover:border-[var(--border-medium)]'
+                    }`}
                 >
                   {plan.ctaText}
                   <svg
@@ -247,26 +246,28 @@ export default function PricingSection() {
           ))}
         </div>
 
-        {/* Demo Disclaimer / Notice */}
-        <div className="mt-12 text-center">
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)] inline-flex items-center gap-2">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="16" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
-            </svg>
-            Ambiente de demonstração técnica. Nenhuma cobrança automática é realizada sem confirmação.
-          </p>
-        </div>
+        {/* Demo Disclaimer / Notice — apenas desenvolvimento/staging, nunca em produção */}
+        {IS_NON_PRODUCTION_ENV && (
+          <div className="mt-12 text-center">
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] inline-flex items-center gap-2">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+              Ambiente de demonstração técnica. Nenhuma cobrança automática é realizada sem confirmação.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   )
