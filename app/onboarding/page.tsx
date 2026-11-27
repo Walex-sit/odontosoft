@@ -92,7 +92,7 @@ function OnboardingForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex flex-col items-center justify-center p-4 sm:p-6 font-sans">
+    <div className="min-h-dvh bg-[var(--bg-base)] text-[var(--text-primary)] flex flex-col items-center justify-center p-4 sm:p-6 font-sans">
       <div className="w-full max-w-2xl bg-[var(--bg-surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-10 shadow-md dark:shadow-none relative overflow-hidden">
         {/* Header de Boas-Vindas */}
         <div className="text-center mb-8 relative z-10">
@@ -259,7 +259,7 @@ export default function OnboardingPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[var(--bg-base)] flex flex-col items-center justify-center p-4">
+        <div className="min-h-dvh bg-[var(--bg-base)] flex flex-col items-center justify-center p-4">
           <div className="w-10 h-10 border-2 border-[var(--primary)]/40 border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-sm text-[var(--text-muted)] font-medium">Carregando dados da sua clínica...</p>
         </div>

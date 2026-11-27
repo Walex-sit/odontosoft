@@ -32,7 +32,7 @@ export default function HeroSection() {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[var(--bg-base)] px-6 pt-24 pb-16"
+      className="relative min-h-dvh flex flex-col items-center justify-center overflow-hidden bg-[var(--bg-base)] px-4 sm:px-6 pt-24 pb-16"
       id="hero"
     >
 

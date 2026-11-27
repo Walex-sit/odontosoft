@@ -253,8 +253,8 @@ export default function Usuarios() {
             <Users size={20} className="text-[var(--primary)]" /> Usuários do Sistema ({usuarios.length})
           </h1>
 
-          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded shadow-sm overflow-hidden">
-            <table className="w-full text-left border-collapse">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded shadow-sm overflow-x-auto">
+            <table className="w-full min-w-[540px] text-left border-collapse">
               <thead className="bg-[var(--bg-surface)] border-b border-[var(--border)] text-xs font-bold text-[var(--text-secondary)]">
                 <tr>
                   <th className="p-3 w-10 text-center border-r border-[var(--border)]">

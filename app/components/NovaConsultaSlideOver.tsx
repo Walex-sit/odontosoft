@@ -45,26 +45,30 @@ export default function NovaConsultaSlideOver({ isOpen, onClose }: NovaConsultaS
         onClick={onClose}
       />
       
-      <div className="fixed right-0 top-0 h-screen w-full sm:w-[500px] bg-[var(--bg-surface)] shadow-md z-[70] flex flex-col transform transition-transform duration-300 ease-in-out border-l border-[var(--border)]">
+      <div className="fixed right-0 top-0 h-dvh w-full sm:w-[500px] bg-[var(--bg-surface)] shadow-md z-[70] flex flex-col transform transition-transform duration-300 ease-in-out border-l border-[var(--border)]">
         
-        <div className="flex items-center justify-between p-6 border-b border-[var(--border)] shrink-0">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-[var(--border)] shrink-0">
           <h2 className="text-[var(--text-primary)] font-bold text-lg">Nova Consulta</h2>
           <button 
+            type="button"
             onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors bg-[var(--bg-surface)] p-1.5 rounded-md hover:bg-[var(--border-medium)] border border-[var(--border)]"
+            aria-label="Fechar painel"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors bg-[var(--bg-surface)] p-1.5 rounded-md hover:bg-[var(--border-medium)] border border-[var(--border)]"
           >
             <X size={18} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
           <form id="nova-consulta-form" onSubmit={handleSalvar} className="space-y-6">
             
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Paciente</label>
+              <label htmlFor="nova-consulta-paciente" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Paciente</label>
               <select 
+                id="nova-consulta-paciente"
+                name="paciente"
                 required
-                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
+                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
               >
                 <option value="">Buscar paciente...</option>
                 <option value="1">Carlos Silva</option>
@@ -73,10 +77,12 @@ export default function NovaConsultaSlideOver({ isOpen, onClose }: NovaConsultaS
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Profissional (Dentista)</label>
+              <label htmlFor="nova-consulta-dentista" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Profissional (Dentista)</label>
               <select 
+                id="nova-consulta-dentista"
+                name="dentista"
                 required
-                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
+                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
               >
                 <option value="">Selecione o profissional...</option>
                 {dentistas.map(d => (
@@ -85,30 +91,36 @@ export default function NovaConsultaSlideOver({ isOpen, onClose }: NovaConsultaS
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Data</label>
+                <label htmlFor="nova-consulta-data" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Data</label>
                 <input 
+                  id="nova-consulta-data"
+                  name="data"
                   type="date" 
                   required
-                  className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
+                  className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Horário</label>
+                <label htmlFor="nova-consulta-horario" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Horário</label>
                 <input 
+                  id="nova-consulta-horario"
+                  name="horario"
                   type="time" 
                   required
-                  className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
+                  className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Procedimento</label>
+              <label htmlFor="nova-consulta-procedimento" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Procedimento</label>
               <select 
+                id="nova-consulta-procedimento"
+                name="procedimento"
                 required
-                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
+                className="w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] rounded-md px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
               >
                 <option value="">Selecione...</option>
                 <option value="avaliacao">Avaliação Inicial</option>
@@ -120,7 +132,7 @@ export default function NovaConsultaSlideOver({ isOpen, onClose }: NovaConsultaS
           </form>
         </div>
 
-        <div className="border-t border-[var(--border)] bg-[var(--bg-surface)] p-4 flex justify-end gap-3 shrink-0">
+        <div className="border-t border-[var(--border)] bg-[var(--bg-surface)] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex justify-end gap-3 shrink-0">
           <button 
             type="button"
             onClick={onClose}

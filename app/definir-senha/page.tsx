@@ -23,7 +23,7 @@ function DefinirSenhaForm() {
     e.preventDefault()
 
     if (password.length < 6) {
-      toast.error('A nova palavra-passe deve ter pelo menos 6 caracteres.')
+      toast.error('A nova senha deve ter pelo menos 6 caracteres.')
       return
     }
 
@@ -82,7 +82,7 @@ function DefinirSenhaForm() {
       <div className="text-center mb-8">
         <BrandMark size="lg" className="mx-auto mb-3.5" />
         <h1 className="text-2xl font-heading font-extrabold text-[var(--text-primary)] tracking-tight">
-          Definir Palavra-passe
+          Definir Senha
         </h1>
         <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
           Bem-vindo(a) ao OdontoSoft. Crie sua senha de acesso para ingressar na equipe da clínica.
@@ -92,35 +92,42 @@ function DefinirSenhaForm() {
       <form onSubmit={handleSubmit} className="space-y-5">
         {emailParam && (
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+            <label htmlFor="definir-email" className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
               E-mail Convidado
             </label>
             <input
+              id="definir-email"
+              name="email"
               type="email"
+              autoComplete="email"
               disabled
               value={emailParam}
-              className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)] rounded-2xl text-xs sm:text-sm font-semibold text-[var(--text-muted)] cursor-not-allowed"
+              className="w-full px-4 py-3 bg-[var(--bg-base)] dark:bg-[var(--bg-base)] border border-[var(--border)] rounded-2xl text-base sm:text-sm font-semibold text-[var(--text-muted)] cursor-not-allowed"
             />
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
-            Nova Palavra-passe
+          <label htmlFor="definir-nova-senha" className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+            Nova Senha
           </label>
           <div className="relative">
             <input
+              id="definir-nova-senha"
+              name="new-password"
               type={showPassword ? 'text' : 'password'}
+              autoComplete="new-password"
               required
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Mínimo 6 caracteres"
-              className="w-full pl-4 pr-11 py-3 bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-2xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
+              className="w-full pl-4 pr-11 py-3 bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-2xl text-base sm:text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors p-1"
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -129,17 +136,20 @@ function DefinirSenhaForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
-            Confirmar Palavra-passe
+          <label htmlFor="definir-confirmar-senha" className="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">
+            Confirmar Senha
           </label>
           <input
+            id="definir-confirmar-senha"
+            name="confirm-password"
             type={showPassword ? 'text' : 'password'}
+            autoComplete="new-password"
             required
             minLength={6}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Repita a palavra-passe"
-            className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-2xl text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
+            placeholder="Repita a senha"
+            className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)]/80  rounded-2xl text-base sm:text-sm font-semibold text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all"
           />
         </div>
 
@@ -176,7 +186,7 @@ function DefinirSenhaForm() {
 
 export default function DefinirSenhaPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-[var(--bg-base)]">
+    <div className="min-h-dvh flex items-center justify-center p-6 bg-[var(--bg-base)]">
       <Suspense
         fallback={
           <div className="p-8 text-center text-[var(--text-muted)] font-bold">

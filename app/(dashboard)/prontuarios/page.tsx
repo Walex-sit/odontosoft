@@ -176,7 +176,7 @@ export default function Prontuarios() {
             </div>
           </div>
 
-          <div className="border border-[var(--border)] rounded-md overflow-hidden bg-[var(--bg-surface)]">
+          <div className="border border-[var(--border)] rounded-md overflow-x-auto bg-[var(--bg-surface)]">
             <table className="w-full text-left text-sm border-collapse min-w-[700px]">
               <thead className="bg-[var(--bg-surface)] border-b border-[var(--border)]">
                 <tr>

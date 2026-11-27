@@ -295,7 +295,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
           </h3>
           {savedAt && (
             <p className="text-xs text-[var(--text-muted)] mt-0.5">
-              Última actualização: {new Date(savedAt).toLocaleString('pt-BR')}
+              Última atualização: {new Date(savedAt).toLocaleString('pt-BR')}
             </p>
           )}
         </div>
@@ -503,7 +503,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {isPending ? 'A salvar…' : 'Salvar Alterações'}
+            {isPending ? 'Salvando…' : 'Salvar Alterações'}
           </button>
         </div>
       </div>
@@ -512,7 +512,7 @@ export default function OdontogramaInterativo({ pacienteId }: OdontogramaInterat
       {savedAt && !isPending && (
         <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium animate-in fade-in duration-300">
           <CheckCircle2 className="h-3.5 w-3.5" />
-          Registo sincronizado com o servidor em {new Date(savedAt).toLocaleTimeString('pt-BR')}
+          Registro sincronizado com o servidor em {new Date(savedAt).toLocaleTimeString('pt-BR')}
         </div>
       )}
     </div>

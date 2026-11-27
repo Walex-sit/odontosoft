@@ -180,7 +180,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-[var(--bg-base)]">
+      <div className="h-dvh w-full flex items-center justify-center bg-[var(--bg-base)]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary)]/40"></div>
       </div>
     )
@@ -189,7 +189,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
   // Aviso claro se o perfil não for encontrado
   if (!profile) {
     return (
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] p-6 text-center">
+      <div className="h-dvh w-full flex flex-col items-center justify-center bg-[var(--bg-base)] text-[var(--text-primary)] p-6 text-center">
         <div className="bg-[var(--bg-surface)] p-8 rounded-lg border border-[var(--border)] max-w-md shadow-md dark:shadow-none">
           <div className="text-[var(--warning)] mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">

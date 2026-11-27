@@ -68,7 +68,7 @@ export default function LoginView() {
   }
 
   return (
-    <div className="min-h-screen w-full flex font-sans antialiased bg-[var(--bg-base)] text-[var(--text-primary)]">
+    <div className="min-h-dvh w-full flex font-sans antialiased bg-[var(--bg-base)] text-[var(--text-primary)]">
 
       {/* Lado Esquerdo - Painel Institucional (Oculto em telas pequenas) */}
       <div className="hidden lg:flex lg:w-1/2 bg-[var(--primary-fill)] text-[var(--on-primary)] flex-col items-center justify-center relative overflow-hidden p-12">
@@ -134,15 +134,19 @@ export default function LoginView() {
 
             {/* Campo E-mail */}
             <div className="relative">
+              <label htmlFor="login-email" className="sr-only">E-mail</label>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Mail className="h-5 w-5 text-[var(--text-secondary)]" />
               </div>
               <input
+                id="login-email"
+                name="email"
                 type="email"
+                autoComplete="email"
                 required
                 data-testid="input-login-email"
                 disabled={carregando}
-                className="w-full pl-10 pr-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-base sm:text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all"
                 placeholder="E-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -151,15 +155,19 @@ export default function LoginView() {
 
             {/* Campo Senha */}
             <div className="relative">
+              <label htmlFor="login-password" className="sr-only">Senha</label>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Lock className="h-5 w-5 text-[var(--text-secondary)]" />
               </div>
               <input
+                id="login-password"
+                name="password"
                 type={mostrarSenha ? 'text' : 'password'}
+                autoComplete="current-password"
                 required
                 data-testid="input-login-password"
                 disabled={carregando}
-                className="w-full pl-10 pr-10 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all"
+                className="w-full pl-10 pr-12 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-base sm:text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-all"
                 placeholder="Senha"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
@@ -167,8 +175,9 @@ export default function LoginView() {
               <button
                 type="button"
                 onClick={() => setMostrarSenha(!mostrarSenha)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                className="absolute inset-y-0 right-0 px-3 min-w-[44px] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                 title={mostrarSenha ? 'Ocultar senha' : 'Visualizar senha'}
+                aria-label={mostrarSenha ? 'Ocultar senha' : 'Visualizar senha'}
               >
                 {mostrarSenha ? (
                   <EyeOff className="h-5 w-5" />

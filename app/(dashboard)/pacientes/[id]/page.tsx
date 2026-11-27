@@ -512,7 +512,7 @@ export default function DetalhePaciente() {
                     Gestão de Privacidade & Conformidade LGPD
                   </h3>
                   <p className="text-xs text-[var(--text-muted)] mt-1 font-medium">
-                    Registo de consentimentos vinculados a este paciente, em conformidade com a LGPD.
+                    Registro de consentimentos vinculados a este paciente, em conformidade com a LGPD.
                   </p>
                 </div>
                 <button
@@ -520,7 +520,7 @@ export default function DetalhePaciente() {
                   className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-2xl text-xs font-bold shadow-sm transition-all active:scale-95 shrink-0"
                 >
                   <Lock className="h-3.5 w-3.5" />
-                  {isLgpdAtivo ? 'Atualizar Consentimento' : 'Registar Consentimento'}
+                  {isLgpdAtivo ? 'Atualizar Consentimento' : 'Registrar Consentimento'}
                 </button>
               </div>
 

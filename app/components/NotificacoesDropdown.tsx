@@ -107,7 +107,7 @@ export default function NotificacoesDropdown({
 
       <div
         ref={containerRef}
-        className="absolute right-[-70px] sm:right-0 mt-3 w-[320px] sm:w-[400px] rounded-2xl shadow-md z-50 overflow-hidden bg-[var(--bg-surface)] border border-[var(--border)] animate-in fade-in zoom-in-95 duration-150"
+        className="fixed left-2 right-2 top-[72px] max-h-[calc(100dvh-5.5rem)] overflow-y-auto sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-3 sm:w-[400px] sm:max-h-[calc(100dvh-5rem)] rounded-2xl shadow-md z-50 bg-[var(--bg-surface)] border border-[var(--border)] animate-in fade-in zoom-in-95 duration-150"
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[var(--border)] bg-[var(--bg-base)] dark:bg-[var(--bg-surface)]">

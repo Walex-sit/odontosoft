@@ -26,7 +26,10 @@ import {
   Clock,
   ArrowLeft,
   Building2,
+  Sun,
+  Moon,
 } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { exitClinicContextAction } from '@/app/actions/admin-global'
 import { BrandMark } from './BrandLogo'
 import { toast } from 'sonner'
@@ -102,6 +105,7 @@ export default function Topbar() {
   const router = useRouter()
   const { profile, session } = useAuth()
   const { clinica, isSuperAdminContext, refreshClinica } = useClinica()
+  const { theme, setTheme } = useTheme()
   
   const [isDropdownOpen,   setIsDropdownOpen]   = useState(false)
   const [isUserMenuOpen,   setIsUserMenuOpen]   = useState(false)
@@ -116,9 +120,9 @@ export default function Topbar() {
   const userMenuRef = useRef<HTMLDivElement>(null)
   const toolsMenuRef = useRef<HTMLDivElement>(null)
 
-  // Fechar menus ao clicar fora
+  // Fechar menus ao clicar/tocar fora
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
       const target = event.target as Node
       if (userMenuRef.current && !userMenuRef.current.contains(target)) {
         setIsUserMenuOpen(false)
@@ -129,11 +133,20 @@ export default function Topbar() {
     }
     if (isUserMenuOpen || isToolsOpen) {
       document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('touchstart', handleClickOutside)
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
     }
   }, [isUserMenuOpen, isToolsOpen])
+
+  // Fechar menus na troca de rota
+  useEffect(() => {
+    setIsToolsOpen(false)
+    setIsUserMenuOpen(false)
+    setIsDropdownOpen(false)
+  }, [pathname])
 
   // Fechar menus ao pressionar Escape
   useEffect(() => {
@@ -391,14 +404,15 @@ export default function Topbar() {
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
-    <header className="h-16 w-full flex items-center justify-between px-4 sm:px-8 z-50 bg-[var(--bg-surface)] border-b border-[var(--border)] shrink-0 transition-colors duration-200">
+    <header className="h-16 w-full flex items-center justify-between gap-2 px-3 sm:px-8 z-50 bg-[var(--bg-surface)] border-b border-[var(--border)] shrink-0 transition-colors duration-200">
       
       {/* ── Lado esquerdo: Logo + Nav ── */}
-      <div className="flex items-center gap-4 sm:gap-6">
+      <div className="flex items-center gap-3 sm:gap-6 min-w-0">
         <Link 
           href={isSuper && !isSuperAdminContext ? '/admin' : '/overview'} 
           prefetch={true} 
-          className="flex items-center gap-3 active:scale-95 transition-transform"
+          className="flex items-center gap-2.5 sm:gap-3 min-h-[44px] min-w-[44px] justify-center sm:justify-start active:scale-95 transition-transform shrink-0"
+          aria-label="Início"
         >
           {clinica?.logo_url ? (
             <div className="h-9 w-9 rounded-2xl overflow-hidden flex items-center justify-center bg-[var(--bg-surface)] border border-[var(--border)]/80  shadow-2xs shrink-0">
@@ -411,7 +425,7 @@ export default function Topbar() {
           ) : (
             <BrandMark size="md" />
           )}
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2 min-w-0">
             <h1 
               className="text-lg sm:text-xl font-black text-[var(--text-primary)] tracking-tight truncate max-w-[140px] sm:max-w-[220px] md:max-w-[300px]" 
               title={isSuper && !isSuperAdminContext ? 'OdontoSoft Global' : (clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft')}
@@ -419,7 +433,7 @@ export default function Topbar() {
               {isSuper && !isSuperAdminContext ? 'OdontoSoft' : (clinica?.nome_exibido?.trim() || clinica?.nome?.trim() || 'OdontoSoft')}
             </h1>
             {isSuper && !isSuperAdminContext && (
-              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-xs font-black uppercase tracking-wider bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30">
+              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-xs font-black uppercase tracking-wider bg-[var(--primary-subtle)] text-[var(--primary)] border border-[var(--primary)]/30 shrink-0">
                 Painel Global
               </span>
             )}
@@ -451,23 +465,23 @@ export default function Topbar() {
       </div>
 
       {/* ── Lado direito: Ferramentas Rápidas + Suporte + Busca + Ações + Perfil ── */}
-      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
 
         {/* ── Menu Dropdown: Utilitários Clínicos Rápidos ── */}
         {canSeeTools && (
           <div className="relative" ref={toolsMenuRef}>
             <button
               onClick={() => setIsToolsOpen(!isToolsOpen)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border outline-none active:scale-[0.98] ${
+              className={`flex items-center justify-center gap-1.5 sm:gap-2 min-h-[44px] min-w-[44px] px-2.5 sm:px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border outline-none active:scale-[0.98] ${
                 isToolsOpen
                   ? 'bg-[var(--bg-base)] border-[var(--border-medium)] text-[var(--primary)]'
                   : 'bg-[var(--bg-base)] border-[var(--border)] hover:border-[var(--border-medium)] text-[var(--text-primary)]'
               }`}
               aria-expanded={isToolsOpen}
               aria-haspopup="true"
-              aria-label="Abrir menu de utilitários rápidos"
+              aria-label="Abrir menu de ferramentas rápidas"
             >
-              <LayoutGrid className="h-4 w-4 text-[var(--text-muted)]" />
+              <LayoutGrid className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
               <span className="hidden md:inline">Ferramentas</span>
               <ChevronDown
                 className={`h-3.5 w-3.5 text-[var(--text-muted)] transition-transform duration-200 shrink-0 ${
@@ -477,10 +491,16 @@ export default function Topbar() {
             </button>
 
             {isToolsOpen && (
-              <div 
-                className="absolute right-0 top-full mt-2 w-80 sm:w-84 max-h-[calc(100vh-5rem)] overflow-y-auto bg-[var(--bg-surface)] rounded-3xl shadow-md border border-[var(--border)] py-2 z-50 animate-in fade-in-50 zoom-in-95 duration-150 origin-top-right divide-y divide-[var(--border)]"
-                role="menu"
-              >
+              <>
+                <div
+                  className="fixed inset-0 z-40 bg-black/25 sm:hidden"
+                  aria-hidden="true"
+                  onClick={() => setIsToolsOpen(false)}
+                />
+                <div 
+                  className="fixed left-2 right-2 top-[72px] max-h-[calc(100dvh-5.5rem)] sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-84 sm:max-h-[calc(100dvh-5rem)] overflow-y-auto bg-[var(--bg-surface)] rounded-3xl shadow-md border border-[var(--border)] py-2 z-50 animate-in fade-in-50 zoom-in-95 duration-150 origin-top-right divide-y divide-[var(--border)]"
+                  role="menu"
+                >
                 {/* ── GRUPO 1: UTILITÁRIOS RÁPIDOS ── */}
                 <div className="py-1 px-1.5 space-y-0.5">
                   <div className="px-3 pt-2 pb-1">
@@ -572,7 +592,7 @@ export default function Topbar() {
                           <ClipboardPlus className="h-4 w-4" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-semibold text-[var(--text-primary)]">Prontuário Eletrónico</span>
+                          <span className="font-semibold text-[var(--text-primary)]">Prontuário Eletrônico</span>
                           <span className="text-xs text-[var(--text-secondary)] font-normal">Histórico clínico e evoluções</span>
                         </div>
                       </Link>
@@ -621,6 +641,7 @@ export default function Topbar() {
                   </div>
                 )}
               </div>
+              </>
             )}
           </div>
         )}
@@ -638,8 +659,9 @@ export default function Topbar() {
         {/* ── Busca global com atalho Kbd ── */}
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="flex items-center gap-2.5 bg-[var(--bg-base)] border border-[var(--border)] px-3.5 py-2 rounded-2xl text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-hover)] hover:border-[var(--border-medium)] text-xs sm:text-sm font-medium group active:scale-[0.98]"
+          className="flex items-center justify-center gap-2.5 min-h-[44px] min-w-[44px] bg-[var(--bg-base)] border border-[var(--border)] px-2.5 sm:px-3.5 py-2 rounded-2xl text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-hover)] hover:border-[var(--border-medium)] text-xs sm:text-sm font-medium group active:scale-[0.98]"
           title="Buscar no sistema (⌘K ou Ctrl+K)"
+          aria-label="Buscar no sistema"
         >
           <Search className="h-4 w-4 text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors" />
           <span className="hidden sm:inline">Buscar...</span>
@@ -649,12 +671,12 @@ export default function Topbar() {
         </button>
 
         {/* ── Cluster: Notificações + Alternância de Tema ── */}
-        <div className="flex items-center bg-[var(--bg-base)] p-1 rounded-2xl border border-[var(--border)] gap-0.5">
+        <div className="flex items-center bg-[var(--bg-base)] p-0.5 sm:p-1 rounded-2xl border border-[var(--border)] gap-0.5">
           {/* Notificações com badge */}
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className={`p-2 rounded-xl relative transition-all ${
+              className={`min-h-[40px] min-w-[40px] sm:min-h-0 sm:min-w-0 flex items-center justify-center p-2 rounded-xl relative transition-all ${
                 isDropdownOpen
                   ? 'bg-[var(--primary-subtle)] text-[var(--primary)]'
                   : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]'
@@ -679,8 +701,10 @@ export default function Topbar() {
             />
           </div>
 
-          {/* Alternância de tema claro/escuro */}
-          <ThemeToggle />
+          {/* Alternância de tema claro/escuro (desktop/tablet; no celular fica no menu do avatar) */}
+          <div className="hidden sm:block">
+            <ThemeToggle />
+          </div>
         </div>
 
         {/* Divisor vertical sutil */}
@@ -690,7 +714,7 @@ export default function Topbar() {
         {isSuper && isSuperAdminContext && (
           <button
             onClick={handleVoltarPainelGlobal}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] text-xs font-bold transition-all active:scale-[0.98] cursor-pointer shrink-0"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] text-[var(--on-primary)] text-xs font-bold transition-all active:scale-[0.98] cursor-pointer shrink-0"
             title="Voltar ao Painel Administrativo Global"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
@@ -698,18 +722,18 @@ export default function Topbar() {
           </button>
         )}
 
-        {/* ── Bloco de Perfil do Utilizador + Menu Dropdown Centralizado ── */}
-        <div className="relative ml-1 sm:ml-2" ref={userMenuRef}>
+        {/* ── Bloco de Perfil do Usuário + Menu Dropdown Centralizado ── */}
+        <div className="relative ml-0.5 sm:ml-2 shrink-0" ref={userMenuRef}>
           <button
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            className={`flex items-center gap-2.5 p-1 sm:pr-3 rounded-2xl transition-all border outline-none active:scale-[0.98] ${
+            className={`flex items-center justify-center gap-2.5 min-h-[44px] min-w-[44px] p-1 sm:pr-3 rounded-2xl transition-all border outline-none active:scale-[0.98] ${
               isUserMenuOpen
                 ? 'bg-[var(--bg-base)] border-[var(--border-medium)]'
                 : 'bg-[var(--bg-base)] border-[var(--border)] hover:bg-[var(--bg-hover)] hover:border-[var(--border-medium)]'
             }`}
             aria-expanded={isUserMenuOpen}
             aria-haspopup="true"
-            aria-label="Menu de perfil do utilizador"
+            aria-label="Menu de perfil do usuário"
           >
             {/* Avatar sem gradiente nem brilho, iniciais e status online */}
             <div className="relative h-9 w-9 rounded-xl bg-[var(--primary-fill)] text-[var(--on-primary)] flex items-center justify-center font-extrabold text-xs shrink-0">
@@ -794,10 +818,25 @@ export default function Topbar() {
                     <KeyRound className="h-4 w-4" />
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="font-semibold">Segurança & Palavra-passe</span>
+                    <span className="font-semibold">Segurança & Senha</span>
                     <span className="text-xs text-[var(--text-muted)] font-normal">Modificar senha e acessos</span>
                   </div>
                 </Link>
+
+                {/* Alternância de tema (no celular fica dentro do menu do avatar) */}
+                <button
+                  type="button"
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="sm:hidden flex items-center gap-2.5 w-full min-h-[44px] px-3 py-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-base)] dark:hover:bg-[var(--bg-hover)] rounded-xl font-medium transition-colors group"
+                >
+                  <div className="p-1 rounded-lg bg-[var(--bg-base)] dark:bg-[var(--bg-surface)] group-hover:bg-[var(--primary-subtle)] group-hover:text-[var(--primary)] transition-colors">
+                    {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="font-semibold">Tema: {theme === 'dark' ? 'Escuro' : 'Claro'}</span>
+                    <span className="text-xs text-[var(--text-muted)] font-normal">Alternar aparência</span>
+                  </div>
+                </button>
               </div>
 
               {/* Seção 2: Administração da Clínica (Exclusivo para admin / admin_clinica) */}
@@ -850,12 +889,12 @@ export default function Topbar() {
               <div className="py-1.5 px-1.5">
                 <button
                   onClick={logout}
-                  className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs sm:text-sm text-[var(--error)] hover:bg-[var(--error-bg)] rounded-xl font-bold transition-colors group"
+                  className="flex items-center gap-2.5 w-full min-h-[44px] text-left px-3 py-2 text-xs sm:text-sm text-[var(--error)] hover:bg-[var(--error-bg)] rounded-xl font-bold transition-colors group"
                 >
                   <div className="p-1 rounded-lg bg-[var(--error-bg)] transition-colors">
                     <LogOut className="h-4 w-4" />
                   </div>
-                  <span>Terminar Sessão</span>
+                  <span>Sair da Conta</span>
                 </button>
               </div>
             </div>

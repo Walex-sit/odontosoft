@@ -44,17 +44,17 @@ export default function PrivacidadePage() {
 
           <section className="space-y-3 pt-2">
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              1. Dados Recolhidos
+              1. Dados Coletados
             </h2>
             <p>
-              Recolhemos apenas os dados estritamente necessários para testar os fluxos de autenticação e gestão:
+              Coletamos apenas os dados estritamente necessários para testar os fluxos de autenticação e gestão:
             </p>
             <ul className="list-disc pl-5 space-y-1.5 marker:text-gray-400 dark:marker:text-gray-500">
               <li>
-                <strong>Dados de Autenticação:</strong> Endereço de e-mail e palavra-passe (geridos de forma segura via Supabase).
+                <strong>Dados de Autenticação:</strong> Endereço de e-mail e senha (gerenciados de forma segura via Supabase).
               </li>
               <li>
-                <strong>Dados Fictícios Inseridos:</strong> Informações clínicas, cadastrais e financeiras inseridas pelo próprio utilizador de teste na sua área de trabalho.
+                <strong>Dados Fictícios Inseridos:</strong> Informações clínicas, cadastrais e financeiras inseridas pelo próprio usuário de teste na sua área de trabalho.
               </li>
             </ul>
           </section>
@@ -68,38 +68,38 @@ export default function PrivacidadePage() {
             </p>
             <ul className="list-disc pl-5 space-y-1.5 marker:text-gray-400 dark:marker:text-gray-500">
               <li>
-                <strong>Criptografia:</strong> O sistema não armazena documentos de identificação (como o CPF) em texto limpo. Utilizamos algoritmos de hash (SHA-256) e criptografia simétrica avançada (AES-256) diretamente na base de dados.
+                <strong>Criptografia:</strong> O sistema não armazena documentos de identificação (como o CPF) em texto limpo. Utilizamos algoritmos de hash (SHA-256) e criptografia simétrica avançada (AES-256) diretamente no banco de dados.
               </li>
               <li>
-                <strong>Isolamento de Dados (Multi-tenant):</strong> A plataforma aplica Row Level Security (RLS), garantindo que os dados inseridos por um utilizador de teste nunca são partilhados ou acedidos por outro.
+                <strong>Isolamento de Dados (Multi-tenant):</strong> A plataforma aplica Row Level Security (RLS), garantindo que os dados inseridos por um usuário de teste nunca sejam compartilhados ou acessados por outro.
               </li>
             </ul>
           </section>
 
           <section className="space-y-2 pt-2">
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              3. Partilha de Dados
+              3. Compartilhamento de Dados
             </h2>
             <p>
-              Nenhum dado inserido neste ambiente de demonstração será partilhado, vendido ou transferido a terceiros.
+              Nenhum dado inserido neste ambiente de demonstração será compartilhado, vendido ou transferido a terceiros.
             </p>
           </section>
 
           <section className="space-y-2 pt-2">
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              4. Eliminação de Dados
+              4. Exclusão de Dados
             </h2>
             <p>
-              Por se tratar de um ambiente de treino, todos os dados inseridos podem ser eliminados pelo utilizador a qualquer momento através das opções do painel, ou ser alvo de rotinas de limpeza automática pelos administradores do sistema sem aviso prévio.
+              Por se tratar de um ambiente de treino, todos os dados inseridos podem ser excluídos pelo usuário a qualquer momento através das opções do painel, ou ser alvo de rotinas de limpeza automática pelos administradores do sistema sem aviso prévio.
             </p>
           </section>
 
           <section className="space-y-2 pt-2">
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              5. Contacto
+              5. Contato
             </h2>
             <p>
-              Se estiver a avaliar o sistema e tiver dúvidas sobre a arquitetura de segurança, por favor entre em contacto com o desenvolvedor responsável pela demonstração.
+              Se estiver avaliando o sistema e tiver dúvidas sobre a arquitetura de segurança, por favor entre em contato com o desenvolvedor responsável pela demonstração.
             </p>
           </section>
         </div>

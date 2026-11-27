@@ -339,7 +339,7 @@ export default function DashboardOverview() {
   const totalAlertas = (alerts?.estoqueCritico.length ?? 0) + (alerts?.despesasVencidas.length ?? 0)
 
   return (
-    <div className="flex flex-col min-h-screen w-full h-full bg-[var(--bg-base)] text-[var(--text-primary)] overflow-y-auto print:bg-white print:text-[var(--text-primary)]">
+    <div className="flex flex-col min-h-dvh w-full h-full bg-[var(--bg-base)] text-[var(--text-primary)] overflow-y-auto print:bg-white print:text-[var(--text-primary)]">
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
           body * { visibility: hidden; }
@@ -448,7 +448,7 @@ export default function DashboardOverview() {
                       </span>
                     </div>
                     <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1.5 font-medium flex items-center gap-2 flex-wrap">
-                      <span className="capitalize">{dataExtenso}</span>
+                      <span>{dataExtenso}</span>
                       {clinicaNome && (
                         <>
                           <span className="text-[var(--text-secondary)]">•</span>

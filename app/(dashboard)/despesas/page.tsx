@@ -153,7 +153,8 @@ export default function Despesas() {
         
         <div className="flex-1 overflow-y-auto p-6">
           <h2 className="text-lg font-bold text-[var(--text-primary)] mb-4">Histórico de Despesas</h2>
-          <table className="w-full border-collapse border border-[var(--border)] text-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[600px] border-collapse border border-[var(--border)] text-sm">
             <thead>
               <tr className="bg-[var(--bg-surface)] border-b border-[var(--border)]">
                 <th className="text-left py-2 px-3 font-semibold text-[var(--text-primary)] border-r border-[var(--border)]">Descrição</th>
@@ -195,6 +196,7 @@ export default function Despesas() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </main>
     </div>

@@ -133,7 +133,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
   }
 
   // Classes reutilizáveis
-  const inputBase = 'w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all placeholder-[var(--text-secondary)]'
+  const inputBase = 'w-full bg-[var(--bg-surface)] text-[var(--text-primary)] border rounded-md px-3 py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]/40 transition-all placeholder-[var(--text-secondary)]'
 
   function cpfBorderClass() {
     if (!cpf) return 'border-[var(--border)]'
@@ -150,31 +150,36 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
       />
       
       {/* Painel */}
-      <div data-testid="slideover-novo-paciente" className="fixed right-0 top-0 h-screen w-full sm:w-[500px] bg-[var(--bg-surface)] shadow-md z-[70] flex flex-col transform transition-transform duration-300 ease-in-out translate-x-0 border-l border-[var(--border)]">
+      <div data-testid="slideover-novo-paciente" className="fixed right-0 top-0 h-dvh w-full sm:w-[500px] bg-[var(--bg-surface)] shadow-md z-[70] flex flex-col transform transition-transform duration-300 ease-in-out translate-x-0 border-l border-[var(--border)]">
         
         {/* Cabeçalho */}
-        <div className="flex items-center justify-between p-6 border-b border-[var(--border)] shrink-0">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-[var(--border)] shrink-0">
           <h2 className="text-[var(--text-primary)] font-bold text-lg">Cadastrar Novo Paciente</h2>
           <button 
+            type="button"
             onClick={onClose}
             data-testid="btn-fechar-slideover-paciente"
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors bg-[var(--bg-surface)] p-1.5 rounded-md hover:bg-[var(--border-medium)] border border-[var(--border)]"
+            aria-label="Fechar painel"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors bg-[var(--bg-surface)] p-1.5 rounded-md hover:bg-[var(--border-medium)] border border-[var(--border)]"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Corpo (Rolável) */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
           <form id="novo-paciente-form" onSubmit={handleSalvar}>
             
             {/* DADOS PESSOAIS */}
             <h3 className="text-xs text-[var(--text-muted)] font-bold uppercase mt-2 mb-4 tracking-wider">Dados Pessoais</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Nome completo <span className="text-red-400">*</span></label>
+                <label htmlFor="paciente-nome" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Nome completo <span className="text-red-400">*</span></label>
                 <input 
+                  id="paciente-nome"
+                  name="nome"
                   type="text" 
+                  autoComplete="name"
                   required
                   data-testid="input-paciente-nome"
                   value={nome}
@@ -183,11 +188,13 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                   placeholder="Ex: João da Silva"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* ── CPF COM MÁSCARA E VALIDAÇÃO ── */}
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">CPF</label>
+                  <label htmlFor="paciente-cpf" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">CPF</label>
                   <input 
+                    id="paciente-cpf"
+                    name="cpf"
                     type="text"
                     inputMode="numeric"
                     data-testid="input-paciente-cpf"
@@ -205,8 +212,10 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">RG</label>
+                  <label htmlFor="paciente-rg" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">RG</label>
                   <input 
+                    id="paciente-rg"
+                    name="rg"
                     type="text" 
                     data-testid="input-paciente-rg"
                     value={rg}
@@ -215,11 +224,14 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Data de Nascimento</label>
+                  <label htmlFor="paciente-nascimento" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Data de Nascimento</label>
                   <input 
+                    id="paciente-nascimento"
+                    name="data_nascimento"
                     type="date" 
+                    autoComplete="bday"
                     data-testid="input-paciente-data-nascimento"
                     value={dataNascimento}
                     onChange={e => setDataNascimento(e.target.value)}
@@ -227,8 +239,11 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Gênero</label>
+                  <label htmlFor="paciente-genero" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Gênero</label>
                   <select 
+                    id="paciente-genero"
+                    name="genero"
+                    autoComplete="sex"
                     data-testid="select-paciente-genero"
                     value={genero}
                     onChange={e => setGenero(e.target.value)}
@@ -274,11 +289,14 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
             {/* CONTATO */}
             <h3 className="text-xs text-[var(--text-muted)] font-bold uppercase mt-8 mb-4 tracking-wider">Contato</h3>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Celular</label>
+                  <label htmlFor="paciente-telefone" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Celular</label>
                   <input 
-                    type="text" 
+                    id="paciente-telefone"
+                    name="telefone"
+                    type="tel" 
+                    autoComplete="tel"
                     data-testid="input-paciente-telefone"
                     value={telefone}
                     onChange={e => setTelefone(e.target.value)}
@@ -286,7 +304,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                     placeholder="(11) 90000-0000"
                   />
                 </div>
-                <div className="flex items-center mt-6">
+                <div className="flex items-center sm:mt-6">
                   <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
                     <input 
                       type="checkbox" 
@@ -300,9 +318,12 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">E-mail</label>
+                <label htmlFor="paciente-email" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">E-mail</label>
                 <input 
+                  id="paciente-email"
+                  name="email"
                   type="email" 
+                  autoComplete="email"
                   data-testid="input-paciente-email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
@@ -315,39 +336,50 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
             {/* ENDEREÇO */}
             <h3 className="text-xs text-[var(--text-muted)] font-bold uppercase mt-8 mb-4 tracking-wider">Endereço</h3>
             <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="col-span-1">
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">CEP</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="sm:col-span-1">
+                  <label htmlFor="paciente-cep" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">CEP</label>
                   <input 
+                    id="paciente-cep"
+                    name="cep"
                     type="text" 
+                    autoComplete="postal-code"
                     value={cep}
                     onChange={e => setCep(e.target.value)}
                     className={`${inputBase} border-[var(--border)]`}
                   />
                 </div>
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Cidade</label>
+                <div className="sm:col-span-2">
+                  <label htmlFor="paciente-cidade" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Cidade</label>
                   <input 
+                    id="paciente-cidade"
+                    name="cidade"
                     type="text" 
+                    autoComplete="address-level2"
                     value={cidade}
                     onChange={e => setCidade(e.target.value)}
                     className={`${inputBase} border-[var(--border)]`}
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-4 gap-4">
-                <div className="col-span-3">
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Rua</label>
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div className="sm:col-span-3">
+                  <label htmlFor="paciente-rua" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Rua</label>
                   <input 
+                    id="paciente-rua"
+                    name="rua"
                     type="text" 
+                    autoComplete="street-address"
                     value={rua}
                     onChange={e => setRua(e.target.value)}
                     className={`${inputBase} border-[var(--border)]`}
                   />
                 </div>
-                <div className="col-span-1">
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Número</label>
+                <div className="sm:col-span-1">
+                  <label htmlFor="paciente-numero" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Número</label>
                   <input 
+                    id="paciente-numero"
+                    name="numero"
                     type="text" 
                     value={numero}
                     onChange={e => setNumero(e.target.value)}
@@ -356,8 +388,10 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Bairro</label>
+                <label htmlFor="paciente-bairro" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Bairro</label>
                 <input 
+                  id="paciente-bairro"
+                  name="bairro"
                   type="text" 
                   value={bairro}
                   onChange={e => setBairro(e.target.value)}
@@ -369,7 +403,7 @@ export default function NovoPacienteSlideOver({ isOpen, onClose, onSuccess }: No
         </div>
 
         {/* Rodapé Fixo */}
-        <div className="border-t border-[var(--border)] bg-[var(--bg-surface)] p-4 shrink-0 space-y-2">
+        <div className="border-t border-[var(--border)] bg-[var(--bg-surface)] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shrink-0 space-y-2">
           {/* Botão Gerar Termo LGPD (PDF) */}
           <button
             type="button"

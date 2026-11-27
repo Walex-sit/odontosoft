@@ -39,7 +39,7 @@ export default function TermosPage() {
         {/* Conteúdo */}
         <div className="space-y-6 text-gray-600 dark:text-gray-300 text-base leading-relaxed">
           <p>
-            Bem-vindo ao OdontoSoft. Ao aceder e utilizar esta plataforma, o utilizador concorda com os presentes Termos de Utilização.
+            Bem-vindo ao OdontoSoft. Ao acessar e utilizar esta plataforma, o usuário concorda com os presentes Termos de Uso.
           </p>
 
           <section className="space-y-2 pt-2">
@@ -47,7 +47,7 @@ export default function TermosPage() {
               1. Natureza da Aplicação
             </h2>
             <p>
-              O OdontoSoft é, no seu estado atual, um projeto de engenharia de software desenvolvido para fins de demonstração, treino técnico e portefólio. Não se trata de um serviço comercial em operação ativa.
+              O OdontoSoft é, no seu estado atual, um projeto de engenharia de software desenvolvido para fins de demonstração, treino técnico e portfólio. Não se trata de um serviço comercial em operação ativa.
             </p>
           </section>
 
@@ -56,7 +56,7 @@ export default function TermosPage() {
               2. Inserção de Dados Fictícios
             </h2>
             <p>
-              Sendo um ambiente de testes, é estritamente proibida a inserção de dados reais ou sensíveis de pacientes (como nomes verdadeiros, CPFs, RGs, moradas ou informações clínicas reais). O utilizador compromete-se a utilizar apenas dados fictícios (mock data) para explorar as funcionalidades da plataforma.
+              Sendo um ambiente de testes, é estritamente proibida a inserção de dados reais ou sensíveis de pacientes (como nomes verdadeiros, CPFs, RGs, endereços ou informações clínicas reais). O usuário compromete-se a utilizar apenas dados fictícios (mock data) para explorar as funcionalidades da plataforma.
             </p>
           </section>
 

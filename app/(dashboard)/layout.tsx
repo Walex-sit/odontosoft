@@ -20,7 +20,7 @@ export default function DashboardLayout({
         {/* Pré-carregador de rotas e dados de alta frequência em idle */}
         <RoutePrefetcher />
 
-        <div className="flex flex-col min-h-screen w-full bg-[var(--bg-base)] text-[var(--text-primary)] overflow-hidden">
+        <div className="flex flex-col min-h-dvh w-full bg-[var(--bg-base)] text-[var(--text-primary)] overflow-x-clip">
           {/* Topbar 100% persistente e estática */}
           <Topbar />
 
@@ -33,7 +33,7 @@ export default function DashboardLayout({
           {/* Feedback tátil imediato em navegação */}
           <NavigationProgress />
 
-          <main className="flex flex-1 flex-col overflow-hidden relative z-10 w-full h-full pb-16 md:pb-0">
+          <main className="flex flex-1 flex-col overflow-x-clip relative z-10 w-full h-full pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
             <RouteGuard>
               <ContentTransition>
                 {children}

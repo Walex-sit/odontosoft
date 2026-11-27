@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins, Nunito } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   description: "A nova geração da gestão odontológica. Software médico premium para clínicas que exigem velocidade, elegância e confiabilidade.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,7 +37,7 @@ export default function RootLayout({
       className={`${poppins.variable} ${nunito.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="w-full min-h-screen flex flex-col font-sans bg-[var(--bg-base)] dark:bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-200">
+      <body className="w-full min-h-dvh flex flex-col font-sans bg-[var(--bg-base)] dark:bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <div className="flex-1 flex flex-col">
             {children}

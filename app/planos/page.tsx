@@ -124,13 +124,13 @@ export default function PlanosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex flex-col font-sans selection:bg-[var(--primary-fill)] selection:text-[var(--on-primary)]">
+    <div className="min-h-dvh bg-[var(--bg-base)] text-[var(--text-primary)] flex flex-col font-sans selection:bg-[var(--primary-fill)] selection:text-[var(--on-primary)]">
       {/* Header / Navegação Pública */}
       <header className="border-b border-[var(--border)] bg-[var(--bg-base)] sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <BrandMark size="md" className="rounded-xl" />
-            <span className="text-xl font-black tracking-tight text-[var(--text-primary)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <BrandMark size="md" className="rounded-xl shrink-0" />
+            <span className="text-lg sm:text-xl font-black tracking-tight text-[var(--text-primary)] truncate">
               Odonto<span className="text-[var(--primary)]">Soft</span>
             </span>
           </Link>
@@ -141,16 +141,16 @@ export default function PlanosPage() {
             <a href="#faq" className="hover:text-[var(--primary)] transition-colors">Perguntas Frequentes</a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Link
               href="/login"
-              className="text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3.5 py-2 rounded-lg transition-colors"
+              className="inline-flex items-center min-h-[44px] text-xs sm:text-sm font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-2.5 sm:px-3.5 py-2 rounded-lg transition-colors"
             >
               Entrar
             </Link>
             <button
               onClick={() => abrirCheckout('premium')}
-              className="text-sm font-bold bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-95 text-[var(--on-primary)] px-4 py-2 rounded-lg transition-all  flex items-center gap-1.5"
+              className="min-h-[44px] text-xs sm:text-sm font-bold bg-[var(--primary-fill)] hover:bg-[var(--primary-fill-hover)] active:scale-95 text-[var(--on-primary)] px-3 sm:px-4 py-2 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap"
             >
               Começar Agora
               <ArrowRight className="w-4 h-4" />
@@ -438,10 +438,12 @@ export default function PlanosPage() {
       {/* Modal de Criação de Conta & Checkout */}
       {modalAberto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl max-w-md w-full p-6 relative shadow-md">
+          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl max-w-md w-full max-h-[90dvh] overflow-y-auto p-6 relative shadow-md">
             <button
+              type="button"
               onClick={() => setModalAberto(false)}
-              className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1 rounded-lg"
+              aria-label="Fechar modal"
+              className="absolute top-3 right-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1 rounded-lg"
             >
               <X className="w-5 h-5" />
             </button>
@@ -464,38 +466,47 @@ export default function PlanosPage() {
 
             <form onSubmit={handleFinalizarContratacao} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Nome Completo</label>
+                <label htmlFor="planos-nome" className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Nome Completo</label>
                 <input
+                  id="planos-nome"
+                  name="nome"
                   type="text"
+                  autoComplete="name"
                   required
                   placeholder="Dra. Mariana Silva"
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)]"
+                  className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-base sm:text-sm focus:outline-none focus:border-[var(--primary)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">E-mail Profissional</label>
+                <label htmlFor="planos-email" className="block text-xs font-bold text-[var(--text-secondary)] mb-1">E-mail Profissional</label>
                 <input
+                  id="planos-email"
+                  name="email"
                   type="email"
+                  autoComplete="email"
                   required
                   placeholder="mariana@clinicaodonto.com.br"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)]"
+                  className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-base sm:text-sm focus:outline-none focus:border-[var(--primary)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Senha de Acesso</label>
+                <label htmlFor="planos-senha" className="block text-xs font-bold text-[var(--text-secondary)] mb-1">Senha de Acesso</label>
                 <input
+                  id="planos-senha"
+                  name="senha"
                   type="password"
+                  autoComplete="new-password"
                   required
                   placeholder="Mínimo 6 caracteres"
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--primary)]"
+                  className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-base)] border border-[var(--border)] text-[var(--text-primary)] text-base sm:text-sm focus:outline-none focus:border-[var(--primary)]"
                 />
               </div>
 

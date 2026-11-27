@@ -256,7 +256,7 @@ export default function RegisterPage() {
   const isLoading = step === 'loading' || enviandoCodigo
 
   return (
-    <div className="min-h-screen w-full flex font-sans antialiased selection:bg-[var(--primary-fill)] selection:text-[var(--on-primary)]">
+    <div className="min-h-dvh w-full flex font-sans antialiased selection:bg-[var(--primary-fill)] selection:text-[var(--on-primary)]">
       {/* ── Painel Esquerdo (visual de autoridade odontológica e SaaS) ─────── */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#0F6E7A] flex-col items-center justify-center relative overflow-hidden select-none">
         {/* Grid pontilhado suave */}
@@ -422,7 +422,7 @@ export default function RegisterPage() {
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      A validar código…
+                      Validando código…
                     </>
                   ) : (
                     <>
@@ -538,6 +538,7 @@ export default function RegisterPage() {
                       type="text"
                       id="register-nome-clinica"
                       data-testid="input-register-nome-clinica"
+                      autoComplete="organization"
                       disabled={isLoading}
                       required
                       placeholder="Ex: Clínica Sorriso Perfeito"

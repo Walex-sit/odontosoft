@@ -49,8 +49,11 @@ export function BottomNav() {
   }
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--bg-surface)] border-t border-[var(--border)]">
-      <div className="flex justify-around items-center h-16 px-2">
+    <nav
+      aria-label="Navegação inferior"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--bg-surface)] border-t border-[var(--border)] pb-[env(safe-area-inset-bottom)]"
+    >
+      <div className="flex justify-around items-center min-h-16 px-2">
         {visibleItems.map((item) => {
           const isActive = item.href === '/admin'
             ? pathname === '/admin'
@@ -62,7 +65,7 @@ export function BottomNav() {
               key={item.name}
               href={item.href}
               prefetch={true}
-              className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-all active:scale-95 ${
+              className={`flex flex-col items-center justify-center w-full min-h-[44px] min-w-[44px] py-2 space-y-1 transition-all active:scale-95 ${
                 isActive
                   ? 'text-[var(--primary)] font-bold'
                   : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] dark:hover:text-[var(--text-primary)]'
